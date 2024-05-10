@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://iiukaws5xo8m"]
+
+[ext_resource type="Script" path="res://Cell.cs" id="1_dnful"]
+[ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="2_mccuu"]
+
+[node name="Cell" type="Node2D"]
+script = ExtResource("1_dnful")
+
+[node name="Ground" type="Sprite2D" parent="."]
+texture = ExtResource("2_mccuu")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
