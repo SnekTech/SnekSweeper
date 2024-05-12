@@ -1,4 +1,5 @@
-﻿using SnekSweeper.CellSystem;
+﻿using System.Collections.Generic;
+using SnekSweeper.CellSystem;
 
 namespace SnekSweeper.GridSystem;
 
@@ -6,14 +7,14 @@ public class Grid
 {
     private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
     {
-        new(-1, -1),
-        new(0, -1),
-        new(1, -1),
-        new(-1, 0),
-        new(1, 0),
-        new(-1, 1),
-        new(0, 1),
-        new(1, 1),
+        (-1, -1),
+        (0, -1),
+        (1, -1),
+        (-1, 0),
+        (1, 0),
+        (-1, 1),
+        (0, 1),
+        (1, 1),
     };
 
     private Cell[,] _cells;
@@ -37,10 +38,35 @@ public class Grid
 
             var cell = new Cell(humbleCell, this, (i, j), hasBomb);
             _cells[i, j] = cell;
-            
+        }
+
+        // must init individual cells after all cells been created,
+        // otherwise neighbor might be null
+        foreach (var cell in _cells.Values())
+        {
             cell.Init();
         }
     }
 
     public Cell this[int i, int j] => _cells[i, j];
+
+    public bool IsValidIndex(int i, int j)
+    {
+        var (rows, columns) = _cells.Size();
+        return i >= 0 && i < rows && j >= 0 && j < columns;
+    }
+
+    public IEnumerable<Cell> GetNeighborsOf(Cell cell)
+    {
+        foreach (var (offsetI, offsetJ) in NeighborOffsets)
+        {
+            var (i, j) = cell.GridIndex;
+            var (neighborI, neighborJ) = (i + offsetI, j + offsetJ);
+
+            if (IsValidIndex(neighborI, neighborJ))
+            {
+                yield return this[neighborI, neighborJ];
+            }
+        }
+    }
 }
