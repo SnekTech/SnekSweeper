@@ -1,13 +1,33 @@
-[gd_scene load_steps=3 format=3 uid="uid://iiukaws5xo8m"]
+[gd_scene load_steps=4 format=3 uid="uid://iiukaws5xo8m"]
 
-[ext_resource type="Script" path="res://Scripts/Cell.cs" id="1_dnful"]
+[ext_resource type="Script" path="res://Scripts/CellSystem/HumbleCell.cs" id="1_6skau"]
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="2_mccuu"]
+[ext_resource type="Script" path="res://Scripts/CellSystem/Content.cs" id="3_iigk5"]
 
 [node name="Cell" type="Node2D"]
-script = ExtResource("1_dnful")
+script = ExtResource("1_6skau")
 
 [node name="Ground" type="Sprite2D" parent="."]
 texture = ExtResource("2_mccuu")
 centered = false
-region_enabled = true
+hframes = 4
+vframes = 4
 region_rect = Rect2(0, 0, 16, 16)
+
+[node name="Content" type="Sprite2D" parent="."]
+texture = ExtResource("2_mccuu")
+centered = false
+hframes = 4
+vframes = 4
+frame = 8
+region_rect = Rect2(0, 16, 16, 16)
+script = ExtResource("3_iigk5")
+
+[node name="Cover" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("2_mccuu")
+centered = false
+hframes = 4
+vframes = 4
+frame = 1
+region_rect = Rect2(0, 16, 16, 16)
