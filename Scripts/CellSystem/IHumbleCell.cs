@@ -2,5 +2,6 @@
 
 public interface IHumbleCell
 {
-    void Init(Cell cell);
+    void SetContent(Cell cell);
+    void SetPosition(Cell cell);
 }

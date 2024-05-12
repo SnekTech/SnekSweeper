@@ -22,13 +22,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
 	{
 	}
 
-	public void Init(Cell cell)
-	{
-		SetPosition(cell.GridIndex);
-		SetContent(cell);
-	}
-
-	private void SetContent(Cell cell)
+	public void SetContent(Cell cell)
 	{
 		var content = GetNode<Content>("Content");
 		
@@ -42,9 +36,9 @@ public partial class HumbleCell : Node2D, IHumbleCell
 		}
 	}
 
-	private void SetPosition((int i, int j) gridIndex)
+	public void SetPosition(Cell cell)
 	{
-		var (i, j) = gridIndex;
+		var (i, j) = cell.GridIndex;
 		Position = new Vector2(j * CellSizePixels, i * CellSizePixels);
 	}
 }

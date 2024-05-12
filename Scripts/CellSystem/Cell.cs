@@ -18,7 +18,8 @@ public class Cell
 
     public void Init()
     {
-        _humbleCell.Init(this);
+        _humbleCell.SetContent(this);
+        _humbleCell.SetPosition(this);
     }
 
     public (int i, int j) GridIndex { get; }
