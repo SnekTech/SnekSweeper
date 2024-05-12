@@ -8,7 +8,7 @@ public class BombMatrix
     private readonly bool[,] _bombs;
 
 
-    public BombMatrix(GridSize size, float probability = 0.3f)
+    public BombMatrix((int rows, int columns) size, float probability = 0.3f)
     {
         if (probability is < 0 or > 1)
         {
@@ -16,7 +16,7 @@ public class BombMatrix
         }
 
         Size = size;
-        var matrix = new bool[size.Row, size.Column];
+        var matrix = new bool[size.rows, size.columns];
         foreach (var (i, j) in matrix.Indices())
         {
             matrix[i, j] = GD.Randf() < probability;
@@ -26,5 +26,5 @@ public class BombMatrix
     }
 
     public bool this[int i, int j] => _bombs[i, j];
-    public GridSize Size { get; }
+    public (int rows, int columns) Size { get; }
 }

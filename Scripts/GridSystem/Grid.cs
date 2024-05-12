@@ -26,13 +26,13 @@ public class Grid
 
     public void InitCells(BombMatrix bombMatrix)
     {
-        var size = bombMatrix.Size;
-        _cells = new Cell[size.Row, size.Column];
+        var (rows, columns) = bombMatrix.Size;
+        _cells = new Cell[rows, columns];
 
         var humbleCells = _humbleGrid.InstantiateHumbleCells(_cells.Length);
         foreach (var (i, j) in _cells.Indices())
         {
-            var humbleCell = humbleCells[i * size.Column + j];
+            var humbleCell = humbleCells[i * columns + j];
             var hasBomb = bombMatrix[i, j];
 
             var cell = new Cell(humbleCell, this, (i, j), hasBomb);
