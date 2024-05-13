@@ -24,7 +24,6 @@ region_rect = Rect2(0, 16, 16, 16)
 script = ExtResource("3_iigk5")
 
 [node name="Cover" type="Sprite2D" parent="."]
-visible = false
 texture = ExtResource("2_mccuu")
 centered = false
 hframes = 4
