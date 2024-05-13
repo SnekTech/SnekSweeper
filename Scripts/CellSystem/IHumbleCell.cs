@@ -2,8 +2,7 @@
 
 public interface IHumbleCell
 {
-    void SetContent(Cell cell);
-    void SetPosition(Cell cell);
+    void Init(Cell cell);
     void PutCover();
     void Reveal();
 }
