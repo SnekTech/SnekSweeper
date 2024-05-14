@@ -48,16 +48,18 @@ public class Grid
         }
     }
 
-    public Cell this[int i, int j] => _cells[i, j];
+    private Cell this[(int i, int j) gridIndex]
+    {
+        get
+        {
+            var (i, j) = gridIndex;
+            return _cells[i, j];
+        }
+    }
 
     private bool IsValidIndex((int i, int j) gridIndex)
     {
         var (i, j) = gridIndex;
-        return IsValidIndex(i, j);
-    }
-
-    private bool IsValidIndex(int i, int j)
-    {
         var (rows, columns) = _cells.Size();
         return i >= 0 && i < rows && j >= 0 && j < columns;
     }
@@ -67,11 +69,11 @@ public class Grid
         var (i, j) = cell.GridIndex;
         foreach (var (offsetI, offsetJ) in NeighborOffsets)
         {
-            var (neighborI, neighborJ) = (i + offsetI, j + offsetJ);
+            var neighborIndex = (i + offsetI, j + offsetJ);
 
-            if (IsValidIndex(neighborI, neighborJ))
+            if (IsValidIndex(neighborIndex))
             {
-                yield return this[neighborI, neighborJ];
+                yield return this[neighborIndex];
             }
         }
     }
@@ -89,11 +91,10 @@ public class Grid
 
     private void FindCellsToReveal((int i, int j) gridIndex, List<Cell> cellsToReveal)
     {
-        var (i, j) = gridIndex;
         if (!IsValidIndex(gridIndex))
             return;
 
-        var cell = this[i, j];
+        var cell = this[gridIndex];
         var visited = cellsToReveal.Contains(cell);
         if (visited || !cell.IsCovered)
             return;
