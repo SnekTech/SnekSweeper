@@ -1,8 +1,12 @@
-﻿namespace SnekSweeper.CellSystem;
+﻿using System;
+
+namespace SnekSweeper.CellSystem;
 
 public interface IHumbleCell
 {
-    void Init(Cell cell);
+    public event Action PrimaryReleased;
+    void SetContent(Cell cell);
+    void SetPosition((int i, int j) gridIndex);
     void PutCover();
     void Reveal();
 }

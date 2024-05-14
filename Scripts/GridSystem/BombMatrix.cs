@@ -8,7 +8,7 @@ public class BombMatrix
     private readonly bool[,] _bombs;
 
 
-    public BombMatrix((int rows, int columns) size, float probability = 0.3f)
+    public BombMatrix((int rows, int columns) size, float probability = 0.1f)
     {
         if (probability is < 0 or > 1)
         {

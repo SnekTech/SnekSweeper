@@ -50,7 +50,13 @@ public class Grid
 
     public Cell this[int i, int j] => _cells[i, j];
 
-    public bool IsValidIndex(int i, int j)
+    private bool IsValidIndex((int i, int j) gridIndex)
+    {
+        var (i, j) = gridIndex;
+        return IsValidIndex(i, j);
+    }
+
+    private bool IsValidIndex(int i, int j)
     {
         var (rows, columns) = _cells.Size();
         return i >= 0 && i < rows && j >= 0 && j < columns;
@@ -58,15 +64,48 @@ public class Grid
 
     public IEnumerable<Cell> GetNeighborsOf(Cell cell)
     {
+        var (i, j) = cell.GridIndex;
         foreach (var (offsetI, offsetJ) in NeighborOffsets)
         {
-            var (i, j) = cell.GridIndex;
             var (neighborI, neighborJ) = (i + offsetI, j + offsetJ);
 
             if (IsValidIndex(neighborI, neighborJ))
             {
                 yield return this[neighborI, neighborJ];
             }
+        }
+    }
+
+    public void RevealAt((int i, int j) gridIndex)
+    {
+        var cellsToReveal = new List<Cell>();
+        FindCellsToReveal(gridIndex, cellsToReveal);
+        
+        foreach (var cell in cellsToReveal)
+        {
+            cell.Reveal();
+        }
+    }
+
+    private void FindCellsToReveal((int i, int j) gridIndex, List<Cell> cellsToReveal)
+    {
+        var (i, j) = gridIndex;
+        if (!IsValidIndex(gridIndex))
+            return;
+
+        var cell = this[i, j];
+        var visited = cellsToReveal.Contains(cell);
+        if (visited || !cell.IsCovered)
+            return;
+
+        cellsToReveal.Add(cell);
+
+        if (cell.HasBomb || cell.NeighborBombCount > 0)
+            return;
+
+        foreach (var neighbor in GetNeighborsOf(cell))
+        {
+            FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
     }
 }

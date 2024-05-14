@@ -16,11 +16,8 @@ public class Cell
         HasBomb = hasBomb;
     }
 
-    public void Init()
-    {
-        _humbleCell.Init(this);
-    }
-
+    // todo: add cell covered state using FSM
+    public bool IsCovered => true;
     public (int i, int j) GridIndex { get; }
     public bool HasBomb { get; }
 
@@ -33,5 +30,22 @@ public class Cell
 
             return _parent.GetNeighborsOf(this).Count(neighbor => neighbor.HasBomb);
         }
+    }
+
+    public void Init()
+    {
+        _humbleCell.SetContent(this);
+        _humbleCell.SetPosition(GridIndex);
+        _humbleCell.PrimaryReleased += OnPrimaryReleased;
+    }
+
+    private void OnPrimaryReleased()
+    {
+        _parent.RevealAt(GridIndex);
+    }
+
+    public void Reveal()
+    {
+        _humbleCell.Reveal();
     }
 }
