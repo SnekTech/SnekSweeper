@@ -43,6 +43,8 @@ public class Cell
         
         // no place to unsubscribe, for now
         _humbleCell.PrimaryReleased += OnPrimaryReleased;
+        
+        _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
     }
 
     private void OnPrimaryReleased()

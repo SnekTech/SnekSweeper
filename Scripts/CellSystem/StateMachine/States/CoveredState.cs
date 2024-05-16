@@ -10,6 +10,6 @@ public class CoveredState : CellState
     
     public override void OnPrimaryReleased()
     {
-        StateMachine.ChangeState(StateMachine.CacheRevealedState);
+        StateMachine.ChangeState(StateMachine.CachedRevealedState);
     }
 }
