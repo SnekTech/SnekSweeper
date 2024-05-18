@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
 using SnekSweeper.GridSystem;
 
@@ -19,6 +20,8 @@ public class Cell
         GridIndex = gridIndex;
         HasBomb = hasBomb;
     }
+    
+    public ICover Cover => _humbleCell.Cover;
 
     public (int i, int j) GridIndex { get; }
     public bool HasBomb { get; }
@@ -54,6 +57,6 @@ public class Cell
 
     public void Reveal()
     {
-        _humbleCell.Reveal();
+        _stateMachine.Reveal();
     }
 }

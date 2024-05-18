@@ -21,15 +21,11 @@ public abstract class CellState : IState
     {
     }
 
-    public virtual void OnPrimaryReleased()
+    public virtual void Reveal()
     {
     }
 
-    public virtual void OnSecondaryReleased()
-    {
-    }
-
-    public virtual void OnPrimaryDouble()
+    public virtual void Flag()
     {
     }
 }

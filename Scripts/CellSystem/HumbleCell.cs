@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using SnekSweeper.CellSystem.Components;
 using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CellSystem;
@@ -16,8 +17,9 @@ public partial class HumbleCell : Node2D, IHumbleCell
     public event Action PrimaryReleased;
 
     private Content Content => GetNode<Content>("Content");
-    private Sprite2D Cover => GetNode<Sprite2D>("Cover");
     private Area2D ClickArea => GetNode<Area2D>("ClickArea");
+    
+    public ICover Cover => GetNode<Cover>("Cover");
 
     public override void _Ready()
     {
@@ -53,15 +55,5 @@ public partial class HumbleCell : Node2D, IHumbleCell
     {
         var (i, j) = gridIndex;
         Position = new Vector2(j * CellSizePixels, i * CellSizePixels);
-    }
-
-    public void PutCover()
-    {
-        Cover.Show();
-    }
-
-    public void Reveal()
-    {
-        Cover.Hide();
     }
 }

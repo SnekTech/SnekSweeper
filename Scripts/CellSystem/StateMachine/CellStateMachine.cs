@@ -14,4 +14,14 @@ public class CellStateMachine : StateMachine<CellState, Cell>
         CachedCoveredState = new CoveredState(this);
         CachedRevealedState = new RevealedState(this);
     }
+
+    public void Reveal()
+    {
+        CurrentState.Reveal();
+    }
+
+    public void Flag()
+    {
+        CurrentState.Flag();
+    }
 }
