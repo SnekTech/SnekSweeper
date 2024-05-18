@@ -12,7 +12,6 @@ public abstract class CellState : IState
         StateMachine = stateMachine;
     }
 
-    public abstract CellStateValue Value { get; }
 
     public virtual void OnEnter()
     {

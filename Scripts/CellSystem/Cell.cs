@@ -23,7 +23,7 @@ public class Cell
     public (int i, int j) GridIndex { get; }
     public bool HasBomb { get; }
 
-    public bool IsCovered => _stateMachine.CurrentStateValue == CellStateValue.Covered;
+    public bool IsCovered => _stateMachine.CurrentState == _stateMachine.CachedCoveredState;
 
     public int NeighborBombCount
     {
