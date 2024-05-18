@@ -9,4 +9,8 @@
   <ItemGroup>
     <None Include="**/*.tscn"/>
   </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Diagrams/**/*.puml" />
+  </ItemGroup>
 </Project>

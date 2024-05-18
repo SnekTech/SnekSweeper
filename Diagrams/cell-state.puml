@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/state-diagram
+
+state covered
+state flagged
+state revealed
+
+[*] -> covered
+
+covered --> flagged : raise command
+flagged --> covered : put down command
+
+covered --> revealed : reveal command
+
+revealed -> [*] : level ends
+
+@enduml
