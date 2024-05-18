@@ -19,6 +19,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
     private Area2D ClickArea => GetNode<Area2D>("ClickArea");
     
     public ICover Cover => GetNode<Cover>("Cover");
+    public IFlag Flag => GetNode<Flag>("Flag");
 
     public override void _Ready()
     {

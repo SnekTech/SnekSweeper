@@ -22,11 +22,13 @@ public class Cell
     }
     
     public ICover Cover => _humbleCell.Cover;
+    public IFlag Flag => _humbleCell.Flag;
 
     public (int i, int j) GridIndex { get; }
     public bool HasBomb { get; }
 
     public bool IsCovered => _stateMachine.CurrentState == _stateMachine.CachedCoveredState;
+    public bool IsRevealed => _stateMachine.CurrentState == _stateMachine.CachedRevealedState;
 
     public int NeighborBombCount
     {
