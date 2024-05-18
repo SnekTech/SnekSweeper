@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace SnekSweeper.CellSystem;
+namespace SnekSweeper.CellSystem.Components;
 
 public partial class Content : Sprite2D
 {

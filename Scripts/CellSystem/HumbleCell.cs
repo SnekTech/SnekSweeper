@@ -1,7 +1,6 @@
 using System;
 using Godot;
 using SnekSweeper.CellSystem.Components;
-using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CellSystem;
 
