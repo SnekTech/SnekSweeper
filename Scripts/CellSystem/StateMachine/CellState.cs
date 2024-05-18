@@ -25,7 +25,7 @@ public abstract class CellState : IState
     {
     }
 
-    public virtual void Flag()
+    public virtual void SwitchFlag()
     {
     }
 }

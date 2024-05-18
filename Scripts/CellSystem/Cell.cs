@@ -20,7 +20,7 @@ public class Cell
         GridIndex = gridIndex;
         HasBomb = hasBomb;
     }
-    
+
     public ICover Cover => _humbleCell.Cover;
     public IFlag Flag => _humbleCell.Flag;
 
@@ -29,6 +29,7 @@ public class Cell
 
     public bool IsCovered => _stateMachine.CurrentState == _stateMachine.CachedCoveredState;
     public bool IsRevealed => _stateMachine.CurrentState == _stateMachine.CachedRevealedState;
+    public bool IsFlagged => _stateMachine.CurrentState == _stateMachine.CachedFlaggedState;
 
     public int NeighborBombCount
     {
@@ -45,10 +46,11 @@ public class Cell
     {
         _humbleCell.SetContent(this);
         _humbleCell.SetPosition(GridIndex);
-        
+
         // no place to unsubscribe, for now
         _humbleCell.PrimaryReleased += OnPrimaryReleased;
-        
+        _humbleCell.SecondaryReleased += OnSecondaryReleased;
+
         _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
     }
 
@@ -57,8 +59,18 @@ public class Cell
         _parent.RevealAt(GridIndex);
     }
 
+    private void OnSecondaryReleased()
+    {
+        SwitchFlag();
+    }
+
     public void Reveal()
     {
         _stateMachine.Reveal();
+    }
+
+    public void SwitchFlag()
+    {
+        _stateMachine.SwitchFlag();
     }
 }

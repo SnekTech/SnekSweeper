@@ -11,7 +11,7 @@ public class CoveredState : CellState
         StateMachine.ChangeState(StateMachine.CachedRevealedState);
     }
 
-    public override void Flag()
+    public override void SwitchFlag()
     {
         StateMachine.ChangeState(StateMachine.CachedFlaggedState);
     }

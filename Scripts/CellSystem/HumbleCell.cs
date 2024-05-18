@@ -14,6 +14,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
     #endregion
     
     public event Action PrimaryReleased;
+    public event Action SecondaryReleased;
 
     private Content Content => GetNode<Content>("Content");
     private Area2D ClickArea => GetNode<Area2D>("ClickArea");
@@ -23,19 +24,23 @@ public partial class HumbleCell : Node2D, IHumbleCell
 
     public override void _Ready()
     {
-        ClickArea.InputEvent += OnPrimaryReleased;
+        ClickArea.InputEvent += OnClickAreaInputEvent;
     }
 
     public override void _ExitTree()
     {
-        ClickArea.InputEvent -= OnPrimaryReleased;
+        ClickArea.InputEvent -= OnClickAreaInputEvent;
     }
 
-    private void OnPrimaryReleased(Node viewport, InputEvent @event, long shapeIdx)
+    private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
     {
         if (@event.IsActionReleased("primary"))
         {
             PrimaryReleased?.Invoke();
+        }
+        else if (@event.IsActionReleased("secondary"))
+        {
+            SecondaryReleased?.Invoke();
         }
     }
 

@@ -22,8 +22,8 @@ public class CellStateMachine : StateMachine<CellState, Cell>
         CurrentState.Reveal();
     }
 
-    public void Flag()
+    public void SwitchFlag()
     {
-        CurrentState.Flag();
+        CurrentState.SwitchFlag();
     }
 }
