@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/CellSystem/HumbleCell.cs" id="1_6skau"]
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="2_mccuu"]
-[ext_resource type="Script" path="res://Scripts/CellSystem/Content.cs" id="3_iigk5"]
+[ext_resource type="Script" path="res://Scripts/CellSystem/Components/Content.cs" id="3_8i3bf"]
 [ext_resource type="Script" path="res://Scripts/CellSystem/Components/Cover.cs" id="4_6e1c6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6s3od"]
@@ -25,7 +25,7 @@ hframes = 4
 vframes = 4
 frame = 8
 region_rect = Rect2(0, 16, 16, 16)
-script = ExtResource("3_iigk5")
+script = ExtResource("3_8i3bf")
 
 [node name="Cover" type="Sprite2D" parent="."]
 texture = ExtResource("2_mccuu")

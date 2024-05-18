@@ -11,7 +11,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public override void _Ready()
     {
         _grid = new Grid(this);
-        _grid.InitCells(new BombMatrix((5, 5)));
+        _grid.InitCells(new BombMatrix((10, 10)));
     }
 
     private void RemoveAllChildren()
