@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SnekSweeper.CellSystem;
 
 namespace SnekSweeper.GridSystem;
@@ -80,16 +81,40 @@ public class Grid
 
     public void RevealAt((int i, int j) gridIndex)
     {
-        var cellsToReveal = new List<Cell>();
+        var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
-        
+
         foreach (var cell in cellsToReveal)
         {
             cell.Reveal();
         }
     }
 
-    private void FindCellsToReveal((int i, int j) gridIndex, List<Cell> cellsToReveal)
+    public void RevealAround((int i, int j) gridIndex)
+    {
+        var cell = this[gridIndex];
+        var canRevealAround = cell.IsRevealed && !cell.HasBomb;
+        if (!canRevealAround)
+            return;
+
+        var neighbors = GetNeighborsOf(cell).ToList();
+        var flaggedNeighborCount = neighbors.Count(neighbor => neighbor.IsFlagged);
+        if (flaggedNeighborCount != cell.NeighborBombCount)
+            return;
+
+        var cellsToReveal = new HashSet<Cell>();
+        foreach (var neighbor in neighbors)
+        {
+            FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
+        }
+        
+        foreach (var c in cellsToReveal)
+        {
+            c.Reveal();
+        }
+    }
+
+    private void FindCellsToReveal((int i, int j) gridIndex, ICollection<Cell> cellsToReveal)
     {
         if (!IsValidIndex(gridIndex))
             return;

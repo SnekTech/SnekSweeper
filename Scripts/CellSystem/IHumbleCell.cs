@@ -6,6 +6,7 @@ namespace SnekSweeper.CellSystem;
 public interface IHumbleCell
 {
     event Action PrimaryReleased;
+    event Action PrimaryDoubleClicked;
     event Action SecondaryReleased;
     
     ICover Cover { get; }

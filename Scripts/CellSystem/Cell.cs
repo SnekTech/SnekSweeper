@@ -49,6 +49,7 @@ public class Cell
 
         // no place to unsubscribe, for now
         _humbleCell.PrimaryReleased += OnPrimaryReleased;
+        _humbleCell.PrimaryDoubleClicked += OnPrimaryDoubleClicked;
         _humbleCell.SecondaryReleased += OnSecondaryReleased;
 
         _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
@@ -57,6 +58,11 @@ public class Cell
     private void OnPrimaryReleased()
     {
         _parent.RevealAt(GridIndex);
+    }
+
+    private void OnPrimaryDoubleClicked()
+    {
+        _parent.RevealAround(GridIndex);
     }
 
     private void OnSecondaryReleased()

@@ -11,9 +11,13 @@ public partial class HumbleCell : Node2D, IHumbleCell
     public const int CellSizePixels = 16;
     public const string CellScenePath = "res://Scenes/cell.tscn";
 
+    public const string PrimaryAction = "primary";
+    public const string SecondaryAction = "secondary";
+
     #endregion
     
     public event Action PrimaryReleased;
+    public event Action PrimaryDoubleClicked;
     public event Action SecondaryReleased;
 
     private Content Content => GetNode<Content>("Content");
@@ -34,11 +38,17 @@ public partial class HumbleCell : Node2D, IHumbleCell
 
     private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
     {
-        if (@event.IsActionReleased("primary"))
+        if (@event.IsActionReleased(PrimaryAction))
         {
             PrimaryReleased?.Invoke();
         }
-        else if (@event.IsActionReleased("secondary"))
+        else if (@event is InputEventMouseButton eventMouseButton && 
+                 eventMouseButton.IsAction(PrimaryAction) &&
+                 eventMouseButton.DoubleClick)
+        {
+            PrimaryDoubleClicked?.Invoke();
+        }
+        else if (@event.IsActionReleased(SecondaryAction))
         {
             SecondaryReleased?.Invoke();
         }
