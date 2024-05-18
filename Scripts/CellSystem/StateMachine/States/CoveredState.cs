@@ -10,4 +10,9 @@ public class CoveredState : CellState
     {
         StateMachine.ChangeState(StateMachine.CachedRevealedState);
     }
+
+    public override void Flag()
+    {
+        StateMachine.ChangeState(StateMachine.CachedFlaggedState);
+    }
 }
