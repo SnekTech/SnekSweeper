@@ -1,14 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://v4xplksolbrf"]
+[gd_scene load_steps=2 format=3 uid="uid://bp0uau12h4nqd"]
 
-[ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scenes/grid.tscn" id="1_qfa1t"]
+[ext_resource type="Script" path="res://Scripts/Main.cs" id="1_75qvg"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node"]
+script = ExtResource("1_75qvg")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(160, 90)
-
-[node name="GridStartPosition" type="Marker2D" parent="."]
-position = Vector2(135, 36)
-gizmo_extents = 16.0
-
-[node name="Grid" parent="GridStartPosition" instance=ExtResource("1_qfa1t")]
+[node name="StartButton" type="Button" parent="."]
+offset_left = 222.0
+offset_top = 147.0
+offset_right = 268.0
+offset_bottom = 178.0
+text = "Start"

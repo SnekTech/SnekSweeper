@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://v4xplksolbrf"]
+
+[ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scenes/grid.tscn" id="2_5rp84"]
+
+[node name="Level1" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 180)
+
+[node name="GridStartPosition" type="Marker2D" parent="."]
+position = Vector2(345, 132)
+gizmo_extents = 16.0
+
+[node name="Grid" parent="GridStartPosition" instance=ExtResource("2_5rp84")]
