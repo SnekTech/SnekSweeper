@@ -34,17 +34,31 @@ public partial class SceneManager : Node
         CallDeferred(MethodName.DeferredGotoScene, path);
     }
 
-    public async void DeferredGotoScene(string path)
+    private async void DeferredGotoScene(string path)
     {
         // It is now safe to remove the current scene.
         CurrentScene.Free();
 
         // show the loading scene first
-        CurrentScene = _packedLoadingScene.Instantiate();
-        GetTree().Root.AddChild(CurrentScene);
-        GetTree().CurrentScene = CurrentScene;
+        var loadingScene = _packedLoadingScene.Instantiate();
+        GetTree().Root.AddChild(loadingScene);
+        GetTree().CurrentScene = loadingScene;
         
-        // load the new scene, async
+        var nextScene = await LoadSceneAsync(path);
+
+        // now the new scene is ready, remove the loading scene,
+        loadingScene.Free();
+        
+        // add the new scene to root
+        CurrentScene = nextScene.Instantiate();
+        GetTree().Root.AddChild(CurrentScene);
+
+        // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
+        GetTree().CurrentScene = CurrentScene;
+    }
+
+    private static async Task<PackedScene> LoadSceneAsync(string path, int millisecondsCheckInterval = 100)
+    {
         ResourceLoader.LoadThreadedRequest(path);
 
         var loadStatus = ResourceLoader.LoadThreadedGetStatus(path);
@@ -53,26 +67,16 @@ public partial class SceneManager : Node
         {
             loadStatus = ResourceLoader.LoadThreadedGetStatus(path, progressArray);
             GD.Print($"scene {path} is being loaded, progress: {progressArray[0]}");
-            await Task.Delay(100);
+            await Task.Delay(millisecondsCheckInterval);
         }
 
         loadStatus = ResourceLoader.LoadThreadedGetStatus(path);
         if (loadStatus == ResourceLoader.ThreadLoadStatus.Failed)
         {
             GD.PrintErr($"failed to load scene {path}");
-            return;
+            return null;
         }
-
-        // now the new scene is ready, remove the loading scene,
-        CurrentScene.Free();
         
-        // add the new scene to root
-        var nextScene = (PackedScene)ResourceLoader.LoadThreadedGet(path);
-        CurrentScene = nextScene.Instantiate();
-
-        GetTree().Root.AddChild(CurrentScene);
-
-        // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
-        GetTree().CurrentScene = CurrentScene;
+        return ResourceLoader.LoadThreadedGet(path) as PackedScene;
     }
 }
