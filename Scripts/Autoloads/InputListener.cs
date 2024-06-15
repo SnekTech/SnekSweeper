@@ -54,10 +54,11 @@ public partial class InputListener : Node
             if (_restartHoldTime > SecondsRestartThreshold)
             {
                 LevelRestarted?.Invoke();
+                _countingRestartHold = false;
             }
         }
 
-        if (Input.IsActionJustReleased("restart"))
+        if (Input.IsActionJustReleased(RestartActionName))
         {
             _countingRestartHold = false;
         }
