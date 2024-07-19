@@ -44,6 +44,9 @@ public partial class SceneManager : Node
         GetTree().Root.AddChild(loadingScene);
         GetTree().CurrentScene = loadingScene;
         
+        // fake loading time
+        await Task.Delay(1000);
+        
         var nextScene = await LoadSceneAsync(path);
 
         // now the new scene is ready, remove the loading scene,
