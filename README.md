@@ -17,3 +17,4 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] save & load
   - [ ] what to save
   - [ ] architecture
+- [ ] skin system

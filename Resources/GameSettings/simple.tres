@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_cjq8a")
 _rows = 5
-_columns = 10
+_columns = 5
 _bombPercentInt = 10

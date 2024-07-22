@@ -1,17 +1,21 @@
 ﻿using System.Collections.Generic;
 using Godot;
 using SnekSweeper.CellSystem;
+using SnekSweeper.GameSettings;
 
 namespace SnekSweeper.GridSystem;
 
 public partial class HumbleGrid : Node2D, IHumbleGrid
 {
+    [Export]
+    private MainSetting _mainSetting;
+    
     private Grid _grid;
 
     public override void _Ready()
     {
         _grid = new Grid(this);
-        _grid.InitCells(new BombMatrix((10, 10)));
+        _grid.InitCells(new BombMatrix(_mainSetting.CurrentDifficulty));
     }
 
     private void RemoveAllChildren()

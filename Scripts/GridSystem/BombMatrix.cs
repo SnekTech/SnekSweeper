@@ -7,16 +7,16 @@ public class BombMatrix
 {
     private readonly bool[,] _bombs;
 
-
-    public BombMatrix((int rows, int columns) size, float probability = 0.1f)
+    public BombMatrix(IGridDifficulty gridDifficulty)
     {
+        var probability = gridDifficulty.BombPercent;
         if (probability is < 0 or > 1)
         {
             throw new ArgumentOutOfRangeException(nameof(probability), "0 ~ 1");
         }
 
-        Size = size;
-        var matrix = new bool[size.rows, size.columns];
+        Size = gridDifficulty.Size;
+        var matrix = new bool[Size.rows, Size.columns];
         foreach (var (i, j) in matrix.Indices())
         {
             matrix[i, j] = GD.Randf() < probability;
