@@ -8,6 +8,7 @@
   
   <ItemGroup>
     <None Include="**/*.tscn"/>
+    <None Include="**/*.tres"/>
   </ItemGroup>
   
   <ItemGroup>

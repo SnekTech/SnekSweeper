@@ -5,6 +5,8 @@ A minesweeper game with modern game features & nice pixel art assets.
 ## TODOs
 
 - [ ] different difficulties
+  - [x] use difficulty to init grid
+  - [ ] add difficulty setting UI
 - [ ] init grid after first click
 - [ ] guess-free option
 - [ ] cell reveal combo
