@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="GridDifficulty" load_steps=2 format=3 uid="uid://ckcum46quvn0a"]
+
+[ext_resource type="Script" path="res://Scripts/GridSystem/GridDifficulty.cs" id="1_lrfky"]
+
+[resource]
+script = ExtResource("1_lrfky")
+_rows = 10
+_columns = 10
+_bombPercentInt = 10
