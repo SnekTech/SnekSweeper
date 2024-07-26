@@ -16,13 +16,12 @@ public partial class Settings : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        var sceneManager = GetNode<SceneManager>($"/root/{nameof(SceneManager)}");
         _optionButton = GetNode<OptionButton>("%OptionButton");
         _backToMainButton = GetNode<Button>("%BackToMainButton");
 
         _optionButton.ItemSelected += OptionButtonOnItemSelected;
 
-        _backToMainButton.Pressed += () => sceneManager.GotoScene(ScenePaths.MainScene);
+        _backToMainButton.Pressed += () => SceneManager.Instance.GotoScene(ScenePaths.MainScene);
     }
 
     private void OptionButtonOnItemSelected(long index)

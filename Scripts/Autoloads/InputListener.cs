@@ -15,12 +15,10 @@ public partial class InputListener : Node
     private bool _countingRestartHold;
     private float _restartHoldTime;
 
-    private SceneManager _sceneManager;
 
     public override void _Ready()
     {
         LevelRestarted += OnLevelRestarted;
-        _sceneManager = GetNode<SceneManager>("/root/SceneManager");
     }
 
     public override void _ExitTree()
@@ -31,7 +29,7 @@ public partial class InputListener : Node
     private void OnLevelRestarted()
     {
         GD.Print("restart");
-        _sceneManager.GotoScene(ScenePaths.MainScene);
+        SceneManager.Instance.GotoScene(ScenePaths.MainScene);
     }
 
     public override void _Process(double delta)

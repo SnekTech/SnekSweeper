@@ -9,10 +9,14 @@ public partial class SceneManager : Node
 {
     public Node CurrentScene { get; set; }
 
+    public static SceneManager Instance { get; private set; }
+
     private PackedScene _packedLoadingScene;
 
     public override void _Ready()
     {
+        Instance ??= this;
+        
         var root = GetTree().Root;
         CurrentScene = root.GetChild(root.GetChildCount() - 1);
 
@@ -45,7 +49,7 @@ public partial class SceneManager : Node
         GetTree().CurrentScene = loadingScene;
         
         // fake loading time
-        await Task.Delay(1000);
+        // await Task.Delay(1000);
         
         var nextScene = await LoadSceneAsync(path);
 
