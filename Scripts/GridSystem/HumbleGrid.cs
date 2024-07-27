@@ -8,14 +8,15 @@ namespace SnekSweeper.GridSystem;
 public partial class HumbleGrid : Node2D, IHumbleGrid
 {
     [Export]
-    private MainSetting _mainSetting;
+    private MainSetting _mainSetting = null!;
     
-    private Grid _grid;
+    private Grid _grid = null!;
 
     public override void _Ready()
     {
-        _grid = new Grid(this);
-        _grid.InitCells(new BombMatrix(_mainSetting.CurrentDifficulty));
+        var bombMatrix = new BombMatrix(_mainSetting.CurrentDifficulty);
+        _grid = new Grid(this, bombMatrix.Size);
+        _grid.InitCells(bombMatrix);
     }
 
     private void RemoveAllChildren()

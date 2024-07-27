@@ -10,7 +10,7 @@ public class StateMachine<TState, TContext>
         Context = context;
     }
 
-    public TState CurrentState { get; private set; }
+    public TState? CurrentState { get; private set; }
     public TContext Context { get; }
 
     public void SetInitState(TState initState)

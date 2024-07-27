@@ -8,10 +8,10 @@ namespace SnekSweeper.UI;
 public partial class Settings : Control
 {
     [Export]
-    private MainSetting _mainSetting;
+    private MainSetting _mainSetting = null!;
 
-    private OptionButton _optionButton;
-    private Button _backToMainButton;
+    private OptionButton? _optionButton;
+    private Button? _backToMainButton;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -22,6 +22,8 @@ public partial class Settings : Control
         _optionButton.ItemSelected += OptionButtonOnItemSelected;
 
         _backToMainButton.Pressed += () => SceneManager.Instance.GotoScene(ScenePaths.MainScene);
+        
+        _mainSetting.SetDifficulty();
     }
 
     private void OptionButtonOnItemSelected(long index)

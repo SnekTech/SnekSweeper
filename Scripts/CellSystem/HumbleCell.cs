@@ -16,9 +16,9 @@ public partial class HumbleCell : Node2D, IHumbleCell
 
     #endregion
     
-    public event Action PrimaryReleased;
-    public event Action PrimaryDoubleClicked;
-    public event Action SecondaryReleased;
+    public event Action? PrimaryReleased;
+    public event Action? PrimaryDoubleClicked;
+    public event Action? SecondaryReleased;
 
     private Content Content => GetNode<Content>("Content");
     private Area2D ClickArea => GetNode<Area2D>("ClickArea");

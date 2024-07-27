@@ -6,7 +6,7 @@ namespace SnekSweeper.Autoloads;
 
 public partial class InputListener : Node
 {
-    public event Action LevelRestarted;
+    public event Action? LevelRestarted;
 
     private const float SecondsRestartThreshold = 1;
     private const string RestartActionName = "restart";

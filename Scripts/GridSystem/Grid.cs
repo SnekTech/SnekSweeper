@@ -21,20 +21,23 @@ public class Grid
     private Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
 
-    public Grid(IHumbleGrid humbleGrid)
+    public Grid(IHumbleGrid humbleGrid, (int rows, int columns) size)
     {
         _humbleGrid = humbleGrid;
+        
+        var (rows, columns) = size;
+        _cells = new Cell[rows, columns];
     }
 
     public void InitCells(BombMatrix bombMatrix)
     {
         var (rows, columns) = bombMatrix.Size;
         _cells = new Cell[rows, columns];
-
+        
         var humbleCells = _humbleGrid.InstantiateHumbleCells(_cells.Length);
         foreach (var (i, j) in _cells.Indices())
         {
-            var humbleCell = humbleCells[i * columns + j];
+            var humbleCell = humbleCells[i * _cells.Size().columns + j];
             var hasBomb = bombMatrix[i, j];
 
             var cell = new Cell(humbleCell, this, (i, j), hasBomb);

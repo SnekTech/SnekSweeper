@@ -19,11 +19,11 @@ public class CellStateMachine : StateMachine<CellState, Cell>
 
     public void Reveal()
     {
-        CurrentState.Reveal();
+        CurrentState?.Reveal();
     }
 
     public void SwitchFlag()
     {
-        CurrentState.SwitchFlag();
+        CurrentState?.SwitchFlag();
     }
 }

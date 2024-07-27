@@ -7,13 +7,13 @@ namespace SnekSweeper.GameSettings;
 public partial class MainSetting : Resource
 {
     [Export]
-    private GridDifficulty[] _difficulties;
+    private GridDifficulty[] _difficulties = null!;
 
-    private GridDifficulty _currentDifficulty;
+    private GridDifficulty? _currentDifficulty;
 
-    public IGridDifficulty CurrentDifficulty => _currentDifficulty ?? _difficulties[0];
+    public IGridDifficulty CurrentDifficulty => _currentDifficulty ?? _difficulties[1];
 
-    public void SetDifficulty(int index)
+    public void SetDifficulty(int index = 0)
     {
         _currentDifficulty = _difficulties[index];
     }

@@ -4,9 +4,9 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## TODOs
 
-- [ ] different difficulties
+- [x] different difficulties
   - [x] use difficulty to init grid
-  - [ ] add difficulty setting UI
+  - [x] add difficulty setting UI
 - [ ] init grid after first click
 - [ ] guess-free option
 - [ ] cell reveal combo
@@ -20,3 +20,4 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] what to save
   - [ ] architecture
 - [ ] skin system
+- [ ] enable nullable reference types in project

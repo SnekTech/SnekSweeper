@@ -12,7 +12,7 @@ public class BombMatrix
         var probability = gridDifficulty.BombPercent;
         if (probability is < 0 or > 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(probability), "0 ~ 1");
+            throw new ArgumentException("0 ~ 1", nameof(gridDifficulty));
         }
 
         Size = gridDifficulty.Size;

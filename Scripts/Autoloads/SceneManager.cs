@@ -1,24 +1,25 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Godot;
-using Godot.Collections;
 using SnekSweeper.Constants;
+using Array = Godot.Collections.Array;
 
 namespace SnekSweeper.Autoloads;
 
 public partial class SceneManager : Node
 {
-    public Node CurrentScene { get; set; }
+    private Node _currentScene = null!;
 
-    public static SceneManager Instance { get; private set; }
+    public static SceneManager Instance { get; private set; } = null!;
 
-    private PackedScene _packedLoadingScene;
+    private PackedScene _packedLoadingScene = null!;
 
     public override void _Ready()
     {
-        Instance ??= this;
+        Instance = this;
         
         var root = GetTree().Root;
-        CurrentScene = root.GetChild(root.GetChildCount() - 1);
+        _currentScene = root.GetChild(root.GetChildCount() - 1);
 
         // preload the loading scene
         _packedLoadingScene = GD.Load<PackedScene>(ScenePaths.LoadingScene);
@@ -41,7 +42,8 @@ public partial class SceneManager : Node
     private async void DeferredGotoScene(string path)
     {
         // It is now safe to remove the current scene.
-        CurrentScene.Free();
+        _currentScene.Free();
+        
 
         // show the loading scene first
         var loadingScene = _packedLoadingScene.Instantiate();
@@ -57,11 +59,11 @@ public partial class SceneManager : Node
         loadingScene.Free();
         
         // add the new scene to root
-        CurrentScene = nextScene.Instantiate();
-        GetTree().Root.AddChild(CurrentScene);
+        _currentScene = nextScene.Instantiate();
+        GetTree().Root.AddChild(_currentScene);
 
         // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
-        GetTree().CurrentScene = CurrentScene;
+        GetTree().CurrentScene = _currentScene;
     }
 
     private static async Task<PackedScene> LoadSceneAsync(string path, int millisecondsCheckInterval = 100)
@@ -81,9 +83,10 @@ public partial class SceneManager : Node
         if (loadStatus == ResourceLoader.ThreadLoadStatus.Failed)
         {
             GD.PrintErr($"failed to load scene {path}");
-            return null;
+            throw new Exception();
         }
-        
-        return ResourceLoader.LoadThreadedGet(path) as PackedScene;
+
+        var packed = ResourceLoader.LoadThreadedGet(path)! as PackedScene;
+        return packed!;
     }
 }

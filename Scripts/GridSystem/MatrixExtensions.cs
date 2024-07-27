@@ -30,7 +30,7 @@ public static class MatrixExtensions
 
         while (enumerator.MoveNext())
         {
-            yield return (T)enumerator.Current;
+            yield return ((T)enumerator.Current)!;
         }
     }
 }
