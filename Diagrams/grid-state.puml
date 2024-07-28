@@ -1,0 +1,12 @@
+﻿@startuml
+'https://plantuml.com/state-diagram
+
+state init : cells instantiated
+state gameStart : set cells' content
+
+[*] -> init : enter level scene
+init --> gameStart : first click
+
+gameStart -> [*] : win or lose the level
+
+@enduml
