@@ -25,9 +25,9 @@ public static class MatrixExtensions
     {
         if (matrix.Length == 0)
             yield break;
-
+    
         var enumerator = matrix.GetEnumerator();
-
+    
         while (enumerator.MoveNext())
         {
             yield return ((T)enumerator.Current)!;

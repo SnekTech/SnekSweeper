@@ -11,7 +11,7 @@ public class Cell
     private readonly Grid _parent;
     private readonly CellStateMachine _stateMachine;
 
-    public Cell(IHumbleCell humbleCell, Grid parent, (int i, int j) gridIndex, bool hasBomb)
+    public Cell(IHumbleCell humbleCell, Grid parent, (int i, int j) gridIndex, bool hasBomb = false)
     {
         _humbleCell = humbleCell;
         _parent = parent;
@@ -25,7 +25,7 @@ public class Cell
     public IFlag Flag => _humbleCell.Flag;
 
     public (int i, int j) GridIndex { get; }
-    public bool HasBomb { get; }
+    public bool HasBomb { get; set; }
 
     public bool IsCovered => _stateMachine.CurrentState == _stateMachine.CachedCoveredState;
     public bool IsRevealed => _stateMachine.CurrentState == _stateMachine.CachedRevealedState;

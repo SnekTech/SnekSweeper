@@ -24,24 +24,29 @@ public class Grid
     public Grid(IHumbleGrid humbleGrid, (int rows, int columns) size)
     {
         _humbleGrid = humbleGrid;
-        
         var (rows, columns) = size;
         _cells = new Cell[rows, columns];
+        
+        InstantiateEmptyCells();
     }
 
-    public void InitCells(BombMatrix bombMatrix)
+    private void InstantiateEmptyCells()
     {
-        var (rows, columns) = bombMatrix.Size;
-        _cells = new Cell[rows, columns];
-        
         var humbleCells = _humbleGrid.InstantiateHumbleCells(_cells.Length);
         foreach (var (i, j) in _cells.Indices())
         {
             var humbleCell = humbleCells[i * _cells.Size().columns + j];
-            var hasBomb = bombMatrix[i, j];
-
-            var cell = new Cell(humbleCell, this, (i, j), hasBomb);
+            var cell = new Cell(humbleCell, this, (i, j));
             _cells[i, j] = cell;
+        }
+    }
+
+    public void InitCells(BombMatrix bombMatrix)
+    {
+        foreach (var (i, j) in _cells.Indices())
+        {
+            var cell = _cells[i, j];
+            cell.HasBomb = bombMatrix[i, j];
         }
 
         // must init individual cells after all cells been created,
