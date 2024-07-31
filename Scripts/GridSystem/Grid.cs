@@ -10,10 +10,20 @@ public class Grid
     public static class EventBus
     {
         public static event Action<(int i, int j)>? CellPrimaryReleasedAt;
+        public static event Action<(int i, int j)>? CellPrimaryDoubleClickedAt;
+        public static event Action<(int i, int j)>? CellSecondaryReleased;
 
         public static void InvokeCellPrimaryReleasedAt((int i, int j) gridIndex)
         {
             CellPrimaryReleasedAt?.Invoke(gridIndex);
+        }
+        public static void InvokeCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
+        {
+            CellPrimaryDoubleClickedAt?.Invoke(gridIndex);
+        }
+        public static void InvokeCellSecondaryReleasedAt((int i, int j) gridIndex)
+        {
+            CellSecondaryReleased?.Invoke(gridIndex);
         }
     }
 
@@ -46,6 +56,8 @@ public class Grid
         InstantiateEmptyCells();
 
         EventBus.CellPrimaryReleasedAt += OnCellPrimaryReleasedAt;
+        EventBus.CellPrimaryDoubleClickedAt += OnCellPrimaryDoubleClickedAt;
+        EventBus.CellSecondaryReleased += OnCellSecondaryReleasedAt;
     }
 
     private void InstantiateEmptyCells()
@@ -56,6 +68,21 @@ public class Grid
             var humbleCell = humbleCells[i * _cells.Size().columns + j];
             var cell = new Cell(humbleCell, this, (i, j));
             _cells[i, j] = cell;
+        }
+    }
+
+    private void InitCells(BombMatrix bombMatrix)
+    {
+        foreach (var (i, j) in _cells.Indices())
+        {
+            var cell = _cells[i, j];
+            cell.HasBomb = bombMatrix[i, j];
+        }
+
+        // must init individual cells after all cells been set if bomb
+        foreach (var cell in _cells.Values())
+        {
+            cell.Init();
         }
     }
 
@@ -72,20 +99,14 @@ public class Grid
         RevealAt(gridIndex);
     }
 
-    private void InitCells(BombMatrix bombMatrix)
+    private void OnCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
     {
-        foreach (var (i, j) in _cells.Indices())
-        {
-            var cell = _cells[i, j];
-            cell.HasBomb = bombMatrix[i, j];
-        }
+        RevealAround(gridIndex);
+    }
 
-        // must init individual cells after all cells been created,
-        // otherwise neighbor might be null
-        foreach (var cell in _cells.Values())
-        {
-            cell.Init();
-        }
+    private void OnCellSecondaryReleasedAt((int i, int j) gridIndex)
+    {
+        this[gridIndex].SwitchFlag();
     }
 
     private Cell this[(int i, int j) gridIndex]
@@ -129,7 +150,7 @@ public class Grid
         }
     }
 
-    public void RevealAround((int i, int j) gridIndex)
+    private void RevealAround((int i, int j) gridIndex)
     {
         var cell = this[gridIndex];
         var canRevealAround = cell is { IsRevealed: true, HasBomb: false };

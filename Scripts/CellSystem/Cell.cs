@@ -62,12 +62,12 @@ public class Cell
 
     private void OnPrimaryDoubleClicked()
     {
-        _parent.RevealAround(GridIndex);
+        Grid.EventBus.InvokeCellPrimaryDoubleClickedAt(GridIndex);
     }
 
     private void OnSecondaryReleased()
     {
-        SwitchFlag();
+        Grid.EventBus.InvokeCellSecondaryReleasedAt(GridIndex);
     }
 
     public void Reveal()
