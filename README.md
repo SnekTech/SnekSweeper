@@ -7,7 +7,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] different difficulties
   - [x] use difficulty to init grid
   - [x] add difficulty setting UI
-- [ ] init grid after first click
+- [x] init grid after first click
 - [ ] guess-free option
 - [ ] cell reveal combo
 - [ ] digital museum - a place to enjoy game assets

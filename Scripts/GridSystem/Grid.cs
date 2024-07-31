@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SnekSweeper.CellSystem;
 
@@ -6,6 +7,16 @@ namespace SnekSweeper.GridSystem;
 
 public class Grid
 {
+    public static class EventBus
+    {
+        public static event Action<(int i, int j)>? CellPrimaryReleasedAt;
+
+        public static void InvokeCellPrimaryReleasedAt((int i, int j) gridIndex)
+        {
+            CellPrimaryReleasedAt?.Invoke(gridIndex);
+        }
+    }
+
     private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
     {
         (-1, -1),
@@ -18,16 +29,23 @@ public class Grid
         (1, 1),
     };
 
-    private Cell[,] _cells;
+    private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
+    private readonly IGridDifficulty _gridDifficulty;
+    private bool _hasInitialized;
 
-    public Grid(IHumbleGrid humbleGrid, (int rows, int columns) size)
+
+    public Grid(IHumbleGrid humbleGrid, IGridDifficulty gridDifficulty)
     {
         _humbleGrid = humbleGrid;
-        var (rows, columns) = size;
+        _gridDifficulty = gridDifficulty;
+
+        var (rows, columns) = gridDifficulty.Size;
         _cells = new Cell[rows, columns];
-        
+
         InstantiateEmptyCells();
+
+        EventBus.CellPrimaryReleasedAt += OnCellPrimaryReleasedAt;
     }
 
     private void InstantiateEmptyCells()
@@ -41,7 +59,20 @@ public class Grid
         }
     }
 
-    public void InitCells(BombMatrix bombMatrix)
+    private void OnCellPrimaryReleasedAt((int i, int j) gridIndex)
+    {
+        if (!_hasInitialized)
+        {
+            var bombMatrix = new BombMatrix(_gridDifficulty);
+            bombMatrix.ClearBombAt(gridIndex);
+            InitCells(bombMatrix);
+            _hasInitialized = true;
+        }
+
+        RevealAt(gridIndex);
+    }
+
+    private void InitCells(BombMatrix bombMatrix)
     {
         foreach (var (i, j) in _cells.Indices())
         {
@@ -87,7 +118,7 @@ public class Grid
         }
     }
 
-    public void RevealAt((int i, int j) gridIndex)
+    private void RevealAt((int i, int j) gridIndex)
     {
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
@@ -101,7 +132,7 @@ public class Grid
     public void RevealAround((int i, int j) gridIndex)
     {
         var cell = this[gridIndex];
-        var canRevealAround = cell.IsRevealed && !cell.HasBomb;
+        var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
         if (!canRevealAround)
             return;
 
@@ -115,7 +146,7 @@ public class Grid
         {
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
-        
+
         foreach (var c in cellsToReveal)
         {
             c.Reveal();

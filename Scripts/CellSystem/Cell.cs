@@ -19,6 +19,13 @@ public class Cell
 
         GridIndex = gridIndex;
         HasBomb = hasBomb;
+
+        _humbleCell.SetPosition(gridIndex);
+        
+        // no good place to unsubscribe, for now
+        _humbleCell.PrimaryReleased += OnPrimaryReleased;
+        _humbleCell.PrimaryDoubleClicked += OnPrimaryDoubleClicked;
+        _humbleCell.SecondaryReleased += OnSecondaryReleased;
     }
 
     public ICover Cover => _humbleCell.Cover;
@@ -45,19 +52,12 @@ public class Cell
     public void Init()
     {
         _humbleCell.SetContent(this);
-        _humbleCell.SetPosition(GridIndex);
-
-        // no place to unsubscribe, for now
-        _humbleCell.PrimaryReleased += OnPrimaryReleased;
-        _humbleCell.PrimaryDoubleClicked += OnPrimaryDoubleClicked;
-        _humbleCell.SecondaryReleased += OnSecondaryReleased;
-
         _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
     }
 
     private void OnPrimaryReleased()
     {
-        _parent.RevealAt(GridIndex);
+        Grid.EventBus.InvokeCellPrimaryReleasedAt(GridIndex);
     }
 
     private void OnPrimaryDoubleClicked()

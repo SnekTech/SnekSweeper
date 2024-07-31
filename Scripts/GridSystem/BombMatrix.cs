@@ -15,8 +15,8 @@ public class BombMatrix
             throw new ArgumentException("0 ~ 1", nameof(gridDifficulty));
         }
 
-        Size = gridDifficulty.Size;
-        var matrix = new bool[Size.rows, Size.columns];
+        var (rows, columns) = gridDifficulty.Size;
+        var matrix = new bool[rows, columns];
         foreach (var (i, j) in matrix.Indices())
         {
             matrix[i, j] = GD.Randf() < probability;
@@ -26,5 +26,10 @@ public class BombMatrix
     }
 
     public bool this[int i, int j] => _bombs[i, j];
-    public (int rows, int columns) Size { get; }
+
+    public void ClearBombAt((int i, int j) gridIndex)
+    {
+        var (i, j) = gridIndex;
+        _bombs[i, j] = false;
+    }
 }
