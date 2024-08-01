@@ -14,10 +14,12 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] achievement system
   - [ ] steamworks adaption
 - [ ] game modes
+  - [ ] original
   - [ ] zen mode, immersive minesweeper experience
   - [ ] timing
+  - [ ] endless
 - [ ] save & load
   - [ ] what to save
   - [ ] architecture
 - [ ] skin system
-- [ ] enable nullable reference types in project
+- [x] enable nullable reference types in project
