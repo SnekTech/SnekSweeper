@@ -1,32 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SnekSweeper.CellSystem;
 
 namespace SnekSweeper.GridSystem;
 
-public class Grid
+public partial class Grid
 {
-    public static class EventBus
-    {
-        public static event Action<(int i, int j)>? CellPrimaryReleasedAt;
-        public static event Action<(int i, int j)>? CellPrimaryDoubleClickedAt;
-        public static event Action<(int i, int j)>? CellSecondaryReleased;
-
-        public static void InvokeCellPrimaryReleasedAt((int i, int j) gridIndex)
-        {
-            CellPrimaryReleasedAt?.Invoke(gridIndex);
-        }
-        public static void InvokeCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
-        {
-            CellPrimaryDoubleClickedAt?.Invoke(gridIndex);
-        }
-        public static void InvokeCellSecondaryReleasedAt((int i, int j) gridIndex)
-        {
-            CellSecondaryReleased?.Invoke(gridIndex);
-        }
-    }
-
     private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
     {
         (-1, -1),
