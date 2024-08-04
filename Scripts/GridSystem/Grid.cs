@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SnekSweeper.CellSystem;
+using SnekSweeper.GameMode;
 
 namespace SnekSweeper.GridSystem;
 
@@ -23,6 +24,7 @@ public partial class Grid
     private readonly IGridDifficulty _gridDifficulty;
     private bool _hasInitialized;
 
+    private readonly Referee _referee;
 
     public Grid(IHumbleGrid humbleGrid, IGridDifficulty gridDifficulty)
     {
@@ -37,6 +39,8 @@ public partial class Grid
         EventBus.CellPrimaryReleasedAt += OnCellPrimaryReleasedAt;
         EventBus.CellPrimaryDoubleClickedAt += OnCellPrimaryDoubleClickedAt;
         EventBus.CellSecondaryReleased += OnCellSecondaryReleasedAt;
+
+        _referee = new Referee(this);
     }
 
     private void InstantiateEmptyCells()
@@ -123,10 +127,22 @@ public partial class Grid
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
 
+        var bombCellsRevealed = new List<Cell>();
         foreach (var cell in cellsToReveal)
         {
             cell.Reveal();
+            if (cell.HasBomb)
+            {
+                bombCellsRevealed.Add(cell);
+            }
         }
+
+        if (bombCellsRevealed.Count > 0)
+        {
+            _referee.OnBombRevealed(bombCellsRevealed);
+        }
+
+        _referee.OnBatchRevealed();
     }
 
     private void RevealAround((int i, int j) gridIndex)
@@ -151,6 +167,8 @@ public partial class Grid
         {
             c.Reveal();
         }
+
+        _referee.OnBatchRevealed();
     }
 
     private void FindCellsToReveal((int i, int j) gridIndex, ICollection<Cell> cellsToReveal)
@@ -171,6 +189,22 @@ public partial class Grid
         foreach (var neighbor in GetNeighborsOf(cell))
         {
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
+        }
+    }
+
+    public bool IsResolved
+    {
+        get
+        {
+            foreach (var cell in _cells.Values())
+            {
+                if (cell is { HasBomb: false, IsRevealed: false })
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
