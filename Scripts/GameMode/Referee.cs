@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Godot;
+using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
+using SnekSweeper.Constants;
 using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.GameMode;
@@ -17,6 +19,7 @@ public class Referee
     public void OnBombRevealed(List<Cell> bombsRevealed)
     {
         GD.Print("Game over! Bomb revealed!");
+        SceneManager.Instance.GotoScene(ScenePaths.LosingScene);
     }
 
     public void OnBatchRevealed()
@@ -24,6 +27,7 @@ public class Referee
         if (_grid.IsResolved)
         {
             GD.Print("You win!");
+            SceneManager.Instance.GotoScene(ScenePaths.WinningScene);
         }
     }
 }

@@ -10,7 +10,7 @@ public partial class Winning : Control
 	
 	public override void _Ready()
 	{
-		_back2MainBtn = GetNode<Button>("#Back2MainBtn");
+		_back2MainBtn = GetNode<Button>("%Back2MainBtn");
 
 		_back2MainBtn.Pressed += () => SceneManager.Instance.GotoScene(ScenePaths.MainScene);
 	}
