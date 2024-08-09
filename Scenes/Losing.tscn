@@ -18,7 +18,7 @@ metadata/_edit_group_ = true
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 80
-text = "You win!"
+text = "You lose!"
 
 [node name="Back2MainBtn" type="Button" parent="VBoxContainer"]
 unique_name_in_owner = true

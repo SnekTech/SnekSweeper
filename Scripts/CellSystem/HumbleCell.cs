@@ -15,25 +15,30 @@ public partial class HumbleCell : Node2D, IHumbleCell
     public const string SecondaryAction = "secondary";
 
     #endregion
-    
+
     public event Action? PrimaryReleased;
     public event Action? PrimaryDoubleClicked;
     public event Action? SecondaryReleased;
 
-    private Content Content => GetNode<Content>("Content");
-    private Area2D ClickArea => GetNode<Area2D>("ClickArea");
-    
-    public ICover Cover => GetNode<Cover>("Cover");
-    public IFlag Flag => GetNode<Flag>("Flag");
+    private Content _content = null!;
+    private Area2D _clickArea = null!;
+
+    public ICover Cover { get; private set; } = null!;
+    public IFlag Flag { get; private set; } = null!;
 
     public override void _Ready()
     {
-        ClickArea.InputEvent += OnClickAreaInputEvent;
+        _clickArea = GetNode<Area2D>("ClickArea");
+        _content = GetNode<Content>("Content");
+        Cover = GetNode<Cover>("Cover");
+        Flag = GetNode<Flag>("Flag");
+        
+        _clickArea.InputEvent += OnClickAreaInputEvent;
     }
 
     public override void _ExitTree()
     {
-        ClickArea.InputEvent -= OnClickAreaInputEvent;
+        _clickArea.InputEvent -= OnClickAreaInputEvent;
     }
 
     private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
@@ -42,7 +47,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
         {
             PrimaryReleased?.Invoke();
         }
-        else if (@event is InputEventMouseButton eventMouseButton && 
+        else if (@event is InputEventMouseButton eventMouseButton &&
                  eventMouseButton.IsAction(PrimaryAction) &&
                  eventMouseButton.DoubleClick)
         {
@@ -58,11 +63,11 @@ public partial class HumbleCell : Node2D, IHumbleCell
     {
         if (cell.HasBomb)
         {
-            Content.ShowBomb();
+            _content.ShowBomb();
         }
         else
         {
-            Content.ShowNeighbourBombCount(cell.NeighborBombCount);
+            _content.ShowNeighbourBombCount(cell.NeighborBombCount);
         }
     }
 
