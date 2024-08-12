@@ -39,6 +39,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
     public override void _ExitTree()
     {
         _clickArea.InputEvent -= OnClickAreaInputEvent;
+        
     }
 
     private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)

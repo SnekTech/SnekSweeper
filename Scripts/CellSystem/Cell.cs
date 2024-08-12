@@ -21,7 +21,7 @@ public class Cell
         HasBomb = hasBomb;
 
         _humbleCell.SetPosition(gridIndex);
-        
+
         // no good place to unsubscribe, for now
         _humbleCell.PrimaryReleased += OnPrimaryReleased;
         _humbleCell.PrimaryDoubleClicked += OnPrimaryDoubleClicked;
@@ -53,6 +53,13 @@ public class Cell
     {
         _humbleCell.SetContent(this);
         _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
+    }
+
+    public void OnDispose()
+    {
+        _humbleCell.PrimaryReleased -= OnPrimaryReleased;
+        _humbleCell.PrimaryDoubleClicked -= OnPrimaryDoubleClicked;
+        _humbleCell.SecondaryReleased -= OnSecondaryReleased;
     }
 
     private void OnPrimaryReleased()

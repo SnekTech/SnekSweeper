@@ -65,6 +65,14 @@ public class Grid
         }
     }
 
+    public void OnDispose()
+    {
+        foreach (var cell in _cells)
+        {
+            cell.OnDispose();
+        }
+    }
+
     public void OnCellPrimaryReleasedAt((int i, int j) gridIndex)
     {
         if (!_hasInitialized)

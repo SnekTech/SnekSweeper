@@ -17,6 +17,11 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         _grid = new Grid(this, _mainSetting.CurrentDifficulty);
     }
 
+    public override void _ExitTree()
+    {
+        _grid.OnDispose();
+    }
+
     public List<IHumbleCell> InstantiateHumbleCells(int count)
     {
         var cellScene = GD.Load<PackedScene>(HumbleCell.CellScenePath);
