@@ -57,17 +57,17 @@ public class Cell
 
     private void OnPrimaryReleased()
     {
-        Grid.EventBus.InvokeCellPrimaryReleasedAt(GridIndex);
+        _parent.OnCellPrimaryReleasedAt(GridIndex);
     }
 
     private void OnPrimaryDoubleClicked()
     {
-        Grid.EventBus.InvokeCellPrimaryDoubleClickedAt(GridIndex);
+        _parent.OnCellPrimaryDoubleClickedAt(GridIndex);
     }
 
     private void OnSecondaryReleased()
     {
-        Grid.EventBus.InvokeCellSecondaryReleasedAt(GridIndex);
+        _parent.OnCellSecondaryReleasedAt(GridIndex);
     }
 
     public void Reveal()

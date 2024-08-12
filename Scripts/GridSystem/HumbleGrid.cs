@@ -17,18 +17,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         _grid = new Grid(this, _mainSetting.CurrentDifficulty);
     }
 
-    private void RemoveAllChildren()
-    {
-        foreach (var child in GetChildren())
-        {
-            child.QueueFree();
-        }
-    }
-
     public List<IHumbleCell> InstantiateHumbleCells(int count)
     {
-        RemoveAllChildren();
-
         var cellScene = GD.Load<PackedScene>(HumbleCell.CellScenePath);
         var humbleCells = new List<IHumbleCell>();
         for (var i = 0; i < count; i++)

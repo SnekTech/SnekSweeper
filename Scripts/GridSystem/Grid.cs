@@ -5,7 +5,7 @@ using SnekSweeper.GameMode;
 
 namespace SnekSweeper.GridSystem;
 
-public partial class Grid
+public class Grid
 {
     private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
     {
@@ -36,10 +36,6 @@ public partial class Grid
 
         InstantiateEmptyCells();
 
-        EventBus.CellPrimaryReleasedAt += OnCellPrimaryReleasedAt;
-        EventBus.CellPrimaryDoubleClickedAt += OnCellPrimaryDoubleClickedAt;
-        EventBus.CellSecondaryReleased += OnCellSecondaryReleasedAt;
-
         _referee = new Referee(this);
     }
 
@@ -69,7 +65,7 @@ public partial class Grid
         }
     }
 
-    private void OnCellPrimaryReleasedAt((int i, int j) gridIndex)
+    public void OnCellPrimaryReleasedAt((int i, int j) gridIndex)
     {
         if (!_hasInitialized)
         {
@@ -82,12 +78,12 @@ public partial class Grid
         RevealAt(gridIndex);
     }
 
-    private void OnCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
+    public void OnCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
     {
         RevealAround(gridIndex);
     }
 
-    private void OnCellSecondaryReleasedAt((int i, int j) gridIndex)
+    public void OnCellSecondaryReleasedAt((int i, int j) gridIndex)
     {
         this[gridIndex].SwitchFlag();
     }
