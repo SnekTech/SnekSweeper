@@ -59,7 +59,7 @@ public class Grid
         }
 
         // must init individual cells after all cells been set if bomb
-        foreach (var cell in _cells.Values())
+        foreach (var cell in _cells)
         {
             cell.Init();
         }
@@ -200,7 +200,7 @@ public class Grid
     {
         get
         {
-            foreach (var cell in _cells.Values())
+            foreach (var cell in _cells)
             {
                 if (cell is { HasBomb: false, IsRevealed: false })
                 {

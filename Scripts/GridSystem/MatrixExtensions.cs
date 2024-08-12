@@ -20,17 +20,4 @@ public static class MatrixExtensions
             }
         }
     }
-
-    public static IEnumerable<T> Values<T>(this T[,] matrix)
-    {
-        if (matrix.Length == 0)
-            yield break;
-    
-        var enumerator = matrix.GetEnumerator();
-    
-        while (enumerator.MoveNext())
-        {
-            yield return ((T)enumerator.Current)!;
-        }
-    }
 }

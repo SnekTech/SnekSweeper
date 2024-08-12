@@ -9,14 +9,14 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [x] add difficulty setting UI
 - [x] init grid after first click
 - [ ] game loop
-  - [ ] scene change on game win or over
+  - [x] scene change on game win or over
 - [ ] guess-free option
 - [ ] cell reveal combo
 - [ ] digital museum - a place to enjoy game assets
 - [ ] achievement system
   - [ ] steamworks adaption
 - [ ] game modes
-  - [ ] original
+  - [x] original
   - [ ] zen mode, immersive minesweeper experience
   - [ ] timing
   - [ ] endless
