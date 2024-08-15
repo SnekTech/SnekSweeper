@@ -25,4 +25,4 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] architecture
 - [ ] skin system
 - [x] enable nullable reference types in project
-- [ ] circle process challenge
+- [ ] circle process challenge like Apple Watch

@@ -11,6 +11,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     private MainSetting _mainSetting = null!;
     
     private Grid _grid = null!;
+    private PackedScene _cellScene = GD.Load<PackedScene>(HumbleCell.CellScenePath);
 
     public override void _Ready()
     {
@@ -24,11 +25,10 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     public List<IHumbleCell> InstantiateHumbleCells(int count)
     {
-        var cellScene = GD.Load<PackedScene>(HumbleCell.CellScenePath);
         var humbleCells = new List<IHumbleCell>();
         for (var i = 0; i < count; i++)
         {
-            var humbleCell = cellScene.Instantiate();
+            var humbleCell = _cellScene.Instantiate();
             AddChild(humbleCell);
             humbleCells.Add((IHumbleCell)humbleCell);
         }
