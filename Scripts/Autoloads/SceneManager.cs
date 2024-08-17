@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Godot;
 using SnekSweeper.Constants;
-using Array = Godot.Collections.Array;
+using SnekSweeper.SaveLoad;
 
 namespace SnekSweeper.Autoloads;
 
@@ -66,27 +65,8 @@ public partial class SceneManager : Node
         GetTree().CurrentScene = _currentScene;
     }
 
-    private static async Task<PackedScene> LoadSceneAsync(string path, int millisecondsCheckInterval = 100)
+    private static Task<PackedScene> LoadSceneAsync(string path)
     {
-        ResourceLoader.LoadThreadedRequest(path);
-
-        var loadStatus = ResourceLoader.LoadThreadedGetStatus(path);
-        var progressArray = new Array { 0 };
-        while (loadStatus == ResourceLoader.ThreadLoadStatus.InProgress)
-        {
-            loadStatus = ResourceLoader.LoadThreadedGetStatus(path, progressArray);
-            GD.Print($"scene {path} is being loaded, progress: {progressArray[0]}");
-            await Task.Delay(millisecondsCheckInterval);
-        }
-
-        loadStatus = ResourceLoader.LoadThreadedGetStatus(path);
-        if (loadStatus == ResourceLoader.ThreadLoadStatus.Failed)
-        {
-            GD.PrintErr($"failed to load scene {path}");
-            throw new Exception();
-        }
-
-        var packed = ResourceLoader.LoadThreadedGet(path)! as PackedScene;
-        return packed!;
+        return SaveLoadHelper.LoadResourceAsync<PackedScene>(path);
     }
 }

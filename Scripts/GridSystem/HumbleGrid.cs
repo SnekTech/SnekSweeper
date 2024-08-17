@@ -28,7 +28,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         var humbleCells = new List<IHumbleCell>();
         for (var i = 0; i < count; i++)
         {
-            var humbleCell = _cellScene.Instantiate();
+            var humbleCell = _cellScene.Instantiate<Node2D>();
             AddChild(humbleCell);
             humbleCells.Add((IHumbleCell)humbleCell);
         }
