@@ -2,6 +2,7 @@ using Godot;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Constants;
 using SnekSweeper.GameSettings;
+using SnekSweeper.SaveLoad;
 
 namespace SnekSweeper.UI;
 
@@ -29,5 +30,6 @@ public partial class Settings : Control
     private void OptionButtonOnItemSelected(long index)
     {
         _mainSetting.SetDifficulty((int)index);
+        SaveLoadEventBus.EmitSaveRequested();
     }
 }
