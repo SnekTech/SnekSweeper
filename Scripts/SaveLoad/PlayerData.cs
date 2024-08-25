@@ -1,5 +1,6 @@
 ﻿using System;
 using Godot;
+using SnekSweeper.GameSettings;
 
 namespace SnekSweeper.SaveLoad;
 
@@ -8,7 +9,7 @@ public partial class PlayerData : Resource
     private const string SavePathBase = "user://playerData";
 
     [Export]
-    public int CurrentDifficultyIndex = 0;
+    public MainSetting MainSetting { get; private set; } = new();
 
     public void Save()
     {

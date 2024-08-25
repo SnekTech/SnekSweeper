@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 SceneManager="*res://Scripts/Autoloads/SceneManager.cs"
 InputListener="*res://Scripts/Autoloads/InputListener.cs"
+HouseKeeper="*res://Scripts/Autoloads/HouseKeeper.cs"
 
 [display]
 

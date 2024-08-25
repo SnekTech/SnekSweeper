@@ -1,8 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://cc658fhlcf7w4"]
+[gd_scene load_steps=2 format=3 uid="uid://cc658fhlcf7w4"]
 
 [ext_resource type="Script" path="res://Scripts/GridSystem/HumbleGrid.cs" id="1_tadkw"]
-[ext_resource type="Resource" uid="uid://dwr83nrdlslu5" path="res://Resources/GameSettings/main_setting.tres" id="2_yow08"]
 
 [node name="Grid" type="Node2D"]
 script = ExtResource("1_tadkw")
-_mainSetting = ExtResource("2_yow08")

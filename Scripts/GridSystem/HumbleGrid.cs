@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
 using Godot;
+using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
-using SnekSweeper.GameSettings;
 
 namespace SnekSweeper.GridSystem;
 
 public partial class HumbleGrid : Node2D, IHumbleGrid
 {
-    [Export]
-    private MainSetting _mainSetting = null!;
-    
     private Grid _grid = null!;
     private PackedScene _cellScene = GD.Load<PackedScene>(HumbleCell.CellScenePath);
 
     public override void _Ready()
     {
-        _grid = new Grid(this, _mainSetting.CurrentDifficulty);
+        var mainSetting = HouseKeeper.MainSetting;
+        _grid = new Grid(this, mainSetting.CurrentDifficulty);
     }
 
     public override void _ExitTree()

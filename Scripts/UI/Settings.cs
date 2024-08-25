@@ -8,28 +8,38 @@ namespace SnekSweeper.UI;
 
 public partial class Settings : Control
 {
-    [Export]
+    private OptionButton _optionButton = null!;
+    private Button _backToMainButton = null!;
     private MainSetting _mainSetting = null!;
-
-    private OptionButton? _optionButton;
-    private Button? _backToMainButton;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        _mainSetting = HouseKeeper.MainSetting;
+        
         _optionButton = GetNode<OptionButton>("%OptionButton");
         _backToMainButton = GetNode<Button>("%BackToMainButton");
+        
+        GenerateDifficultyOptions();
 
         _optionButton.ItemSelected += OptionButtonOnItemSelected;
-
         _backToMainButton.Pressed += () => SceneManager.Instance.GotoScene(ScenePaths.MainScene);
-        
-        _mainSetting.SetDifficulty();
     }
 
     private void OptionButtonOnItemSelected(long index)
     {
-        _mainSetting.SetDifficulty((int)index);
+        _mainSetting.CurrentDifficultyIndex = (int)index;
         SaveLoadEventBus.EmitSaveRequested();
+    }
+
+    private void GenerateDifficultyOptions()
+    {
+        _optionButton.Clear();
+        foreach (var difficulty in _mainSetting.Difficulties)
+        {
+            _optionButton.AddItem(difficulty.Name);
+        }
+        
+        _optionButton.Select(_mainSetting.CurrentDifficultyIndex);
     }
 }
