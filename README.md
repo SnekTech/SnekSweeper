@@ -8,7 +8,7 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [x] use difficulty to init grid
   - [x] add difficulty setting UI
 - [x] init grid after first click
-- [ ] game loop
+- [x] game loop
   - [x] scene change on game win or over
 - [ ] guess-free option
 - [ ] cell reveal combo
@@ -22,7 +22,12 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] endless
 - [ ] save & load
   - [ ] what to save
-  - [ ] architecture
+    - [x] current difficulty
+  - [x] architecture using Godot Resource
 - [ ] skin system
+  - [ ] 麻将
 - [x] enable nullable reference types in project
 - [ ] circle process challenge like Apple Watch
+- [ ] cell sprite animation
+  - [ ] use async
+- [ ] highlight the hovering cell
