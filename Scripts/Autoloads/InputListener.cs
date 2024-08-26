@@ -9,7 +9,6 @@ public partial class InputListener : Node
     public event Action? LevelRestarted;
 
     private const float SecondsRestartThreshold = 1;
-    private const string RestartActionName = "restart";
 
     private bool _isRestartPressed;
     private bool _countingRestartHold;
@@ -39,13 +38,14 @@ public partial class InputListener : Node
 
     private void ProcessRestartInput(double delta)
     {
-        if (Input.IsActionJustPressed(RestartActionName))
+        var restartActionName = InputActions.Restart;
+        if (Input.IsActionJustPressed(restartActionName))
         {
             _countingRestartHold = true;
             _restartHoldTime = 0;
         }
         
-        if (_countingRestartHold && Input.IsActionPressed(RestartActionName))
+        if (_countingRestartHold && Input.IsActionPressed(restartActionName))
         {
             _restartHoldTime += (float)delta;
 
@@ -56,7 +56,7 @@ public partial class InputListener : Node
             }
         }
 
-        if (Input.IsActionJustReleased(RestartActionName))
+        if (Input.IsActionJustReleased(restartActionName))
         {
             _countingRestartHold = false;
         }

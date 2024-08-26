@@ -1,20 +1,14 @@
 using System;
 using Godot;
 using SnekSweeper.CellSystem.Components;
+using SnekSweeper.Constants;
 
 namespace SnekSweeper.CellSystem;
 
 public partial class HumbleCell : Node2D, IHumbleCell
 {
-    #region constants
-
-    public const int CellSizePixels = 16;
+    private const int CellSizePixels = 16;
     public const string CellScenePath = "res://Scenes/cell.tscn";
-
-    public const string PrimaryAction = "primary";
-    public const string SecondaryAction = "secondary";
-
-    #endregion
 
     public event Action? PrimaryReleased;
     public event Action? PrimaryDoubleClicked;
@@ -44,17 +38,17 @@ public partial class HumbleCell : Node2D, IHumbleCell
 
     private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
     {
-        if (@event.IsActionReleased(PrimaryAction))
+        if (@event.IsActionReleased(InputActions.Primary))
         {
             PrimaryReleased?.Invoke();
         }
         else if (@event is InputEventMouseButton eventMouseButton &&
-                 eventMouseButton.IsAction(PrimaryAction) &&
+                 eventMouseButton.IsAction(InputActions.Primary) &&
                  eventMouseButton.DoubleClick)
         {
             PrimaryDoubleClicked?.Invoke();
         }
-        else if (@event.IsActionReleased(SecondaryAction))
+        else if (@event.IsActionReleased(InputActions.Secondary))
         {
             SecondaryReleased?.Invoke();
         }
