@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="SkinResource" load_steps=3 format=3 uid="uid://bnydqkm34fv4d"]
+
+[ext_resource type="Script" path="res://Scripts/SkinSystem/SkinResource.cs" id="1_2lsxt"]
+[ext_resource type="Texture2D" uid="uid://dyvdk1dcv7bku" path="res://Art/SnekSweeperSpriteSheet02.png" id="1_tefo6"]
+
+[resource]
+script = ExtResource("1_2lsxt")
+Name = "majiang"
+Texture = ExtResource("1_tefo6")

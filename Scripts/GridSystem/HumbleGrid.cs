@@ -2,18 +2,23 @@
 using Godot;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
+using SnekSweeper.GameSettings;
+using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.GridSystem;
 
 public partial class HumbleGrid : Node2D, IHumbleGrid
 {
+    [Export]
+    private SkinCollection _skinCollection = null!;
+
     private Grid _grid = null!;
     private PackedScene _cellScene = GD.Load<PackedScene>(HumbleCell.CellScenePath);
+    private MainSetting _mainSetting = HouseKeeper.MainSetting;
 
     public override void _Ready()
     {
-        var mainSetting = HouseKeeper.MainSetting;
-        _grid = new Grid(this, mainSetting.CurrentDifficulty);
+        _grid = new Grid(this, _mainSetting.CurrentDifficulty);
     }
 
     public override void _ExitTree()
@@ -24,11 +29,16 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public List<IHumbleCell> InstantiateHumbleCells(int count)
     {
         var humbleCells = new List<IHumbleCell>();
+        var currentSkin = _skinCollection.GetSkin(_mainSetting.CurrentSkinName);
+
         for (var i = 0; i < count; i++)
         {
-            var humbleCell = _cellScene.Instantiate<Node2D>();
+            var humbleCell = _cellScene.Instantiate<HumbleCell>();
+
+            humbleCell.UseSkin(currentSkin);
+
             AddChild(humbleCell);
-            humbleCells.Add((IHumbleCell)humbleCell);
+            humbleCells.Add(humbleCell);
         }
 
         return humbleCells;

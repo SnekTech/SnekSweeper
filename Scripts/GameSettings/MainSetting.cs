@@ -15,6 +15,9 @@ public partial class MainSetting : Resource
 
     [Export]
     private int _currentDifficultyIndex = 1;
+    
+    [Export]
+    private string _currentSkinName = "default";
 
     public int CurrentDifficultyIndex
     {
@@ -29,4 +32,14 @@ public partial class MainSetting : Resource
     }
 
     public IGridDifficulty CurrentDifficulty => Difficulties[_currentDifficultyIndex];
+
+    public string CurrentSkinName
+    {
+        get => _currentSkinName;
+        set
+        {
+            _currentSkinName = value;
+            EmitChanged();
+        }
+    }
 }

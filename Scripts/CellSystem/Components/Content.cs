@@ -5,12 +5,6 @@ namespace SnekSweeper.CellSystem.Components;
 
 public partial class Content : Sprite2D
 {
-    private static class FrameIndex
-    {
-        public const int Bomb = 2;
-        public const int Zero = 7;
-    }
-    
     public void ShowBomb()
     {
         Frame = FrameIndex.Bomb;
@@ -22,5 +16,16 @@ public partial class Content : Sprite2D
             throw new ArgumentOutOfRangeException(nameof(count));
         
         Frame = FrameIndex.Zero + count;
+    }
+
+    public void ChangeTexture(Texture2D newTexture)
+    {
+        Texture = newTexture;
+    }
+    
+    private static class FrameIndex
+    {
+        public const int Bomb = 2;
+        public const int Zero = 7;
     }
 }

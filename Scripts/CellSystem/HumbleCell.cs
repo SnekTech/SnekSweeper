@@ -2,6 +2,7 @@ using System;
 using Godot;
 using SnekSweeper.CellSystem.Components;
 using SnekSweeper.Constants;
+using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.CellSystem;
 
@@ -14,26 +15,29 @@ public partial class HumbleCell : Node2D, IHumbleCell
     public event Action? PrimaryDoubleClicked;
     public event Action? SecondaryReleased;
 
+    [Export]
     private Content _content = null!;
+
+    [Export]
     private Area2D _clickArea = null!;
 
-    public ICover Cover { get; private set; } = null!;
-    public IFlag Flag { get; private set; } = null!;
+    [Export]
+    private Cover _cover = null!;
+
+    [Export]
+    private Flag _flag = null!;
+
+    public ICover Cover => _cover;
+    public IFlag Flag => _flag;
 
     public override void _Ready()
     {
-        _clickArea = GetNode<Area2D>("ClickArea");
-        _content = GetNode<Content>("Content");
-        Cover = GetNode<Cover>("Cover");
-        Flag = GetNode<Flag>("Flag");
-        
         _clickArea.InputEvent += OnClickAreaInputEvent;
     }
 
     public override void _ExitTree()
     {
         _clickArea.InputEvent -= OnClickAreaInputEvent;
-        
     }
 
     private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
@@ -70,5 +74,10 @@ public partial class HumbleCell : Node2D, IHumbleCell
     {
         var (i, j) = gridIndex;
         Position = new Vector2(j * CellSizePixels, i * CellSizePixels);
+    }
+
+    public void UseSkin(ISkin newSkin)
+    {
+        _content.ChangeTexture(newSkin.Texture);
     }
 }

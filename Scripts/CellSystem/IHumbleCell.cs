@@ -1,5 +1,6 @@
 ﻿using System;
 using SnekSweeper.CellSystem.Components;
+using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.CellSystem;
 
@@ -13,4 +14,5 @@ public interface IHumbleCell
     IFlag Flag { get; }
     void SetContent(Cell cell);
     void SetPosition((int i, int j) gridIndex);
+    void UseSkin(ISkin newSkin);
 }

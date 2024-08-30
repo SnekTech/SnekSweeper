@@ -9,8 +9,12 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6s3od"]
 size = Vector2(16, 16)
 
-[node name="Cell" type="Node2D"]
+[node name="Cell" type="Node2D" node_paths=PackedStringArray("_content", "_clickArea", "_cover", "_flag")]
 script = ExtResource("1_6skau")
+_content = NodePath("Content")
+_clickArea = NodePath("ClickArea")
+_cover = NodePath("Cover")
+_flag = NodePath("Flag")
 
 [node name="Ground" type="Sprite2D" parent="."]
 texture = ExtResource("2_mccuu")
