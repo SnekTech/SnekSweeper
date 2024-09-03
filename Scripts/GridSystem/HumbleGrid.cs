@@ -29,7 +29,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public List<IHumbleCell> InstantiateHumbleCells(int count)
     {
         var humbleCells = new List<IHumbleCell>();
-        var currentSkin = _skinCollection.GetSkin(_mainSetting.CurrentSkinName);
+        var currentSkin = _skinCollection.SkinDict[_mainSetting.CurrentSkinName];
 
         for (var i = 0; i < count; i++)
         {

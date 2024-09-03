@@ -15,11 +15,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] digital museum - a place to enjoy game assets
 - [ ] achievement system
     - [ ] steamworks adaption
-- [ ] game modes
-    - [x] original
-    - [ ] zen mode, immersive minesweeper experience
-    - [ ] timing
-    - [ ] endless
 - [ ] save & load
     - [ ] what to save
         - [x] current difficulty
@@ -42,3 +37,9 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [x] content
   - [ ] cover
   - [ ] flag
+
+### Game Modes
+- [x] original
+- [ ] zen mode, immersive minesweeper experience
+- [ ] timing
+- [ ] endless
