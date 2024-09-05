@@ -10,11 +10,5 @@ public partial class SkinCollection : Resource
     [Export]
     private SkinResource[] _skins = null!;
 
-    public IReadOnlyDictionary<string, ISkin> SkinDict
-    {
-        get
-        {
-            return _skins.ToDictionary<SkinResource, string, ISkin>(skin => skin.Name, skin => skin);
-        }
-    }
+    public List<ISkin> Skins => _skins.Cast<ISkin>().ToList();
 }

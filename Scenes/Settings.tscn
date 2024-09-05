@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://c3v16clfuvy6n"]
+[gd_scene load_steps=3 format=3 uid="uid://c3v16clfuvy6n"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Settings.cs" id="1_13xw3"]
+[ext_resource type="Resource" uid="uid://cv6d715pwwrsh" path="res://Resources/skins/skin_collection.tres" id="2_p6kym"]
 
-[node name="Settings" type="Control"]
+[node name="Settings" type="Control" node_paths=PackedStringArray("_backToMainButton", "_difficultyOptionButton", "_skinOptionButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,30 +11,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_13xw3")
-
-[node name="DifficultySelect" type="HBoxContainer" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 288.0
-offset_top = 99.0
-offset_right = 472.0
-offset_bottom = 139.0
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="DifficultySelect"]
-layout_mode = 2
-text = "Difficulty"
-
-[node name="OptionButton" type="OptionButton" parent="DifficultySelect"]
-unique_name_in_owner = true
-layout_mode = 2
-selected = 0
-item_count = 3
-popup/item_0/text = "simple"
-popup/item_1/text = "medium"
-popup/item_1/id = 1
-popup/item_2/text = "hard"
-popup/item_2/id = 2
+_skinCollection = ExtResource("2_p6kym")
+_backToMainButton = NodePath("BackToMainButton")
+_difficultyOptionButton = NodePath("VBoxContainer/DifficultySelect/OptionButton")
+_skinOptionButton = NodePath("VBoxContainer/SkinSelect/OptionButton")
 
 [node name="BackToMainButton" type="Button" parent="."]
 unique_name_in_owner = true
@@ -43,3 +24,40 @@ offset_top = 39.0
 offset_right = 152.0
 offset_bottom = 70.0
 text = "Back To Main"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 313.0
+offset_top = 106.0
+offset_right = 484.0
+offset_bottom = 172.0
+
+[node name="DifficultySelect" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="VBoxContainer/DifficultySelect"]
+layout_mode = 2
+text = "Difficulty"
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/DifficultySelect"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "simple"
+popup/item_1/text = "medium"
+popup/item_1/id = 1
+popup/item_2/text = "hard"
+popup/item_2/id = 2
+
+[node name="SkinSelect" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="VBoxContainer/SkinSelect"]
+layout_mode = 2
+text = "Skin"
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/SkinSelect"]
+layout_mode = 2
+selected = 0

@@ -32,7 +32,7 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [x] default
   - [x] 麻将
 - [ ] UI
-  - [ ] change skin
+  - [x] change skin
 - [ ] change skin on all cell components
   - [x] content
   - [ ] cover
