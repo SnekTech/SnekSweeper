@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://dmhdcr0pjobe6"]
+
+[ext_resource type="Script" path="res://Scripts/Widgets/TestClock.cs" id="1_iyrnl"]
+[ext_resource type="Script" path="res://Scripts/Widgets/Clock.cs" id="1_o1fg1"]
+
+[node name="TestClock" type="Node2D" node_paths=PackedStringArray("_clock", "_time")]
+script = ExtResource("1_iyrnl")
+_clock = NodePath("Clock")
+_time = NodePath("TimeElapsed")
+
+[node name="Clock" type="Node" parent="."]
+script = ExtResource("1_o1fg1")
+
+[node name="TimeElapsed" type="Label" parent="."]
+offset_left = 214.0
+offset_top = 113.0
+offset_right = 254.0
+offset_bottom = 136.0
+theme_override_font_sizes/font_size = 80
+text = "-1"

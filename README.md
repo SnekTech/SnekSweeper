@@ -39,7 +39,10 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] flag
 
 ### Game Modes
+
 - [x] original
 - [ ] zen mode, immersive minesweeper experience
 - [ ] timing
 - [ ] endless
+
+### History
