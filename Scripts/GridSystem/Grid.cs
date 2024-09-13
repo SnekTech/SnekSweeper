@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SnekSweeper.CellSystem;
-using SnekSweeper.GameMode;
 
 namespace SnekSweeper.GridSystem;
 
 public class Grid
 {
+    public event Action<List<Cell>>? BombRevealed;
+    public event Action? BatchRevealed; 
+    
     private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
     {
         (-1, -1),
@@ -24,8 +27,6 @@ public class Grid
     private readonly IGridDifficulty _gridDifficulty;
     private bool _hasInitialized;
 
-    private readonly Referee _referee;
-
     public Grid(IHumbleGrid humbleGrid, IGridDifficulty gridDifficulty)
     {
         _humbleGrid = humbleGrid;
@@ -35,8 +36,7 @@ public class Grid
         _cells = new Cell[rows, columns];
 
         InstantiateEmptyCells();
-
-        _referee = new Referee(this);
+        
     }
 
     private void InstantiateEmptyCells()
@@ -143,10 +143,10 @@ public class Grid
 
         if (bombCellsRevealed.Count > 0)
         {
-            _referee.OnBombRevealed(bombCellsRevealed);
+            BombRevealed?.Invoke(bombCellsRevealed);
         }
 
-        _referee.OnBatchRevealed();
+        BatchRevealed?.Invoke();
     }
 
     private void RevealAround((int i, int j) gridIndex)
@@ -172,7 +172,7 @@ public class Grid
             c.Reveal();
         }
 
-        _referee.OnBatchRevealed();
+        BatchRevealed?.Invoke();
     }
 
     private void FindCellsToReveal((int i, int j) gridIndex, ICollection<Cell> cellsToReveal)

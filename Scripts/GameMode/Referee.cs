@@ -14,15 +14,24 @@ public class Referee
     public Referee(Grid grid)
     {
         _grid = grid;
+        _grid.BatchRevealed += OnBatchRevealed;
+        _grid.BombRevealed += OnBombRevealed;
     }
 
-    public void OnBombRevealed(List<Cell> bombsRevealed)
+    public void OnDispose()
     {
+        _grid.BatchRevealed -= OnBatchRevealed;
+        _grid.BombRevealed -= OnBombRevealed;
+    }
+
+    private void OnBombRevealed(List<Cell> bombsRevealed)
+    {
+        // todo: create & save game record
         GD.Print("Game over! Bomb revealed!");
         SceneManager.Instance.GotoScene(ScenePaths.LosingScene);
     }
 
-    public void OnBatchRevealed()
+    private void OnBatchRevealed()
     {
         if (_grid.IsResolved)
         {
