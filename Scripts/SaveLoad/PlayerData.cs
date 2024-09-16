@@ -1,5 +1,6 @@
 ﻿using System;
 using Godot;
+using SnekSweeper.GameHistory;
 using SnekSweeper.GameSettings;
 
 namespace SnekSweeper.SaveLoad;
@@ -10,6 +11,9 @@ public partial class PlayerData : Resource
 
     [Export]
     public MainSetting MainSetting { get; private set; } = new();
+    
+    [Export]
+    public History History { get; private set; } = new();
 
     public void Save()
     {

@@ -21,3 +21,7 @@ text = "Start"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Settings"
+
+[node name="HistoryButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "History"

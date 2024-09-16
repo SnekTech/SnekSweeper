@@ -1,4 +1,5 @@
 ﻿using Godot;
+using SnekSweeper.GameHistory;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SaveLoad;
 
@@ -39,4 +40,6 @@ public partial class HouseKeeper: Node
     }
     
     public static MainSetting MainSetting => _playerData.MainSetting;
+    
+    public static History History => _playerData.History;
 }

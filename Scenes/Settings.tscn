@@ -60,4 +60,3 @@ text = "Skin"
 
 [node name="OptionButton" type="OptionButton" parent="VBoxContainer/SkinSelect"]
 layout_mode = 2
-selected = 0
