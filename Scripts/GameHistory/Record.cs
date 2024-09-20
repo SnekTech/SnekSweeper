@@ -9,10 +9,10 @@ public partial class Record : Resource
     /// use long to save and load <see cref="DateTime"/> binary
     /// </summary>
     [Export]
-    private long _startDateTime;
+    private long _startDateTimeBinary;
 
     [Export]
-    private long _endDateTime;
+    private long _endDateTimeBinary;
 
     [Export]
     private bool _winning;
@@ -23,14 +23,14 @@ public partial class Record : Resource
 
     public Record(DateTime startAt, DateTime endAt, bool winning)
     {
-        _startDateTime = startAt.ToBinary();
-        _endDateTime = endAt.ToBinary();
+        _startDateTimeBinary = startAt.ToBinary();
+        _endDateTimeBinary = endAt.ToBinary();
         _winning = winning;
     }
 
-    public DateTime StartAt => DateTime.FromBinary(_startDateTime);
+    public DateTime StartAt => DateTime.FromBinary(_startDateTimeBinary);
 
-    public DateTime EndAt => DateTime.FromBinary(_endDateTime);
+    public DateTime EndAt => DateTime.FromBinary(_endDateTimeBinary);
 
     public bool Winning => _winning;
 }

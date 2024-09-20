@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SnekSweeper.CellSystem;
+using SnekSweeper.GameHistory;
 
 namespace SnekSweeper.GridSystem;
 
@@ -63,6 +64,8 @@ public class Grid
         {
             cell.Init();
         }
+        
+        HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
     public void OnDispose()
