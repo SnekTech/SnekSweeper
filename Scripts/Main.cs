@@ -1,21 +1,18 @@
 ﻿using Godot;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Constants;
-using SnekSweeper.SaveLoad;
 
 namespace SnekSweeper;
 
 public partial class Main : Node
 {
-    private PlayerData _playerData = null!;
+    [Export]
     private Button _startButton = null!;
+    [Export]
     private Button _settingsButton = null!;
 
     public override void _Ready()
     {
-        _startButton = GetNode<Button>("%StartButton");
-        _settingsButton = GetNode<Button>("%SettingsButton");
-
         RegisterEvents();
     }
 
