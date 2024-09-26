@@ -8,8 +8,12 @@ public partial class Main : Node
 {
     [Export]
     private Button _startButton = null!;
+
     [Export]
     private Button _settingsButton = null!;
+
+    [Export]
+    private Button _historyButton = null!;
 
     public override void _Ready()
     {
@@ -21,5 +25,6 @@ public partial class Main : Node
         var sceneManager = SceneManager.Instance;
         _startButton.Pressed += () => sceneManager.GotoScene(ScenePaths.Level1);
         _settingsButton.Pressed += () => sceneManager.GotoScene(ScenePaths.SettingsScene);
+        _historyButton.Pressed += () => sceneManager.GotoScene(ScenePaths.HistoryScene);
     }
 }

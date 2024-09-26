@@ -1,0 +1,49 @@
+[gd_scene load_steps=2 format=3 uid="uid://hk57xckul7ox"]
+
+[ext_resource type="Script" path="res://Scripts/UI/HistoryScene.cs" id="1_xmkyp"]
+
+[node name="History" type="Node2D"]
+script = ExtResource("1_xmkyp")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+custom_minimum_size = Vector2(100, 100)
+offset_left = 183.0
+offset_top = 82.0
+offset_right = 283.0
+offset_bottom = 182.0
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
+
+[node name="Label2" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
+
+[node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
+
+[node name="Label4" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
+
+[node name="Label5" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
+
+[node name="Label6" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
+
+[node name="Label7" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
+
+[node name="Label8" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "2000-01-01"
