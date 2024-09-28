@@ -25,6 +25,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] cell sprite animation
     - [ ] use async
 - [ ] highlight the hovering cell
+  - [ ] glow effect
 
 ### Skin System
 
