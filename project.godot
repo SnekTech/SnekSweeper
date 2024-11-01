@@ -34,6 +34,10 @@ window/stretch/scale_mode="integer"
 
 project/assembly_name="SnekSweeper"
 
+[gui]
+
+theme/custom_font="res://Font/Tiny5-Regular.ttf"
+
 [input]
 
 primary={
@@ -56,3 +60,4 @@ restart={
 
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="mobile"
+textures/lossless_compression/force_png=true
