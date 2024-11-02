@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3 uid="uid://dq36pirgpjakw"]
+
+[ext_resource type="Script" path="res://Scripts/Widgets/TestCombo.cs" id="1_6mo8p"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tsgtk"]
+bg_color = Color(0.32, 0.1856, 0.1856, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wvk1n"]
+
+[node name="TestCombo" type="Node2D" node_paths=PackedStringArray("_progressBar", "_button", "_comboTimer")]
+script = ExtResource("1_6mo8p")
+_progressBar = NodePath("ProgressBar")
+_button = NodePath("Button")
+_comboTimer = NodePath("Timer")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_left = 222.0
+offset_top = 150.0
+offset_right = 322.0
+offset_bottom = 160.0
+scale = Vector2(2, 2)
+theme_override_styles/background = SubResource("StyleBoxFlat_tsgtk")
+theme_override_styles/fill = SubResource("StyleBoxFlat_wvk1n")
+value = 75.0
+show_percentage = false
+
+[node name="Button" type="Button" parent="."]
+offset_left = 287.0
+offset_top = 192.0
+offset_right = 363.0
+offset_bottom = 220.0
+text = "Click Me"
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
