@@ -4,64 +4,64 @@ namespace SnekSweeper.Widgets;
 
 public partial class TestCombo : Node2D
 {
-    [Export]
-    private ProgressBar _progressBar = null!;
+    [Export] private ProgressBar progressBar = default!;
+    [Export] private Button button = default!;
+    [Export] private Label descriptionLabel = default!;
+    [Export] private ComboComponent comboComponent = default!;
 
-    [Export]
-    private Button _button = null!;
-
-    [Export]
-    private Timer _comboTimer = null!;
-
-    private const int ComboWaitTime = 3;
-    private int _comboLevel;
-    private bool IsCountingCombo => !_comboTimer.IsStopped();
-
-    private StyleBoxFlat _fillStyleBox = new();
-    private Color[] _fillColors = { Colors.Aqua, Colors.Azure, Colors.Crimson };
+    private Color[] _fillColors = { Colors.Gray, Colors.White, Colors.Yellow, Colors.Crimson };
 
     public override void _Ready()
     {
-        _progressBar.AddThemeStyleboxOverride("fill", _fillStyleBox);
-
-        _button.Pressed += HandleClick;
-        _comboTimer.Timeout += HandleComboTimerTimeout;
+        button.Pressed += OnButtonPressed;
+        comboComponent.LevelRefreshed += OnComboLevelRefreshed;
+        comboComponent.LevelDropped += OnComboLevelDropped;
     }
 
     public override void _ExitTree()
     {
-        _button.Pressed -= HandleClick;
-        _comboTimer.Timeout -= HandleComboTimerTimeout;
-    }
-
-    private void HandleComboTimerTimeout()
-    {
-        _comboLevel = 0;
+        button.Pressed -= OnButtonPressed;
+        comboComponent.LevelRefreshed -= OnComboLevelRefreshed;
+        comboComponent.LevelDropped -= OnComboLevelDropped;
     }
 
     public override void _Process(double delta)
     {
-        if (!IsCountingCombo)
-            return;
-
-        _progressBar.Value = _comboTimer.TimeLeft / ComboWaitTime * _progressBar.MaxValue;
-    }
-
-    private void HandleClick()
-    {
-        _progressBar.Value = _progressBar.MaxValue;
-
-        if (IsCountingCombo)
+        if (!comboComponent.IsCountingCombo)
         {
-            _comboLevel++;
-            IterateProgressFillColor(_comboLevel);
+            return;
         }
-        
-        _comboTimer.Start(ComboWaitTime);
+
+        progressBar.Value = progressBar.MaxValue * comboComponent.ComboAlivePercent;
     }
 
-    private void IterateProgressFillColor(int level)
+    private void UpdateProgressColor()
     {
-        _fillStyleBox.BgColor = _fillColors[level % _fillColors.Length];
+        var level = comboComponent.CurrentLevel;
+        progressBar.Modulate = _fillColors[level];
+
+        descriptionLabel.Text = comboComponent.CurrentComment;
+        descriptionLabel.Modulate = _fillColors[level];
+    }
+
+    private void OnButtonPressed()
+    {
+        comboComponent.Strike();
+    }
+
+    private void OnComboLevelRefreshed()
+    {
+        UpdateProgressColor();
+        progressBar.Value = progressBar.MaxValue;
+    }
+
+    private void OnComboLevelDropped()
+    {
+        UpdateProgressColor();
+        if (!comboComponent.IsCountingCombo)
+        {
+            progressBar.Value = 0;
+            descriptionLabel.Text = "";
+        }
     }
 }

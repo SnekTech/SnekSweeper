@@ -29,7 +29,7 @@ public static class SaveLoadHelper
             throw new Exception(errMessage);
         }
 
-        var packed = ResourceLoader.LoadThreadedGet(path) as T;
-        return packed!;
+        var loadedResource = (T)ResourceLoader.LoadThreadedGet(path);
+        return loadedResource;
     }
 }

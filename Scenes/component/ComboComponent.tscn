@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://btpesexyb6tc1"]
+
+[ext_resource type="Script" path="res://Scripts/Widgets/ComboComponent.cs" id="1_bhjep"]
+
+[node name="ComboComponent" type="Node" node_paths=PackedStringArray("_timer")]
+script = ExtResource("1_bhjep")
+_timer = NodePath("Timer")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true

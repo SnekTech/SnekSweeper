@@ -12,6 +12,7 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [x] scene change on game win or over
 - [ ] guess-free option
 - [ ] cell reveal combo
+  - [ ] standalone combo test scene
 - [ ] digital museum - a place to enjoy game assets
 - [ ] achievement system
     - [ ] steamworks adaption
