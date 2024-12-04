@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dq36pirgpjakw"]
+[gd_scene load_steps=6 format=3 uid="uid://dq36pirgpjakw"]
 
 [ext_resource type="Script" path="res://Scripts/Widgets/TestCombo.cs" id="1_xwqhc"]
 [ext_resource type="PackedScene" uid="uid://btpesexyb6tc1" path="res://Scenes/component/ComboComponent.tscn" id="2_hyvko"]
+[ext_resource type="PackedScene" uid="uid://fqgexjh6clx5" path="res://Scenes/widgets/ComboParticle.tscn" id="2_p4g8t"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tsgtk"]
 bg_color = Color(0.32, 0.1856, 0.1856, 1)
@@ -15,6 +16,7 @@ progressBar = NodePath("ProgressBar")
 button = NodePath("Button")
 descriptionLabel = NodePath("Label")
 comboComponent = NodePath("ComboComponent")
+comboParticleScene = ExtResource("2_p4g8t")
 
 [node name="ComboComponent" parent="." instance=ExtResource("2_hyvko")]
 

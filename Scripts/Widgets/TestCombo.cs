@@ -7,7 +7,9 @@ public partial class TestCombo : Node2D
     [Export] private ProgressBar progressBar = default!;
     [Export] private Button button = default!;
     [Export] private Label descriptionLabel = default!;
+
     [Export] private ComboComponent comboComponent = default!;
+    [Export] private PackedScene comboParticleScene = default!;
 
     private Color[] _fillColors = { Colors.Gray, Colors.White, Colors.Yellow, Colors.Crimson };
 
@@ -47,6 +49,9 @@ public partial class TestCombo : Node2D
     private void OnButtonPressed()
     {
         comboComponent.Strike();
+        
+        var particleScene = comboParticleScene.Instantiate<Node2D>();
+        progressBar.AddChild(particleScene);
     }
 
     private void OnComboLevelRefreshed()
