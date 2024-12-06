@@ -4,41 +4,51 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## TODOs
 
-- [x] different difficulties
-    - [x] use difficulty to init grid
-    - [x] add difficulty setting UI
-- [x] init grid after first click
-- [x] game loop
-    - [x] scene change on game win or over
-- [ ] guess-free option
-- [ ] cell reveal combo
-  - [ ] standalone combo test scene
 - [ ] digital museum - a place to enjoy game assets
 - [ ] achievement system
     - [ ] steamworks adaption
-- [ ] save & load
-    - [ ] what to save
-        - [x] current difficulty
-        - [ ] current skin
-    - [x] architecture using Godot Resource
 - [x] enable nullable reference types in project
+
+### GamePlay
+
+- [x] different difficulties
+  - [x] use difficulty to init grid
+  - [x] add difficulty setting UI
+- [x] init grid after first click
+- [x] game loop
+  - [x] scene change on game win or over
+- [ ] guess-free option
+- [ ] cell reveal combo
+  - [x] standalone combo test scene
+  - [x] combo component
+- [ ] charging reveal
+
+### Save & Load
+
+- [ ] what to save
+    - [x] current difficulty
+    - [ ] current skin
+- [x] architecture using Godot Resource
+
+### UI
+
+- [ ] HUD
+    - [ ] half screen damage / healing effect
 - [ ] circle process challenge like Apple Watch
-- [ ] cell sprite animation
-    - [ ] use async
 - [ ] highlight the hovering cell
   - [ ] glow effect
 
-### Skin System
+### Skin
 
 - [ ] skin assets
-  - [x] default
-  - [x] 麻将
+    - [x] default
+    - [x] 麻将
 - [ ] UI
-  - [x] change skin
+    - [x] change skin
 - [ ] change skin on all cell components
-  - [x] content
-  - [ ] cover
-  - [ ] flag
+    - [x] content
+    - [ ] cover
+    - [ ] flag
 
 ### Game Modes
 
@@ -47,4 +57,16 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] timing
 - [ ] endless
 
-### History
+### History Records
+
+- [ ] history screen
+- [ ] save/load
+
+### Health / Damage System
+
+### Animation
+
+- [ ] cell sprite animation
+  - [ ] use async
+
+### Shader
