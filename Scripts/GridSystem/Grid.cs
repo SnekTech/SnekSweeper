@@ -37,7 +37,6 @@ public class Grid
         _cells = new Cell[rows, columns];
 
         InstantiateEmptyCells();
-        
     }
 
     private void InstantiateEmptyCells()
@@ -59,7 +58,7 @@ public class Grid
             cell.HasBomb = bombMatrix[i, j];
         }
 
-        // must init individual cells after all cells been set if bomb
+        // must init individual cells after bombs planted
         foreach (var cell in _cells)
         {
             cell.Init();

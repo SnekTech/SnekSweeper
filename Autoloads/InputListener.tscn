@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://d4kybmf5hxxqj"]
+
+[ext_resource type="Script" path="res://Scripts/Autoloads/InputListener.cs" id="1_rhsh2"]
+
+[node name="InputListener" type="Node"]
+script = ExtResource("1_rhsh2")
