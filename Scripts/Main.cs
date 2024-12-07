@@ -1,19 +1,24 @@
 ﻿using Godot;
+using GodotUtilities;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Constants;
 
 namespace SnekSweeper;
 
+[Scene]
 public partial class Main : Node
 {
-    [Export]
-    private Button _startButton = null!;
+    [Node] private Button startButton = default!;
+    [Node] private Button settingsButton = default!;
+    [Node] private Button historyButton = default!;
 
-    [Export]
-    private Button _settingsButton = null!;
-
-    [Export]
-    private Button _historyButton = null!;
+    public override void _Notification(int what)
+    {
+        if (what == NotificationSceneInstantiated)
+        {
+            WireNodes();
+        }
+    }
 
     public override void _Ready()
     {
@@ -23,8 +28,8 @@ public partial class Main : Node
     private void RegisterEvents()
     {
         var sceneManager = SceneManager.Instance;
-        _startButton.Pressed += () => sceneManager.GotoScene(ScenePaths.Level1);
-        _settingsButton.Pressed += () => sceneManager.GotoScene(ScenePaths.SettingsScene);
-        _historyButton.Pressed += () => sceneManager.GotoScene(ScenePaths.HistoryScene);
+        startButton.Pressed += () => sceneManager.GotoScene(ScenePaths.Level1);
+        settingsButton.Pressed += () => sceneManager.GotoScene(ScenePaths.SettingsScene);
+        historyButton.Pressed += () => sceneManager.GotoScene(ScenePaths.HistoryScene);
     }
 }

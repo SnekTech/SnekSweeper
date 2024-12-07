@@ -9,7 +9,7 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [ ] steamworks adaption
 - [x] enable nullable reference types in project
 
-### GamePlay
+## GamePlay
 
 - [x] different difficulties
   - [x] use difficulty to init grid
@@ -23,14 +23,14 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [x] combo component
 - [ ] charging reveal
 
-### Save & Load
+## Save & Load
 
 - [ ] what to save
     - [x] current difficulty
     - [ ] current skin
 - [x] architecture using Godot Resource
 
-### UI
+## UI
 
 - [ ] HUD
     - [ ] half screen damage / healing effect
@@ -38,7 +38,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] highlight the hovering cell
   - [ ] glow effect
 
-### Skin
+## Skin
 
 - [ ] skin assets
     - [x] default
@@ -50,23 +50,24 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [ ] cover
     - [ ] flag
 
-### Game Modes
+## Game Modes
 
 - [x] original
 - [ ] zen mode, immersive minesweeper experience
 - [ ] timing
 - [ ] endless
 
-### History Records
+## History Records
 
 - [ ] history screen
 - [ ] save/load
 
-### Health / Damage System
+## Health / Damage System
 
-### Animation
+## Animation
 
 - [ ] cell sprite animation
   - [ ] use async
 
-### Shader
+## Tutorial
+- [ ] interactable grid & cell

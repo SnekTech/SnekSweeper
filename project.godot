@@ -18,8 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 SceneManager="*res://Autoloads/SceneManager.tscn"
-InputListener="*res://Autoloads/InputListener.tscn"
 HouseKeeper="*res://Autoloads/HouseKeeper.tscn"
+InputListener="*res://Autoloads/InputListener.tscn"
 
 [display]
 

@@ -2,11 +2,8 @@
 
 [ext_resource type="Script" path="res://Scripts/Main.cs" id="1_75qvg"]
 
-[node name="Main" type="Node" node_paths=PackedStringArray("_startButton", "_settingsButton", "_historyButton")]
+[node name="Main" type="Node"]
 script = ExtResource("1_75qvg")
-_startButton = NodePath("VBoxContainer/StartButton")
-_settingsButton = NodePath("VBoxContainer/SettingsButton")
-_historyButton = NodePath("VBoxContainer/HistoryButton")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 offset_left = 289.0
@@ -16,13 +13,16 @@ offset_bottom = 225.0
 metadata/_edit_group_ = true
 
 [node name="StartButton" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Start"
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Settings"
 
 [node name="HistoryButton" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "History"
