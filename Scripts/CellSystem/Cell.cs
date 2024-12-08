@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
 using SnekSweeper.GridSystem;
@@ -7,14 +8,16 @@ namespace SnekSweeper.CellSystem;
 
 public class Cell
 {
+    public event Action<(int i, int j)>? PrimaryReleased;
+    public event Action<(int i, int j)>? PrimaryDoubleClicked;
+    public event Action<(int i, int j)>? SecondaryReleased;
+    
     private readonly IHumbleCell _humbleCell;
-    private readonly Grid _parent;
     private readonly CellStateMachine _stateMachine;
 
-    public Cell(IHumbleCell humbleCell, Grid parent, (int i, int j) gridIndex, bool hasBomb = false)
+    public Cell(IHumbleCell humbleCell, (int i, int j) gridIndex, bool hasBomb = false)
     {
         _humbleCell = humbleCell;
-        _parent = parent;
         _stateMachine = new CellStateMachine(this);
 
         GridIndex = gridIndex;
@@ -22,7 +25,6 @@ public class Cell
 
         _humbleCell.SetPosition(gridIndex);
 
-        // no good place to unsubscribe, for now
         _humbleCell.PrimaryReleased += OnPrimaryReleased;
         _humbleCell.PrimaryDoubleClicked += OnPrimaryDoubleClicked;
         _humbleCell.SecondaryReleased += OnSecondaryReleased;
@@ -38,20 +40,12 @@ public class Cell
     public bool IsRevealed => _stateMachine.CurrentState == _stateMachine.CachedRevealedState;
     public bool IsFlagged => _stateMachine.CurrentState == _stateMachine.CachedFlaggedState;
 
-    public int NeighborBombCount
-    {
-        get
-        {
-            if (HasBomb)
-                return -1;
+    public int NeighborBombCount { get; private set; }
 
-            return _parent.GetNeighborsOf(this).Count(neighbor => neighbor.HasBomb);
-        }
-    }
-
-    public void Init()
+    public void Init(int neighborBombCount)
     {
-        _humbleCell.SetContent(this);
+        NeighborBombCount = neighborBombCount;
+        _humbleCell.SetContent(HasBomb, NeighborBombCount);
         _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
     }
 
@@ -64,17 +58,17 @@ public class Cell
 
     private void OnPrimaryReleased()
     {
-        _parent.OnCellPrimaryReleasedAt(GridIndex);
+        PrimaryReleased?.Invoke(GridIndex);
     }
 
     private void OnPrimaryDoubleClicked()
     {
-        _parent.OnCellPrimaryDoubleClickedAt(GridIndex);
+        PrimaryDoubleClicked?.Invoke(GridIndex);
     }
 
     private void OnSecondaryReleased()
     {
-        _parent.OnCellSecondaryReleasedAt(GridIndex);
+        SecondaryReleased?.Invoke(GridIndex);
     }
 
     public void Reveal()

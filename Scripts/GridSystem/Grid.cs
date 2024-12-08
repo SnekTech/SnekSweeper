@@ -45,8 +45,12 @@ public class Grid
         foreach (var (i, j) in _cells.Indices())
         {
             var humbleCell = humbleCells[i * _cells.Size().columns + j];
-            var cell = new Cell(humbleCell, this, (i, j));
+            var cell = new Cell(humbleCell, (i, j));
             _cells[i, j] = cell;
+
+            cell.PrimaryReleased += OnCellPrimaryReleasedAt;
+            cell.PrimaryDoubleClicked += OnCellPrimaryDoubleClickedAt;
+            cell.SecondaryReleased += OnCellSecondaryReleasedAt;
         }
     }
 
@@ -61,7 +65,8 @@ public class Grid
         // must init individual cells after bombs planted
         foreach (var cell in _cells)
         {
-            cell.Init();
+            var neighborBombCount = GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb);
+            cell.Init(neighborBombCount);
         }
         
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
@@ -71,11 +76,15 @@ public class Grid
     {
         foreach (var cell in _cells)
         {
+            cell.PrimaryReleased -= OnCellPrimaryReleasedAt;
+            cell.PrimaryDoubleClicked -= OnCellPrimaryDoubleClickedAt;
+            cell.SecondaryReleased -= OnCellSecondaryReleasedAt;
+            
             cell.OnDispose();
         }
     }
 
-    public void OnCellPrimaryReleasedAt((int i, int j) gridIndex)
+    private void OnCellPrimaryReleasedAt((int i, int j) gridIndex)
     {
         if (!_hasInitialized)
         {
@@ -88,12 +97,12 @@ public class Grid
         RevealAt(gridIndex);
     }
 
-    public void OnCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
+    private void OnCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
     {
         RevealAround(gridIndex);
     }
 
-    public void OnCellSecondaryReleasedAt((int i, int j) gridIndex)
+    private void OnCellSecondaryReleasedAt((int i, int j) gridIndex)
     {
         this[gridIndex].SwitchFlag();
     }

@@ -10,14 +10,14 @@ namespace SnekSweeper.GridSystem;
 
 public partial class HumbleGrid : Node2D, IHumbleGrid
 {
-    [Export]
-    private SkinCollection _skinCollection = null!;
-    
-    private readonly PackedScene _cellScene = GD.Load<PackedScene>(HumbleCell.CellScenePath);
+    [Export] private SkinCollection skinCollection = default!;
+
+    [Export] private PackedScene cellScene = default!;
+
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
-    private Grid _grid = null!;
-    private Referee _referee = null!;
+    private Grid _grid = default!;
+    private Referee _referee = default!;
 
     public override void _Ready()
     {
@@ -34,11 +34,11 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public List<IHumbleCell> InstantiateHumbleCells(int count)
     {
         var humbleCells = new List<IHumbleCell>();
-        var currentSkin = _skinCollection.Skins[_mainSetting.CurrentSkinIndex];
+        var currentSkin = skinCollection.Skins[_mainSetting.CurrentSkinIndex];
 
         for (var i = 0; i < count; i++)
         {
-            var humbleCell = _cellScene.Instantiate<HumbleCell>();
+            var humbleCell = cellScene.Instantiate<HumbleCell>();
 
             humbleCell.UseSkin(currentSkin);
 

@@ -1,43 +1,45 @@
 using System;
 using Godot;
+using GodotUtilities;
 using SnekSweeper.CellSystem.Components;
 using SnekSweeper.Constants;
 using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.CellSystem;
 
+[Scene]
 public partial class HumbleCell : Node2D, IHumbleCell
 {
     private const int CellSizePixels = 16;
-    public const string CellScenePath = "res://Scenes/cell.tscn";
 
     public event Action? PrimaryReleased;
     public event Action? PrimaryDoubleClicked;
     public event Action? SecondaryReleased;
 
-    [Export]
-    private Content _content = null!;
+    [Node] private Content content = default!;
+    [Node] private Area2D clickArea = default!;
+    [Node] private Cover cover = default!;
+    [Node] private Flag flag = default!;
 
-    [Export]
-    private Area2D _clickArea = null!;
+    public ICover Cover => cover;
+    public IFlag Flag => flag;
 
-    [Export]
-    private Cover _cover = null!;
-
-    [Export]
-    private Flag _flag = null!;
-
-    public ICover Cover => _cover;
-    public IFlag Flag => _flag;
+    public override void _Notification(int what)
+    {
+        if (what == NotificationSceneInstantiated)
+        {
+            WireNodes();
+        }
+    }
 
     public override void _Ready()
     {
-        _clickArea.InputEvent += OnClickAreaInputEvent;
+        clickArea.InputEvent += OnClickAreaInputEvent;
     }
 
     public override void _ExitTree()
     {
-        _clickArea.InputEvent -= OnClickAreaInputEvent;
+        clickArea.InputEvent -= OnClickAreaInputEvent;
     }
 
     private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
@@ -58,15 +60,15 @@ public partial class HumbleCell : Node2D, IHumbleCell
         }
     }
 
-    public void SetContent(Cell cell)
+    public void SetContent(bool hasBomb, int neighborBombCount)
     {
-        if (cell.HasBomb)
+        if (hasBomb)
         {
-            _content.ShowBomb();
+            content.ShowBomb();
         }
         else
         {
-            _content.ShowNeighbourBombCount(cell.NeighborBombCount);
+            content.ShowNeighbourBombCount(neighborBombCount);
         }
     }
 
@@ -78,6 +80,6 @@ public partial class HumbleCell : Node2D, IHumbleCell
 
     public void UseSkin(ISkin newSkin)
     {
-        _content.ChangeTexture(newSkin.Texture);
+        content.ChangeTexture(newSkin.Texture);
     }
 }
