@@ -3,10 +3,10 @@ using GodotUtilities;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Constants;
 
-namespace SnekSweeper;
+namespace SnekSweeper.UI;
 
 [Scene]
-public partial class Main : Node
+public partial class MainMenu : CanvasLayer
 {
     [Node] private Button startButton = default!;
     [Node] private Button settingsButton = default!;

@@ -6,7 +6,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 - [ ] digital museum - a place to enjoy game assets
 - [ ] achievement system
-    - [ ] steamworks adaption
+    - [ ] Steam adaption
 - [x] enable nullable reference types in project
 
 ## GamePlay
@@ -27,7 +27,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 - [ ] what to save
     - [x] current difficulty
-    - [ ] current skin
+    - [x] current skin
 - [x] architecture using Godot Resource
 
 ## UI
@@ -37,6 +37,11 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] circle process challenge like Apple Watch
 - [ ] highlight the hovering cell
   - [ ] glow effect
+- [ ] grid status display
+  - [ ] bombs remaining
+- [ ] pixel art theming
+- [ ] scrolling background
+  - [ ] random generated like Balatro
 
 ## Skin
 
