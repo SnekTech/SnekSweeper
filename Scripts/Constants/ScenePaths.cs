@@ -1,11 +1,11 @@
 ﻿namespace SnekSweeper.Constants;
 
-public static class ScenePaths
+public enum SceneName
 {
-    public const string MainScene = "res://Scenes/Main.tscn";
-    public const string SettingsScene = "res://Scenes/UI/SettingsPage.tscn";
-    public const string HistoryScene = "res://Scenes/History.tscn";
-    public const string Level1 = "res://Scenes/Level1.tscn";
-    public const string WinningScene = "res://Scenes/Winning.tscn";
-    public const string LosingScene = "res://Scenes/Losing.tscn";
+    Main,
+    SettingsPage,
+    HistoryPage,
+    Level1,
+    Winning,
+    Losing,
 }

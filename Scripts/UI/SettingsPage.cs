@@ -30,7 +30,7 @@ public partial class SettingsPage : CanvasLayer
     public override void _Ready()
     {
         _mainSetting = HouseKeeper.MainSetting;
-        backToMainButton.Pressed += () => SceneManager.Instance.GotoScene(ScenePaths.MainScene);
+        backToMainButton.Pressed += () => SceneManager.Instance.GotoScene(SceneName.Main);
 
         GenerateDifficultyOptions();
         GenerateSkinOptions();

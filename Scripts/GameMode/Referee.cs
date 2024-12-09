@@ -34,7 +34,7 @@ public class Referee
         GD.Print("Game over! Bomb revealed!");
         SaveNewRecord(false);
 
-        SceneManager.Instance.GotoScene(ScenePaths.LosingScene);
+        SceneManager.Instance.GotoScene(SceneName.Losing);
     }
 
     private void OnBatchRevealed()
@@ -44,7 +44,7 @@ public class Referee
             GD.Print("You win!");
             SaveNewRecord(true);
 
-            SceneManager.Instance.GotoScene(ScenePaths.WinningScene);
+            SceneManager.Instance.GotoScene(SceneName.Winning);
         }
     }
 

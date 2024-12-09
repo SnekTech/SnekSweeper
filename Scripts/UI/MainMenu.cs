@@ -28,8 +28,8 @@ public partial class MainMenu : CanvasLayer
     private void RegisterEvents()
     {
         var sceneManager = SceneManager.Instance;
-        startButton.Pressed += () => sceneManager.GotoScene(ScenePaths.Level1);
-        settingsButton.Pressed += () => sceneManager.GotoScene(ScenePaths.SettingsScene);
-        historyButton.Pressed += () => sceneManager.GotoScene(ScenePaths.HistoryScene);
+        startButton.Pressed += () => sceneManager.GotoScene(SceneName.Level1);
+        settingsButton.Pressed += () => sceneManager.GotoScene(SceneName.SettingsPage);
+        historyButton.Pressed += () => sceneManager.GotoScene(SceneName.HistoryPage);
     }
 }

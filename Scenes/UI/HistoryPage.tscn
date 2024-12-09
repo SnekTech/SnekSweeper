@@ -1,9 +1,9 @@
 [gd_scene load_steps=2 format=3 uid="uid://hk57xckul7ox"]
 
-[ext_resource type="Script" path="res://Scripts/UI/HistoryScene.cs" id="1_xmkyp"]
+[ext_resource type="Script" path="res://Scripts/UI/HistoryScene.cs" id="1_b11y7"]
 
-[node name="History" type="Node2D" node_paths=PackedStringArray("_recordsContainer", "_backToMain")]
-script = ExtResource("1_xmkyp")
+[node name="HistoryPage" type="Node2D" node_paths=PackedStringArray("_recordsContainer", "_backToMain")]
+script = ExtResource("1_b11y7")
 _recordsContainer = NodePath("ScrollContainer/VBoxContainer")
 _backToMain = NodePath("Button")
 

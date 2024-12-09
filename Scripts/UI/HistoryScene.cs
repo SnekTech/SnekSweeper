@@ -15,7 +15,7 @@ public partial class HistoryScene : Node2D
 
     public override void _Ready()
     {
-        _backToMain.Pressed += () => SceneManager.Instance.GotoScene(ScenePaths.MainScene);
+        _backToMain.Pressed += () => SceneManager.Instance.GotoScene(SceneName.Main);
 
         PopulateRecords();
     }

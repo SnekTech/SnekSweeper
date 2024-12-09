@@ -28,7 +28,7 @@ public partial class InputListener : Node
     private void OnLevelRestarted()
     {
         GD.Print("restart");
-        SceneManager.Instance.GotoScene(ScenePaths.MainScene);
+        SceneManager.Instance.GotoScene(SceneName.Main);
     }
 
     public override void _Process(double delta)

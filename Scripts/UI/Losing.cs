@@ -12,6 +12,6 @@ public partial class Losing : Control
 	{
 		_back2MainBtn = GetNode<Button>("%Back2MainBtn");
 
-		_back2MainBtn.Pressed += () => SceneManager.Instance.GotoScene(ScenePaths.MainScene);
+		_back2MainBtn.Pressed += () => SceneManager.Instance.GotoScene(SceneName.Main);
 	}
 }
