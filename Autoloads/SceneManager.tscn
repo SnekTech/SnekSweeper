@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://na7hdxv3y0kj"]
+[gd_scene load_steps=3 format=3 uid="uid://na7hdxv3y0kj"]
 
 [ext_resource type="Script" path="res://Scripts/Autoloads/SceneManager.cs" id="1_rdw1j"]
+[ext_resource type="PackedScene" uid="uid://yh76ns8wingx" path="res://Scenes/Loading.tscn" id="2_66aew"]
 
 [node name="SceneManager" type="Node"]
 script = ExtResource("1_rdw1j")
+packedLoadingScene = ExtResource("2_66aew")

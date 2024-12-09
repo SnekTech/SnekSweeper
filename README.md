@@ -22,6 +22,7 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [x] standalone combo test scene
   - [x] combo component
 - [ ] charging reveal
+- [ ] undo ability
 
 ## Save & Load
 

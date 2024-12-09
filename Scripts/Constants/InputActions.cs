@@ -4,7 +4,7 @@ namespace SnekSweeper.Constants;
 
 public static class InputActions
 {
-    public static StringName Restart => "restart";
-    public static StringName Primary => "primary";
-    public static StringName Secondary => "secondary";
+    public static readonly StringName Restart = "restart";
+    public static readonly StringName Primary = "primary";
+    public static readonly StringName Secondary = "secondary";
 }

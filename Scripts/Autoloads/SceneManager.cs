@@ -1,27 +1,23 @@
 ﻿using System.Threading.Tasks;
 using Godot;
-using SnekSweeper.Constants;
 using SnekSweeper.SaveLoad;
 
 namespace SnekSweeper.Autoloads;
 
 public partial class SceneManager : Node
 {
+    [Export] private PackedScene packedLoadingScene = null!;
+
     private Node _currentScene = null!;
 
     public static SceneManager Instance { get; private set; } = null!;
 
-    private PackedScene _packedLoadingScene = null!;
-
     public override void _Ready()
     {
         Instance = this;
-        
+
         var root = GetTree().Root;
         _currentScene = root.GetChild(root.GetChildCount() - 1);
-
-        // preload the loading scene
-        _packedLoadingScene = GD.Load<PackedScene>(ScenePaths.LoadingScene);
     }
 
     public void GotoScene(string path)
@@ -42,21 +38,21 @@ public partial class SceneManager : Node
     {
         // It is now safe to remove the current scene.
         _currentScene.Free();
-        
+
 
         // show the loading scene first
-        var loadingScene = _packedLoadingScene.Instantiate();
+        var loadingScene = packedLoadingScene.Instantiate();
         GetTree().Root.AddChild(loadingScene);
         GetTree().CurrentScene = loadingScene;
-        
+
         // fake loading time
         // await Task.Delay(1000);
-        
+
         var nextScene = await LoadSceneAsync(path);
 
         // now the new scene is ready, remove the loading scene,
         loadingScene.Free();
-        
+
         // add the new scene to root
         _currentScene = nextScene.Instantiate();
         GetTree().Root.AddChild(_currentScene);
