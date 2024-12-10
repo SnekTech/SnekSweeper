@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://hk57xckul7ox"]
+[gd_scene load_steps=3 format=3 uid="uid://hk57xckul7ox"]
 
 [ext_resource type="Script" path="res://Scripts/UI/HistoryPage.cs" id="1_jklwc"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="2_3byel"]
 
 [node name="HistoryPage" type="CanvasLayer"]
 script = ExtResource("1_jklwc")
@@ -14,12 +15,10 @@ grow_vertical = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 30
 
-[node name="BackToMainButton" type="Button" parent="MarginContainer"]
-unique_name_in_owner = true
+[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("2_3byel")]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
-text = "Back to main"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2

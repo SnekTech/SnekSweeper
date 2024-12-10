@@ -1,7 +1,6 @@
 using Godot;
 using GodotUtilities;
 using SnekSweeper.Autoloads;
-using SnekSweeper.Constants;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SaveLoad;
 using SnekSweeper.SkinSystem;
@@ -13,7 +12,6 @@ public partial class SettingsPage : CanvasLayer
 {
     [Export] private SkinCollection skinCollection = default!;
 
-    [Node] private Button backToMainButton = default!;
     [Node] private OptionButton difficultyOptionButton = default!;
     [Node] private OptionButton skinOptionButton = default!;
 
@@ -30,7 +28,6 @@ public partial class SettingsPage : CanvasLayer
     public override void _Ready()
     {
         _mainSetting = HouseKeeper.MainSetting;
-        backToMainButton.Pressed += () => SceneManager.Instance.GotoScene(SceneName.Main);
 
         GenerateDifficultyOptions();
         GenerateSkinOptions();

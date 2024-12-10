@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://w1c3ere2p3fy"]
+[gd_scene load_steps=3 format=3 uid="uid://w1c3ere2p3fy"]
 
 [ext_resource type="Script" path="res://Scripts/UI/LosingPage.cs" id="1_7sp1x"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="2_t64su"]
 
 [node name="LosingPage" type="MarginContainer"]
 anchors_preset = 15
@@ -21,8 +22,5 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 80
 text = "You lose!"
 
-[node name="BackToMainButton" type="Button" parent="VBoxContainer"]
-unique_name_in_owner = true
+[node name="BackToMainButton" parent="VBoxContainer" instance=ExtResource("2_t64su")]
 layout_mode = 2
-size_flags_horizontal = 4
-text = "Back to main"

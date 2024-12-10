@@ -2,7 +2,6 @@
 using Godot;
 using GodotUtilities;
 using SnekSweeper.Autoloads;
-using SnekSweeper.Constants;
 
 namespace SnekSweeper.UI;
 
@@ -11,7 +10,6 @@ public partial class HistoryPage : CanvasLayer
 {
     [Node] private Label recordsCountLabel = null!;
     [Node] private VBoxContainer recordsContainer = null!;
-    [Node] private Button backToMainButton = null!;
 
     public override void _Notification(int what)
     {
@@ -23,8 +21,6 @@ public partial class HistoryPage : CanvasLayer
 
     public override void _Ready()
     {
-        backToMainButton.Pressed += () => SceneManager.Instance.GotoScene(SceneName.Main);
-
         PopulateRecords();
     }
 

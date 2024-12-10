@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://cv3fler02wdew"]
+
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="1_exko8"]
+
+[node name="HUD" type="CanvasLayer"]
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+
+[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("1_exko8")]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0

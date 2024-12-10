@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://v4xplksolbrf"]
+[gd_scene load_steps=3 format=3 uid="uid://v4xplksolbrf"]
 
 [ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scenes/grid.tscn" id="2_5rp84"]
+[ext_resource type="PackedScene" uid="uid://cv3fler02wdew" path="res://Scenes/UI/HUD.tscn" id="2_mn7yg"]
 
 [node name="Level1" type="Node2D"]
 
@@ -12,3 +13,5 @@ position = Vector2(345, 132)
 gizmo_extents = 16.0
 
 [node name="Grid" parent="GridStartPosition" instance=ExtResource("2_5rp84")]
+
+[node name="HUD" parent="." instance=ExtResource("2_mn7yg")]
