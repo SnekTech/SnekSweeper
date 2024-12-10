@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=3 uid="uid://na7hdxv3y0kj"]
 
 [ext_resource type="Script" path="res://Scripts/Autoloads/SceneManager.cs" id="1_rdw1j"]
-[ext_resource type="PackedScene" uid="uid://yh76ns8wingx" path="res://Scenes/Loading.tscn" id="2_66aew"]
+[ext_resource type="PackedScene" uid="uid://yh76ns8wingx" path="res://Scenes/LoadingScene.tscn" id="2_66aew"]
 [ext_resource type="PackedScene" uid="uid://c3v16clfuvy6n" path="res://Scenes/UI/SettingsPage.tscn" id="3_4su6g"]
 [ext_resource type="PackedScene" uid="uid://bp0uau12h4nqd" path="res://Scenes/Main.tscn" id="3_hfrdo"]
 [ext_resource type="PackedScene" uid="uid://hk57xckul7ox" path="res://Scenes/UI/HistoryPage.tscn" id="5_5db22"]
 [ext_resource type="PackedScene" uid="uid://v4xplksolbrf" path="res://Scenes/Level1.tscn" id="6_p5wi2"]
-[ext_resource type="PackedScene" uid="uid://by7l56sawano" path="res://Scenes/UI/Winning.tscn" id="7_6lv3w"]
-[ext_resource type="PackedScene" uid="uid://w1c3ere2p3fy" path="res://Scenes/UI/Losing.tscn" id="8_mbixi"]
+[ext_resource type="PackedScene" uid="uid://by7l56sawano" path="res://Scenes/UI/WinningPage.tscn" id="7_6lv3w"]
+[ext_resource type="PackedScene" uid="uid://w1c3ere2p3fy" path="res://Scenes/UI/LosingPage.tscn" id="8_mbixi"]
 
 [node name="SceneManager" type="Node"]
 script = ExtResource("1_rdw1j")

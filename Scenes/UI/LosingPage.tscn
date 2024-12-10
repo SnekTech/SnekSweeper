@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://w1c3ere2p3fy"]
+
+[ext_resource type="Script" path="res://Scripts/UI/LosingPage.cs" id="1_7sp1x"]
+
+[node name="LosingPage" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7sp1x")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "You lose!"
+
+[node name="BackToMainButton" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Back to main"

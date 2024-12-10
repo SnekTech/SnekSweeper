@@ -30,6 +30,7 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [x] current difficulty
     - [x] current skin
 - [x] architecture using Godot Resource
+- [ ] Steam cloud save
 
 ## UI
 
@@ -41,8 +42,10 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] grid status display
   - [ ] bombs remaining
 - [ ] pixel art theming
+  - [ ] button
 - [ ] scrolling background
   - [ ] random generated like Balatro
+- [ ] fade out animation on scene switch
 
 ## Skin
 

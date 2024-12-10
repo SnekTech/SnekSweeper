@@ -57,18 +57,18 @@ public partial class SceneManager : Node
         _currentScene.Free();
 
 
-        // show the loading scene first
-        var loadingScene = packedLoadingScene.Instantiate();
-        GetTree().Root.AddChild(loadingScene);
-        GetTree().CurrentScene = loadingScene;
-
-        // fake loading time
-        // await Task.Delay(1000);
+        // // show the loading scene first
+        // var loadingScene = packedLoadingScene.Instantiate();
+        // GetTree().Root.AddChild(loadingScene);
+        // GetTree().CurrentScene = loadingScene;
+        //
+        // // fake loading time
+        // // await Task.Delay(1000);
 
         var nextScene = _scenesDict[sceneName];
 
-        // now the new scene is ready, remove the loading scene,
-        loadingScene.Free();
+        // // now the new scene is ready, remove the loading scene,
+        // loadingScene.Free();
 
         // add the new scene to root
         _currentScene = nextScene.Instantiate();
