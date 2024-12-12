@@ -1,14 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using Godot;
 using Godot.Collections;
 using SnekSweeper.Constants;
-using SnekSweeper.SaveLoad;
+using SnekSweeper.UI.Common;
 
 namespace SnekSweeper.Autoloads;
 
 public partial class SceneManager : Node
 {
-    [Export] private PackedScene packedLoadingScene = null!;
+    [Export] private PackedScene fadingMaskScene = null!;
     [Export] private PackedScene mainScene = null!;
     [Export] private PackedScene settingsPageScene = null!;
     [Export] private PackedScene historyPageScene = null!;
@@ -51,35 +51,38 @@ public partial class SceneManager : Node
         Callable.From(() => DeferredGotoScene(sceneName)).CallDeferred();
     }
 
-    private void DeferredGotoScene(SceneName sceneName)
+    private async void DeferredGotoScene(SceneName sceneName)
     {
-        // It is now safe to remove the current scene.
-        _currentScene.Free();
+        var rootWindow = GetTree().Root;
 
+        var fadingMask = fadingMaskScene.Instantiate<FadingMask>();
+        rootWindow.AddChild(fadingMask);
 
-        // // show the loading scene first
-        // var loadingScene = packedLoadingScene.Instantiate();
-        // GetTree().Root.AddChild(loadingScene);
-        // GetTree().CurrentScene = loadingScene;
-        //
-        // // fake loading time
-        // // await Task.Delay(1000);
+        try
+        {
+            await fadingMask.FadeOutAsync();
 
-        var nextScene = _scenesDict[sceneName];
+            // It is now safe to remove the current scene.
+            _currentScene.Free();
 
-        // // now the new scene is ready, remove the loading scene,
-        // loadingScene.Free();
+            var nextScene = _scenesDict[sceneName];
 
-        // add the new scene to root
-        _currentScene = nextScene.Instantiate();
-        GetTree().Root.AddChild(_currentScene);
+            // now the new scene is ready, remove the loading scene,
+
+            // add the new scene to root
+            _currentScene = nextScene.Instantiate();
+            rootWindow.AddChild(_currentScene);
+
+            await fadingMask.FadeInAsync();
+            fadingMask.QueueFree();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"error occurred in async void: {e}");
+            throw;
+        }
 
         // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
         GetTree().CurrentScene = _currentScene;
-    }
-
-    private static Task<PackedScene> LoadSceneAsync(string path)
-    {
-        return SaveLoadHelper.LoadResourceAsync<PackedScene>(path);
     }
 }

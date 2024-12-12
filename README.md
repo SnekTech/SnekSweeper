@@ -45,7 +45,7 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] button
 - [ ] scrolling background
   - [ ] random generated like Balatro
-- [ ] fade out animation on scene switch
+- [x] fade out animation on scene switch
 
 ## Skin
 
