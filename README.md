@@ -12,17 +12,29 @@ A minesweeper game with modern game features & nice pixel art assets.
 ## GamePlay
 
 - [x] different difficulties
-  - [x] use difficulty to init grid
-  - [x] add difficulty setting UI
+    - [x] use difficulty to init grid
+    - [x] add difficulty setting UI
 - [x] init grid after first click
 - [x] game loop
-  - [x] scene change on game win or over
+    - [x] scene change on game win or over
 - [ ] guess-free option
 - [ ] cell reveal combo
-  - [x] standalone combo test scene
-  - [x] combo component
+    - [x] standalone combo test scene
+    - [x] combo component
 - [ ] charging reveal
 - [ ] undo ability
+
+## Animation
+
+- [ ] cell sprite animation
+    - [ ] use async
+- [x] fade out animation on scene switch
+
+## Visual Effects
+
+- [ ] 2D lighting
+- [ ] scrolling background
+    - [ ] random generated like Balatro
 
 ## Save & Load
 
@@ -38,14 +50,11 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [ ] half screen damage / healing effect
 - [ ] circle process challenge like Apple Watch
 - [ ] highlight the hovering cell
-  - [ ] glow effect
+    - [ ] glow effect
 - [ ] grid status display
-  - [ ] bombs remaining
+    - [ ] bombs remaining
 - [ ] pixel art theming
-  - [ ] button
-- [ ] scrolling background
-  - [ ] random generated like Balatro
-- [x] fade out animation on scene switch
+    - [x] button
 
 ## Skin
 
@@ -73,10 +82,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Health / Damage System
 
-## Animation
-
-- [ ] cell sprite animation
-  - [ ] use async
-
 ## Tutorial
+
 - [ ] interactable grid & cell
