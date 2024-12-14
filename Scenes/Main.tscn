@@ -6,7 +6,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blnvu"]
 shader = ExtResource("1_rky7j")
-shader_parameter/scroll_speed = 0.036
+shader_parameter/scroll_speed = 0.05
 shader_parameter/angle_degrees = 45.0
 shader_parameter/repeat_x = 10.0
 shader_parameter/repeat_y = 10.0

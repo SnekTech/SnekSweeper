@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Godot;
 using GodotUtilities;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.Common;
 
@@ -28,24 +29,9 @@ public partial class FadingMask : CanvasLayer
         ResetFadeAnimationLength(FadeOut);
     }
 
-    public Task FadeInAsync() => FadeAsync(FadeIn);
+    public Task FadeInAsync() => animationPlayer.PlayOneShotAsync(FadeIn);
 
-    public Task FadeOutAsync() => FadeAsync(FadeOut);
-
-    private Task FadeAsync(StringName animationName)
-    {
-        var tcs = new TaskCompletionSource();
-        animationPlayer.Play(animationName);
-        animationPlayer.AnimationFinished += OnAnimationFinished;
-
-        return tcs.Task;
-
-        void OnAnimationFinished(StringName _)
-        {
-            animationPlayer.AnimationFinished -= OnAnimationFinished;
-            tcs.SetResult();
-        }
-    }
+    public Task FadeOutAsync() => animationPlayer.PlayOneShotAsync(FadeOut);
 
     private void ResetFadeAnimationLength(StringName animationName)
     {
