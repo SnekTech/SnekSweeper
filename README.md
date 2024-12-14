@@ -34,6 +34,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 - [ ] 2D lighting
 - [ ] scrolling background
+    - [x] using shader
     - [ ] random generated like Balatro
 
 ## Save & Load
@@ -54,6 +55,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] grid status display
     - [ ] bombs remaining
 - [ ] pixel art theming
+    - [x] default pixel font
     - [x] button
 
 ## Skin
