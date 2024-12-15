@@ -1,17 +1,37 @@
-[gd_scene load_steps=3 format=3 uid="uid://v4xplksolbrf"]
+[gd_scene load_steps=7 format=3 uid="uid://v4xplksolbrf"]
 
 [ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scenes/grid.tscn" id="2_5rp84"]
 [ext_resource type="PackedScene" uid="uid://cv3fler02wdew" path="res://Scenes/UI/HUD.tscn" id="2_mn7yg"]
+[ext_resource type="Shader" path="res://Resources/shaders/Cursor.gdshader" id="3_gcmrv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iyq8r"]
+shader = ExtResource("3_gcmrv")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/borderWidth = 0.08
+shader_parameter/freq = 4.8
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fddug"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1cgix"]
+width = 16
+height = 16
+noise = SubResource("FastNoiseLite_fddug")
 
 [node name="Level1" type="Node2D"]
+
+[node name="HUD" parent="." instance=ExtResource("2_mn7yg")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(320, 180)
 
 [node name="GridStartPosition" type="Marker2D" parent="."]
-position = Vector2(345, 132)
+position = Vector2(336, 128)
 gizmo_extents = 16.0
 
 [node name="Grid" parent="GridStartPosition" instance=ExtResource("2_5rp84")]
 
-[node name="HUD" parent="." instance=ExtResource("2_mn7yg")]
+[node name="Cursor" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_iyq8r")
+position = Vector2(144, 112)
+texture = SubResource("NoiseTexture2D_1cgix")
+centered = false

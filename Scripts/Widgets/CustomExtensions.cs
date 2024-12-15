@@ -10,7 +10,7 @@ public static class CustomExtensions
         var animation = animationPlayer.GetAnimation(animationName);
         if (animation.LoopMode != Animation.LoopModeEnum.None)
         {
-            GD.PrintErr($"animation {animationName} is looping, animation_finished signal will not be emitted");
+            GD.PushError($"animation {animationName} is looping, animation_finished signal will not be emitted");
             return;
         }
         animationPlayer.Play(animationName);
