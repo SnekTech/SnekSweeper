@@ -10,16 +10,16 @@ namespace SnekSweeper.CellSystem;
 [Scene]
 public partial class HumbleCell : Node2D, IHumbleCell
 {
-    private const int CellSizePixels = 16;
-
     public event Action? PrimaryReleased;
     public event Action? PrimaryDoubleClicked;
     public event Action? SecondaryReleased;
 
-    [Node] private Content content = default!;
-    [Node] private Area2D clickArea = default!;
-    [Node] private Cover cover = default!;
-    [Node] private Flag flag = default!;
+    [Node] private Content content = null!;
+    [Node] private Area2D interactArea = null!;
+    [Node] private Cover cover = null!;
+    [Node] private Flag flag = null!;
+
+    private const int CellSize = CoreConstants.CellSizePixels;
 
     public ICover Cover => cover;
     public IFlag Flag => flag;
@@ -34,15 +34,15 @@ public partial class HumbleCell : Node2D, IHumbleCell
 
     public override void _Ready()
     {
-        clickArea.InputEvent += OnClickAreaInputEvent;
+        interactArea.InputEvent += OnInteractAreaInputEvent;
     }
 
     public override void _ExitTree()
     {
-        clickArea.InputEvent -= OnClickAreaInputEvent;
+        interactArea.InputEvent -= OnInteractAreaInputEvent;
     }
 
-    private void OnClickAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
+    private void OnInteractAreaInputEvent(Node viewport, InputEvent @event, long shapeIdx)
     {
         if (@event.IsActionReleased(InputActions.Primary))
         {
@@ -75,7 +75,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
     public void SetPosition((int i, int j) gridIndex)
     {
         var (i, j) = gridIndex;
-        Position = new Vector2(j * CellSizePixels, i * CellSizePixels);
+        Position = new Vector2(j * CellSize, i * CellSize);
     }
 
     public void UseSkin(ISkin newSkin)

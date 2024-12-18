@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
-using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CellSystem;
 
@@ -56,20 +54,11 @@ public class Cell
         _humbleCell.SecondaryReleased -= OnSecondaryReleased;
     }
 
-    private void OnPrimaryReleased()
-    {
-        PrimaryReleased?.Invoke(GridIndex);
-    }
+    private void OnPrimaryReleased() => PrimaryReleased?.Invoke(GridIndex);
 
-    private void OnPrimaryDoubleClicked()
-    {
-        PrimaryDoubleClicked?.Invoke(GridIndex);
-    }
+    private void OnPrimaryDoubleClicked() => PrimaryDoubleClicked?.Invoke(GridIndex);
 
-    private void OnSecondaryReleased()
-    {
-        SecondaryReleased?.Invoke(GridIndex);
-    }
+    private void OnSecondaryReleased() => SecondaryReleased?.Invoke(GridIndex);
 
     public void Reveal()
     {

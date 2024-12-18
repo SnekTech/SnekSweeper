@@ -47,8 +47,8 @@ frame = 3
 region_rect = Rect2(0, 16, 16, 16)
 script = ExtResource("5_pspji")
 
-[node name="ClickArea" type="Area2D" parent="."]
+[node name="InteractArea" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
 position = Vector2(8, 8)
 shape = SubResource("RectangleShape2D_6s3od")

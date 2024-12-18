@@ -9,8 +9,8 @@ namespace SnekSweeper.GridSystem;
 public class Grid
 {
     public event Action<List<Cell>>? BombRevealed;
-    public event Action? BatchRevealed; 
-    
+    public event Action? BatchRevealed;
+
     private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
     {
         (-1, -1),
@@ -68,7 +68,7 @@ public class Grid
             var neighborBombCount = GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb);
             cell.Init(neighborBombCount);
         }
-        
+
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
@@ -79,7 +79,7 @@ public class Grid
             cell.PrimaryReleased -= OnCellPrimaryReleasedAt;
             cell.PrimaryDoubleClicked -= OnCellPrimaryDoubleClickedAt;
             cell.SecondaryReleased -= OnCellSecondaryReleasedAt;
-            
+
             cell.OnDispose();
         }
     }
@@ -116,14 +116,14 @@ public class Grid
         }
     }
 
-    private bool IsValidIndex((int i, int j) gridIndex)
+    public bool IsValidIndex((int i, int j) gridIndex)
     {
         var (i, j) = gridIndex;
         var (rows, columns) = _cells.Size();
         return i >= 0 && i < rows && j >= 0 && j < columns;
     }
 
-    public IEnumerable<Cell> GetNeighborsOf(Cell cell)
+    private IEnumerable<Cell> GetNeighborsOf(Cell cell)
     {
         var (i, j) = cell.GridIndex;
         foreach (var (offsetI, offsetJ) in NeighborOffsets)

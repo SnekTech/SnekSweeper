@@ -50,7 +50,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] HUD
     - [ ] half screen damage / healing effect
 - [ ] circle process challenge like Apple Watch
-- [ ] highlight the hovering cell
+- [x] highlight the hovering cell
     - [ ] glow effect
 - [ ] grid status display
     - [ ] bombs remaining
