@@ -6,10 +6,6 @@ namespace SnekSweeper.CellSystem;
 
 public class Cell
 {
-    public event Action<(int i, int j)>? PrimaryReleased;
-    public event Action<(int i, int j)>? PrimaryDoubleClicked;
-    public event Action<(int i, int j)>? SecondaryReleased;
-    
     private readonly IHumbleCell _humbleCell;
     private readonly CellStateMachine _stateMachine;
 
@@ -22,10 +18,6 @@ public class Cell
         HasBomb = hasBomb;
 
         _humbleCell.SetPosition(gridIndex);
-
-        _humbleCell.PrimaryReleased += OnPrimaryReleased;
-        _humbleCell.PrimaryDoubleClicked += OnPrimaryDoubleClicked;
-        _humbleCell.SecondaryReleased += OnSecondaryReleased;
     }
 
     public ICover Cover => _humbleCell.Cover;
@@ -46,19 +38,6 @@ public class Cell
         _humbleCell.SetContent(HasBomb, NeighborBombCount);
         _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
     }
-
-    public void OnDispose()
-    {
-        _humbleCell.PrimaryReleased -= OnPrimaryReleased;
-        _humbleCell.PrimaryDoubleClicked -= OnPrimaryDoubleClicked;
-        _humbleCell.SecondaryReleased -= OnSecondaryReleased;
-    }
-
-    private void OnPrimaryReleased() => PrimaryReleased?.Invoke(GridIndex);
-
-    private void OnPrimaryDoubleClicked() => PrimaryDoubleClicked?.Invoke(GridIndex);
-
-    private void OnSecondaryReleased() => SecondaryReleased?.Invoke(GridIndex);
 
     public void Reveal()
     {

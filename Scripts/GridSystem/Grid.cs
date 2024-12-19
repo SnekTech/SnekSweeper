@@ -37,6 +37,10 @@ public class Grid
         _cells = new Cell[rows, columns];
 
         InstantiateEmptyCells();
+
+        _humbleGrid.PrimaryReleased += OnPrimaryReleasedAt;
+        _humbleGrid.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
+        _humbleGrid.SecondaryReleased += OnSecondaryReleasedAt;
     }
 
     private void InstantiateEmptyCells()
@@ -47,10 +51,6 @@ public class Grid
             var humbleCell = humbleCells[i * _cells.Size().columns + j];
             var cell = new Cell(humbleCell, (i, j));
             _cells[i, j] = cell;
-
-            cell.PrimaryReleased += OnCellPrimaryReleasedAt;
-            cell.PrimaryDoubleClicked += OnCellPrimaryDoubleClickedAt;
-            cell.SecondaryReleased += OnCellSecondaryReleasedAt;
         }
     }
 
@@ -74,17 +74,12 @@ public class Grid
 
     public void OnDispose()
     {
-        foreach (var cell in _cells)
-        {
-            cell.PrimaryReleased -= OnCellPrimaryReleasedAt;
-            cell.PrimaryDoubleClicked -= OnCellPrimaryDoubleClickedAt;
-            cell.SecondaryReleased -= OnCellSecondaryReleasedAt;
-
-            cell.OnDispose();
-        }
+        _humbleGrid.PrimaryReleased -= OnPrimaryReleasedAt;
+        _humbleGrid.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
+        _humbleGrid.SecondaryReleased -= OnSecondaryReleasedAt;
     }
 
-    private void OnCellPrimaryReleasedAt((int i, int j) gridIndex)
+    private void OnPrimaryReleasedAt((int i, int j) gridIndex)
     {
         if (!_hasInitialized)
         {
@@ -97,23 +92,20 @@ public class Grid
         RevealAt(gridIndex);
     }
 
-    private void OnCellPrimaryDoubleClickedAt((int i, int j) gridIndex)
+    private void OnPrimaryDoubleClickedAt((int i, int j) gridIndex)
     {
         RevealAround(gridIndex);
     }
 
-    private void OnCellSecondaryReleasedAt((int i, int j) gridIndex)
+    private void OnSecondaryReleasedAt((int i, int j) gridIndex)
     {
-        this[gridIndex].SwitchFlag();
+        GetCellAt(gridIndex).SwitchFlag();
     }
 
-    private Cell this[(int i, int j) gridIndex]
+    private Cell GetCellAt((int i, int j) gridIndex)
     {
-        get
-        {
-            var (i, j) = gridIndex;
-            return _cells[i, j];
-        }
+        var (i, j) = gridIndex;
+        return _cells[i, j];
     }
 
     public bool IsValidIndex((int i, int j) gridIndex)
@@ -132,7 +124,7 @@ public class Grid
 
             if (IsValidIndex(neighborIndex))
             {
-                yield return this[neighborIndex];
+                yield return GetCellAt(neighborIndex);
             }
         }
     }
@@ -162,7 +154,7 @@ public class Grid
 
     private void RevealAround((int i, int j) gridIndex)
     {
-        var cell = this[gridIndex];
+        var cell = GetCellAt(gridIndex);
         var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
         if (!canRevealAround)
             return;
@@ -191,7 +183,7 @@ public class Grid
         if (!IsValidIndex(gridIndex))
             return;
 
-        var cell = this[gridIndex];
+        var cell = GetCellAt(gridIndex);
         var visited = cellsToReveal.Contains(cell);
         if (visited || !cell.IsCovered)
             return;

@@ -1,13 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://iiukaws5xo8m"]
+[gd_scene load_steps=6 format=3 uid="uid://iiukaws5xo8m"]
 
 [ext_resource type="Script" path="res://Scripts/CellSystem/HumbleCell.cs" id="1_6skau"]
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="2_mccuu"]
 [ext_resource type="Script" path="res://Scripts/CellSystem/Components/Content.cs" id="3_8i3bf"]
 [ext_resource type="Script" path="res://Scripts/CellSystem/Components/Cover.cs" id="4_6e1c6"]
 [ext_resource type="Script" path="res://Scripts/CellSystem/Components/Flag.cs" id="5_pspji"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6s3od"]
-size = Vector2(16, 16)
 
 [node name="Cell" type="Node2D"]
 script = ExtResource("1_6skau")
@@ -46,9 +43,3 @@ vframes = 4
 frame = 3
 region_rect = Rect2(0, 16, 16, 16)
 script = ExtResource("5_pspji")
-
-[node name="InteractArea" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
-position = Vector2(8, 8)
-shape = SubResource("RectangleShape2D_6s3od")

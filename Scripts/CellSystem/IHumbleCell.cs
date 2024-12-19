@@ -6,10 +6,6 @@ namespace SnekSweeper.CellSystem;
 
 public interface IHumbleCell
 {
-    event Action PrimaryReleased;
-    event Action PrimaryDoubleClicked;
-    event Action SecondaryReleased;
-
     ICover Cover { get; }
     IFlag Flag { get; }
     void SetContent(bool hasBomb, int neighborBombCount);

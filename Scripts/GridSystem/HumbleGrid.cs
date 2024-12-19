@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Godot;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
@@ -11,6 +12,10 @@ namespace SnekSweeper.GridSystem;
 
 public partial class HumbleGrid : Node2D, IHumbleGrid
 {
+    public event Action<(int i, int j)>? PrimaryReleased;
+    public event Action<(int i, int j)>? PrimaryDoubleClicked;
+    public event Action<(int i, int j)>? SecondaryReleased;
+    
     [Export] private SkinCollection skinCollection = null!;
     [Export] private PackedScene cellScene = null!;
     [Export] private Sprite2D cursor = null!;
@@ -31,9 +36,26 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        if (@event is not InputEventMouse) return;
+        
         if (@event is InputEventMouseMotion eventMouseMotion)
         {
-            UpdateCursor(eventMouseMotion.Position);
+            _hoveringGridIndex = GetHoveringGridIndex(eventMouseMotion.Position);
+            UpdateCursor();
+        }
+        else if (@event.IsActionReleased(InputActions.Primary))
+        {
+            PrimaryReleased?.Invoke(_hoveringGridIndex);
+        }
+        else if (@event is InputEventMouseButton eventMouseButton &&
+                 eventMouseButton.IsAction(InputActions.Primary) &&
+                 eventMouseButton.DoubleClick)
+        {
+            PrimaryDoubleClicked?.Invoke(_hoveringGridIndex);
+        }
+        else if (@event.IsActionReleased(InputActions.Secondary))
+        {
+            SecondaryReleased?.Invoke(_hoveringGridIndex);
         }
     }
 
@@ -61,22 +83,24 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         return humbleCells;
     }
 
-    private void UpdateCursor(Vector2 globalMousePosition)
+    private (int i, int j) GetHoveringGridIndex(Vector2 globalMousePosition)
     {
         var localMousePosition = globalMousePosition - GlobalPosition;
         var i = Mathf.FloorToInt(localMousePosition.Y / CellSize);
         var j = Mathf.FloorToInt(localMousePosition.X / CellSize);
-        _hoveringGridIndex = (i, j);
+        return (i, j);
+    }
 
-        if (_grid.IsValidIndex(_hoveringGridIndex))
-        {
-            cursor.Show();
-            var cellOffset = new Vector2(j * CellSize, i * CellSize);
-            cursor.Position = cellOffset;
-        }
-        else
+    private void UpdateCursor()
+    {
+        if (!_grid.IsValidIndex(_hoveringGridIndex))
         {
             cursor.Hide();
+            return;
         }
+
+        cursor.Show();
+        var (i, j) = _hoveringGridIndex;
+        cursor.Position =  new Vector2(j * CellSize, i * CellSize);
     }
 }
