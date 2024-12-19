@@ -26,7 +26,7 @@ public class Grid
     private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
     private readonly IGridDifficulty _gridDifficulty;
-    private bool _hasInitialized;
+    private bool _hasCellInitialized;
 
     public Grid(IHumbleGrid humbleGrid, IGridDifficulty gridDifficulty)
     {
@@ -36,14 +36,14 @@ public class Grid
         var (rows, columns) = gridDifficulty.Size;
         _cells = new Cell[rows, columns];
 
-        InstantiateEmptyCells();
+        InstantiateHumbleCells();
 
         _humbleGrid.PrimaryReleased += OnPrimaryReleasedAt;
         _humbleGrid.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
         _humbleGrid.SecondaryReleased += OnSecondaryReleasedAt;
     }
 
-    private void InstantiateEmptyCells()
+    private void InstantiateHumbleCells()
     {
         var humbleCells = _humbleGrid.InstantiateHumbleCells(_cells.Length);
         foreach (var (i, j) in _cells.Indices())
@@ -54,12 +54,13 @@ public class Grid
         }
     }
 
-    private void InitCells(BombMatrix bombMatrix)
+    private void InitCells((int i, int j) firstClickGridIndex)
     {
+        var bombMatrix = new BombMatrix(_gridDifficulty);
+        bombMatrix.ClearBombAt(firstClickGridIndex);
         foreach (var (i, j) in _cells.Indices())
         {
-            var cell = _cells[i, j];
-            cell.HasBomb = bombMatrix[i, j];
+            _cells[i, j].HasBomb = bombMatrix[i, j];
         }
 
         // must init individual cells after bombs planted
@@ -68,6 +69,7 @@ public class Grid
             var neighborBombCount = GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb);
             cell.Init(neighborBombCount);
         }
+        _hasCellInitialized = true;
 
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
@@ -81,12 +83,9 @@ public class Grid
 
     private void OnPrimaryReleasedAt((int i, int j) gridIndex)
     {
-        if (!_hasInitialized)
+        if (!_hasCellInitialized)
         {
-            var bombMatrix = new BombMatrix(_gridDifficulty);
-            bombMatrix.ClearBombAt(gridIndex);
-            InitCells(bombMatrix);
-            _hasInitialized = true;
+            InitCells(gridIndex);
         }
 
         RevealAt(gridIndex);
@@ -121,7 +120,6 @@ public class Grid
         foreach (var (offsetI, offsetJ) in NeighborOffsets)
         {
             var neighborIndex = (i + offsetI, j + offsetJ);
-
             if (IsValidIndex(neighborIndex))
             {
                 yield return GetCellAt(neighborIndex);
