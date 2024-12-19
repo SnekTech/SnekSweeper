@@ -1,5 +1,4 @@
-﻿using System;
-using SnekSweeper.CellSystem.Components;
+﻿using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
 
 namespace SnekSweeper.CellSystem;

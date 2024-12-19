@@ -27,7 +27,8 @@ A minesweeper game with modern game features & nice pixel art assets.
 ## Animation
 
 - [ ] cell sprite animation
-    - [ ] use async
+    - [ ] cover animation
+    - [ ] flag animation
 - [x] fade out animation on scene switch
 
 ## Visual Effects
@@ -79,11 +80,12 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## History Records
 
-- [ ] history screen
-- [ ] save/load
+- [x] history screen
+- [x] save/load
 
 ## Health / Damage System
 
 ## Tutorial
 
 - [ ] interactable grid & cell
+- [ ] floating indicator
