@@ -1,0 +1,23 @@
+[gd_scene load_steps=6 format=3 uid="uid://c2tgj2ojhfe84"]
+
+[ext_resource type="Shader" path="res://Resources/shaders/Cursor.gdshader" id="1_upumb"]
+[ext_resource type="Script" path="res://Scripts/GridSystem/GridCursor.cs" id="2_d4diq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7myuh"]
+shader = ExtResource("1_upumb")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/borderWidth = 0.05
+shader_parameter/freq = 4.8
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fddug"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dmcuk"]
+width = 16
+height = 16
+noise = SubResource("FastNoiseLite_fddug")
+
+[node name="GridCursor" type="Sprite2D"]
+material = SubResource("ShaderMaterial_7myuh")
+texture = SubResource("NoiseTexture2D_dmcuk")
+centered = false
+script = ExtResource("2_d4diq")

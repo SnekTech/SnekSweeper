@@ -13,7 +13,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
     [Node] private Cover cover = null!;
     [Node] private Flag flag = null!;
 
-    private const int CellSize = CoreConstants.CellSizePixels;
+    private const int CellSize = CoreStats.CellSizePixels;
 
     public ICover Cover => cover;
     public IFlag Flag => flag;

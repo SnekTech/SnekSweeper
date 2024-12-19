@@ -15,14 +15,14 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public event Action<(int i, int j)>? PrimaryReleased;
     public event Action<(int i, int j)>? PrimaryDoubleClicked;
     public event Action<(int i, int j)>? SecondaryReleased;
-    
+
     [Export] private SkinCollection skinCollection = null!;
     [Export] private PackedScene cellScene = null!;
-    [Export] private Sprite2D cursor = null!;
+    [Export] private GridCursor cursor = null!;
 
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
-    private const int CellSize = CoreConstants.CellSizePixels;
+    private const int CellSize = CoreStats.CellSizePixels;
     private Grid _grid = null!;
     private Referee _referee = null!;
     private (int i, int j) _hoveringGridIndex = (0, 0);
@@ -37,10 +37,15 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event is not InputEventMouse) return;
-        
+
         if (@event is InputEventMouseMotion eventMouseMotion)
         {
-            _hoveringGridIndex = GetHoveringGridIndex(eventMouseMotion.Position);
+            var newHoveringGridIndex = GetHoveringGridIndex(eventMouseMotion.Position);
+            var hoveringGridIndexHasChanged = newHoveringGridIndex != _hoveringGridIndex;
+            if (!hoveringGridIndexHasChanged)
+                return;
+
+            _hoveringGridIndex = newHoveringGridIndex;
             UpdateCursor();
         }
         else if (@event.IsActionReleased(InputActions.Primary))
@@ -93,14 +98,13 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     private void UpdateCursor()
     {
-        if (!_grid.IsValidIndex(_hoveringGridIndex))
+        var shouldShowCursor = _grid.IsValidIndex(_hoveringGridIndex);
+        if (!shouldShowCursor)
         {
             cursor.Hide();
             return;
         }
 
-        cursor.Show();
-        var (i, j) = _hoveringGridIndex;
-        cursor.Position =  new Vector2(j * CellSize, i * CellSize);
+        cursor.ShowAtHoveringCell(_hoveringGridIndex);
     }
 }
