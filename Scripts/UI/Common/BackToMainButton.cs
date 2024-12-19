@@ -8,6 +8,6 @@ public partial class BackToMainButton : Button
 {
     public override void _Ready()
     {
-        Pressed += () => SceneManager.Instance.GotoScene(SceneName.Main);
+        Pressed += () => SceneSwitcher.Instance.GotoScene(SceneName.Main);
     }
 }

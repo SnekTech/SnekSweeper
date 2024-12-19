@@ -27,7 +27,7 @@ public partial class MainMenu : CanvasLayer
 
     private void RegisterEvents()
     {
-        var sceneManager = SceneManager.Instance;
+        var sceneManager = SceneSwitcher.Instance;
         startButton.Pressed += () => sceneManager.GotoScene(SceneName.Level1);
         settingsButton.Pressed += () => sceneManager.GotoScene(SceneName.SettingsPage);
         historyButton.Pressed += () => sceneManager.GotoScene(SceneName.HistoryPage);

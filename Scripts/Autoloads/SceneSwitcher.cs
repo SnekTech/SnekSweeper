@@ -6,7 +6,7 @@ using SnekSweeper.UI.Common;
 
 namespace SnekSweeper.Autoloads;
 
-public partial class SceneManager : Node
+public partial class SceneSwitcher : Node
 {
     [Export] private PackedScene fadingMaskScene = null!;
     [Export] private PackedScene mainScene = null!;
@@ -20,7 +20,7 @@ public partial class SceneManager : Node
 
     private Node _currentScene = null!;
 
-    public static SceneManager Instance { get; private set; } = null!;
+    public static SceneSwitcher Instance { get; private set; } = null!;
 
     public override void _Ready()
     {
