@@ -33,6 +33,7 @@ window/stretch/scale_mode="integer"
 [dotnet]
 
 project/assembly_name="SnekSweeper"
+project/solution_directory="../.."
 
 [editor]
 

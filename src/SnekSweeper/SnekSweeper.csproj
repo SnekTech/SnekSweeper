@@ -7,13 +7,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="**/*.tscn" />
-    <None Include="**/*.tres" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Diagrams/**/*.puml" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Firebelley.GodotUtilities" Version="5.0.0" />
   </ItemGroup>
 </Project>
