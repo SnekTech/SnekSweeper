@@ -65,4 +65,22 @@ public class RandomGeneratorSpecs
 
         sequenceBefore.Should().Equal(sequenceAfter);
     }
+    
+    [Test]
+    public void should_evenly_generate_true_or_false_when_picking_bool()
+    {
+        var generator = new RandomGenerator();
+    
+        var trueCount = 0;
+        var falseCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            if (generator.PickBool())
+                trueCount++;
+            else
+                falseCount++;
+        }
+    
+        trueCount.Should().BeCloseTo(falseCount, 20);
+    }
 }
