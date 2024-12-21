@@ -6,31 +6,30 @@
 /// </summary>
 public sealed class Pcg32
 {
-	readonly ulong _inc;
-	private ulong _seed;
-	private ulong _state;
-	
+	private readonly ulong _inc;
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Pcg32"/> pseudorandom number generator.
 	/// </summary>
-	/// <param name="state">The starting state for the RNG; you can pass any 64-bit value.</param>
-	/// <param name="seed">The output sequence for the RNG; you can pass any 64-bit value, although only the low
+	/// <param name="seed">The starting state for the RNG; you can pass any 64-bit value.</param>
+	/// <param name="state">The output sequence for the RNG; you can pass any 64-bit value, although only the low
 	/// 63 bits are significant.</param>
 	/// <remarks>For this generator, there are 2<sup>63</sup> possible sequences of pseudorandom numbers. Each sequence
 	/// is entirely distinct and has a period of 2<sup>64</sup>. The <paramref name="seed"/> argument selects which
 	/// stream you will use. The <paramref name="state"/> argument specifies where you are in that 2<sup>64</sup> period.</remarks>
 	public Pcg32(ulong seed, ulong state)
 	{
-		_seed = seed;
+		Seed = seed;
 		// implements pcg_setseq_64_srandom_r
 		_inc = (seed << 1) | 1u;
 		Step();
-		_state += state;
+		State += state;
 		Step();
 	}
 
-	public ulong Seed => _seed;
-	public ulong State => _state;
+	public ulong Seed { get; }
+
+	public ulong State { get; set; }
 
 	/// <summary>
 	/// Generates the next random number.
@@ -39,7 +38,7 @@ public sealed class Pcg32
 	public uint GenerateNext()
 	{
 		// implements pcg_setseq_64_xsh_rr_32_random_r
-		var oldState = _state;
+		var oldState = State;
 		Step();
 		return Helpers.OutputXshRr(oldState);
 	}
@@ -69,13 +68,13 @@ public sealed class Pcg32
 	public void Advance(ulong delta)
 	{
 		// implements pcg_setseq_64_advance_r
-		_state = Helpers.Advance(_state, delta, Helpers.Multiplier64, _inc);
+		State = Helpers.Advance(State, delta, Helpers.Multiplier64, _inc);
 	}
 	
 	private void Step()
 	{
 		// corresponds to pcg_setseq_64_step_r
-		_state = unchecked(_state * Helpers.Multiplier64 + _inc);
+		State = unchecked(State * Helpers.Multiplier64 + _inc);
 	}
 
 }

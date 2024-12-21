@@ -2,7 +2,7 @@
 
 public class RandomGenerator
 {
-    private Pcg32 _generator = new(0,0);
+    private Pcg32 _generator = new(0, 0);
 
     public void Reset(ulong seed, ulong state)
     {
@@ -12,5 +12,13 @@ public class RandomGenerator
     public int PickInt()
     {
         return (int)_generator.GenerateNext();
+    }
+
+    public ulong Seed => _generator.Seed;
+
+    public ulong State
+    {
+        get => _generator.State;
+        set => _generator.State = value;
     }
 }

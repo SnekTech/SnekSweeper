@@ -4,6 +4,19 @@ namespace BasicTests.Roguelike;
 
 public class RandomGeneratorSpecs
 {
+    private const int TestSequenceLength = 3;
+
+    private static List<int> GenerateSequence(RandomGenerator generator, int length = TestSequenceLength)
+    {
+        var result = new List<int>();
+        for (var i = 0; i < length; i++)
+        {
+            result.Add(generator.PickInt());
+        }
+
+        return result;
+    }
+
     [Test]
     public void should_generate_same_first_number_when_created_with_same_seed()
     {
@@ -14,8 +27,8 @@ public class RandomGeneratorSpecs
         generatorA.Reset(seed, state);
         generatorB.Reset(seed, state);
 
-        var sequenceA = GenerateSequence(generatorA, 3);
-        var sequenceB = GenerateSequence(generatorB, 3);
+        var sequenceA = GenerateSequence(generatorA);
+        var sequenceB = GenerateSequence(generatorB);
 
         sequenceA.Should().Equal(sequenceB);
     }
@@ -26,23 +39,30 @@ public class RandomGeneratorSpecs
         const int seed = 12345;
         const int state = 0;
         var generator = new RandomGenerator();
-        generator.Reset(seed,state);
-
-        var firstSequence = GenerateSequence(generator, 3);
         generator.Reset(seed, state);
-        var sequenceAfterReset = GenerateSequence(generator, 3);
+
+        var firstSequence = GenerateSequence(generator);
+        generator.Reset(seed, state);
+        var sequenceAfterReset = GenerateSequence(generator);
 
         firstSequence.Should().Equal(sequenceAfterReset);
     }
 
-    private static List<int> GenerateSequence(RandomGenerator generator, int length)
+    [Test]
+    public void should_generate_same_before_and_after_setting_state_property()
     {
-        var result = new List<int>();
-        for (var i = 0; i < length; i++)
-        {
-            result.Add(generator.PickInt());
-        }
+        const int seed = 12345;
+        const int state = 10;
+        var generator = new RandomGenerator();
+        generator.Reset(seed, state);
 
-        return result;
+        // generate some first
+        GenerateSequence(generator, 5);
+        var oldState = generator.State;
+        var sequenceBefore = GenerateSequence(generator);
+        generator.State = oldState;
+        var sequenceAfter = GenerateSequence(generator);
+
+        sequenceBefore.Should().Equal(sequenceAfter);
     }
 }
