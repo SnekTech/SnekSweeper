@@ -14,15 +14,35 @@ public class RandomGeneratorSpecs
         generatorA.Reset(seed, state);
         generatorB.Reset(seed, state);
 
-        var a1 = generatorA.PickInt();
-        var b1 = generatorB.PickInt();
+        var sequenceA = GenerateSequence(generatorA, 3);
+        var sequenceB = GenerateSequence(generatorB, 3);
 
-        a1.Should().Be(b1);
+        sequenceA.Should().Equal(sequenceB);
     }
 
     [Test]
-    public void should_generate_same_after_state_reload()
+    public void should_generate_same_before_and_after_reset()
     {
         const int seed = 12345;
+        const int state = 0;
+        var generator = new RandomGenerator();
+        generator.Reset(seed,state);
+
+        var firstSequence = GenerateSequence(generator, 3);
+        generator.Reset(seed, state);
+        var sequenceAfterReset = GenerateSequence(generator, 3);
+
+        firstSequence.Should().Equal(sequenceAfterReset);
+    }
+
+    private static List<int> GenerateSequence(RandomGenerator generator, int length)
+    {
+        var result = new List<int>();
+        for (var i = 0; i < length; i++)
+        {
+            result.Add(generator.PickInt());
+        }
+
+        return result;
     }
 }
