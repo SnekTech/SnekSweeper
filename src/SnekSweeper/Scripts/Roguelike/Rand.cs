@@ -15,4 +15,5 @@ public static class Rand
     }
 
     public static float Float() => Generator.PickFloat();
+    public static (ulong seed, ulong state) Data => (Generator.Seed, Generator.State);
 }

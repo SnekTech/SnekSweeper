@@ -1,5 +1,6 @@
 ﻿using System;
 using Godot;
+using SnekSweeper.Roguelike;
 
 namespace SnekSweeper.GameHistory;
 
@@ -11,11 +12,12 @@ public partial class Record : Resource
     [Export]
     private long _startDateTimeBinary;
 
-    [Export]
-    private long _endDateTimeBinary;
+    [Export] private long _endDateTimeBinary;
+
+    [Export] private bool _winning;
 
     [Export]
-    private bool _winning;
+    public RandomGeneratorData RandomGeneratorData { get; private set; } = new();
 
     public Record()
     {
@@ -26,6 +28,8 @@ public partial class Record : Resource
         _startDateTimeBinary = startAt.ToBinary();
         _endDateTimeBinary = endAt.ToBinary();
         _winning = winning;
+        var (seed, state) = Rand.Data;
+        (RandomGeneratorData.Seed, RandomGeneratorData.State) = (seed, state);
     }
 
     public DateTime StartAt => DateTime.FromBinary(_startDateTimeBinary);
