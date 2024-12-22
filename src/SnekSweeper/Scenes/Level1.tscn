@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://c2tgj2ojhfe84" path="res://Scenes/GridCursor.tscn" id="3_gg0ug"]
 
 [node name="Level1" type="Node2D"]
+metadata/_edit_lock_ = true
 
 [node name="HUD" parent="." instance=ExtResource("2_mn7yg")]
 

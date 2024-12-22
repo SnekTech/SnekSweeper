@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bp0uau12h4nqd"]
+[gd_scene load_steps=6 format=3 uid="uid://bp0uau12h4nqd"]
 
 [ext_resource type="PackedScene" uid="uid://dl8giqbva3jwf" path="res://Scenes/UI/MainMenu.tscn" id="1_2qhgp"]
+[ext_resource type="Script" path="res://Scripts/Main.cs" id="1_611wh"]
 [ext_resource type="Shader" path="res://Resources/shaders/ScrollingBackground.gdshader" id="1_rky7j"]
 [ext_resource type="Texture2D" uid="uid://b5d2ow0cgb2m6" path="res://Art/UI/main_background.png" id="2_j47qo"]
 
@@ -13,6 +14,7 @@ shader_parameter/repeat_y = 10.0
 shader_parameter/tint = Color(1, 1, 1, 0.101961)
 
 [node name="Main" type="Node"]
+script = ExtResource("1_611wh")
 
 [node name="ScrollingBackground" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_blnvu")

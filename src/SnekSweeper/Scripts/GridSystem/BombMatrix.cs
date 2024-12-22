@@ -1,5 +1,5 @@
 ﻿using System;
-using Godot;
+using SnekSweeper.Roguelike;
 
 namespace SnekSweeper.GridSystem;
 
@@ -19,7 +19,7 @@ public class BombMatrix
         var matrix = new bool[rows, columns];
         foreach (var (i, j) in matrix.Indices())
         {
-            matrix[i, j] = GD.Randf() < probability;
+            matrix[i, j] = Rand.Float() < probability;
         }
 
         _bombs = matrix;

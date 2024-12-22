@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.Roguelike;
+﻿namespace SnekSweeper.Roguelike.PCG;
 
 internal static class Helpers
 {

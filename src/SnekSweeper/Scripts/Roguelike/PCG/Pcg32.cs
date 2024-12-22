@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.Roguelike;
+﻿namespace SnekSweeper.Roguelike.PCG;
 
 /// <summary>
 /// Implements the <code>pcg32</code> random number generator described

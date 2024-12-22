@@ -1,4 +1,6 @@
-﻿namespace SnekSweeper.Roguelike;
+﻿using SnekSweeper.Roguelike.PCG;
+
+namespace SnekSweeper.Roguelike;
 
 public class RandomGenerator
 {
@@ -22,13 +24,9 @@ public class RandomGenerator
         set => _generator.State = value;
     }
 
-    public int PickInt()
-    {
-        return (int)_generator.GenerateNext();
-    }
+    public int PickInt() => (int)_generator.GenerateNext();
 
-    public bool PickBool()
-    {
-        return _generator.GenerateNext() > (uint.MaxValue / 2);
-    }
+    public bool PickBool() => _generator.GenerateNext() > (uint.MaxValue / 2);
+
+    public float PickFloat() => _generator.GenerateNext() / (float)uint.MaxValue;
 }
