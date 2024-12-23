@@ -1,13 +1,14 @@
-﻿using System.Globalization;
-using Godot;
+﻿using Godot;
 using GodotUtilities;
 using SnekSweeper.Autoloads;
 
-namespace SnekSweeper.UI;
+namespace SnekSweeper.UI.History;
 
 [Scene]
 public partial class HistoryPage : CanvasLayer
 {
+    [Export] private PackedScene recordCardScene = null!;
+    
     [Node] private Label recordsCountLabel = null!;
     [Node] private VBoxContainer recordsContainer = null!;
 
@@ -31,14 +32,9 @@ public partial class HistoryPage : CanvasLayer
         
         foreach (var record in records)
         {
-            var culture = CultureInfo.CurrentCulture;
-            var (startAt, endAt, winning) =
-                (record.StartAt.ToString(culture), record.EndAt.ToString(culture), record.Winning);
-            var recordString = $"from {startAt} to {endAt}, {winning}";
-
-            var label = new Label();
-            label.Text = recordString;
-            recordsContainer.AddChild(label);
+            var recordCard = recordCardScene.Instantiate<RecordCard>();
+            recordCard.SetContent(record);
+            recordsContainer.AddChild(recordCard);
         }
     }
 }
