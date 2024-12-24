@@ -25,9 +25,9 @@ public class Cell
     public (int i, int j) GridIndex { get; }
     public bool HasBomb { get; set; }
 
-    public bool IsCovered => _stateMachine.CurrentState == _stateMachine.CachedCoveredState;
-    public bool IsRevealed => _stateMachine.CurrentState == _stateMachine.CachedRevealedState;
-    public bool IsFlagged => _stateMachine.CurrentState == _stateMachine.CachedFlaggedState;
+    public bool IsCovered => _stateMachine.IsAtState(CellStateKey.Covered);
+    public bool IsRevealed => _stateMachine.IsAtState(CellStateKey.Revealed);
+    public bool IsFlagged => _stateMachine.IsAtState(CellStateKey.Flagged);
 
     public int NeighborBombCount { get; private set; }
 
@@ -35,7 +35,7 @@ public class Cell
     {
         NeighborBombCount = neighborBombCount;
         _humbleCell.SetContent(HasBomb, NeighborBombCount);
-        _stateMachine.SetInitState(_stateMachine.CachedCoveredState);
+        _stateMachine.SetInitState(CellStateKey.Covered);
     }
 
     public void Reveal()

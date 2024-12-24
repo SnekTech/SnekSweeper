@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.FSM;
 
@@ -6,15 +6,13 @@ namespace SnekSweeper.CellSystem.StateMachine;
 
 public class CellStateMachine : StateMachine<CellState, Cell>
 {
-    public readonly CellState CachedCoveredState;
-    public readonly CellState CachedRevealedState;
-    public readonly CellState CachedFlaggedState;
+    private readonly Dictionary<CellStateKey, CellState> _states = new();
 
     public CellStateMachine(Cell context) : base(context)
     {
-        CachedCoveredState = new CoveredState(this);
-        CachedRevealedState = new RevealedState(this);
-        CachedFlaggedState = new FlaggedState(this);
+        _states[CellStateKey.Covered] = new CoveredState(this);
+        _states[CellStateKey.Revealed] = new RevealedState(this);
+        _states[CellStateKey.Flagged] = new FlaggedState(this);
     }
 
     public void Reveal()
@@ -25,5 +23,22 @@ public class CellStateMachine : StateMachine<CellState, Cell>
     public void SwitchFlag()
     {
         CurrentState?.SwitchFlag();
+    }
+
+    public void SetInitState(CellStateKey cellStateKey)
+    {
+        base.SetInitState(_states[cellStateKey]);
+    }
+
+    public void ChangeState(CellStateKey cellStateKey)
+    {
+        base.ChangeState(_states[cellStateKey]);
+    }
+
+    public bool IsAtState(CellStateKey cellStateKey)
+    {
+        if (CurrentState == null) return false;
+
+        return CurrentState == _states[cellStateKey];
     }
 }

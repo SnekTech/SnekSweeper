@@ -17,7 +17,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] init grid after first click
 - [x] game loop
     - [x] scene change on game win or over
-- [ ] guess-free option
 - [ ] cell reveal combo
     - [x] standalone combo test scene
     - [x] combo component
@@ -79,6 +78,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] zen mode, immersive minesweeper experience
 - [ ] timing
 - [ ] endless
+- [ ] no guess
 
 ## History Records
 

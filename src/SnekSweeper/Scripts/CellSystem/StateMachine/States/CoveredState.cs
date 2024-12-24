@@ -8,11 +8,11 @@ public class CoveredState : CellState
 
     public override void Reveal()
     {
-        StateMachine.ChangeState(StateMachine.CachedRevealedState);
+        StateMachine.ChangeState(CellStateKey.Revealed);
     }
 
     public override void SwitchFlag()
     {
-        StateMachine.ChangeState(StateMachine.CachedFlaggedState);
+        StateMachine.ChangeState(CellStateKey.Flagged);
     }
 }
