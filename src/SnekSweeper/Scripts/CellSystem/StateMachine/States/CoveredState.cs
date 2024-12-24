@@ -6,6 +6,11 @@ public class CoveredState : CellState
     {
     }
 
+    public override void OnExit()
+    {
+        Cell.Cover.Reveal();
+    }
+
     public override void Reveal()
     {
         StateMachine.ChangeState(CellStateKey.Revealed);
