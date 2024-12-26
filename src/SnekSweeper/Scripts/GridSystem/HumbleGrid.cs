@@ -29,7 +29,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     public override void _Ready()
     {
-        _grid = new Grid(this, _mainSetting.CurrentDifficulty);
+        var bombMatrix = new BombMatrix(_mainSetting.CurrentDifficulty);
+        _grid = new Grid(this, bombMatrix);
         _referee = new Referee(_grid);
         cursor.Hide();
     }

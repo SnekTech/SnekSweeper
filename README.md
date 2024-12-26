@@ -2,12 +2,6 @@
 
 A minesweeper game with modern game features & nice pixel art assets.
 
-## TODOs
-
-- [ ] digital museum - a place to enjoy game assets
-- [ ] achievement system
-    - [ ] Steam adaption
-- [x] enable nullable reference types in project
 
 ## GamePlay
 
@@ -91,3 +85,11 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 - [ ] interactable grid & cell
 - [ ] floating indicator
+
+## Achievement
+
+- [ ] Steam integration
+
+## Digital Museum
+
+- show off game assets

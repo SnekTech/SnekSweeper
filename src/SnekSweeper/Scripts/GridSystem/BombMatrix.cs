@@ -25,6 +25,8 @@ public class BombMatrix
         _bombs = matrix;
     }
 
+    public (int rows, int columns) Size => _bombs.Size();
+
     public bool this[int i, int j] => _bombs[i, j];
 
     public void ClearBombAt((int i, int j) gridIndex)

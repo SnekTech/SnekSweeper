@@ -23,17 +23,17 @@ public class Grid
         (1, 1),
     };
 
+    private readonly BombMatrix _bombMatrix;
     private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
-    private readonly IGridDifficulty _gridDifficulty;
     private bool _hasCellInitialized;
 
-    public Grid(IHumbleGrid humbleGrid, IGridDifficulty gridDifficulty)
+    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
     {
         _humbleGrid = humbleGrid;
-        _gridDifficulty = gridDifficulty;
+        _bombMatrix = bombMatrix;
 
-        var (rows, columns) = gridDifficulty.Size;
+        var (rows, columns) = bombMatrix.Size;
         _cells = new Cell[rows, columns];
 
         InstantiateHumbleCells();
@@ -56,11 +56,10 @@ public class Grid
 
     private void InitCells((int i, int j) firstClickGridIndex)
     {
-        var bombMatrix = new BombMatrix(_gridDifficulty);
-        bombMatrix.ClearBombAt(firstClickGridIndex);
+        _bombMatrix.ClearBombAt(firstClickGridIndex);
         foreach (var (i, j) in _cells.Indices())
         {
-            _cells[i, j].HasBomb = bombMatrix[i, j];
+            _cells[i, j].HasBomb = _bombMatrix[i, j];
         }
 
         // must init individual cells after bombs planted
