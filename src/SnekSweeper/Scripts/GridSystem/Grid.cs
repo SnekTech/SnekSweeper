@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.GameHistory;
 
@@ -10,6 +11,51 @@ public class Grid
 {
     public event Action<List<Cell>>? BombRevealed;
     public event Action? BatchRevealed;
+
+    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
+    {
+        _humbleGrid = humbleGrid;
+        _bombMatrix = bombMatrix;
+
+        var (rows, columns) = bombMatrix.Size;
+        _cells = new Cell[rows, columns];
+
+        InstantiateHumbleCells();
+
+        _humbleGrid.PrimaryReleased += OnPrimaryReleasedAt;
+        _humbleGrid.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
+        _humbleGrid.SecondaryReleased += OnSecondaryReleasedAt;
+    }
+
+    public bool IsResolved
+    {
+        get
+        {
+            foreach (var cell in _cells)
+            {
+                if (cell is { HasBomb: false, IsRevealed: false })
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public bool IsValidIndex((int i, int j) gridIndex)
+    {
+        var (i, j) = gridIndex;
+        var (rows, columns) = _cells.Size();
+        return i >= 0 && i < rows && j >= 0 && j < columns;
+    }
+    
+    public void OnDispose()
+    {
+        _humbleGrid.PrimaryReleased -= OnPrimaryReleasedAt;
+        _humbleGrid.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
+        _humbleGrid.SecondaryReleased -= OnSecondaryReleasedAt;
+    }
 
     private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
     {
@@ -27,21 +73,9 @@ public class Grid
     private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
     private bool _hasCellInitialized;
+    private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
 
-    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
-    {
-        _humbleGrid = humbleGrid;
-        _bombMatrix = bombMatrix;
-
-        var (rows, columns) = bombMatrix.Size;
-        _cells = new Cell[rows, columns];
-
-        InstantiateHumbleCells();
-
-        _humbleGrid.PrimaryReleased += OnPrimaryReleasedAt;
-        _humbleGrid.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
-        _humbleGrid.SecondaryReleased += OnSecondaryReleasedAt;
-    }
+    private int FlaggedCellCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
 
     private void InstantiateHumbleCells()
     {
@@ -73,13 +107,6 @@ public class Grid
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
-    public void OnDispose()
-    {
-        _humbleGrid.PrimaryReleased -= OnPrimaryReleasedAt;
-        _humbleGrid.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
-        _humbleGrid.SecondaryReleased -= OnSecondaryReleasedAt;
-    }
-
     private void OnPrimaryReleasedAt((int i, int j) gridIndex)
     {
         if (!_hasCellInitialized)
@@ -98,19 +125,13 @@ public class Grid
     private void OnSecondaryReleasedAt((int i, int j) gridIndex)
     {
         GetCellAt(gridIndex).SwitchFlag();
+        _eventBus.EmitFlaggedCellCountChanged(FlaggedCellCount);
     }
 
     private Cell GetCellAt((int i, int j) gridIndex)
     {
         var (i, j) = gridIndex;
         return _cells[i, j];
-    }
-
-    public bool IsValidIndex((int i, int j) gridIndex)
-    {
-        var (i, j) = gridIndex;
-        var (rows, columns) = _cells.Size();
-        return i >= 0 && i < rows && j >= 0 && j < columns;
     }
 
     private IEnumerable<Cell> GetNeighborsOf(Cell cell)
@@ -193,22 +214,6 @@ public class Grid
         foreach (var neighbor in GetNeighborsOf(cell))
         {
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
-        }
-    }
-
-    public bool IsResolved
-    {
-        get
-        {
-            foreach (var cell in _cells)
-            {
-                if (cell is { HasBomb: false, IsRevealed: false })
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

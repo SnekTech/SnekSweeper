@@ -19,6 +19,10 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] PRNG using PCG-random
     - [x] save random seed for each game history record
 
+## User Input
+
+- [ ] refactor InputListener autoload to an event bus
+
 ## Animation
 
 - [ ] cell sprite animation
