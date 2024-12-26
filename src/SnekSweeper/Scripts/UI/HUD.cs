@@ -9,6 +9,7 @@ namespace SnekSweeper.UI;
 public partial class HUD : CanvasLayer
 {
     [Node] private Label flagCountLabel = null!;
+    [Node] private Label bombCountLabel = null!;
     
     private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
 
@@ -22,16 +23,23 @@ public partial class HUD : CanvasLayer
 
     public override void _EnterTree()
     {
-        _gridEventBus.FlagCountChanged += OnGridFlagCountChanged;
+        _gridEventBus.BombCountChanged += OnBombCountChanged;
+        _gridEventBus.FlagCountChanged += OnFlagCountChanged;
     }
 
     public override void _ExitTree()
     {
-        _gridEventBus.FlagCountChanged -= OnGridFlagCountChanged;
+        _gridEventBus.BombCountChanged -= OnBombCountChanged;
+        _gridEventBus.FlagCountChanged -= OnFlagCountChanged;
     }
 
-    private void OnGridFlagCountChanged(int flaggedCellCount)
+    private void OnBombCountChanged(int bombCount)
     {
-        flagCountLabel.Text = $"{flaggedCellCount} flags";
+        bombCountLabel.Text = $"{bombCount} bombs";
+    }
+
+    private void OnFlagCountChanged(int flagCount)
+    {
+        flagCountLabel.Text = $"{flagCount} flags";
     }
 }

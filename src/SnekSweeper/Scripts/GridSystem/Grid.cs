@@ -75,6 +75,7 @@ public class Grid
     private bool _hasCellInitialized;
     private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
 
+    private int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
     private int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
 
     private void InstantiateHumbleCells()
@@ -104,6 +105,7 @@ public class Grid
         }
         _hasCellInitialized = true;
 
+        _eventBus.EmitBombCountChanged(BombCount);
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
