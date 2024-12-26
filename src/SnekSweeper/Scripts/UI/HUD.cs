@@ -1,25 +1,37 @@
 ﻿using Godot;
+using GodotUtilities;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.UI;
 
+[Scene]
 public partial class HUD : CanvasLayer
 {
-    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
+    [Node] private Label flagCountLabel = null!;
     
+    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationSceneInstantiated)
+        {
+            WireNodes();
+        }
+    }
+
     public override void _EnterTree()
     {
-        _gridEventBus.FlaggedCellCountChanged += OnGridFlaggedCellCountChanged;
+        _gridEventBus.FlagCountChanged += OnGridFlagCountChanged;
     }
 
     public override void _ExitTree()
     {
-        _gridEventBus.FlaggedCellCountChanged -= OnGridFlaggedCellCountChanged;
+        _gridEventBus.FlagCountChanged -= OnGridFlagCountChanged;
     }
 
-    private void OnGridFlaggedCellCountChanged(int flaggedCellCount)
+    private void OnGridFlagCountChanged(int flaggedCellCount)
     {
-        GD.Print($"{flaggedCellCount} flags on grid");
+        flagCountLabel.Text = $"{flaggedCellCount} flags";
     }
 }

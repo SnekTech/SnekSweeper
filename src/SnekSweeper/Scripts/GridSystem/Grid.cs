@@ -75,7 +75,7 @@ public class Grid
     private bool _hasCellInitialized;
     private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
 
-    private int FlaggedCellCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
+    private int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
 
     private void InstantiateHumbleCells()
     {
@@ -125,7 +125,7 @@ public class Grid
     private void OnSecondaryReleasedAt((int i, int j) gridIndex)
     {
         GetCellAt(gridIndex).SwitchFlag();
-        _eventBus.EmitFlaggedCellCountChanged(FlaggedCellCount);
+        _eventBus.EmitFlagCountChanged(FlagCount);
     }
 
     private Cell GetCellAt((int i, int j) gridIndex)

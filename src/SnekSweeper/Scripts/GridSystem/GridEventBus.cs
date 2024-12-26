@@ -4,8 +4,8 @@ namespace SnekSweeper.GridSystem;
 
 public class GridEventBus
 {
-    public event Action<int>? FlaggedCellCountChanged;
+    public event Action<int>? FlagCountChanged;
 
-    public void EmitFlaggedCellCountChanged(int coveredBombCount) =>
-        FlaggedCellCountChanged?.Invoke(coveredBombCount);
+    public void EmitFlagCountChanged(int coveredBombCount) =>
+        FlagCountChanged?.Invoke(coveredBombCount);
 }
