@@ -4,12 +4,12 @@ namespace SnekSweeper.CellSystem.StateMachine;
 
 public abstract class CellState : IState
 {
-    protected readonly CellStateMachine StateMachine;
-    protected Cell Cell => StateMachine.Context;
+    private readonly CellStateMachine stateMachine;
+    protected Cell Cell => stateMachine.Cell;
 
     protected CellState(CellStateMachine stateMachine)
     {
-        StateMachine = stateMachine;
+        this.stateMachine = stateMachine;
     }
 
 
@@ -27,5 +27,10 @@ public abstract class CellState : IState
 
     public virtual void SwitchFlag()
     {
+    }
+
+    protected void ChangeState<T>() where T : CellState
+    {
+        stateMachine.ChangeState<T>();
     }
 }

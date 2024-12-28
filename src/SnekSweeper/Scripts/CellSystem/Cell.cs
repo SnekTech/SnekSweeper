@@ -13,6 +13,7 @@ public class Cell
     {
         _humbleCell = humbleCell;
         _stateMachine = new CellStateMachine(this);
+        _stateMachine.SetInitState<CoveredState>();
 
         GridIndex = gridIndex;
         HasBomb = hasBomb;
@@ -36,7 +37,6 @@ public class Cell
     {
         NeighborBombCount = neighborBombCount;
         _humbleCell.SetContent(HasBomb, NeighborBombCount);
-        _stateMachine.SetInitState<CoveredState>();
     }
 
     public void Reveal()

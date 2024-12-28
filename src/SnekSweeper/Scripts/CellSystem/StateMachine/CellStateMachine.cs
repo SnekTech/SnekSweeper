@@ -1,13 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using SnekSweeper.CellSystem.StateMachine.States;
+﻿using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.FSM;
 
 namespace SnekSweeper.CellSystem.StateMachine;
 
-public class CellStateMachine : StateMachine<CellState, Cell>
+public class CellStateMachine : StateMachine<CellState>
 {
-    public CellStateMachine(Cell context) : base(context)
+    public readonly Cell Cell;
+    public CellStateMachine(Cell cell)
+    {
+        Cell = cell;
+    }
+
+    protected override void PopulateStateInstances()
     {
         StateInstances[typeof(CoveredState)] = new CoveredState(this);
         StateInstances[typeof(RevealedState)] = new RevealedState(this);
