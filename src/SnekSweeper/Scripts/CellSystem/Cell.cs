@@ -1,5 +1,6 @@
 ﻿using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
+using SnekSweeper.CellSystem.StateMachine.States;
 
 namespace SnekSweeper.CellSystem;
 
@@ -25,9 +26,9 @@ public class Cell
     public (int i, int j) GridIndex { get; }
     public bool HasBomb { get; set; }
 
-    public bool IsCovered => _stateMachine.IsAtState(CellStateKey.Covered);
-    public bool IsRevealed => _stateMachine.IsAtState(CellStateKey.Revealed);
-    public bool IsFlagged => _stateMachine.IsAtState(CellStateKey.Flagged);
+    public bool IsCovered => _stateMachine.IsAtState<CoveredState>();
+    public bool IsRevealed => _stateMachine.IsAtState<RevealedState>();
+    public bool IsFlagged => _stateMachine.IsAtState<FlaggedState>();
 
     public int NeighborBombCount { get; private set; }
 
@@ -35,7 +36,7 @@ public class Cell
     {
         NeighborBombCount = neighborBombCount;
         _humbleCell.SetContent(HasBomb, NeighborBombCount);
-        _stateMachine.SetInitState(CellStateKey.Covered);
+        _stateMachine.SetInitState<CoveredState>();
     }
 
     public void Reveal()

@@ -18,6 +18,6 @@ public class FlaggedState : CellState
 
     public override void SwitchFlag()
     {
-        StateMachine.ChangeState(CellStateKey.Covered);
+        StateMachine.ChangeState<CoveredState>();
     }
 }

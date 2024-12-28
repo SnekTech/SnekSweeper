@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SnekSweeper.FSM;
 
@@ -10,20 +11,32 @@ public abstract class StateMachine<TState, TContext>
         Context = context;
     }
 
-    protected TState? CurrentState { get; private set; }
     public TContext Context { get; }
 
-    protected void SetInitState(TState initState)
+    public bool IsAtState<T>() where T : TState
     {
-        CurrentState = initState;
+        if (CurrentState == null) return false;
+
+        return CurrentState == StateInstances[typeof(T)];
+    }
+
+    protected readonly Dictionary<Type, TState> StateInstances = new();
+    protected TState? CurrentState { get; private set; }
+
+    public void SetInitState<T>() where T : TState
+    {
+        if (StateInstances.Count == 0)
+            throw new InvalidOperationException("set initial state before populate the state instance dictionary");
+        CurrentState = StateInstances[typeof(T)];
         CurrentState.OnEnter();
     }
 
-    protected void ChangeState(TState newState)
+    public void ChangeState<T>() where T : TState
     {
         if (CurrentState == null)
-            throw new InvalidOperationException("cannot change from a null state");
+            throw new InvalidOperationException("cannot change state from a null state");
 
+        var newState = StateInstances[typeof(T)];
         if (newState == CurrentState)
             return;
 
