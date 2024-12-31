@@ -194,7 +194,11 @@ public class Grid
 
     private void ExecuteRevealBatchCommand(IEnumerable<Cell> cellsToReveal)
     {
-        var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
+        var cells = cellsToReveal.ToList();
+        if (cells.Count == 0)
+            return;
+        
+        var commands = cells.Select(cell => new RevealCellCommand(cell));
         _commandInvoker.ExecuteCommand(new CompoundCommand(commands));
     }
 
