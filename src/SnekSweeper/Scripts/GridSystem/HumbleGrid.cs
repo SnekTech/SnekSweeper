@@ -16,8 +16,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 {
     [Export] private SkinCollection skinCollection = null!;
     [Export] private PackedScene cellScene = null!;
-    [Export] private GridCursor cursor = null!;
 
+    [Node] private GridCursor cursor = null!;
     [Node] private GridInputListener gridInputListener = null!;
 
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
@@ -43,8 +43,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
         _hudEventBus.UndoPressed += OnUndoPressed;
         gridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
-
-        cursor.Hide();
     }
 
     public override void _ExitTree()
