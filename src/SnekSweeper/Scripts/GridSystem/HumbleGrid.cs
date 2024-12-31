@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Godot;
+using GodotUtilities;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
-using SnekSweeper.Constants;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SkinSystem;
@@ -12,24 +11,29 @@ using SnekSweeper.UI;
 
 namespace SnekSweeper.GridSystem;
 
+[Scene]
 public partial class HumbleGrid : Node2D, IHumbleGrid
 {
-    public event Action<(int i, int j)>? PrimaryReleased;
-    public event Action<(int i, int j)>? PrimaryDoubleClicked;
-    public event Action<(int i, int j)>? SecondaryReleased;
-
     [Export] private SkinCollection skinCollection = null!;
     [Export] private PackedScene cellScene = null!;
     [Export] private GridCursor cursor = null!;
 
+    [Node] private GridInputListener gridInputListener = null!;
+
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
-    private const int CellSize = CoreStats.CellSizePixels;
     private Grid _grid = null!;
     private readonly CommandInvoker _commandInvoker = new();
     private Referee _referee = null!;
-    private (int i, int j) _hoveringGridIndex = (0, 0);
     private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationSceneInstantiated)
+        {
+            WireNodes();
+        }
+    }
 
     public override void _Ready()
     {
@@ -38,38 +42,9 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         _referee = new Referee(_grid);
 
         _hudEventBus.UndoPressed += OnUndoPressed;
+        gridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
 
         cursor.Hide();
-    }
-
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        if (@event is not InputEventMouse) return;
-
-        if (@event is InputEventMouseMotion eventMouseMotion)
-        {
-            var newHoveringGridIndex = GetHoveringGridIndex(eventMouseMotion.Position);
-            var hoveringGridIndexHasChanged = newHoveringGridIndex != _hoveringGridIndex;
-            if (!hoveringGridIndexHasChanged)
-                return;
-
-            _hoveringGridIndex = newHoveringGridIndex;
-            UpdateCursor();
-        }
-        else if (@event.IsActionReleased(InputActions.Primary))
-        {
-            PrimaryReleased?.Invoke(_hoveringGridIndex);
-        }
-        else if (@event is InputEventMouseButton eventMouseButton &&
-                 eventMouseButton.IsAction(InputActions.Primary) &&
-                 eventMouseButton.DoubleClick)
-        {
-            PrimaryDoubleClicked?.Invoke(_hoveringGridIndex);
-        }
-        else if (@event.IsActionReleased(InputActions.Secondary))
-        {
-            SecondaryReleased?.Invoke(_hoveringGridIndex);
-        }
     }
 
     public override void _ExitTree()
@@ -77,6 +52,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         _grid.OnDispose();
         _referee.OnDispose();
         _hudEventBus.UndoPressed -= OnUndoPressed;
+        gridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
     public List<IHumbleCell> InstantiateHumbleCells(int count)
@@ -97,24 +73,18 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         return humbleCells;
     }
 
-    private (int i, int j) GetHoveringGridIndex(Vector2 globalMousePosition)
-    {
-        var localMousePosition = globalMousePosition - GlobalPosition;
-        var i = Mathf.FloorToInt(localMousePosition.Y / CellSize);
-        var j = Mathf.FloorToInt(localMousePosition.X / CellSize);
-        return (i, j);
-    }
+    public IGridInputListener GridInputListener => gridInputListener;
 
-    private void UpdateCursor()
+    private void OnHoveringGridIndexChanged((int i, int j) hoveringGridIndex)
     {
-        var shouldShowCursor = _grid.IsValidIndex(_hoveringGridIndex);
+        var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);
         if (!shouldShowCursor)
         {
             cursor.Hide();
             return;
         }
 
-        cursor.ShowAtHoveringCell(_hoveringGridIndex);
+        cursor.ShowAtHoveringCell(hoveringGridIndex);
     }
 
     private void OnUndoPressed()

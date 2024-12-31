@@ -13,20 +13,41 @@ public class Grid
     public event Action<List<Cell>>? BombRevealed;
     public event Action? BatchRevealed;
 
+    private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
+    {
+        (-1, -1),
+        (0, -1),
+        (1, -1),
+        (-1, 0),
+        (1, 0),
+        (-1, 1),
+        (0, 1),
+        (1, 1),
+    };
+
+    private readonly BombMatrix _bombMatrix;
+    private readonly Cell[,] _cells;
+    private readonly IHumbleGrid _humbleGrid;
+    private bool _hasCellInitialized;
+    private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
+    private readonly CommandInvoker _commandInvoker;
+    private readonly IGridInputListener _gridInputListener;
+
     public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix, CommandInvoker commandInvoker)
     {
         _humbleGrid = humbleGrid;
         _bombMatrix = bombMatrix;
         _commandInvoker = commandInvoker;
+        _gridInputListener = humbleGrid.GridInputListener;
 
         var (rows, columns) = bombMatrix.Size;
         _cells = new Cell[rows, columns];
 
         InstantiateHumbleCells();
 
-        _humbleGrid.PrimaryReleased += OnPrimaryReleasedAt;
-        _humbleGrid.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
-        _humbleGrid.SecondaryReleased += OnSecondaryReleasedAt;
+        _gridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
+        _gridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
+        _gridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
     }
 
     public bool IsResolved
@@ -54,29 +75,10 @@ public class Grid
 
     public void OnDispose()
     {
-        _humbleGrid.PrimaryReleased -= OnPrimaryReleasedAt;
-        _humbleGrid.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
-        _humbleGrid.SecondaryReleased -= OnSecondaryReleasedAt;
+        _gridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
+        _gridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
+        _gridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
     }
-
-    private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
-    {
-        (-1, -1),
-        (0, -1),
-        (1, -1),
-        (-1, 0),
-        (1, 0),
-        (-1, 1),
-        (0, 1),
-        (1, 1),
-    };
-
-    private readonly BombMatrix _bombMatrix;
-    private readonly Cell[,] _cells;
-    private readonly IHumbleGrid _humbleGrid;
-    private bool _hasCellInitialized;
-    private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
-    private readonly CommandInvoker _commandInvoker;
 
     private int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
     private int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
