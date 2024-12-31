@@ -158,15 +158,7 @@ public class Grid
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
 
-        ExecuteRevealBatchCommand(cellsToReveal);
-
-        var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
-        if (bombCellsRevealed.Count > 0)
-        {
-            BombRevealed?.Invoke(bombCellsRevealed);
-        }
-
-        BatchRevealed?.Invoke();
+        RevealCells(cellsToReveal);
     }
 
     private void RevealAround((int i, int j) gridIndex)
@@ -187,18 +179,28 @@ public class Grid
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
 
-        ExecuteRevealBatchCommand(cellsToReveal);
+        RevealCells(cellsToReveal);
+    }
+
+    private void RevealCells(ICollection<Cell> cells)
+    {
+        ExecuteRevealBatchCommand(cells);
+
+        var bombCellsRevealed = cells.Where(cell => cell.HasBomb).ToList();
+        if (bombCellsRevealed.Count > 0)
+        {
+            BombRevealed?.Invoke(bombCellsRevealed);
+        }
 
         BatchRevealed?.Invoke();
     }
 
-    private void ExecuteRevealBatchCommand(IEnumerable<Cell> cellsToReveal)
+    private void ExecuteRevealBatchCommand(ICollection<Cell> cellsToReveal)
     {
-        var cells = cellsToReveal.ToList();
-        if (cells.Count == 0)
+        if (cellsToReveal.Count == 0)
             return;
-        
-        var commands = cells.Select(cell => new RevealCellCommand(cell));
+
+        var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
         _commandInvoker.ExecuteCommand(new CompoundCommand(commands));
     }
 
