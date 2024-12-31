@@ -10,8 +10,10 @@ public partial class HUD : CanvasLayer
 {
     [Node] private Label flagCountLabel = null!;
     [Node] private Label bombCountLabel = null!;
+    [Node] private Button undoButton = null!;
     
     private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
+    private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
 
     public override void _Notification(int what)
     {
@@ -25,12 +27,14 @@ public partial class HUD : CanvasLayer
     {
         _gridEventBus.BombCountChanged += OnBombCountChanged;
         _gridEventBus.FlagCountChanged += OnFlagCountChanged;
+        undoButton.Pressed += OnUndoPressed;
     }
 
     public override void _ExitTree()
     {
         _gridEventBus.BombCountChanged -= OnBombCountChanged;
         _gridEventBus.FlagCountChanged -= OnFlagCountChanged;
+        undoButton.Pressed -= OnUndoPressed;
     }
 
     private void OnBombCountChanged(int bombCount)
@@ -41,5 +45,10 @@ public partial class HUD : CanvasLayer
     private void OnFlagCountChanged(int flagCount)
     {
         flagCountLabel.Text = $"{flagCount} flags";
+    }
+
+    private void OnUndoPressed()
+    {
+        _hudEventBus.EmitUndoPressed();
     }
 }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using Godot;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
+using SnekSweeper.Commands;
 using SnekSweeper.Constants;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SkinSystem;
+using SnekSweeper.UI;
 
 namespace SnekSweeper.GridSystem;
 
@@ -24,14 +26,19 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     private const int CellSize = CoreStats.CellSizePixels;
     private Grid _grid = null!;
+    private readonly CommandInvoker _commandInvoker = new();
     private Referee _referee = null!;
     private (int i, int j) _hoveringGridIndex = (0, 0);
+    private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
 
     public override void _Ready()
     {
         var bombMatrix = new BombMatrix(_mainSetting.CurrentDifficulty);
-        _grid = new Grid(this, bombMatrix);
+        _grid = new Grid(this, bombMatrix, _commandInvoker);
         _referee = new Referee(_grid);
+
+        _hudEventBus.UndoPressed += OnUndoPressed;
+
         cursor.Hide();
     }
 
@@ -69,6 +76,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     {
         _grid.OnDispose();
         _referee.OnDispose();
+        _hudEventBus.UndoPressed -= OnUndoPressed;
     }
 
     public List<IHumbleCell> InstantiateHumbleCells(int count)
@@ -107,5 +115,10 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         }
 
         cursor.ShowAtHoveringCell(_hoveringGridIndex);
+    }
+
+    private void OnUndoPressed()
+    {
+        _commandInvoker.UndoCommand();
     }
 }

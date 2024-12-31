@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
+using SnekSweeper.Commands;
 using SnekSweeper.GameHistory;
 
 namespace SnekSweeper.GridSystem;
@@ -12,10 +13,11 @@ public class Grid
     public event Action<List<Cell>>? BombRevealed;
     public event Action? BatchRevealed;
 
-    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
+    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix, CommandInvoker commandInvoker)
     {
         _humbleGrid = humbleGrid;
         _bombMatrix = bombMatrix;
+        _commandInvoker = commandInvoker;
 
         var (rows, columns) = bombMatrix.Size;
         _cells = new Cell[rows, columns];
@@ -49,7 +51,7 @@ public class Grid
         var (rows, columns) = _cells.Size();
         return i >= 0 && i < rows && j >= 0 && j < columns;
     }
-    
+
     public void OnDispose()
     {
         _humbleGrid.PrimaryReleased -= OnPrimaryReleasedAt;
@@ -74,6 +76,7 @@ public class Grid
     private readonly IHumbleGrid _humbleGrid;
     private bool _hasCellInitialized;
     private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
+    private readonly CommandInvoker _commandInvoker;
 
     private int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
     private int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
@@ -103,6 +106,7 @@ public class Grid
             var neighborBombCount = GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb);
             cell.Init(neighborBombCount);
         }
+
         _hasCellInitialized = true;
 
         _eventBus.EmitBombCountChanged(BombCount);
@@ -154,16 +158,9 @@ public class Grid
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
 
-        var bombCellsRevealed = new List<Cell>();
-        foreach (var cell in cellsToReveal)
-        {
-            cell.Reveal();
-            if (cell.HasBomb)
-            {
-                bombCellsRevealed.Add(cell);
-            }
-        }
+        ExecuteRevealBatchCommand(cellsToReveal);
 
+        var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
         if (bombCellsRevealed.Count > 0)
         {
             BombRevealed?.Invoke(bombCellsRevealed);
@@ -190,12 +187,15 @@ public class Grid
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
 
-        foreach (var c in cellsToReveal)
-        {
-            c.Reveal();
-        }
+        ExecuteRevealBatchCommand(cellsToReveal);
 
         BatchRevealed?.Invoke();
+    }
+
+    private void ExecuteRevealBatchCommand(IEnumerable<Cell> cellsToReveal)
+    {
+        var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
+        _commandInvoker.ExecuteCommand(new CompoundCommand(commands));
     }
 
     private void FindCellsToReveal((int i, int j) gridIndex, ICollection<Cell> cellsToReveal)
