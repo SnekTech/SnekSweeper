@@ -10,4 +10,14 @@ public class RevealedState : CellState
     {
         Cell.Cover.Reveal();
     }
+
+    public override void OnExit()
+    {
+        Cell.Cover.PutOn();
+    }
+
+    public override void PutOnCover()
+    {
+        ChangeState<CoveredState>();
+    }
 }

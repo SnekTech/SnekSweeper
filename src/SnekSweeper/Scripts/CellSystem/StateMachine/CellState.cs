@@ -25,6 +25,10 @@ public abstract class CellState : IState
     {
     }
 
+    public virtual void PutOnCover()
+    {
+    }
+
     public virtual void SwitchFlag()
     {
     }

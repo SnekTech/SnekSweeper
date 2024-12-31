@@ -11,6 +11,7 @@ covered --> flagged : raise command
 flagged --> covered : put down command
 
 covered --> revealed : reveal command
+revealed --> covered : put on cover command
 
 revealed -> [*] : level ends
 

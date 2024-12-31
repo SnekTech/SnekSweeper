@@ -44,6 +44,11 @@ public class Cell
         _stateMachine.Reveal();
     }
 
+    public void PutOnCover()
+    {
+        _stateMachine.PutOnCover();
+    }
+
     public void SwitchFlag()
     {
         _stateMachine.SwitchFlag();

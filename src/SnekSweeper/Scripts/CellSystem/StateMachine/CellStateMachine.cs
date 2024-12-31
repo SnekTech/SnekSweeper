@@ -23,6 +23,11 @@ public class CellStateMachine : StateMachine<CellState>
         CurrentState?.Reveal();
     }
 
+    public void PutOnCover()
+    {
+       CurrentState?.PutOnCover();
+    }
+
     public void SwitchFlag()
     {
         CurrentState?.SwitchFlag();
