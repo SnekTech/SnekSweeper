@@ -23,9 +23,11 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
     private Grid _grid = null!;
-    private readonly CommandInvoker _commandInvoker = new();
     private Referee _referee = null!;
     private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
+
+    public IGridInputListener GridInputListener => gridInputListener;
+    public CommandInvoker GridCommandInvoker { get; } = new();
 
     public override void _Notification(int what)
     {
@@ -38,7 +40,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public override void _Ready()
     {
         var bombMatrix = new BombMatrix(_mainSetting.CurrentDifficulty);
-        _grid = new Grid(this, bombMatrix, _commandInvoker);
+        _grid = new Grid(this, bombMatrix);
         _referee = new Referee(_grid);
 
         _hudEventBus.UndoPressed += OnUndoPressed;
@@ -71,8 +73,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         return humbleCells;
     }
 
-    public IGridInputListener GridInputListener => gridInputListener;
-
     private void OnHoveringGridIndexChanged((int i, int j) hoveringGridIndex)
     {
         var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);
@@ -87,6 +87,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     private void OnUndoPressed()
     {
-        _commandInvoker.UndoCommand();
+        GridCommandInvoker.UndoCommand();
     }
 }

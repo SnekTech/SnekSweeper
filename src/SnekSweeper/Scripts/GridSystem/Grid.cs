@@ -33,12 +33,12 @@ public class Grid
     private readonly CommandInvoker _commandInvoker;
     private readonly IGridInputListener _gridInputListener;
 
-    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix, CommandInvoker commandInvoker)
+    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
     {
         _humbleGrid = humbleGrid;
-        _bombMatrix = bombMatrix;
-        _commandInvoker = commandInvoker;
+        _commandInvoker = humbleGrid.GridCommandInvoker;
         _gridInputListener = humbleGrid.GridInputListener;
+        _bombMatrix = bombMatrix;
 
         var (rows, columns) = bombMatrix.Size;
         _cells = new Cell[rows, columns];
