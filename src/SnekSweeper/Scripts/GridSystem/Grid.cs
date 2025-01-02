@@ -31,23 +31,17 @@ public class Grid
     private bool _hasCellInitialized;
     private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
     private readonly CommandInvoker _commandInvoker;
-    private readonly IGridInputListener _gridInputListener;
 
     public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
     {
         _humbleGrid = humbleGrid;
         _commandInvoker = humbleGrid.GridCommandInvoker;
-        _gridInputListener = humbleGrid.GridInputListener;
         _bombMatrix = bombMatrix;
 
         var (rows, columns) = bombMatrix.Size;
         _cells = new Cell[rows, columns];
 
         InstantiateHumbleCells();
-
-        _gridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
-        _gridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
-        _gridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
     }
 
     public bool IsResolved
@@ -71,13 +65,6 @@ public class Grid
         var (i, j) = gridIndex;
         var (rows, columns) = _cells.Size();
         return i >= 0 && i < rows && j >= 0 && j < columns;
-    }
-
-    public void OnDispose()
-    {
-        _gridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
-        _gridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
-        _gridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
     }
 
     private int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
@@ -115,7 +102,7 @@ public class Grid
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
-    private void OnPrimaryReleasedAt((int i, int j) gridIndex)
+    public void OnPrimaryReleasedAt((int i, int j) gridIndex)
     {
         if (!_hasCellInitialized)
         {
@@ -125,12 +112,12 @@ public class Grid
         RevealAt(gridIndex);
     }
 
-    private void OnPrimaryDoubleClickedAt((int i, int j) gridIndex)
+    public void OnPrimaryDoubleClickedAt((int i, int j) gridIndex)
     {
         RevealAround(gridIndex);
     }
 
-    private void OnSecondaryReleasedAt((int i, int j) gridIndex)
+    public void OnSecondaryReleasedAt((int i, int j) gridIndex)
     {
         GetCellAt(gridIndex).SwitchFlag();
         _eventBus.EmitFlagCountChanged(FlagCount);

@@ -15,7 +15,7 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [x] standalone combo test scene
     - [x] combo component
 - [ ] charging reveal
-- [ ] undo ability
+- [x] undo ability
 - [x] PRNG using PCG-random
     - [x] save random seed for each game history record
 
@@ -57,6 +57,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] pixel art theming
     - [x] default pixel font
     - [x] button
+- [ ] message queue
 
 ## Skin
 

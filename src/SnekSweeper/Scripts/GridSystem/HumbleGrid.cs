@@ -26,7 +26,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     private Referee _referee = null!;
     private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
 
-    public IGridInputListener GridInputListener => gridInputListener;
     public CommandInvoker GridCommandInvoker { get; } = new();
 
     public override void _Notification(int what)
@@ -42,16 +41,25 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         var bombMatrix = new BombMatrix(_mainSetting.CurrentDifficulty);
         _grid = new Grid(this, bombMatrix);
         _referee = new Referee(_grid);
+    }
 
+    public override void _EnterTree()
+    {
         _hudEventBus.UndoPressed += OnUndoPressed;
+        gridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
+        gridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
+        gridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
         gridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
     }
 
     public override void _ExitTree()
     {
-        _grid.OnDispose();
         _referee.OnDispose();
+        
         _hudEventBus.UndoPressed -= OnUndoPressed;
+        gridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
+        gridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
+        gridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
         gridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
@@ -85,8 +93,11 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         cursor.ShowAtHoveringCell(hoveringGridIndex);
     }
 
-    private void OnUndoPressed()
-    {
-        GridCommandInvoker.UndoCommand();
-    }
+    private void OnUndoPressed() => GridCommandInvoker.UndoCommand();
+
+    private void OnPrimaryReleasedAt((int i, int j) gridIndex) => _grid.OnPrimaryReleasedAt(gridIndex);
+
+    private void OnPrimaryDoubleClickedAt((int i, int j) gridIndex) => _grid.OnPrimaryDoubleClickedAt(gridIndex);
+
+    private void OnSecondaryReleasedAt((int i, int j) gridIndex) => _grid.OnSecondaryReleasedAt(gridIndex);
 }

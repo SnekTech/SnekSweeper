@@ -6,7 +6,6 @@ namespace SnekSweeper.GridSystem;
 
 public interface IHumbleGrid
 {
-    IGridInputListener GridInputListener { get; }
     CommandInvoker GridCommandInvoker { get; }
     List<IHumbleCell> InstantiateHumbleCells(int count);
 }
