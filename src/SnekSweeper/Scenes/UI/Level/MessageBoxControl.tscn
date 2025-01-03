@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b40kl5oblpvrf"]
 
-[ext_resource type="Script" path="res://Scripts/UI/MessageBox/MessageBoxControl.cs" id="1_dkxaw"]
+[ext_resource type="Script" path="res://Scripts/UI/MessageBox/MessageBoxControl.cs" id="1_lxaxq"]
 
 [node name="MessageBoxControl" type="Control"]
 layout_mode = 3
@@ -9,7 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_dkxaw")
+script = ExtResource("1_lxaxq")
 
 [node name="SendButton" type="Button" parent="."]
 layout_mode = 0

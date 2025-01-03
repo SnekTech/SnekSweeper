@@ -1,12 +1,12 @@
 [gd_scene load_steps=4 format=3 uid="uid://hk57xckul7ox"]
 
-[ext_resource type="Script" path="res://Scripts/UI/History/HistoryPage.cs" id="1_argxm"]
-[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="2_3byel"]
-[ext_resource type="PackedScene" uid="uid://ch4rktebfoitb" path="res://Scenes/UI/History/RecordCard.tscn" id="2_8587v"]
+[ext_resource type="Script" path="res://Scripts/UI/History/HistoryPage.cs" id="1_4aauc"]
+[ext_resource type="PackedScene" uid="uid://ch4rktebfoitb" path="res://Scenes/UI/History/RecordCard.tscn" id="2_7jss2"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="3_0nfvo"]
 
 [node name="HistoryPage" type="CanvasLayer"]
-script = ExtResource("1_argxm")
-recordCardScene = ExtResource("2_8587v")
+script = ExtResource("1_4aauc")
+recordCardScene = ExtResource("2_7jss2")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15
@@ -17,7 +17,7 @@ grow_vertical = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 30
 
-[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("2_3byel")]
+[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("3_0nfvo")]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0

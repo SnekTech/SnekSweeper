@@ -1,12 +1,12 @@
 [gd_scene load_steps=4 format=3 uid="uid://c3v16clfuvy6n"]
 
-[ext_resource type="Resource" uid="uid://cv6d715pwwrsh" path="res://Resources/skins/skin_collection.tres" id="2_g6fcp"]
-[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="3_qmnax"]
-[ext_resource type="Script" path="res://Scripts/UI/SettingsPage.cs" id="3_s4tei"]
+[ext_resource type="Script" path="res://Scripts/UI/SettingsPage.cs" id="1_o17li"]
+[ext_resource type="Resource" uid="uid://cv6d715pwwrsh" path="res://Resources/skins/skin_collection.tres" id="2_p2sr4"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="3_b5u8t"]
 
 [node name="SettingsPage" type="CanvasLayer"]
-script = ExtResource("3_s4tei")
-skinCollection = ExtResource("2_g6fcp")
+script = ExtResource("1_o17li")
+skinCollection = ExtResource("2_p2sr4")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15
@@ -17,7 +17,7 @@ grow_vertical = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 30
 
-[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("3_qmnax")]
+[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("3_b5u8t")]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0

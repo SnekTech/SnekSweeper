@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://w1c3ere2p3fy"]
+[gd_scene load_steps=2 format=3 uid="uid://w1c3ere2p3fy"]
 
-[ext_resource type="Script" path="res://Scripts/UI/LosingPage.cs" id="1_7sp1x"]
-[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="2_t64su"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="1_tphee"]
 
 [node name="LosingPage" type="MarginContainer"]
 anchors_preset = 15
@@ -9,7 +8,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_7sp1x")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -22,5 +20,5 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 80
 text = "You lose!"
 
-[node name="BackToMainButton" parent="VBoxContainer" instance=ExtResource("2_t64su")]
+[node name="BackToMainButton" parent="VBoxContainer" instance=ExtResource("1_tphee")]
 layout_mode = 2
