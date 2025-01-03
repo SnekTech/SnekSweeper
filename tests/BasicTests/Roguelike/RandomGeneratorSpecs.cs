@@ -1,4 +1,4 @@
-﻿using SnekSweeper.Roguelike;
+﻿using Widgets.Roguelike;
 
 namespace BasicTests.Roguelike;
 

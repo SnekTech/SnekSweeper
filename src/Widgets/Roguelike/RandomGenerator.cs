@@ -1,6 +1,6 @@
-﻿using SnekSweeper.Roguelike.PCG;
+﻿using Widgets.Roguelike.PCG;
 
-namespace SnekSweeper.Roguelike;
+namespace Widgets.Roguelike;
 
 public class RandomGenerator
 {

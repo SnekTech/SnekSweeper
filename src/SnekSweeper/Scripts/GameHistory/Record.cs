@@ -1,6 +1,6 @@
 ﻿using System;
 using Godot;
-using SnekSweeper.Roguelike;
+using Widgets.Roguelike;
 
 namespace SnekSweeper.GameHistory;
 

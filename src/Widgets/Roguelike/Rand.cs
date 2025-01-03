@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SnekSweeper.Roguelike;
+﻿namespace Widgets.Roguelike;
 
 public static class Rand
 {
