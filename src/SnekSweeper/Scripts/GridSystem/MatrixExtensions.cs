@@ -9,14 +9,14 @@ public static class MatrixExtensions
         return (matrix.GetLength(0), matrix.GetLength(1));
     }
 
-    public static IEnumerable<(int i, int j)> Indices<T>(this T[,] matrix)
+    public static IEnumerable<GridIndex> Indices<T>(this T[,] matrix)
     {
         var (rows, columns) = matrix.Size();
         for (var i = 0; i < rows; i++)
         {
             for (var j = 0; j < columns; j++)
             {
-                yield return (i, j);
+                yield return new GridIndex(i, j);
             }
         }
     }

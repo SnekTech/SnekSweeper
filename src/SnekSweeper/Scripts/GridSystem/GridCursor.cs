@@ -13,7 +13,7 @@ public partial class GridCursor : Sprite2D
         Hide();
     }
 
-    public void ShowAtHoveringCell((int i, int j) hoveringGridIndex)
+    public void ShowAtHoveringCell(GridIndex hoveringGridIndex)
     {
         Show();
         var (i, j) = hoveringGridIndex;

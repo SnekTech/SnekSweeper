@@ -29,7 +29,7 @@ public class BombMatrix
 
     public bool this[int i, int j] => _bombs[i, j];
 
-    public void ClearBombAt((int i, int j) gridIndex)
+    public void ClearBombAt(GridIndex gridIndex)
     {
         var (i, j) = gridIndex;
         _bombs[i, j] = false;

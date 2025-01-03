@@ -4,6 +4,7 @@ using System.Linq;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
+using SnekSweeper.Constants;
 using SnekSweeper.GameHistory;
 
 namespace SnekSweeper.GridSystem;
@@ -12,18 +13,6 @@ public class Grid
 {
     public event Action<List<Cell>>? BombRevealed;
     public event Action? BatchRevealed;
-
-    private static readonly (int offsetI, int offsetJ)[] NeighborOffsets =
-    {
-        (-1, -1),
-        (0, -1),
-        (1, -1),
-        (-1, 0),
-        (1, 0),
-        (-1, 1),
-        (0, 1),
-        (1, 1),
-    };
 
     private readonly BombMatrix _bombMatrix;
     private readonly Cell[,] _cells;
@@ -60,7 +49,7 @@ public class Grid
         }
     }
 
-    public bool IsValidIndex((int i, int j) gridIndex)
+    public bool IsValidIndex(GridIndex gridIndex)
     {
         var (i, j) = gridIndex;
         var (rows, columns) = _cells.Size();
@@ -76,12 +65,12 @@ public class Grid
         foreach (var (i, j) in _cells.Indices())
         {
             var humbleCell = humbleCells[i * _cells.Size().columns + j];
-            var cell = new Cell(humbleCell, (i, j));
+            var cell = new Cell(humbleCell, new GridIndex(i, j));
             _cells[i, j] = cell;
         }
     }
 
-    private void InitCells((int i, int j) firstClickGridIndex)
+    private void InitCells(GridIndex firstClickGridIndex)
     {
         _bombMatrix.ClearBombAt(firstClickGridIndex);
         foreach (var (i, j) in _cells.Indices())
@@ -102,7 +91,7 @@ public class Grid
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
-    public void OnPrimaryReleasedAt((int i, int j) gridIndex)
+    public void OnPrimaryReleasedAt(GridIndex gridIndex)
     {
         if (!_hasCellInitialized)
         {
@@ -112,18 +101,18 @@ public class Grid
         RevealAt(gridIndex);
     }
 
-    public void OnPrimaryDoubleClickedAt((int i, int j) gridIndex)
+    public void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
     {
         RevealAround(gridIndex);
     }
 
-    public void OnSecondaryReleasedAt((int i, int j) gridIndex)
+    public void OnSecondaryReleasedAt(GridIndex gridIndex)
     {
         GetCellAt(gridIndex).SwitchFlag();
         _eventBus.EmitFlagCountChanged(FlagCount);
     }
 
-    private Cell GetCellAt((int i, int j) gridIndex)
+    private Cell GetCellAt(GridIndex gridIndex)
     {
         var (i, j) = gridIndex;
         return _cells[i, j];
@@ -132,9 +121,9 @@ public class Grid
     private IEnumerable<Cell> GetNeighborsOf(Cell cell)
     {
         var (i, j) = cell.GridIndex;
-        foreach (var (offsetI, offsetJ) in NeighborOffsets)
+        foreach (var (offsetI, offsetJ) in CoreStats.NeighborOffsets)
         {
-            var neighborIndex = (i + offsetI, j + offsetJ);
+            var neighborIndex = new GridIndex(i + offsetI, j + offsetJ);
             if (IsValidIndex(neighborIndex))
             {
                 yield return GetCellAt(neighborIndex);
@@ -142,7 +131,7 @@ public class Grid
         }
     }
 
-    private void RevealAt((int i, int j) gridIndex)
+    private void RevealAt(GridIndex gridIndex)
     {
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
@@ -150,7 +139,7 @@ public class Grid
         RevealCells(cellsToReveal);
     }
 
-    private void RevealAround((int i, int j) gridIndex)
+    private void RevealAround(GridIndex gridIndex)
     {
         var cell = GetCellAt(gridIndex);
         var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
@@ -193,7 +182,7 @@ public class Grid
         _commandInvoker.ExecuteCommand(new CompoundCommand(commands));
     }
 
-    private void FindCellsToReveal((int i, int j) gridIndex, ICollection<Cell> cellsToReveal)
+    private void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)
     {
         if (!IsValidIndex(gridIndex))
             return;

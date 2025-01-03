@@ -2,6 +2,7 @@ using Godot;
 using GodotUtilities;
 using SnekSweeper.CellSystem.Components;
 using SnekSweeper.Constants;
+using SnekSweeper.GridSystem;
 using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.CellSystem;
@@ -38,7 +39,7 @@ public partial class HumbleCell : Node2D, IHumbleCell
         }
     }
 
-    public void SetPosition((int i, int j) gridIndex)
+    public void SetPosition(GridIndex gridIndex)
     {
         var (i, j) = gridIndex;
         Position = new Vector2(j * CellSize, i * CellSize);

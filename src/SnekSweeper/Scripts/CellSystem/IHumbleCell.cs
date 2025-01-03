@@ -1,4 +1,5 @@
 ﻿using SnekSweeper.CellSystem.Components;
+using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CellSystem;
 
@@ -7,5 +8,5 @@ public interface IHumbleCell
     ICover Cover { get; }
     IFlag Flag { get; }
     void SetContent(bool hasBomb, int neighborBombCount);
-    void SetPosition((int i, int j) gridIndex);
+    void SetPosition(GridIndex gridIndex);
 }

@@ -1,6 +1,7 @@
 ﻿using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
 using SnekSweeper.CellSystem.StateMachine.States;
+using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CellSystem;
 
@@ -9,7 +10,7 @@ public class Cell
     private readonly IHumbleCell _humbleCell;
     private readonly CellStateMachine _stateMachine;
 
-    public Cell(IHumbleCell humbleCell, (int i, int j) gridIndex, bool hasBomb = false)
+    public Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = false)
     {
         _humbleCell = humbleCell;
         _stateMachine = new CellStateMachine(this);
@@ -24,7 +25,7 @@ public class Cell
     public ICover Cover => _humbleCell.Cover;
     public IFlag Flag => _humbleCell.Flag;
 
-    public (int i, int j) GridIndex { get; }
+    public GridIndex GridIndex { get; }
     public bool HasBomb { get; set; }
 
     public bool IsCovered => _stateMachine.IsAtState<CoveredState>();

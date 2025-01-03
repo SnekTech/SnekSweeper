@@ -81,7 +81,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         return humbleCells;
     }
 
-    private void OnHoveringGridIndexChanged((int i, int j) hoveringGridIndex)
+    private void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {
         var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);
         if (!shouldShowCursor)
@@ -95,9 +95,9 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     private void OnUndoPressed() => GridCommandInvoker.UndoCommand();
 
-    private void OnPrimaryReleasedAt((int i, int j) gridIndex) => _grid.OnPrimaryReleasedAt(gridIndex);
+    private void OnPrimaryReleasedAt(GridIndex gridIndex) => _grid.OnPrimaryReleasedAt(gridIndex);
 
-    private void OnPrimaryDoubleClickedAt((int i, int j) gridIndex) => _grid.OnPrimaryDoubleClickedAt(gridIndex);
+    private void OnPrimaryDoubleClickedAt(GridIndex gridIndex) => _grid.OnPrimaryDoubleClickedAt(gridIndex);
 
-    private void OnSecondaryReleasedAt((int i, int j) gridIndex) => _grid.OnSecondaryReleasedAt(gridIndex);
+    private void OnSecondaryReleasedAt(GridIndex gridIndex) => _grid.OnSecondaryReleasedAt(gridIndex);
 }
