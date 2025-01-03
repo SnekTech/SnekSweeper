@@ -173,6 +173,9 @@ public class Grid
 
     private void RevealCells(ICollection<Cell> cells)
     {
+        if (cells.Count == 0)
+            return;
+
         ExecuteRevealBatchCommand(cells);
 
         var bombCellsRevealed = cells.Where(cell => cell.HasBomb).ToList();
@@ -186,9 +189,6 @@ public class Grid
 
     private void ExecuteRevealBatchCommand(ICollection<Cell> cellsToReveal)
     {
-        if (cellsToReveal.Count == 0)
-            return;
-
         var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
         _commandInvoker.ExecuteCommand(new CompoundCommand(commands));
     }
