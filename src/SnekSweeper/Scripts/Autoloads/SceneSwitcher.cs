@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using Godot;
 using Godot.Collections;
 using SnekSweeper.Constants;
 using SnekSweeper.UI.Common;
+using Widgets;
 
 namespace SnekSweeper.Autoloads;
 
@@ -48,39 +49,30 @@ public partial class SceneSwitcher : Node
         // The solution is to defer the load to a later time, when
         // we can be sure that no code from the current scene is running:
 
-        Callable.From(() => DeferredGotoScene(sceneName)).CallDeferred();
+        Callable.From(() => DeferredGotoScene(sceneName).Fire()).CallDeferred();
     }
 
-    private async void DeferredGotoScene(SceneName sceneName)
+    private async Task DeferredGotoScene(SceneName sceneName)
     {
         var rootWindow = GetTree().Root;
 
         var fadingMask = fadingMaskScene.Instantiate<FadingMask>();
         rootWindow.AddChild(fadingMask);
 
-        try
-        {
-            await fadingMask.FadeOutAsync();
+        await fadingMask.FadeOutAsync();
 
-            // It is now safe to remove the current scene.
-            _currentScene.Free();
+        // It is now safe to remove the current scene.
+        _currentScene.Free();
 
-            var nextScene = _scenesDict[sceneName];
+        var nextScene = _scenesDict[sceneName];
 
-            // now the new scene is ready, remove the loading scene,
+        // add the new scene to root
+        _currentScene = nextScene.Instantiate();
+        rootWindow.AddChild(_currentScene);
 
-            // add the new scene to root
-            _currentScene = nextScene.Instantiate();
-            rootWindow.AddChild(_currentScene);
+        await fadingMask.FadeInAsync();
+        fadingMask.QueueFree();
 
-            await fadingMask.FadeInAsync();
-            fadingMask.QueueFree();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"error occurred in async void: {e}");
-            throw;
-        }
 
         // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
         GetTree().CurrentScene = _currentScene;

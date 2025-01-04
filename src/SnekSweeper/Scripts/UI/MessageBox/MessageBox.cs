@@ -9,7 +9,6 @@ namespace SnekSweeper.UI.MessageBox;
 [Scene]
 public partial class MessageBox : Control, IMessageDisplay
 {
-    [Node] private Button sendButton = null!;
     [Node] private VBoxContainer messageContainer = null!;
 
     private const float MessageLifetime = 3;
@@ -30,8 +29,14 @@ public partial class MessageBox : Control, IMessageDisplay
             OutputIntervalSeconds = 0.5f
         };
         _messageQueue.StartRunning().Fire();
+    }
 
-        sendButton.Pressed += () => _messageQueue.Enqueue("Rider!");
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (@event is InputEventKey eventKey && eventKey.IsReleased() && eventKey.Keycode == Key.M)
+        {
+            _messageQueue.Enqueue("Rider!");
+        }
     }
 
     public void Display(string message)
