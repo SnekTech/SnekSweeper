@@ -20,6 +20,7 @@ config/icon="res://mine_icon.png"
 SceneSwitcher="*res://Autoloads/SceneSwitcher.tscn"
 HouseKeeper="*res://Autoloads/HouseKeeper.tscn"
 InputListener="*res://Autoloads/InputListener.tscn"
+GTweensGodotUpdater="*res://Autoloads/GTweensGodotUpdater.tscn"
 
 [display]
 

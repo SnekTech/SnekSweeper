@@ -5,7 +5,7 @@ public class MessageQueue(IMessageDisplay messageDisplay)
     private readonly Queue<string> _queue = [];
     private bool _isRunning;
 
-    public int OutputIntervalSeconds { get; set; } = 1;
+    public float OutputIntervalSeconds { get; set; } = 1;
 
     public async Task StartRunning()
     {
