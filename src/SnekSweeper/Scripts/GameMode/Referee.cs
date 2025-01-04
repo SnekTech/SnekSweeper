@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Godot;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.Constants;
@@ -31,7 +30,7 @@ public class Referee
 
     private void OnBombRevealed(List<Cell> bombsRevealed)
     {
-        GD.Print("Game over! Bomb revealed!");
+        MessageBox.Print("Game over! Bomb revealed!");
         SaveNewRecord(false);
 
         SceneSwitcher.Instance.GotoScene(SceneName.Losing);
@@ -41,7 +40,7 @@ public class Referee
     {
         if (_grid.IsResolved)
         {
-            GD.Print("You win!");
+            MessageBox.Print("You win!");
             SaveNewRecord(true);
 
             SceneSwitcher.Instance.GotoScene(SceneName.Winning);

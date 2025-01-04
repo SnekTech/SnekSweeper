@@ -4,7 +4,7 @@ using SnekSweeper.Widgets;
 using Widgets;
 using Widgets.MessageQueue;
 
-namespace SnekSweeper.UI.MessageBox;
+namespace SnekSweeper.Autoloads;
 
 [Scene]
 public partial class MessageBox : Control, IMessageDisplay
@@ -13,6 +13,13 @@ public partial class MessageBox : Control, IMessageDisplay
 
     private const float MessageLifetime = 3;
     private MessageQueue _messageQueue = null!;
+
+    private static MessageBox Instance { get; set; } = null!;
+
+    public static void Print(string message)
+    {
+        Instance.Enqueue(message);
+    }
 
     public override void _Notification(int what)
     {
@@ -24,6 +31,8 @@ public partial class MessageBox : Control, IMessageDisplay
 
     public override void _Ready()
     {
+        Instance = this;
+
         _messageQueue = new MessageQueue(this)
         {
             OutputIntervalSeconds = 0.5f
@@ -46,4 +55,6 @@ public partial class MessageBox : Control, IMessageDisplay
 
         messageLabel.FadeOutAsync(MessageLifetime, 1, messageLabel.QueueFree).Fire();
     }
+
+    private void Enqueue(string message) => _messageQueue.Enqueue(message);
 }
