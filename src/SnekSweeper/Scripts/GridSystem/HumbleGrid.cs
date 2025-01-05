@@ -55,7 +55,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public override void _ExitTree()
     {
         _referee.OnDispose();
-        
+
         _hudEventBus.UndoPressed -= OnUndoPressed;
         gridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
         gridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
@@ -95,9 +95,24 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
 
     private void OnUndoPressed() => GridCommandInvoker.UndoCommand();
 
-    private void OnPrimaryReleasedAt(GridIndex gridIndex) => _grid.OnPrimaryReleasedAt(gridIndex);
+    private void OnPrimaryReleasedAt(GridIndex gridIndex)
+    {
+        if (!_grid.IsValidIndex(gridIndex))
+            return;
+        _grid.OnPrimaryReleasedAt(gridIndex);
+    }
 
-    private void OnPrimaryDoubleClickedAt(GridIndex gridIndex) => _grid.OnPrimaryDoubleClickedAt(gridIndex);
+    private void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
+    {
+        if (!_grid.IsValidIndex(gridIndex))
+            return;
+        _grid.OnPrimaryDoubleClickedAt(gridIndex);
+    }
 
-    private void OnSecondaryReleasedAt(GridIndex gridIndex) => _grid.OnSecondaryReleasedAt(gridIndex);
+    private void OnSecondaryReleasedAt(GridIndex gridIndex)
+    {
+        if (!_grid.IsValidIndex(gridIndex))
+            return;
+        _grid.OnSecondaryReleasedAt(gridIndex);
+    }
 }
