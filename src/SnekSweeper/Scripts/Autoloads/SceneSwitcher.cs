@@ -59,7 +59,7 @@ public partial class SceneSwitcher : Node
         var fadingMask = fadingMaskScene.Instantiate<FadingMask>();
         rootWindow.AddChild(fadingMask);
 
-        await fadingMask.FadeOutAsync();
+        await fadingMask.FadeInAsync();
 
         // It is now safe to remove the current scene.
         _currentScene.Free();
@@ -70,7 +70,7 @@ public partial class SceneSwitcher : Node
         _currentScene = nextScene.Instantiate();
         rootWindow.AddChild(_currentScene);
 
-        await fadingMask.FadeInAsync();
+        await fadingMask.FadeOutAsync();
         fadingMask.QueueFree();
 
 
