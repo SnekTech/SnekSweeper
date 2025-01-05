@@ -1,4 +1,6 @@
-﻿using Godot;
+﻿using System;
+using System.Threading.Tasks;
+using Godot;
 using GodotUtilities;
 using SnekSweeper.Widgets;
 using Widgets;
@@ -48,12 +50,13 @@ public partial class MessageBox : Control, IMessageDisplay
         }
     }
 
-    public void Display(string message)
+    public async Task Display(string message)
     {
         var messageLabel = new Label { Text = message };
         messageContainer.AddChild(messageLabel);
 
-        messageLabel.FadeOutAsync(MessageLifetime, 1, messageLabel.QueueFree).Fire();
+        await Task.Delay(TimeSpan.FromSeconds(MessageLifetime));
+        await messageLabel.FadeOutAsync( 1, messageLabel.QueueFree);
     }
 
     private void Enqueue(string message) => _messageQueue.Enqueue(message);

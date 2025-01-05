@@ -39,6 +39,6 @@ public class MessageQueue(IMessageDisplay messageDisplay)
             return;
 
         var message = _queue.Dequeue();
-        messageDisplay.Display(message);
+        messageDisplay.Display(message).Fire();
     }
 }

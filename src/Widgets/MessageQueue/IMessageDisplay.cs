@@ -2,5 +2,5 @@
 
 public interface IMessageDisplay
 {
-    void Display(string message);
+    Task Display(string message);
 }
