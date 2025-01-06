@@ -18,6 +18,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] undo ability
 - [x] PRNG using PCG-random
     - [x] save random seed for each game history record
+- [ ] collectable cheat-code like Doom Eternal
 
 ## User Input
 

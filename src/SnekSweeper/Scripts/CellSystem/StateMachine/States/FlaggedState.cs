@@ -4,15 +4,14 @@ namespace SnekSweeper.CellSystem.StateMachine.States;
 
 public class FlaggedState(CellStateMachine stateMachine) : CellState(stateMachine)
 {
-    public override Task OnEnterAsync()
+    public override async Task OnEnterAsync()
     {
-        Cell.Flag.Raise();
-        return Task.CompletedTask;
+        await Cell.Flag.RaiseAsync();
     }
 
-    public override Task OnExitAsync()
+    public override async Task OnExitAsync()
     {
-        return Task.CompletedTask;
+        await Cell.Flag.PutDownAsync();
     }
 
     public override Task RevealAsync()

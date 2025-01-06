@@ -13,7 +13,10 @@ public static class CustomExtensions
         => target.TweenAlphaAsync(0, duration, onComplete);
 
     public static Task FadeInAsync(this CanvasItem target, float duration = 1, Action? onComplete = null)
-        => target.TweenAlphaAsync(1, duration, onComplete);
+    {
+        target.Modulate = target.Modulate with { A = 0 };
+        return target.TweenAlphaAsync(1, duration, onComplete);
+    }
 
     private static async Task TweenAlphaAsync(this CanvasItem target, float to, float duration, Action? onComplete)
     {

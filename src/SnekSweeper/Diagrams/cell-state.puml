@@ -1,5 +1,6 @@
 @startuml
 'https://plantuml.com/state-diagram
+hide empty description
 
 state covered
 state flagged
@@ -7,11 +8,11 @@ state revealed
 
 [*] -> covered
 
-covered --> flagged : raise command
-flagged --> covered : put down command
+covered ---> flagged : switch flag
+flagged ---> covered : switch flag
 
-covered --> revealed : reveal command
-revealed --> covered : put on cover command
+covered ---> revealed : reveal
+revealed ---> covered : put on cover
 
 revealed -> [*] : level ends
 

@@ -1,7 +1,9 @@
-﻿namespace SnekSweeper.CellSystem.Components;
+﻿using System.Threading.Tasks;
+
+namespace SnekSweeper.CellSystem.Components;
 
 public interface IFlag
 {
-    void Raise();
-    void PutDown();
+    Task RaiseAsync();
+    Task PutDownAsync();
 }
