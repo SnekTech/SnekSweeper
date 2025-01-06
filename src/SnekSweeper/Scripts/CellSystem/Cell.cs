@@ -1,4 +1,5 @@
-﻿using SnekSweeper.CellSystem.Components;
+﻿using System.Threading.Tasks;
+using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
 using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.GridSystem;
@@ -14,7 +15,6 @@ public class Cell
     {
         _humbleCell = humbleCell;
         _stateMachine = new CellStateMachine(this);
-        _stateMachine.SetInitState<CoveredState>();
 
         GridIndex = gridIndex;
         HasBomb = hasBomb;
@@ -34,24 +34,16 @@ public class Cell
 
     public int NeighborBombCount { get; private set; }
 
-    public void Init(int neighborBombCount)
+    public async Task InitAsync(int neighborBombCount)
     {
         NeighborBombCount = neighborBombCount;
         _humbleCell.SetContent(HasBomb, NeighborBombCount);
+        await _stateMachine.SetInitStateAsync<CoveredState>();
     }
 
-    public void Reveal()
-    {
-        _stateMachine.Reveal();
-    }
+    public Task Reveal() => _stateMachine.RevealAsync();
 
-    public void PutOnCover()
-    {
-        _stateMachine.PutOnCover();
-    }
+    public Task PutOnCover() => _stateMachine.PutOnCoverAsync();
 
-    public void SwitchFlag()
-    {
-        _stateMachine.SwitchFlag();
-    }
+    public Task SwitchFlag() => _stateMachine.SwitchFlagAsync();
 }

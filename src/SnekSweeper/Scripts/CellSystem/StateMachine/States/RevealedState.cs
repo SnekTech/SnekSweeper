@@ -1,23 +1,33 @@
-﻿namespace SnekSweeper.CellSystem.StateMachine.States;
+﻿using System.Threading.Tasks;
 
-public class RevealedState : CellState
+namespace SnekSweeper.CellSystem.StateMachine.States;
+
+public class RevealedState(CellStateMachine stateMachine) : CellState(stateMachine)
 {
-    public RevealedState(CellStateMachine stateMachine) : base(stateMachine)
-    {
-    }
-
-    public override void OnEnter()
+    public override Task OnEnterAsync()
     {
         Cell.Cover.Reveal();
+        return Task.CompletedTask;
     }
 
-    public override void OnExit()
+    public override Task OnExitAsync()
     {
         Cell.Cover.PutOn();
+        return Task.CompletedTask;
     }
 
-    public override void PutOnCover()
+    public override Task RevealAsync()
     {
-        ChangeState<CoveredState>();
+        return Task.CompletedTask;
+    }
+
+    public override Task SwitchFlagAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public override Task PutOnCoverAsync()
+    {
+        return ChangeStateAsync<CoveredState>();
     }
 }

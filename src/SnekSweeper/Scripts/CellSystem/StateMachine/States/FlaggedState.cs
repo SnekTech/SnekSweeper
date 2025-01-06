@@ -1,23 +1,32 @@
-﻿namespace SnekSweeper.CellSystem.StateMachine.States;
+﻿using System.Threading.Tasks;
 
-public class FlaggedState : CellState
+namespace SnekSweeper.CellSystem.StateMachine.States;
+
+public class FlaggedState(CellStateMachine stateMachine) : CellState(stateMachine)
 {
-    public FlaggedState(CellStateMachine stateMachine) : base(stateMachine)
-    {
-    }
-
-    public override void OnEnter()
+    public override Task OnEnterAsync()
     {
         Cell.Flag.Raise();
+        return Task.CompletedTask;
     }
 
-    public override void OnExit()
+    public override Task OnExitAsync()
     {
-        Cell.Flag.PutDown();
+        return Task.CompletedTask;
     }
 
-    public override void SwitchFlag()
+    public override Task RevealAsync()
     {
-        ChangeState<CoveredState>();
+        return Task.CompletedTask;
+    }
+
+    public override Task SwitchFlagAsync()
+    {
+        return ChangeStateAsync<CoveredState>();
+    }
+
+    public override Task PutOnCoverAsync()
+    {
+        return Task.CompletedTask;
     }
 }

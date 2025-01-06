@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SnekSweeper.Commands;
 
@@ -16,20 +17,16 @@ public class CompoundCommand : ICommand
 
     public string Name { get; }
 
-    public void Execute()
+    public Task ExecuteAsync()
     {
-        foreach (var command in _commands)
-        {
-            command.Execute();
-        }
+        var executeTasks = _commands.Select(command => command.ExecuteAsync()).ToList();
+        return Task.WhenAll(executeTasks);
     }
 
-    public void Undo()
+    public Task UndoAsync()
     {
-        foreach (var command in _commands)
-        {
-            command.Undo();
-        }
+        var undoTasks = _commands.Select(command => command.UndoAsync()).ToList();
+        return Task.WhenAll(undoTasks);
     }
 
     private string CalculateCommandName()

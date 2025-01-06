@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SnekSweeper.FSM;
 
@@ -18,7 +19,7 @@ public abstract class StateMachine<TState>
 
     protected abstract void PopulateStateInstances();
 
-    public void SetInitState<T>() where T : TState
+    public async Task SetInitStateAsync<T>() where T : TState
     {
         PopulateStateInstances();
 
@@ -26,10 +27,10 @@ public abstract class StateMachine<TState>
             throw new InvalidOperationException("cannot set initial state on a FSM with no state instances");
 
         CurrentState = StateInstances[typeof(T)];
-        CurrentState.OnEnter();
+        await CurrentState.OnEnterAsync();
     }
 
-    public void ChangeState<T>() where T : TState
+    public async Task ChangeStateAsync<T>() where T : TState
     {
         if (CurrentState == null)
             throw new InvalidOperationException("cannot change state from a null state");
@@ -38,8 +39,8 @@ public abstract class StateMachine<TState>
         if (newState == CurrentState)
             return;
 
-        CurrentState.OnExit();
+        await CurrentState.OnExitAsync();
         CurrentState = newState;
-        CurrentState.OnEnter();
+        await CurrentState.OnEnterAsync();
     }
 }

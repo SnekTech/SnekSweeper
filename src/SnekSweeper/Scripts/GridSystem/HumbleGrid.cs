@@ -8,6 +8,7 @@ using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
+using Widgets;
 
 namespace SnekSweeper.GridSystem;
 
@@ -93,26 +94,26 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         cursor.ShowAtHoveringCell(hoveringGridIndex);
     }
 
-    private void OnUndoPressed() => GridCommandInvoker.UndoCommand();
+    private void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();
 
     private void OnPrimaryReleasedAt(GridIndex gridIndex)
     {
         if (!_grid.IsValidIndex(gridIndex))
             return;
-        _grid.OnPrimaryReleasedAt(gridIndex);
+        _grid.OnPrimaryReleasedAt(gridIndex).Fire();
     }
 
     private void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
     {
         if (!_grid.IsValidIndex(gridIndex))
             return;
-        _grid.OnPrimaryDoubleClickedAt(gridIndex);
+        _grid.OnPrimaryDoubleClickedAt(gridIndex).Fire();
     }
 
     private void OnSecondaryReleasedAt(GridIndex gridIndex)
     {
         if (!_grid.IsValidIndex(gridIndex))
             return;
-        _grid.OnSecondaryReleasedAt(gridIndex);
+        _grid.OnSecondaryReleasedAt(gridIndex).Fire();
     }
 }

@@ -1,40 +1,24 @@
-﻿using SnekSweeper.FSM;
+﻿using System.Threading.Tasks;
+using SnekSweeper.FSM;
 
 namespace SnekSweeper.CellSystem.StateMachine;
 
-public abstract class CellState : IState
+public abstract class CellState(CellStateMachine stateMachine) : IState
 {
-    private readonly CellStateMachine stateMachine;
     protected Cell Cell => stateMachine.Cell;
 
-    protected CellState(CellStateMachine stateMachine)
-    {
-        this.stateMachine = stateMachine;
-    }
+    public abstract Task OnEnterAsync();
 
+    public abstract Task OnExitAsync();
 
-    public virtual void OnEnter()
-    {
-    }
+    public abstract Task RevealAsync();
 
-    public virtual void OnExit()
-    {
-    }
+    public abstract Task PutOnCoverAsync();
 
-    public virtual void Reveal()
-    {
-    }
+    public abstract Task SwitchFlagAsync();
 
-    public virtual void PutOnCover()
+    protected Task ChangeStateAsync<T>() where T : CellState
     {
-    }
-
-    public virtual void SwitchFlag()
-    {
-    }
-
-    protected void ChangeState<T>() where T : CellState
-    {
-        stateMachine.ChangeState<T>();
+        return stateMachine.ChangeStateAsync<T>();
     }
 }

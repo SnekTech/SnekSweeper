@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 
 namespace SnekSweeper.Commands;
@@ -7,19 +8,20 @@ public class CommandInvoker
 {
     private readonly Stack<ICommand> _undoStack = new();
 
-    public void ExecuteCommand(ICommand command)
+    public async Task ExecuteCommandAsync(ICommand command)
     {
-        command.Execute();
+        await command.ExecuteAsync();
         GD.Print($"execute: {command.Name}");
         _undoStack.Push(command);
     }
 
-    public void UndoCommand()
+    public async Task UndoCommandAsync()
     {
-        if (_undoStack.Count <= 0) return;
+        if (_undoStack.Count == 0)
+            return;
 
         var activeCommand = _undoStack.Pop();
         GD.Print($"undo: {activeCommand.Name}");
-        activeCommand.Undo();
+        await activeCommand.UndoAsync();
     }
 }

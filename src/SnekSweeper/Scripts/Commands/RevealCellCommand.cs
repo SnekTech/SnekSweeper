@@ -1,25 +1,19 @@
-﻿using SnekSweeper.CellSystem;
+﻿using System.Threading.Tasks;
+using SnekSweeper.CellSystem;
 
 namespace SnekSweeper.Commands;
 
-public class RevealCellCommand : ICommand
+public class RevealCellCommand(Cell cell) : ICommand
 {
-    private readonly Cell _cell;
+    public string Name => $"reveal cell at {cell.GridIndex}";
 
-    public RevealCellCommand(Cell cell)
+    public Task ExecuteAsync()
     {
-        _cell = cell;
+        return cell.Reveal();
     }
 
-    public string Name => $"reveal cell at {_cell.GridIndex}";
-
-    public void Execute()
+    public Task UndoAsync()
     {
-        _cell.Reveal();
-    }
-
-    public void Undo()
-    {
-        _cell.PutOnCover();
+        return cell.PutOnCover();
     }
 }

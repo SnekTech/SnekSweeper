@@ -1,7 +1,9 @@
-﻿namespace SnekSweeper.FSM;
+﻿using System.Threading.Tasks;
+
+namespace SnekSweeper.FSM;
 
 public interface IState
 {
-    void OnEnter();
-    void OnExit();
+    Task OnEnterAsync();
+    Task OnExitAsync();
 }

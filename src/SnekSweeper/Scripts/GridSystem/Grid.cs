@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
@@ -70,7 +71,7 @@ public class Grid
         }
     }
 
-    private void InitCells(GridIndex firstClickGridIndex)
+    private async Task InitCellsAsync(GridIndex firstClickGridIndex)
     {
         _bombMatrix.ClearBombAt(firstClickGridIndex);
         foreach (var (i, j) in _cells.Indices())
@@ -79,11 +80,13 @@ public class Grid
         }
 
         // must init individual cells after bombs planted
+        var initCellTasks = new List<Task>();
         foreach (var cell in _cells)
         {
             var neighborBombCount = GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb);
-            cell.Init(neighborBombCount);
+            initCellTasks.Add(cell.InitAsync(neighborBombCount));
         }
+        await Task.WhenAll(initCellTasks);
 
         _hasCellInitialized = true;
 
@@ -91,24 +94,24 @@ public class Grid
         HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
-    public void OnPrimaryReleasedAt(GridIndex gridIndex)
+    public async Task OnPrimaryReleasedAt(GridIndex gridIndex)
     {
         if (!_hasCellInitialized)
         {
-            InitCells(gridIndex);
+            await InitCellsAsync(gridIndex);
         }
 
-        RevealAt(gridIndex);
+        await RevealAt(gridIndex);
     }
 
-    public void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
+    public async Task OnPrimaryDoubleClickedAt(GridIndex gridIndex)
     {
-        RevealAround(gridIndex);
+        await RevealAround(gridIndex);
     }
 
-    public void OnSecondaryReleasedAt(GridIndex gridIndex)
+    public async Task OnSecondaryReleasedAt(GridIndex gridIndex)
     {
-        GetCellAt(gridIndex).SwitchFlag();
+        await GetCellAt(gridIndex).SwitchFlag();
         _eventBus.EmitFlagCountChanged(FlagCount);
     }
 
@@ -131,15 +134,15 @@ public class Grid
         }
     }
 
-    private void RevealAt(GridIndex gridIndex)
+    private async Task RevealAt(GridIndex gridIndex)
     {
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
 
-        RevealCells(cellsToReveal);
+        await RevealCells(cellsToReveal);
     }
 
-    private void RevealAround(GridIndex gridIndex)
+    private async Task RevealAround(GridIndex gridIndex)
     {
         var cell = GetCellAt(gridIndex);
         var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
@@ -157,15 +160,15 @@ public class Grid
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
 
-        RevealCells(cellsToReveal);
+        await RevealCells(cellsToReveal);
     }
 
-    private void RevealCells(ICollection<Cell> cells)
+    private async Task RevealCells(ICollection<Cell> cells)
     {
         if (cells.Count == 0)
             return;
 
-        ExecuteRevealBatchCommand(cells);
+        await ExecuteRevealBatchCommandAsync(cells);
 
         var bombCellsRevealed = cells.Where(cell => cell.HasBomb).ToList();
         if (bombCellsRevealed.Count > 0)
@@ -176,10 +179,10 @@ public class Grid
         BatchRevealed?.Invoke();
     }
 
-    private void ExecuteRevealBatchCommand(ICollection<Cell> cellsToReveal)
+    private async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal)
     {
         var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-        _commandInvoker.ExecuteCommand(new CompoundCommand(commands));
+        await _commandInvoker.ExecuteCommandAsync(new CompoundCommand(commands));
     }
 
     private void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)

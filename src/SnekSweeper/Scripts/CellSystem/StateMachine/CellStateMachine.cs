@@ -1,15 +1,12 @@
-﻿using SnekSweeper.CellSystem.StateMachine.States;
+﻿using System.Threading.Tasks;
+using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.FSM;
 
 namespace SnekSweeper.CellSystem.StateMachine;
 
-public class CellStateMachine : StateMachine<CellState>
+public class CellStateMachine(Cell cell) : StateMachine<CellState>
 {
-    public readonly Cell Cell;
-    public CellStateMachine(Cell cell)
-    {
-        Cell = cell;
-    }
+    public readonly Cell Cell = cell;
 
     protected override void PopulateStateInstances()
     {
@@ -18,18 +15,26 @@ public class CellStateMachine : StateMachine<CellState>
         StateInstances[typeof(FlaggedState)] = new FlaggedState(this);
     }
 
-    public void Reveal()
+    public async Task RevealAsync()
     {
-        CurrentState?.Reveal();
+        if (CurrentState == null)
+            return;
+
+        await CurrentState.RevealAsync();
     }
 
-    public void PutOnCover()
+    public async Task PutOnCoverAsync()
     {
-       CurrentState?.PutOnCover();
+        if (CurrentState == null)
+            return;
+        await CurrentState.PutOnCoverAsync();
     }
 
-    public void SwitchFlag()
+    public async Task SwitchFlagAsync()
     {
-        CurrentState?.SwitchFlag();
+        if (CurrentState == null)
+            return;
+
+        await CurrentState.SwitchFlagAsync();
     }
 }
