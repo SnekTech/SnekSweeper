@@ -1,7 +1,9 @@
-﻿namespace SnekSweeper.CellSystem.Components;
+﻿using System.Threading.Tasks;
+
+namespace SnekSweeper.CellSystem.Components;
 
 public interface ICover
 {
-    void Reveal();
-    void PutOn();
+    Task RevealAsync();
+    Task PutOnAsync();
 }
