@@ -52,12 +52,12 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] circle process challenge like Apple Watch
 - [x] highlight the hovering cell
     - [ ] glow effect
-- [ ] grid status display
-    - [ ] bombs remaining
+- [x] grid status display
+    - [x] bombs remaining
 - [ ] pixel art theming
     - [x] default pixel font
     - [x] button
-- [ ] message queue
+- [x] message queue
 
 ## Skin
 
