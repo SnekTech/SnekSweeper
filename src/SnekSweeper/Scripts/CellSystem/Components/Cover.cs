@@ -11,7 +11,7 @@ namespace SnekSweeper.CellSystem.Components;
 public partial class Cover : Node2D, ICover
 {
     [Node] private Sprite2D sprite = null!;
-    private const float AnimationDuration = 0.5f;
+    private const float AnimationDuration = 0.4f;
 
     private ShaderMaterial _shaderMaterial = null!;
     private static readonly StringName DissolveProgressName = "progress";

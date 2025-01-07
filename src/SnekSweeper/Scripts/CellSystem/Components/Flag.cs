@@ -9,7 +9,7 @@ using SnekSweeper.Constants;
 namespace SnekSweeper.CellSystem.Components;
 
 [Scene]
-public partial class Flag : Sprite2D, IFlag
+public partial class Flag : Node2D, IFlag
 {
     [Node] private Sprite2D flagSprite = null!;
 
