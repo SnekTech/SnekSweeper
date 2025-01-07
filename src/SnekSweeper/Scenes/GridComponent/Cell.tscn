@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://iiukaws5xo8m"]
+
+[ext_resource type="Script" path="res://Scripts/CellSystem/HumbleCell.cs" id="1_ktwgp"]
+[ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="2_60wal"]
+[ext_resource type="Script" path="res://Scripts/CellSystem/Components/Content.cs" id="3_21xs1"]
+[ext_resource type="Script" path="res://Scripts/CellSystem/Components/Cover.cs" id="4_ccxle"]
+[ext_resource type="PackedScene" uid="uid://bm7i2bgrkt8g1" path="res://Scenes/GridComponent/Flag.tscn" id="5_1a0pc"]
+
+[node name="Cell" type="Node2D"]
+script = ExtResource("1_ktwgp")
+
+[node name="Ground" type="Sprite2D" parent="."]
+texture = ExtResource("2_60wal")
+centered = false
+hframes = 4
+vframes = 4
+region_rect = Rect2(0, 0, 16, 16)
+
+[node name="Content" type="Sprite2D" parent="."]
+texture = ExtResource("2_60wal")
+centered = false
+hframes = 4
+vframes = 4
+frame = 8
+region_rect = Rect2(0, 16, 16, 16)
+script = ExtResource("3_21xs1")
+
+[node name="Cover" type="Sprite2D" parent="."]
+texture = ExtResource("2_60wal")
+centered = false
+hframes = 4
+vframes = 4
+frame = 1
+region_rect = Rect2(0, 16, 16, 16)
+script = ExtResource("4_ccxle")
+
+[node name="Flag" parent="." instance=ExtResource("5_1a0pc")]

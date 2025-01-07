@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/GridSystem/HumbleGrid.cs" id="1_tadkw"]
 [ext_resource type="Resource" uid="uid://cv6d715pwwrsh" path="res://Resources/skins/skin_collection.tres" id="2_64ws5"]
-[ext_resource type="PackedScene" uid="uid://iiukaws5xo8m" path="res://Scenes/cell.tscn" id="3_6uaqq"]
+[ext_resource type="PackedScene" uid="uid://iiukaws5xo8m" path="res://Scenes/GridComponent/Cell.tscn" id="3_6uaqq"]
 [ext_resource type="Script" path="res://Scripts/GridSystem/GridInputListener.cs" id="4_mr00i"]
 [ext_resource type="PackedScene" uid="uid://c2tgj2ojhfe84" path="res://Scenes/GridCursor.tscn" id="5_kbjng"]
 

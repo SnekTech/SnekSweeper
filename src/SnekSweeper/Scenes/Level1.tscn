@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://v4xplksolbrf"]
 
-[ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scenes/grid.tscn" id="2_5rp84"]
+[ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scenes/GridComponent/Grid.tscn" id="2_5rp84"]
 [ext_resource type="PackedScene" uid="uid://cv3fler02wdew" path="res://Scenes/UI/Level/HUD.tscn" id="2_mn7yg"]
 
 [node name="Level1" type="Node2D"]

@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://bm7i2bgrkt8g1"]
+
+[ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="1_teerk"]
+[ext_resource type="Script" path="res://Scripts/CellSystem/Components/Flag.cs" id="2_wvhjo"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_yshrq"]
+size = Vector2(16, 16)
+
+[node name="Flag" type="Sprite2D"]
+centered = false
+region_rect = Rect2(0, 16, 16, 16)
+script = ExtResource("2_wvhjo")
+
+[node name="Mask" type="Sprite2D" parent="."]
+clip_children = 1
+texture = SubResource("PlaceholderTexture2D_yshrq")
+centered = false
+
+[node name="FlagSprite" type="Sprite2D" parent="Mask"]
+unique_name_in_owner = true
+texture = ExtResource("1_teerk")
+centered = false
+hframes = 4
+vframes = 4
+frame = 3
