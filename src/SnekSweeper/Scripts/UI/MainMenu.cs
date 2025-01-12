@@ -8,9 +8,10 @@ namespace SnekSweeper.UI;
 [Scene]
 public partial class MainMenu : CanvasLayer
 {
-    [Node] private Button startButton = default!;
-    [Node] private Button settingsButton = default!;
-    [Node] private Button historyButton = default!;
+    [Node] private Button startButton = null!;
+    [Node] private Button settingsButton = null!;
+    [Node] private Button historyButton = null!;
+    [Node] private Button quitButton = null!;
 
     public override void _Notification(int what)
     {
@@ -31,5 +32,7 @@ public partial class MainMenu : CanvasLayer
         startButton.Pressed += () => sceneManager.GotoScene(SceneName.Level1);
         settingsButton.Pressed += () => sceneManager.GotoScene(SceneName.SettingsPage);
         historyButton.Pressed += () => sceneManager.GotoScene(SceneName.HistoryPage);
+
+        quitButton.Pressed += () => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
     }
 }

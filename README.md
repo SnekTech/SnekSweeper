@@ -19,6 +19,8 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] PRNG using PCG-random
     - [x] save random seed for each game history record
 - [ ] collectable cheat-code like Doom Eternal
+- [ ] *moving bombs every click, show the moving direction
+- [ ] 闪卡
 
 ## User Input
 
@@ -26,9 +28,9 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Animation
 
-- [ ] cell sprite animation
-    - [ ] cover animation
-    - [ ] flag animation
+- [x] cell sprite animation
+    - [x] cover animation
+    - [x] flag animation
 - [x] fade out animation on scene switch
 
 ## Visual Effects
