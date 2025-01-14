@@ -8,10 +8,10 @@ state revealed
 
 [*] -> covered
 
-covered ---> flagged : switch flag
-flagged ---> covered : switch flag
+covered ---> flagged : raise flag
+flagged ---> covered : put down flag
 
-covered ---> revealed : reveal
+covered ---> revealed : reveal cover
 revealed ---> covered : put on cover
 
 revealed -> [*] : level ends

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using SnekSweeper.FSM;
 
 namespace SnekSweeper.CellSystem.StateMachine;
@@ -7,18 +9,13 @@ public abstract class CellState(CellStateMachine stateMachine) : IState
 {
     protected Cell Cell => stateMachine.Cell;
 
-    public abstract Task OnEnterAsync();
+    private readonly HashSet<Transition> _transitions = [];
 
-    public abstract Task OnExitAsync();
+    public List<Transition> Transitions => _transitions.ToList();
 
-    public abstract Task RevealAsync();
+    public void AddTransition(Transition transition) => _transitions.Add(transition);
 
-    public abstract Task PutOnCoverAsync();
+    public virtual Task OnEnterAsync() => Task.CompletedTask;
 
-    public abstract Task SwitchFlagAsync();
-
-    protected Task ChangeStateAsync<T>() where T : CellState
-    {
-        return stateMachine.ChangeStateAsync<T>();
-    }
+    public virtual Task OnExitAsync() => Task.CompletedTask;
 }

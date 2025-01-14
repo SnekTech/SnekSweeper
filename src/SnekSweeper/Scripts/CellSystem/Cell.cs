@@ -41,9 +41,10 @@ public class Cell
         await _stateMachine.SetInitStateAsync<CoveredState>();
     }
 
-    public Task Reveal() => _stateMachine.RevealAsync();
+    public Task Reveal() => _stateMachine.HandleCellRequestAsync(CellRequest.RevealCover);
 
-    public Task PutOnCover() => _stateMachine.PutOnCoverAsync();
+    public Task PutOnCover() => _stateMachine.HandleCellRequestAsync(CellRequest.PutOnCover);
 
-    public Task SwitchFlag() => _stateMachine.SwitchFlagAsync();
+    public Task SwitchFlag() =>
+        _stateMachine.HandleCellRequestAsync(IsFlagged ? CellRequest.PutDownFlag : CellRequest.RaiseFlag);
 }

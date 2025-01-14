@@ -13,19 +13,4 @@ public class RevealedState(CellStateMachine stateMachine) : CellState(stateMachi
     {
         await Cell.Cover.PutOnAsync();
     }
-
-    public override Task RevealAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public override Task SwitchFlagAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public override Task PutOnCoverAsync()
-    {
-        return ChangeStateAsync<CoveredState>();
-    }
 }

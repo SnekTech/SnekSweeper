@@ -13,19 +13,4 @@ public class FlaggedState(CellStateMachine stateMachine) : CellState(stateMachin
     {
         await Cell.Flag.PutDownAsync();
     }
-
-    public override Task RevealAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public override Task SwitchFlagAsync()
-    {
-        return ChangeStateAsync<CoveredState>();
-    }
-
-    public override Task PutOnCoverAsync()
-    {
-        return Task.CompletedTask;
-    }
 }
