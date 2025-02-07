@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://cq6jujql0gw5n"]
+
+[ext_resource type="Script" path="res://Scripts/UI/CheatCode/CheatCodeCard.cs" id="1_7tr6w"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_a36ow"]
+size = Vector2(40, 40)
+
+[node name="CheatCodeCard" type="PanelContainer"]
+custom_minimum_size = Vector2(80, 100)
+script = ExtResource("1_7tr6w")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Icon" type="TextureRect" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = SubResource("PlaceholderTexture2D_a36ow")
+stretch_mode = 2
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Alpha"
+
+[node name="CheckButton" type="CheckButton" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2

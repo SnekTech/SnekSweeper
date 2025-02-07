@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://d05cgegldnxei"]
+
+[ext_resource type="Script" path="res://Scripts/UI/CheatCode/CheatCodePage.cs" id="1_j7dlw"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="1_tiqmo"]
+[ext_resource type="PackedScene" uid="uid://cq6jujql0gw5n" path="res://Scenes/UI/CheatCode/CheatCodeCard.tscn" id="2_2bddg"]
+[ext_resource type="Resource" uid="uid://dyvt8gfbdnlpr" path="res://Resources/CheatCode/CheatCodeCollection.tres" id="3_t6xf8"]
+
+[node name="CheatCodePage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_j7dlw")
+cardScene = ExtResource("2_2bddg")
+cheatCodeCollection = ExtResource("3_t6xf8")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 30
+
+[node name="Header" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Header"]
+layout_mode = 2
+
+[node name="BackToMainButton" parent="VBoxContainer/Header/HBoxContainer" instance=ExtResource("1_tiqmo")]
+layout_mode = 2
+
+[node name="CardContainer" type="GridContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 10
+columns = 3
