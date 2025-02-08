@@ -1,5 +1,6 @@
 ﻿using Godot;
 using GodotUtilities;
+using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCode;
 
 namespace SnekSweeper.UI.CheatCode;
@@ -12,6 +13,8 @@ public partial class CheatCodePage : Control
 
     [Node] private GridContainer cardContainer = null!;
 
+    private CheatCodeSaveData _cheatCodeSaveData = null!;
+
     public override void _Notification(int what)
     {
         if (what == NotificationSceneInstantiated)
@@ -22,6 +25,7 @@ public partial class CheatCodePage : Control
 
     public override void _Ready()
     {
+        _cheatCodeSaveData = HouseKeeper.CheatCodeSaveData;
         PopulateCheatCodeCards();
     }
 
@@ -30,8 +34,16 @@ public partial class CheatCodePage : Control
         foreach (var cheatCodeResource in cheatCodeCollection.CheatCodeResources)
         {
             var card = cardScene.Instantiate<CheatCodeCard>();
-            card.SetContent(cheatCodeResource);
+            var isCheatCodeActivated = _cheatCodeSaveData.IsCheatCodeActivated(cheatCodeResource.Name);
+            card.Init(cheatCodeResource, OnCheatCodeToggle, isCheatCodeActivated);
             cardContainer.AddChild(card);
+        }
+
+        return;
+
+        void OnCheatCodeToggle(string cheatCodeName, bool isButtonPressed)
+        {
+            _cheatCodeSaveData.SetCheatCodeStatus(cheatCodeName, isButtonPressed);
         }
     }
 }
