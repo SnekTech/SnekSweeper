@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://dq36pirgpjakw"]
 
-[ext_resource type="Script" path="res://Scripts/Widgets/TestCombo.cs" id="1_xwqhc"]
+[ext_resource type="Script" uid="uid://ddbgu0mucagd6" path="res://Scripts/Widgets/TestCombo.cs" id="1_xwqhc"]
 [ext_resource type="PackedScene" uid="uid://btpesexyb6tc1" path="res://Scenes/component/ComboComponent.tscn" id="2_hyvko"]
 [ext_resource type="PackedScene" uid="uid://fqgexjh6clx5" path="res://Scenes/widgets/ComboParticle.tscn" id="2_p4g8t"]
 

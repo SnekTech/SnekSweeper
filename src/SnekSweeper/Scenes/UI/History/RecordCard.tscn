@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ch4rktebfoitb"]
 
-[ext_resource type="Script" path="res://Scripts/UI/History/RecordCard.cs" id="1_t6neu"]
+[ext_resource type="Script" uid="uid://3gtos6jbw232" path="res://Scripts/UI/History/RecordCard.cs" id="1_t6neu"]
 
 [node name="RecordCard" type="PanelContainer"]
 script = ExtResource("1_t6neu")

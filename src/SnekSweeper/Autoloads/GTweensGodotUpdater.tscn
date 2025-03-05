@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://uy4t1cvt5jfy"]
 
-[ext_resource type="Script" path="res://Scripts/Autoloads/GTweensGodotUpdater.cs" id="1_6wa66"]
+[ext_resource type="Script" uid="uid://cfgirfei8smdd" path="res://Scripts/Autoloads/GTweensGodotUpdater.cs" id="1_6wa66"]
 
 [node name="GTweensGodotUpdater" type="Node"]
 script = ExtResource("1_6wa66")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://btpesexyb6tc1"]
 
-[ext_resource type="Script" path="res://Scripts/Widgets/ComboComponent.cs" id="1_bhjep"]
+[ext_resource type="Script" uid="uid://dxby2rqm3rnn6" path="res://Scripts/Widgets/ComboComponent.cs" id="1_bhjep"]
 
 [node name="ComboComponent" type="Node" node_paths=PackedStringArray("_timer")]
 script = ExtResource("1_bhjep")

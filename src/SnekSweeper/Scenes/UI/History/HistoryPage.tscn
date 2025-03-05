@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://hk57xckul7ox"]
 
-[ext_resource type="Script" path="res://Scripts/UI/History/HistoryPage.cs" id="1_4aauc"]
+[ext_resource type="Script" uid="uid://cewnqg33qno37" path="res://Scripts/UI/History/HistoryPage.cs" id="1_4aauc"]
 [ext_resource type="PackedScene" uid="uid://ch4rktebfoitb" path="res://Scenes/UI/History/RecordCard.tscn" id="2_7jss2"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="3_0nfvo"]
 

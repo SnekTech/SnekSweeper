@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://iiukaws5xo8m"]
 
-[ext_resource type="Script" path="res://Scripts/CellSystem/HumbleCell.cs" id="1_ktwgp"]
+[ext_resource type="Script" uid="uid://cay4rblna2j0r" path="res://Scripts/CellSystem/HumbleCell.cs" id="1_ktwgp"]
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="2_60wal"]
-[ext_resource type="Script" path="res://Scripts/CellSystem/Components/Content.cs" id="3_21xs1"]
+[ext_resource type="Script" uid="uid://dxvapr3aethbe" path="res://Scripts/CellSystem/Components/Content.cs" id="3_21xs1"]
 [ext_resource type="PackedScene" uid="uid://dutrqx1ej8t61" path="res://Scenes/GridComponent/Cover.tscn" id="4_2vsyh"]
 [ext_resource type="PackedScene" uid="uid://bm7i2bgrkt8g1" path="res://Scenes/GridComponent/Flag.tscn" id="5_1a0pc"]
 

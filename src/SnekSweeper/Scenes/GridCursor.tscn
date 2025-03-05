@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://c2tgj2ojhfe84"]
 
-[ext_resource type="Shader" path="res://Resources/shaders/Cursor.gdshader" id="1_upumb"]
-[ext_resource type="Script" path="res://Scripts/GridSystem/GridCursor.cs" id="2_d4diq"]
+[ext_resource type="Shader" uid="uid://c4patq8r6h34x" path="res://Resources/shaders/Cursor.gdshader" id="1_upumb"]
+[ext_resource type="Script" uid="uid://cowf1anqmt5fc" path="res://Scripts/GridSystem/GridCursor.cs" id="2_d4diq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7myuh"]
 shader = ExtResource("1_upumb")

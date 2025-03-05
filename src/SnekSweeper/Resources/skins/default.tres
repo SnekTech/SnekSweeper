@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="SkinResource" load_steps=3 format=3 uid="uid://bd0sikl5ni2uv"]
 
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="1_ah06n"]
-[ext_resource type="Script" path="res://Scripts/SkinSystem/SkinResource.cs" id="1_j05vb"]
+[ext_resource type="Script" uid="uid://cxep7ftkodjjo" path="res://Scripts/SkinSystem/SkinResource.cs" id="1_j05vb"]
 
 [resource]
 script = ExtResource("1_j05vb")

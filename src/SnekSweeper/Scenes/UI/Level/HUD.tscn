@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cv3fler02wdew"]
 
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="1_exko8"]
-[ext_resource type="Script" path="res://Scripts/UI/HUD.cs" id="1_udr3g"]
+[ext_resource type="Script" uid="uid://y4bxhdwv6tsd" path="res://Scripts/UI/HUD.cs" id="1_udr3g"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_udr3g")

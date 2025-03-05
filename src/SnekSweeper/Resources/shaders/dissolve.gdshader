@@ -6,6 +6,6 @@ uniform sampler2D mask: source_color;
 void fragment() {
 	float threshold = texture(mask, UV).r;
     float alpha = step(progress, threshold);
-    
+
     COLOR = vec4(COLOR.rgb, alpha);
 }

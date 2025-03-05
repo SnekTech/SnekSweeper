@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bm7i2bgrkt8g1"]
 
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="1_teerk"]
-[ext_resource type="Script" path="res://Scripts/CellSystem/Components/Flag.cs" id="2_wvhjo"]
+[ext_resource type="Script" uid="uid://b2mvqf0mrq8ms" path="res://Scripts/CellSystem/Components/Flag.cs" id="2_wvhjo"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_yshrq"]
 size = Vector2(16, 16)

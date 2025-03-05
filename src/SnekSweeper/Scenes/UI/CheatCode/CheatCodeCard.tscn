@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cq6jujql0gw5n"]
 
-[ext_resource type="Script" path="res://Scripts/UI/CheatCode/CheatCodeCard.cs" id="1_7tr6w"]
+[ext_resource type="Script" uid="uid://cl514kge2sa28" path="res://Scripts/UI/CheatCode/CheatCodeCard.cs" id="1_7tr6w"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_a36ow"]
 size = Vector2(40, 40)

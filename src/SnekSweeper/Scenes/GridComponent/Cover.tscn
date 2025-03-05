@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://dutrqx1ej8t61"]
 
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="1_lsodw"]
-[ext_resource type="Shader" path="res://Resources/shaders/dissolve.gdshader" id="2_ff8jv"]
-[ext_resource type="Script" path="res://Scripts/CellSystem/Components/Cover.cs" id="2_nuewc"]
+[ext_resource type="Shader" uid="uid://d3nabspnas8ff" path="res://Resources/shaders/dissolve.gdshader" id="2_ff8jv"]
+[ext_resource type="Script" uid="uid://cfwg6yiahpdc1" path="res://Scripts/CellSystem/Components/Cover.cs" id="2_nuewc"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_6gqgg"]
 seed = 2

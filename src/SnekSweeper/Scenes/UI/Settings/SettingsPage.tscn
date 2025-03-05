@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://c3v16clfuvy6n"]
 
-[ext_resource type="Script" path="res://Scripts/UI/SettingsPage.cs" id="1_o17li"]
+[ext_resource type="Script" uid="uid://dn3rxc1nqx581" path="res://Scripts/UI/SettingsPage.cs" id="1_o17li"]
 [ext_resource type="Resource" uid="uid://cv6d715pwwrsh" path="res://Resources/skins/skin_collection.tres" id="2_p2sr4"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="3_b5u8t"]
 

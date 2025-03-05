@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b40kl5oblpvrf"]
 
-[ext_resource type="Script" path="res://Scripts/Autoloads/MessageBox.cs" id="1_ijndv"]
+[ext_resource type="Script" uid="uid://c1mva8f4s8dkt" path="res://Scripts/Autoloads/MessageBox.cs" id="1_ijndv"]
 
 [node name="MessageBox" type="Control"]
 layout_mode = 3
