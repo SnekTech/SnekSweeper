@@ -1,11 +1,11 @@
 ﻿using SnekSweeper.Constants;
 using SnekSweeper.UI.Common;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.Autoloads;
 
 public partial class SceneSwitcher : Node
 {
-    [Export] private PackedScene fadingMaskScene = null!;
     [Export] private PackedScene mainScene = null!;
     [Export] private PackedScene settingsPageScene = null!;
     [Export] private PackedScene historyPageScene = null!;
@@ -52,7 +52,7 @@ public partial class SceneSwitcher : Node
     {
         var rootWindow = GetTree().Root;
 
-        var fadingMask = fadingMaskScene.Instantiate<FadingMask>();
+        var fadingMask = SceneFactory.Instantiate<FadingMask>();
         rootWindow.AddChild(fadingMask);
 
         await fadingMask.FadeInAsync();

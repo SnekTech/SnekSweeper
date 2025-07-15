@@ -3,7 +3,7 @@
 namespace SnekSweeper.UI.Common;
 
 [SceneTree]
-public partial class FadingMask : CanvasLayer
+public partial class FadingMask : CanvasLayer, ISceneScript
 {
     private const float FadingDuration = 0.3f;
 
