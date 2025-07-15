@@ -21,6 +21,9 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] collectable cheat-code like Doom Eternal
 - [ ] *moving bombs every click, show the moving direction
 - [ ] 闪卡
+- [ ] 夜光，黑暗环境下某些元素发光提示
+- [ ] 拍卖机制
+- [ ] bingo game
 
 ## User Input
 
@@ -101,3 +104,11 @@ A minesweeper game with modern game features & nice pixel art assets.
 ## Digital Museum
 
 - show off game assets
+
+## Cheat Code
+
+- [ ] 半透明单元格几秒
+- [ ] 15% 概率不受伤
+
+### 新游戏
+- 自动售货机
