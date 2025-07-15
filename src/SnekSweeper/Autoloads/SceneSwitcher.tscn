@@ -1,7 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://na7hdxv3y0kj"]
+[gd_scene load_steps=7 format=3 uid="uid://na7hdxv3y0kj"]
 
 [ext_resource type="Script" uid="uid://c621d34idrnhd" path="res://Scripts/Autoloads/SceneSwitcher.cs" id="1_17fq4"]
-[ext_resource type="PackedScene" uid="uid://bp0uau12h4nqd" path="res://Scenes/Main.tscn" id="3_1son4"]
 [ext_resource type="PackedScene" uid="uid://c3v16clfuvy6n" path="res://Scenes/UI/Settings/SettingsPage.tscn" id="4_j7kib"]
 [ext_resource type="PackedScene" uid="uid://hk57xckul7ox" path="res://Scenes/UI/History/HistoryPage.tscn" id="5_c0tcq"]
 [ext_resource type="PackedScene" uid="uid://v4xplksolbrf" path="res://Scenes/Level1.tscn" id="6_5cmoo"]
@@ -10,7 +9,6 @@
 
 [node name="SceneSwitcher" type="Node"]
 script = ExtResource("1_17fq4")
-mainScene = ExtResource("3_1son4")
 settingsPageScene = ExtResource("4_j7kib")
 historyPageScene = ExtResource("5_c0tcq")
 level1Scene = ExtResource("6_5cmoo")

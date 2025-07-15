@@ -2,7 +2,6 @@
 
 public enum SceneName
 {
-    Main,
     SettingsPage,
     HistoryPage,
     Level1,

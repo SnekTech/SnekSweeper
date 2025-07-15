@@ -6,12 +6,16 @@ namespace SnekSweeper.Autoloads;
 
 public partial class SceneSwitcher : Node
 {
-    [Export] private PackedScene mainScene = null!;
-    [Export] private PackedScene settingsPageScene = null!;
-    [Export] private PackedScene historyPageScene = null!;
-    [Export] private PackedScene level1Scene = null!;
-    [Export] private PackedScene winningScene = null!;
-    [Export] private PackedScene losingScene = null!;
+    [Export]
+    private PackedScene settingsPageScene = null!;
+    [Export]
+    private PackedScene historyPageScene = null!;
+    [Export]
+    private PackedScene level1Scene = null!;
+    [Export]
+    private PackedScene winningScene = null!;
+    [Export]
+    private PackedScene losingScene = null!;
 
     private readonly Dictionary<SceneName, PackedScene> _scenesDict = new();
 
@@ -26,12 +30,16 @@ public partial class SceneSwitcher : Node
         var root = GetTree().Root;
         _currentScene = root.GetChild(root.GetChildCount() - 1);
 
-        _scenesDict[SceneName.Main] = mainScene;
         _scenesDict[SceneName.SettingsPage] = settingsPageScene;
         _scenesDict[SceneName.HistoryPage] = historyPageScene;
         _scenesDict[SceneName.Level1] = level1Scene;
         _scenesDict[SceneName.Winning] = winningScene;
         _scenesDict[SceneName.Losing] = losingScene;
+    }
+
+    public void GotoScene<T>() where T : Node, ISceneScript
+    {
+        Callable.From(() => DeferredGotoScene(SceneFactory.Instantiate<T>()).Fire()).CallDeferred();
     }
 
     public void GotoScene(SceneName sceneName)
@@ -46,6 +54,29 @@ public partial class SceneSwitcher : Node
         // we can be sure that no code from the current scene is running:
 
         Callable.From(() => DeferredGotoScene(sceneName).Fire()).CallDeferred();
+    }
+
+    private async Task DeferredGotoScene(Node newSceneRoot)
+    {
+        var rootWindow = GetTree().Root;
+
+        var fadingMask = SceneFactory.Instantiate<FadingMask>();
+        rootWindow.AddChild(fadingMask);
+
+        await fadingMask.FadeInAsync();
+
+        // It is now safe to remove the current scene.
+        _currentScene.Free();
+
+        // add the new scene to root
+        _currentScene = newSceneRoot;
+        rootWindow.AddChild(newSceneRoot);
+
+        await fadingMask.FadeOutAsync();
+        fadingMask.QueueFree();
+
+        // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
+        GetTree().CurrentScene = _currentScene;
     }
 
     private async Task DeferredGotoScene(SceneName sceneName)

@@ -1,8 +1,10 @@
-﻿using Widgets.Roguelike;
+﻿using SnekSweeper.Widgets;
+using Widgets.Roguelike;
 
 namespace SnekSweeper;
 
-public partial class Main : Node
+[SceneTree]
+public partial class Main : Node, ISceneScript
 {
     public override void _Ready()
     {
