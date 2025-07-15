@@ -1,10 +1,10 @@
 [gd_scene load_steps=2 format=3 uid="uid://c03m7y1od2hcs"]
 
-[ext_resource type="Script" uid="uid://bewo3updawl4q" path="res://Scripts/UI/Common/FadingMask.cs" id="1_f0xhu"]
+[ext_resource type="Script" uid="uid://bewo3updawl4q" path="res://Scripts/UI/Common/FadingMask.cs" id="1_l5k55"]
 
 [node name="FadingMask" type="CanvasLayer"]
 layer = 2
-script = ExtResource("1_f0xhu")
+script = ExtResource("1_l5k55")
 
 [node name="Panel" type="Panel" parent="."]
 unique_name_in_owner = true

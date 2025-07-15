@@ -1,5 +1,4 @@
-﻿using Godot;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 using SnekSweeper.Constants;
 
 namespace SnekSweeper.UI.Common;

@@ -1,26 +1,12 @@
-﻿using System.Threading.Tasks;
-using Godot;
-using GodotUtilities;
-using SnekSweeper.Widgets;
+﻿using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.Common;
 
-[Scene]
+[SceneTree]
 public partial class FadingMask : CanvasLayer
 {
-    [Node] private Panel panel = null!;
+    private const float FadingDuration = 0.3f;
 
-    private const float FadingTime = 0.3f;
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
-
-    public Task FadeInAsync() => panel.FadeInAsync(FadingTime);
-
-    public Task FadeOutAsync() => panel.FadeOutAsync(FadingTime);
+    public Task FadeInAsync() => Panel.FadeInAsync(FadingDuration);
+    public Task FadeOutAsync() => Panel.FadeOutAsync(FadingDuration);
 }

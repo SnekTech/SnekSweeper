@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cewnqg33qno37" path="res://Scripts/UI/History/HistoryPage.cs" id="1_4aauc"]
 [ext_resource type="PackedScene" uid="uid://ch4rktebfoitb" path="res://Scenes/UI/History/RecordCard.tscn" id="2_7jss2"]
-[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="3_0nfvo"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="3_0nfvo"]
 
 [node name="HistoryPage" type="CanvasLayer"]
 script = ExtResource("1_4aauc")

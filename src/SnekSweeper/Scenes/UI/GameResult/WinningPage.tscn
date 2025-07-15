@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://by7l56sawano"]
 
-[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="1_4037g"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_4037g"]
 
 [node name="WinningPage" type="MarginContainer"]
 anchors_preset = 15

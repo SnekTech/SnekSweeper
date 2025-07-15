@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://d05cgegldnxei"]
 
 [ext_resource type="Script" uid="uid://dbgpbjx6h2wit" path="res://Scripts/UI/CheatCode/CheatCodePage.cs" id="1_j7dlw"]
-[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scenes/UI/Common/BackToMainButton.tscn" id="1_tiqmo"]
+[ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_tiqmo"]
 [ext_resource type="PackedScene" uid="uid://cq6jujql0gw5n" path="res://Scenes/UI/CheatCode/CheatCodeCard.tscn" id="2_2bddg"]
 [ext_resource type="Resource" uid="uid://dyvt8gfbdnlpr" path="res://Resources/CheatCode/CheatCodeCollection.tres" id="3_t6xf8"]
 
