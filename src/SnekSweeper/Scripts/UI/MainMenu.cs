@@ -1,27 +1,13 @@
-﻿using GodotUtilities;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 using SnekSweeper.Constants;
 using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
 
 namespace SnekSweeper.UI;
 
-[Scene]
+[SceneTree]
 public partial class MainMenu : CanvasLayer
 {
-    [Node] private Button startButton = null!;
-    [Node] private Button settingsButton = null!;
-    [Node] private Button historyButton = null!;
-    [Node] private Button quitButton = null!;
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
-
     public override void _Ready()
     {
         RegisterEvents();
@@ -30,10 +16,10 @@ public partial class MainMenu : CanvasLayer
     private void RegisterEvents()
     {
         var sceneManager = SceneSwitcher.Instance;
-        startButton.Pressed += () => sceneManager.GotoScene(SceneName.Level1);
-        settingsButton.Pressed += () => sceneManager.GotoScene<SettingsPage>();
-        historyButton.Pressed += () => sceneManager.GotoScene<HistoryPage>();
+        StartButton.Pressed += () => sceneManager.GotoScene(SceneName.Level1);
+        SettingsButton.Pressed += () => sceneManager.GotoScene<SettingsPage>();
+        HistoryButton.Pressed += () => sceneManager.GotoScene<HistoryPage>();
 
-        quitButton.Pressed += () => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+        QuitButton.Pressed += () => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
     }
 }
