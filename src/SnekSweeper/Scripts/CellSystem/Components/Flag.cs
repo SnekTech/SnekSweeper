@@ -1,45 +1,32 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Godot;
-using GodotUtilities;
-using GTweens.Easings;
+﻿using GTweens.Easings;
 using GTweensGodot.Extensions;
 using SnekSweeper.Constants;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.CellSystem.Components;
 
-[Scene]
-public partial class Flag : Node2D, IFlag
+[SceneTree]
+public partial class Flag : Node2D, IFlag, ISceneScript
 {
-    [Node] private Sprite2D flagSprite = null!;
-
     private const float AnimationDuration = 0.2f;
     private const int StartPositionY = CoreStats.CellSizePixels;
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
 
     public override void _Ready()
     {
         Hide();
-        flagSprite.Position = flagSprite.Position with { Y = StartPositionY };
+        FlagSprite.Position = FlagSprite.Position with { Y = StartPositionY };
     }
 
     public async Task RaiseAsync()
     {
         Show();
-        var tween = flagSprite.TweenPositionY(0, AnimationDuration).SetEasing(Easing.OutQuad);
+        var tween = FlagSprite.TweenPositionY(0, AnimationDuration).SetEasing(Easing.OutQuad);
         await tween.PlayAsync(CancellationToken.None);
     }
 
     public async Task PutDownAsync()
     {
-        var tween = flagSprite.TweenPositionY(StartPositionY, AnimationDuration).SetEasing(Easing.InQuad);
+        var tween = FlagSprite.TweenPositionY(StartPositionY, AnimationDuration).SetEasing(Easing.InQuad);
         await tween.PlayAsync(CancellationToken.None);
         Hide();
     }

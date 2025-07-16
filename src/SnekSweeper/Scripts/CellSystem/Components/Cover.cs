@@ -1,33 +1,21 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Godot;
-using GodotUtilities;
-using GTweens.Extensions;
+﻿using GTweens.Extensions;
 using GTweensGodot.Extensions;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.CellSystem.Components;
 
-[Scene]
-public partial class Cover : Node2D, ICover
+[SceneTree]
+public partial class Cover : Node2D, ICover, ISceneScript
 {
-    [Node] private Sprite2D sprite = null!;
     private const float AnimationDuration = .4f;
 
     private ShaderMaterial _shaderMaterial = null!;
     private static readonly StringName DissolveProgressName = "progress";
     private static readonly StringName MaskName = "mask";
 
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
-
     public override void _Ready()
     {
-        _shaderMaterial = (ShaderMaterial)sprite.Material;
+        _shaderMaterial = (ShaderMaterial)_.Sprite.Material;
         SetDissolveProgress(0);
     }
 

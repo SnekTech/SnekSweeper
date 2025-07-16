@@ -1,25 +1,19 @@
-﻿using System.Collections.Generic;
-using Godot;
-using GodotUtilities;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
-using Widgets;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.GridSystem;
 
-[Scene]
-public partial class HumbleGrid : Node2D, IHumbleGrid
+[SceneTree]
+public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
     [Export] private SkinCollection skinCollection = null!;
     [Export] private PackedScene cellScene = null!;
-
-    [Node] private GridCursor cursor = null!;
-    [Node] private GridInputListener gridInputListener = null!;
 
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
@@ -28,14 +22,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
 
     public CommandInvoker GridCommandInvoker { get; } = new();
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
 
     public override void _Ready()
     {
@@ -47,10 +33,10 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
     public override void _EnterTree()
     {
         _hudEventBus.UndoPressed += OnUndoPressed;
-        gridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
-        gridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
-        gridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
-        gridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
+        GridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
+        GridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
+        GridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
+        GridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
     }
 
     public override void _ExitTree()
@@ -58,10 +44,10 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         _referee.OnDispose();
 
         _hudEventBus.UndoPressed -= OnUndoPressed;
-        gridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
-        gridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
-        gridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
-        gridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
+        GridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
+        GridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
+        GridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
+        GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
     public List<IHumbleCell> InstantiateHumbleCells(int count)
@@ -87,11 +73,11 @@ public partial class HumbleGrid : Node2D, IHumbleGrid
         var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);
         if (!shouldShowCursor)
         {
-            cursor.Hide();
+            Cursor.Hide();
             return;
         }
 
-        cursor.ShowAtHoveringCell(hoveringGridIndex);
+        Cursor.ShowAtHoveringCell(hoveringGridIndex);
     }
 
     private void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();

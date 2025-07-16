@@ -1,52 +1,38 @@
-using Godot;
-using GodotUtilities;
 using SnekSweeper.CellSystem.Components;
 using SnekSweeper.Constants;
 using SnekSweeper.GridSystem;
 using SnekSweeper.SkinSystem;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.CellSystem;
 
-[Scene]
-public partial class HumbleCell : Node2D, IHumbleCell
+[SceneTree]
+public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
 {
-    [Node] private Content content = null!;
-    [Node] private Cover cover = null!;
-    [Node] private Flag flag = null!;
-
-    private const int CellSize = CoreStats.CellSizePixels;
-
-    public ICover Cover => cover;
-    public IFlag Flag => flag;
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
+    public ICover Cover => CellCover;
+    public IFlag Flag => CellFlag;
 
     public void SetContent(bool hasBomb, int neighborBombCount)
     {
         if (hasBomb)
         {
-            content.ShowBomb();
+            Content.ShowBomb();
         }
         else
         {
-            content.ShowNeighbourBombCount(neighborBombCount);
+            Content.ShowNeighbourBombCount(neighborBombCount);
         }
     }
 
     public void SetPosition(GridIndex gridIndex)
     {
         var (i, j) = gridIndex;
-        Position = new Vector2(j * CellSize, i * CellSize);
+        const int cellSize = CoreStats.CellSizePixels;
+        Position = new Vector2(j * cellSize, i * cellSize);
     }
 
     public void UseSkin(ISkin newSkin)
     {
-        content.ChangeTexture(newSkin.Texture);
+        Content.ChangeTexture(newSkin.Texture);
     }
 }

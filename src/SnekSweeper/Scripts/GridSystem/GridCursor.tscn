@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://c2tgj2ojhfe84"]
 
-[ext_resource type="Shader" uid="uid://c4patq8r6h34x" path="res://Resources/shaders/Cursor.gdshader" id="1_upumb"]
-[ext_resource type="Script" uid="uid://cowf1anqmt5fc" path="res://Scripts/GridSystem/GridCursor.cs" id="2_d4diq"]
+[ext_resource type="Shader" uid="uid://c4patq8r6h34x" path="res://Resources/shaders/Cursor.gdshader" id="1_iqi6u"]
+[ext_resource type="Script" uid="uid://cowf1anqmt5fc" path="res://Scripts/GridSystem/GridCursor.cs" id="2_j6bvq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7myuh"]
-shader = ExtResource("1_upumb")
+shader = ExtResource("1_iqi6u")
 shader_parameter/tint = Color(1, 1, 1, 1)
 shader_parameter/borderWidth = 0.05
 shader_parameter/freq = 4.8
@@ -20,4 +20,4 @@ noise = SubResource("FastNoiseLite_fddug")
 material = SubResource("ShaderMaterial_7myuh")
 texture = SubResource("NoiseTexture2D_dmcuk")
 centered = false
-script = ExtResource("2_d4diq")
+script = ExtResource("2_j6bvq")
