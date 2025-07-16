@@ -1,18 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Godot;
-using GodotUtilities;
-using SnekSweeper.Widgets;
-using Widgets;
+﻿using SnekSweeper.Widgets;
 using Widgets.MessageQueue;
 
 namespace SnekSweeper.Autoloads;
 
-[Scene]
+[SceneTree]
 public partial class MessageBox : Control, IMessageDisplay
 {
-    [Node] private VBoxContainer messageContainer = null!;
-
     private const float MessageLifetime = 3;
     private MessageQueue _messageQueue = null!;
 
@@ -23,21 +16,13 @@ public partial class MessageBox : Control, IMessageDisplay
         Instance.Enqueue(message);
     }
 
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
-
     public override void _Ready()
     {
         Instance = this;
 
         _messageQueue = new MessageQueue(this)
         {
-            OutputIntervalSeconds = 0.5f
+            OutputIntervalSeconds = 0.5f,
         };
         _messageQueue.StartRunning().Fire();
     }
@@ -53,7 +38,7 @@ public partial class MessageBox : Control, IMessageDisplay
     public async Task Display(string message)
     {
         var messageLabel = new Label { Text = message };
-        messageContainer.AddChild(messageLabel);
+        MessageContainer.AddChild(messageLabel);
 
         await Task.Delay(TimeSpan.FromSeconds(MessageLifetime));
         await messageLabel.FadeOutAsync( 1, messageLabel.QueueFree);

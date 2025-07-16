@@ -20,7 +20,7 @@ config/icon="res://mine_icon.png"
 GTweensGodotUpdater="*res://Scripts/Autoloads/GTweensGodotUpdater.cs"
 SceneSwitcher="*res://Autoloads/SceneSwitcher.tscn"
 HouseKeeper="*res://Autoloads/HouseKeeper.tscn"
-MessageBox="*res://Autoloads/MessageBox.tscn"
+MessageBox="*res://Scripts/Autoloads/MessageBox.tscn"
 QuitHandler="*res://Autoloads/QuitHandler.tscn"
 
 [display]
