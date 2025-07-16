@@ -1,25 +1,11 @@
-﻿using System;
-using Godot;
-using GodotUtilities;
-using SnekSweeper.GameHistory;
+﻿using SnekSweeper.GameHistory;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.History;
 
-[Scene]
-public partial class RecordCard : PanelContainer
+[SceneTree]
+public partial class RecordCard : PanelContainer, ISceneScript
 {
-    [Node] private Label timeLabel = null!;
-    [Node] private Label winningLabel = null!;
-    [Node] private Label seedLabel = null!;
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
-
     public void SetContent(Record record)
     {
         SetTimeLabel(record.StartAt, record.EndAt);
@@ -29,25 +15,25 @@ public partial class RecordCard : PanelContainer
 
     private void SetTimeLabel(DateTime startAt, DateTime endAt)
     {
-        timeLabel.Text = $"from {startAt} to {endAt}";
+        TimeLabel.Text = $"from {startAt} to {endAt}";
     }
 
     private void SetWinningLabel(bool winning)
     {
         if (winning)
         {
-            winningLabel.Text = "Success";
-            winningLabel.Modulate = Colors.Green;
+            WinningLabel.Text = "Success";
+            WinningLabel.Modulate = Colors.Green;
         }
         else
         {
-            winningLabel.Text = "Fail";
-            winningLabel.Modulate = Colors.Red;
+            WinningLabel.Text = "Fail";
+            WinningLabel.Modulate = Colors.Red;
         }
     }
 
     private void SetSeedLabel(ulong seed)
     {
-        seedLabel.Text = $"seed: {seed}";
+        SeedLabel.Text = $"seed: {seed}";
     }
 }

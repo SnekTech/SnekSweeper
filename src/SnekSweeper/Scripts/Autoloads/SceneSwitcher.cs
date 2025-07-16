@@ -7,8 +7,6 @@ namespace SnekSweeper.Autoloads;
 public partial class SceneSwitcher : Node
 {
     [Export]
-    private PackedScene historyPageScene = null!;
-    [Export]
     private PackedScene level1Scene = null!;
     [Export]
     private PackedScene winningScene = null!;
@@ -28,7 +26,6 @@ public partial class SceneSwitcher : Node
         var root = GetTree().Root;
         _currentScene = root.GetChild(root.GetChildCount() - 1);
 
-        _scenesDict[SceneName.HistoryPage] = historyPageScene;
         _scenesDict[SceneName.Level1] = level1Scene;
         _scenesDict[SceneName.Winning] = winningScene;
         _scenesDict[SceneName.Losing] = losingScene;
@@ -50,7 +47,7 @@ public partial class SceneSwitcher : Node
         // The solution is to defer the load to a later time, when
         // we can be sure that no code from the current scene is running:
 
-        Callable.From(() => DeferredGotoScene(sceneName).Fire()).CallDeferred();
+        Callable.From(() => DeferredGotoScene(_scenesDict[sceneName].Instantiate()).Fire()).CallDeferred();
     }
 
     private async Task DeferredGotoScene(Node newSceneRoot)
@@ -71,32 +68,6 @@ public partial class SceneSwitcher : Node
 
         await fadingMask.FadeOutAsync();
         fadingMask.QueueFree();
-
-        // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
-        GetTree().CurrentScene = _currentScene;
-    }
-
-    private async Task DeferredGotoScene(SceneName sceneName)
-    {
-        var rootWindow = GetTree().Root;
-
-        var fadingMask = SceneFactory.Instantiate<FadingMask>();
-        rootWindow.AddChild(fadingMask);
-
-        await fadingMask.FadeInAsync();
-
-        // It is now safe to remove the current scene.
-        _currentScene.Free();
-
-        var nextScene = _scenesDict[sceneName];
-
-        // add the new scene to root
-        _currentScene = nextScene.Instantiate();
-        rootWindow.AddChild(_currentScene);
-
-        await fadingMask.FadeOutAsync();
-        fadingMask.QueueFree();
-
 
         // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
         GetTree().CurrentScene = _currentScene;

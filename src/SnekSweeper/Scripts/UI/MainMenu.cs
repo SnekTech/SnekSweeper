@@ -1,7 +1,7 @@
-﻿using Godot;
-using GodotUtilities;
+﻿using GodotUtilities;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Constants;
+using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
 
 namespace SnekSweeper.UI;
@@ -32,7 +32,7 @@ public partial class MainMenu : CanvasLayer
         var sceneManager = SceneSwitcher.Instance;
         startButton.Pressed += () => sceneManager.GotoScene(SceneName.Level1);
         settingsButton.Pressed += () => sceneManager.GotoScene<SettingsPage>();
-        historyButton.Pressed += () => sceneManager.GotoScene(SceneName.HistoryPage);
+        historyButton.Pressed += () => sceneManager.GotoScene<HistoryPage>();
 
         quitButton.Pressed += () => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
     }
