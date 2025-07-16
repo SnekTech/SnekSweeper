@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
-using SnekSweeper.Constants;
 using SnekSweeper.GameHistory;
 using SnekSweeper.GridSystem;
+using SnekSweeper.UI.GameResult;
 
 namespace SnekSweeper.GameMode;
 
@@ -33,7 +31,7 @@ public class Referee
         MessageBox.Print("Game over! Bomb revealed!");
         SaveNewRecord(false);
 
-        SceneSwitcher.Instance.GotoScene(SceneName.Losing);
+        SceneSwitcher.Instance.GotoScene<LosingPage>();
     }
 
     private void OnBatchRevealed()
@@ -43,7 +41,7 @@ public class Referee
             MessageBox.Print("You win!");
             SaveNewRecord(true);
 
-            SceneSwitcher.Instance.GotoScene(SceneName.Winning);
+            SceneSwitcher.Instance.GotoScene<WinningPage>();
         }
     }
 
