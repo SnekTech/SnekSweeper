@@ -1,4 +1,4 @@
-﻿using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Levels;
 using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
 
@@ -14,8 +14,8 @@ public partial class MainMenu : CanvasLayer
 
     private void RegisterEvents()
     {
-        var sceneManager = SceneSwitcher.Instance;
-        StartButton.Pressed += () => sceneManager.GotoScene<Levels.Level1>();
+        var sceneManager = Autoload.SceneSwitcher;
+        StartButton.Pressed += () => sceneManager.GotoScene<Level1>();
         SettingsButton.Pressed += () => sceneManager.GotoScene<SettingsPage>();
         HistoryButton.Pressed += () => sceneManager.GotoScene<HistoryPage>();
 

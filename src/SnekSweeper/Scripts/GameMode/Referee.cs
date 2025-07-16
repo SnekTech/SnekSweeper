@@ -31,7 +31,7 @@ public class Referee
         MessageBox.Print("Game over! Bomb revealed!");
         SaveNewRecord(false);
 
-        SceneSwitcher.Instance.GotoScene<LosingPage>();
+        Autoload.SceneSwitcher.GotoScene<LosingPage>();
     }
 
     private void OnBatchRevealed()
@@ -41,7 +41,7 @@ public class Referee
             MessageBox.Print("You win!");
             SaveNewRecord(true);
 
-            SceneSwitcher.Instance.GotoScene<WinningPage>();
+            Autoload.SceneSwitcher.GotoScene<WinningPage>();
         }
     }
 

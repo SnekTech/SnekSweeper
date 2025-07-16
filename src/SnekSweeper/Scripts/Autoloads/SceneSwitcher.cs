@@ -7,12 +7,8 @@ public partial class SceneSwitcher : Node
 {
     private Node _currentScene = null!;
 
-    public static SceneSwitcher Instance { get; private set; } = null!;
-
     public override void _Ready()
     {
-        Instance = this;
-
         var root = GetTree().Root;
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
