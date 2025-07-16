@@ -1,4 +1,3 @@
-using Dumpify;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SaveLoad;
@@ -18,7 +17,7 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
     public override void _Ready()
     {
         _mainSetting = HouseKeeper.MainSetting;
-        GD.Print(_mainSetting.DumpText());
+        _mainSetting.DumpGd();
 
         GenerateDifficultyOptions();
         GenerateSkinOptions();
