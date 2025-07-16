@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://v4xplksolbrf"]
 
 [ext_resource type="Script" uid="uid://bphc6kshu5xps" path="res://Scripts/Levels/Level1.cs" id="1_0xpq7"]
-[ext_resource type="PackedScene" uid="uid://cv3fler02wdew" path="res://Scenes/UI/Level/HUD.tscn" id="2_80ky2"]
+[ext_resource type="PackedScene" uid="uid://cv3fler02wdew" path="res://Scripts/UI/HUD.tscn" id="2_80ky2"]
 [ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scenes/GridComponent/Grid.tscn" id="3_27cws"]
 
 [node name="Level1" type="Node2D"]
