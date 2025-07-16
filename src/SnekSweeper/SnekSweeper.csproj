@@ -6,6 +6,7 @@
     <LangVersion>12</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Dumpify" Version="0.6.6" />
     <PackageReference Include="Firebelley.GodotUtilities" Version="5.0.0" />
     <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0-250131-2115.Release" />
     <PackageReference Include="GTweensGodot" Version="6.0.0" />

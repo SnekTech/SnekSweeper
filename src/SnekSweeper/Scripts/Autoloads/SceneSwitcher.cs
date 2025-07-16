@@ -7,8 +7,6 @@ namespace SnekSweeper.Autoloads;
 public partial class SceneSwitcher : Node
 {
     [Export]
-    private PackedScene settingsPageScene = null!;
-    [Export]
     private PackedScene historyPageScene = null!;
     [Export]
     private PackedScene level1Scene = null!;
@@ -30,7 +28,6 @@ public partial class SceneSwitcher : Node
         var root = GetTree().Root;
         _currentScene = root.GetChild(root.GetChildCount() - 1);
 
-        _scenesDict[SceneName.SettingsPage] = settingsPageScene;
         _scenesDict[SceneName.HistoryPage] = historyPageScene;
         _scenesDict[SceneName.Level1] = level1Scene;
         _scenesDict[SceneName.Winning] = winningScene;
