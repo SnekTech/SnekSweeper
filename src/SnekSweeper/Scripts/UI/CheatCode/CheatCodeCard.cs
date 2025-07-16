@@ -1,32 +1,24 @@
-﻿using Godot;
-using GodotUtilities;
-using SnekSweeper.CheatCode;
+﻿using SnekSweeper.CheatCode;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.CheatCode;
 
-[Scene]
-public partial class CheatCodeCard : PanelContainer
+[SceneTree]
+public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
-    [Node] private Label name = null!;
-    [Node] private TextureRect icon = null!;
-    [Node] private CheckButton checkButton = null!;
-    
     public delegate void CheatCodeToggleHandler(string cheatCodeName, bool isButtonChecked);
 
     private CheatCodeToggleHandler _onToggle = null!;
     private CheatCodeResource _cheatCodeResource = null!;
 
-    public override void _Notification(int what)
+    public override void _EnterTree()
     {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
+        CheckButton.Pressed += OnCheckButtonPressed;
     }
 
     public override void _ExitTree()
     {
-        checkButton.Pressed -= OnCheckButtonPressed;
+        CheckButton.Pressed -= OnCheckButtonPressed;
     }
 
     public void Init(CheatCodeResource cheatCodeResource, CheatCodeToggleHandler onToggle, bool isActivated = false)
@@ -34,15 +26,13 @@ public partial class CheatCodeCard : PanelContainer
         _cheatCodeResource = cheatCodeResource;
         _onToggle = onToggle;
 
-        name.Text = cheatCodeResource.Name;
-        icon.Texture = cheatCodeResource.Icon;
-        checkButton.SetPressed(isActivated);
-
-        checkButton.Pressed += OnCheckButtonPressed;
+        Name.Text = cheatCodeResource.Name;
+        Icon.Texture = cheatCodeResource.Icon;
+        CheckButton.SetPressed(isActivated);
     }
 
     private void OnCheckButtonPressed()
     {
-        _onToggle(_cheatCodeResource.Name, checkButton.IsPressed());
+        _onToggle(_cheatCodeResource.Name, CheckButton.IsPressed());
     }
 }

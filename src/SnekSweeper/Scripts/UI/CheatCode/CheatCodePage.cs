@@ -1,27 +1,15 @@
-﻿using Godot;
-using GodotUtilities;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCode;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.CheatCode;
 
-[Scene]
-public partial class CheatCodePage : Control
+[SceneTree]
+public partial class CheatCodePage : Control, ISceneScript
 {
-    [Export] private PackedScene cardScene = null!;
     [Export] private CheatCodeCollection cheatCodeCollection = null!;
 
-    [Node] private GridContainer cardContainer = null!;
-
     private CheatCodeSaveData _cheatCodeSaveData = null!;
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationSceneInstantiated)
-        {
-            WireNodes();
-        }
-    }
 
     public override void _Ready()
     {
@@ -33,10 +21,10 @@ public partial class CheatCodePage : Control
     {
         foreach (var cheatCodeResource in cheatCodeCollection.CheatCodeResources)
         {
-            var card = cardScene.Instantiate<CheatCodeCard>();
+            var card = SceneFactory.Instantiate<CheatCodeCard>();
             var isCheatCodeActivated = _cheatCodeSaveData.IsCheatCodeActivated(cheatCodeResource.Name);
             card.Init(cheatCodeResource, OnCheatCodeToggle, isCheatCodeActivated);
-            cardContainer.AddChild(card);
+            CardContainer.AddChild(card);
         }
 
         return;
