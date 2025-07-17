@@ -8,7 +8,7 @@ public class PlayerDataJson
 {
     public static readonly string SavePath = Path.Combine(OS.GetUserDataDir(), "playerData.json");
 
-    public string CurrentSkinName { get; set; } = SkinFactory.Skins[0].Name;
+    public SkinData CurrentSkin { get; set; } = SkinFactory.Classic;
 
     public static PlayerDataJson Load()
     {

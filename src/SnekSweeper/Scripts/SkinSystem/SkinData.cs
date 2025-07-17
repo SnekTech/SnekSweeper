@@ -1,6 +1,9 @@
-﻿namespace SnekSweeper.SkinSystem;
+﻿using System.Text.Json.Serialization;
 
-public record SkinData(string Name, string TexturePath) : ISkin
+namespace SnekSweeper.SkinSystem;
+
+public record SkinData(int Id, string Name, string TexturePath)
 {
+    [JsonIgnore]
     public Texture2D Texture => SnekUtility.LoadTexture(TexturePath);
 }

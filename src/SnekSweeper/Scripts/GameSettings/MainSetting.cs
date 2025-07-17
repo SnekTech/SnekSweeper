@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using SnekSweeper.GridSystem;
+﻿using SnekSweeper.GridSystem;
 using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.GameSettings;
@@ -31,8 +30,5 @@ public partial class MainSetting : Resource
 
     public IGridDifficulty CurrentDifficulty => Difficulties[_currentDifficultyIndex];
 
-    public string CurrentSkinName { get; set; } = string.Empty;
-    
-    [JsonIgnore]
-    public ISkin CurrentSkin => SkinFactory.GetSkinByName(CurrentSkinName);
+    public required SkinData CurrentSkin { get; set; }
 }

@@ -48,14 +48,14 @@ public partial class HouseKeeper : Node
             _playerDataJson.Save();
         }
 
-        MainSetting.CurrentSkinName = _playerDataJson.CurrentSkinName;
+        MainSetting.CurrentSkin = _playerDataJson.CurrentSkin;
     }
 
     private void SavePlayerData()
     {
         _playerData.Save();
 
-        _playerDataJson.CurrentSkinName = MainSetting.CurrentSkinName;
+        _playerDataJson.CurrentSkin = MainSetting.CurrentSkin;
         _playerDataJson.Save();
     }
 

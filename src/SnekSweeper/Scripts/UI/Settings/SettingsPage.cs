@@ -13,8 +13,6 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 
     public override void _Ready()
     {
-        _mainSetting.DumpGd();
-
         GenerateDifficultyOptions();
         GenerateSkinOptions();
         DifficultyOptionButton.ItemSelected += OnDifficultySelected;
@@ -35,7 +33,8 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 
     private void OnSkinSelected(long index)
     {
-        _mainSetting.CurrentSkinName = SkinFactory.Skins[(int)index].Name;
+        var id = SkinOptionButton.GetSelectedId();
+        _mainSetting.CurrentSkin = SkinFactory.GetSkinById(id);
         SaveLoadEventBus.EmitSaveRequested();
     }
 
@@ -59,10 +58,10 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
         for (var i = 0; i < skins.Count; i++)
         {
             var skin = skins[i];
-            SkinOptionButton.AddItem(skin.Name, i);
+            SkinOptionButton.AddItem(skin.Name, skin.Id);
         }
 
-        var savedSkinIndex = skins.FindIndex(skin => skin.Name == _mainSetting.CurrentSkinName);
+        var savedSkinIndex = skins.FindIndex(skin => skin.Id == _mainSetting.CurrentSkin.Id);
         if (savedSkinIndex != -1)
         {
             SkinOptionButton.Select(savedSkinIndex);
