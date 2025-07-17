@@ -3,7 +3,6 @@ using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
-using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
 using SnekSweeper.Widgets;
 
@@ -12,14 +11,11 @@ namespace SnekSweeper.GridSystem;
 [SceneTree]
 public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
-    [Export] private SkinCollection skinCollection = null!;
-    [Export] private PackedScene cellScene = null!;
-
+    private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
     private Grid _grid = null!;
     private Referee _referee = null!;
-    private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
 
     public CommandInvoker GridCommandInvoker { get; } = new();
 
@@ -53,16 +49,13 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     public List<IHumbleCell> InstantiateHumbleCells(int count)
     {
         var humbleCells = new List<IHumbleCell>();
-        var currentSkin = skinCollection.Skins[_mainSetting.CurrentSkinIndex];
 
         for (var i = 0; i < count; i++)
         {
-            var humbleCell = cellScene.Instantiate<HumbleCell>();
-
-            humbleCell.UseSkin(currentSkin);
-
-            AddChild(humbleCell);
+            var humbleCell = SceneFactory.Instantiate<HumbleCell>();
             humbleCells.Add(humbleCell);
+            humbleCell.UseSkin(_mainSetting.CurrentSkin);
+            AddChild(humbleCell);
         }
 
         return humbleCells;

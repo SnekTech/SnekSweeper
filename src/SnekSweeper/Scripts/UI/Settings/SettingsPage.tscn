@@ -1,12 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://c3v16clfuvy6n"]
+[gd_scene load_steps=3 format=3 uid="uid://c3v16clfuvy6n"]
 
 [ext_resource type="Script" uid="uid://dn3rxc1nqx581" path="res://Scripts/UI/Settings/SettingsPage.cs" id="1_f6ywa"]
-[ext_resource type="Resource" uid="uid://cv6d715pwwrsh" path="res://Resources/skins/skin_collection.tres" id="2_xnkgw"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="3_wsdol"]
 
 [node name="SettingsPage" type="CanvasLayer"]
 script = ExtResource("1_f6ywa")
-skinCollection = ExtResource("2_xnkgw")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15

@@ -1,5 +1,6 @@
-﻿using Godot;
+﻿using System.Text.Json.Serialization;
 using SnekSweeper.GridSystem;
+using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.GameSettings;
 
@@ -7,17 +8,14 @@ namespace SnekSweeper.GameSettings;
 public partial class MainSetting : Resource
 {
     public readonly IGridDifficulty[] Difficulties =
-    {
+    [
         new GridDifficulty("simple", (5, 5), 0.1f),
         new GridDifficulty("medium", (10, 10), 0.1f),
         new GridDifficulty("hard", (10, 10), 0.2f),
-    };
+    ];
 
     [Export]
     private int _currentDifficultyIndex = 1;
-
-    [Export]
-    private int _currentSkinIndex;
 
     public int CurrentDifficultyIndex
     {
@@ -33,13 +31,8 @@ public partial class MainSetting : Resource
 
     public IGridDifficulty CurrentDifficulty => Difficulties[_currentDifficultyIndex];
 
-    public int CurrentSkinIndex
-    {
-        get => _currentSkinIndex;
-        set
-        {
-            _currentSkinIndex = value;
-            EmitChanged();
-        }
-    }
+    public string CurrentSkinName { get; set; } = string.Empty;
+    
+    [JsonIgnore]
+    public ISkin CurrentSkin => SkinFactory.GetSkinByName(CurrentSkinName);
 }

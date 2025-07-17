@@ -9,14 +9,10 @@ namespace SnekSweeper.UI.Settings;
 [SceneTree]
 public partial class SettingsPage : CanvasLayer, ISceneScript
 {
-    [Export]
-    private SkinCollection skinCollection = null!;
-
-    private MainSetting _mainSetting = null!;
+    private MainSetting _mainSetting = HouseKeeper.MainSetting;
 
     public override void _Ready()
     {
-        _mainSetting = HouseKeeper.MainSetting;
         _mainSetting.DumpGd();
 
         GenerateDifficultyOptions();
@@ -39,7 +35,7 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 
     private void OnSkinSelected(long index)
     {
-        _mainSetting.CurrentSkinIndex = (int)index;
+        _mainSetting.CurrentSkinName = SkinFactory.Skins[(int)index].Name;
         SaveLoadEventBus.EmitSaveRequested();
     }
 
@@ -58,13 +54,18 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
     private void GenerateSkinOptions()
     {
         SkinOptionButton.Clear();
-        var skins = skinCollection.Skins;
+
+        var skins = SkinFactory.Skins;
         for (var i = 0; i < skins.Count; i++)
         {
             var skin = skins[i];
             SkinOptionButton.AddItem(skin.Name, i);
         }
 
-        SkinOptionButton.Select(_mainSetting.CurrentSkinIndex);
+        var savedSkinIndex = skins.FindIndex(skin => skin.Name == _mainSetting.CurrentSkinName);
+        if (savedSkinIndex != -1)
+        {
+            SkinOptionButton.Select(savedSkinIndex);
+        }
     }
 }

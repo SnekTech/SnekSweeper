@@ -1,6 +1,4 @@
-﻿using Godot;
-
-namespace SnekSweeper.SkinSystem;
+﻿namespace SnekSweeper.SkinSystem;
 
 public interface ISkin
 {
