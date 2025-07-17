@@ -1,5 +1,6 @@
 using SnekSweeper.Autoloads;
 using SnekSweeper.GameSettings;
+using SnekSweeper.GridSystem;
 using SnekSweeper.SaveLoad;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.Widgets;
@@ -9,7 +10,7 @@ namespace SnekSweeper.UI.Settings;
 [SceneTree]
 public partial class SettingsPage : CanvasLayer, ISceneScript
 {
-    private MainSetting _mainSetting = HouseKeeper.MainSetting;
+    private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
     public override void _Ready()
     {
@@ -27,27 +28,28 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 
     private void OnDifficultySelected(long index)
     {
-        _mainSetting.CurrentDifficultyIndex = (int)index;
+        _mainSetting.CurrentDifficulty = DifficultyFactory.GetDifficultyById(DifficultyOptionButton.GetSelectedId());
         SaveLoadEventBus.EmitSaveRequested();
     }
 
     private void OnSkinSelected(long index)
     {
-        var id = SkinOptionButton.GetSelectedId();
-        _mainSetting.CurrentSkin = SkinFactory.GetSkinById(id);
+        _mainSetting.CurrentSkin = SkinFactory.GetSkinById(SkinOptionButton.GetSelectedId());
         SaveLoadEventBus.EmitSaveRequested();
     }
 
     private void GenerateDifficultyOptions()
     {
         DifficultyOptionButton.Clear();
-        for (var i = 0; i < _mainSetting.Difficulties.Length; i++)
+        var difficulties = DifficultyFactory.Difficulties;
+        foreach (var difficulty in difficulties)
         {
-            var difficulty = _mainSetting.Difficulties[i];
-            DifficultyOptionButton.AddItem(difficulty.Name, i);
+            DifficultyOptionButton.AddItem(difficulty.Name, difficulty.Id);
         }
 
-        DifficultyOptionButton.Select(_mainSetting.CurrentDifficultyIndex);
+        var savedDifficultyIndex =
+            difficulties.FindIndex(difficulty => difficulty.Id == _mainSetting.CurrentDifficulty.Id);
+        DifficultyOptionButton.Select(savedDifficultyIndex);
     }
 
     private void GenerateSkinOptions()
@@ -55,9 +57,8 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
         SkinOptionButton.Clear();
 
         var skins = SkinFactory.Skins;
-        for (var i = 0; i < skins.Count; i++)
+        foreach (var skin in skins)
         {
-            var skin = skins[i];
             SkinOptionButton.AddItem(skin.Name, skin.Id);
         }
 

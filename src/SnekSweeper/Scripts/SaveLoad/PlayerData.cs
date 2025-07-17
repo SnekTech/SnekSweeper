@@ -1,19 +1,11 @@
 ﻿using SnekSweeper.CheatCode;
 using SnekSweeper.GameHistory;
-using SnekSweeper.GameSettings;
-using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.SaveLoad;
 
 public partial class PlayerData : Resource
 {
     private const string SavePathBase = "user://playerData";
-
-    [Export]
-    public MainSetting MainSetting { get; private set; } = new()
-    {
-        CurrentSkin = SkinFactory.Classic,
-    };
 
     [Export]
     public History History { get; private set; } = new();

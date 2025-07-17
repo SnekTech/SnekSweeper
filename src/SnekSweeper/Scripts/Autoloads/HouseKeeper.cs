@@ -47,20 +47,16 @@ public partial class HouseKeeper : Node
             _playerDataJson = new PlayerDataJson();
             _playerDataJson.Save();
         }
-
-        MainSetting.CurrentSkin = _playerDataJson.CurrentSkin;
     }
 
     private void SavePlayerData()
     {
         _playerData.Save();
 
-        _playerDataJson.CurrentSkin = MainSetting.CurrentSkin;
         _playerDataJson.Save();
     }
 
-    public static MainSetting MainSetting => _playerData.MainSetting;
-
+    public static MainSetting MainSetting => _playerDataJson.MainSetting;
     public static History History => _playerData.History;
     public static CheatCodeSaveData CheatCodeSaveData => _playerData.CheatCodeSaveData;
 }

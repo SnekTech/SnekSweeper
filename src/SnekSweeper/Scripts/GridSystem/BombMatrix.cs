@@ -7,7 +7,7 @@ public class BombMatrix
 {
     private readonly bool[,] _bombs;
 
-    public BombMatrix(IGridDifficulty gridDifficulty)
+    public BombMatrix(GridDifficulty gridDifficulty)
     {
         var probability = gridDifficulty.BombPercent;
         if (probability is < 0 or > 1)

@@ -3,32 +3,9 @@ using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.GameSettings;
 
-[GlobalClass]
-public partial class MainSetting : Resource
+public class MainSetting
 {
-    public readonly IGridDifficulty[] Difficulties =
-    [
-        new GridDifficulty("simple", (5, 5), 0.1f),
-        new GridDifficulty("medium", (10, 10), 0.1f),
-        new GridDifficulty("hard", (10, 10), 0.2f),
-    ];
+    public GridDifficulty CurrentDifficulty { get; set; } = DifficultyFactory.Medium;
 
-    [Export]
-    private int _currentDifficultyIndex = 1;
-
-    public int CurrentDifficultyIndex
-    {
-        get => _currentDifficultyIndex;
-        set
-        {
-            _currentDifficultyIndex = value;
-
-            if (value != _currentDifficultyIndex)
-                EmitChanged();
-        }
-    }
-
-    public IGridDifficulty CurrentDifficulty => Difficulties[_currentDifficultyIndex];
-
-    public required SkinData CurrentSkin { get; set; }
+    public SkinData CurrentSkin { get; set; } = SkinFactory.Classic;
 }

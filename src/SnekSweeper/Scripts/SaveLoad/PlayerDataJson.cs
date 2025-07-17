@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
-using SnekSweeper.SkinSystem;
+using SnekSweeper.GameSettings;
 
 namespace SnekSweeper.SaveLoad;
 
@@ -8,7 +8,7 @@ public class PlayerDataJson
 {
     public static readonly string SavePath = Path.Combine(OS.GetUserDataDir(), "playerData.json");
 
-    public SkinData CurrentSkin { get; set; } = SkinFactory.Classic;
+    public MainSetting MainSetting { get; set; } = new();
 
     public static PlayerDataJson Load()
     {
