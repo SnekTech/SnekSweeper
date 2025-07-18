@@ -11,11 +11,11 @@ public static class SkinFactory
         [Mahjong.Id] = Mahjong,
     };
 
-    public static List<SkinData> Skins => BuiltinSkins.Values.ToList();
+    public static IEnumerable<SkinData> Skins => BuiltinSkins.Values;
 
-    public static SkinData GetSkinById(int id)
+    public static SkinData? GetSkinById(int id)
     {
         BuiltinSkins.TryGetValue(id, out var skin);
-        return skin ?? Classic;
+        return skin;
     }
 }

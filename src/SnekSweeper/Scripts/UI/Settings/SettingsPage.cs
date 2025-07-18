@@ -34,7 +34,7 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 
     private void OnSkinSelected(long index)
     {
-        _mainSetting.CurrentSkin = SkinFactory.GetSkinById(SkinOptionButton.GetSelectedId());
+        _mainSetting.CurrentSkin = SkinFactory.GetSkinById(SkinOptionButton.GetSelectedId()) ?? SkinFactory.Classic;
         SaveLoadEventBus.EmitSaveRequested();
     }
 
@@ -56,7 +56,7 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
     {
         SkinOptionButton.Clear();
 
-        var skins = SkinFactory.Skins;
+        var skins = SkinFactory.Skins.ToList();
         foreach (var skin in skins)
         {
             SkinOptionButton.AddItem(skin.Name, skin.Id);
