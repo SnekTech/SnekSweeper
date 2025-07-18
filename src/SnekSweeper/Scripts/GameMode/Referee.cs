@@ -35,7 +35,7 @@ public class Referee
             StartAt = _currentRunStartAt,
             EndAt = DateTime.Now,
             Winning = winning,
-            RandomData = new RandomData(seed, state),
+            RngData = new RngData(seed, state),
         };
         HouseKeeper.History.AddRecord(record);
     }

@@ -10,7 +10,7 @@ public partial class RecordCard : PanelContainer, ISceneScript
     {
         SetTimeLabel(gameRunRecord.StartAt, gameRunRecord.EndAt);
         SetWinningLabel(gameRunRecord.Winning);
-        SetSeedLabel(gameRunRecord.RandomData.Seed);
+        SetSeedLabel(gameRunRecord.RngData.Seed);
     }
 
     private void SetTimeLabel(DateTime startAt, DateTime endAt)

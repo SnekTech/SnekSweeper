@@ -8,6 +8,6 @@ public partial class Main : Node, ISceneScript
 {
     public override void _Ready()
     {
-        Rand.Randomize();
+        Rand.RandomizeSeed();
     }
 }

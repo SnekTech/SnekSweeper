@@ -2,17 +2,13 @@
 
 namespace Widgets.Roguelike;
 
-public class RandomGenerator
+public class RandomGenerator(RngData data)
 {
-    public RandomGenerator(ulong seed = 0, ulong state = 0)
-    {
-        _generator = new Pcg32(seed, state);
-    }
-    
-    private Pcg32 _generator;
+    private Pcg32 _generator = new(data.Seed, data.State);
 
-    public void Reset(ulong seed, ulong state)
+    public void Reset(RngData data)
     {
+        var (seed, state) = data;
         _generator = new Pcg32(seed, state);
     }
 
