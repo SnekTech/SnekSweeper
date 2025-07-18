@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using SnekSweeper.CellSystem.StateMachine.States;
+﻿using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.FSM;
 
 namespace SnekSweeper.CellSystem.StateMachine;

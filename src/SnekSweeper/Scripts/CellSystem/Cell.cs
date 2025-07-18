@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using SnekSweeper.CellSystem.Components;
+﻿using SnekSweeper.CellSystem.Components;
 using SnekSweeper.CellSystem.StateMachine;
 using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.GridSystem;
@@ -27,12 +26,11 @@ public class Cell
 
     public GridIndex GridIndex { get; }
     public bool HasBomb { get; set; }
+    public int NeighborBombCount { get; private set; }
 
     public bool IsCovered => _stateMachine.IsAtState<CoveredState>();
     public bool IsRevealed => _stateMachine.IsAtState<RevealedState>();
     public bool IsFlagged => _stateMachine.IsAtState<FlaggedState>();
-
-    public int NeighborBombCount { get; private set; }
 
     public async Task InitAsync(int neighborBombCount)
     {

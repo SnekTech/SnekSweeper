@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SnekSweeper.FSM;
+﻿namespace SnekSweeper.FSM;
 
 public abstract class StateMachine<TState>
     where TState : class, IState

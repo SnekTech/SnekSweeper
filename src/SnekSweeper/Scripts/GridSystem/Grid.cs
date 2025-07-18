@@ -17,6 +17,9 @@ public class Grid
     private bool _hasCellInitialized;
     private readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
     private readonly CommandInvoker _commandInvoker;
+    private readonly TransitioningCellsSet _transitioningCellsSet = new();
+
+    private bool IsTransitioning => !_transitioningCellsSet.IsEmpty;
 
     public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
     {
@@ -82,6 +85,7 @@ public class Grid
             var neighborBombCount = GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb);
             initCellTasks.Add(cell.InitAsync(neighborBombCount));
         }
+
         await Task.WhenAll(initCellTasks);
 
         _hasCellInitialized = true;
@@ -97,16 +101,22 @@ public class Grid
             await InitCellsAsync(gridIndex);
         }
 
+        if (IsTransitioning) return;
+
         await RevealAt(gridIndex);
     }
 
     public async Task OnPrimaryDoubleClickedAt(GridIndex gridIndex)
     {
+        if (IsTransitioning) return;
+
         await RevealAround(gridIndex);
     }
 
     public async Task OnSecondaryReleasedAt(GridIndex gridIndex)
     {
+        if (IsTransitioning) return;
+
         await GetCellAt(gridIndex).SwitchFlag();
         _eventBus.EmitFlagCountChanged(FlagCount);
     }
@@ -164,7 +174,9 @@ public class Grid
         if (cells.Count == 0)
             return;
 
+        _transitioningCellsSet.AddRange(cells);
         await ExecuteRevealBatchCommandAsync(cells);
+        _transitioningCellsSet.RemoveRange(cells);
 
         var bombCellsRevealed = cells.Where(cell => cell.HasBomb).ToList();
         if (bombCellsRevealed.Count > 0)
