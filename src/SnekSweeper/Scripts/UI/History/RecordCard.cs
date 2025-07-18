@@ -6,11 +6,11 @@ namespace SnekSweeper.UI.History;
 [SceneTree]
 public partial class RecordCard : PanelContainer, ISceneScript
 {
-    public void SetContent(Record record)
+    public void SetContent(GameRunRecord gameRunRecord)
     {
-        SetTimeLabel(record.StartAt, record.EndAt);
-        SetWinningLabel(record.Winning);
-        SetSeedLabel(record.RandomGeneratorData.Seed);
+        SetTimeLabel(gameRunRecord.StartAt, gameRunRecord.EndAt);
+        SetWinningLabel(gameRunRecord.Winning);
+        SetSeedLabel(gameRunRecord.RandomData.Seed);
     }
 
     private void SetTimeLabel(DateTime startAt, DateTime endAt)

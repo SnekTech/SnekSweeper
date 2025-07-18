@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.Constants;
-using SnekSweeper.GameHistory;
 
 namespace SnekSweeper.GridSystem;
 
@@ -14,6 +9,7 @@ public class Grid
 {
     public event Action<List<Cell>>? BombRevealed;
     public event Action? BatchRevealed;
+    public event Action? InitCompleted;
 
     private readonly BombMatrix _bombMatrix;
     private readonly Cell[,] _cells;
@@ -90,8 +86,8 @@ public class Grid
 
         _hasCellInitialized = true;
 
+        InitCompleted?.Invoke();
         _eventBus.EmitBombCountChanged(BombCount);
-        HistoryManager.CurrentRecordStartAt = DateTime.Now;
     }
 
     public async Task OnPrimaryReleasedAt(GridIndex gridIndex)

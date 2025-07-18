@@ -1,26 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Godot;
-using Godot.Collections;
-using SnekSweeper.SaveLoad;
+﻿using SnekSweeper.SaveLoad;
 
 namespace SnekSweeper.GameHistory;
 
-public partial class History : Resource
+public class History
 {
-    [Export]
-    private Array<Record> _records = new();
-    
-    public void AddRecord(Record record)
+    public List<GameRunRecord> Records { get; } = [];
+
+    public void AddRecord(GameRunRecord gameRunRecord)
     {
-        _records.Add(record);
+        Records.Add(gameRunRecord);
         SaveLoadEventBus.EmitSaveRequested();
     }
 
     public void ClearRecords()
     {
-        _records.Clear();
+        Records.Clear();
+        SaveLoadEventBus.EmitSaveRequested();
     }
-    
-    public List<Record> Records => _records.ToList();
 }

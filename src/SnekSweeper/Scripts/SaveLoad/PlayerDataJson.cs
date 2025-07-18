@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json;
 using SnekSweeper.CheatCode;
+using SnekSweeper.GameHistory;
 using SnekSweeper.GameSettings;
 
 namespace SnekSweeper.SaveLoad;
@@ -11,6 +12,7 @@ public class PlayerDataJson
 
     public MainSetting MainSetting { get; init; } = new();
     public ActivatedCheatCodeSet ActivatedCheatCodeSet { get; init; } = new();
+    public History History { get; init; } = new();
 
     public static PlayerDataJson Load()
     {
