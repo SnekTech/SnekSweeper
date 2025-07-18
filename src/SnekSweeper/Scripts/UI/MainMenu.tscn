@@ -27,6 +27,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Settings"
 
+[node name="CheatCodeButton" type="Button" parent="CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cheat Code"
+
 [node name="HistoryButton" type="Button" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2

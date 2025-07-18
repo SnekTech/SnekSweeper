@@ -1,4 +1,5 @@
 ﻿using SnekSweeper.Levels;
+using SnekSweeper.UI.CheatCode;
 using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
 
@@ -14,10 +15,11 @@ public partial class MainMenu : CanvasLayer
 
     private void RegisterEvents()
     {
-        var sceneManager = Autoload.SceneSwitcher;
-        StartButton.Pressed += () => sceneManager.GotoScene<Level1>();
-        SettingsButton.Pressed += () => sceneManager.GotoScene<SettingsPage>();
-        HistoryButton.Pressed += () => sceneManager.GotoScene<HistoryPage>();
+        var sceneSwitcher = Autoload.SceneSwitcher;
+        StartButton.Pressed += () => sceneSwitcher.GotoScene<Level1>();
+        SettingsButton.Pressed += () => sceneSwitcher.GotoScene<SettingsPage>();
+        CheatCodeButton.Pressed += () => sceneSwitcher.GotoScene<CheatCodePage>();
+        HistoryButton.Pressed += () => sceneSwitcher.GotoScene<HistoryPage>();
 
         QuitButton.Pressed += () => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
     }

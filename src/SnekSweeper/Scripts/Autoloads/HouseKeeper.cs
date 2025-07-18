@@ -7,9 +7,6 @@ namespace SnekSweeper.Autoloads;
 
 public partial class HouseKeeper : Node
 {
-    [Export]
-    private CheatCodeCollection cheatCodeCollection = null!;
-
     private static PlayerData _playerData = null!;
     private static PlayerDataJson _playerDataJson = null!;
 
@@ -34,7 +31,6 @@ public partial class HouseKeeper : Node
         else
         {
             _playerData = new PlayerData();
-            _playerData.CheatCodeSaveData.Init(cheatCodeCollection);
             _playerData.Save();
         }
 
@@ -58,5 +54,5 @@ public partial class HouseKeeper : Node
 
     public static MainSetting MainSetting => _playerDataJson.MainSetting;
     public static History History => _playerData.History;
-    public static CheatCodeSaveData CheatCodeSaveData => _playerData.CheatCodeSaveData;
+    public static ActivatedCheatCodeSet ActivatedCheatCodeSet => _playerDataJson.ActivatedCheatCodeSet;
 }

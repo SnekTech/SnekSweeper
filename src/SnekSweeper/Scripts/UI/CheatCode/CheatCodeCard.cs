@@ -1,4 +1,5 @@
-﻿using SnekSweeper.CheatCode;
+﻿using SnekSweeper.Autoloads;
+using SnekSweeper.CheatCode;
 using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.CheatCode;
@@ -6,10 +7,9 @@ namespace SnekSweeper.UI.CheatCode;
 [SceneTree]
 public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
-    public delegate void CheatCodeToggleHandler(string cheatCodeName, bool isButtonChecked);
+    private readonly ActivatedCheatCodeSet activatedSet = HouseKeeper.ActivatedCheatCodeSet;
 
-    private CheatCodeToggleHandler _onToggle = null!;
-    private CheatCodeResource _cheatCodeResource = null!;
+    private CheatCodeData _cheatCode = null!;
 
     public override void _EnterTree()
     {
@@ -21,18 +21,24 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
         CheckButton.Pressed -= OnCheckButtonPressed;
     }
 
-    public void Init(CheatCodeResource cheatCodeResource, CheatCodeToggleHandler onToggle, bool isActivated = false)
+    public void Init(CheatCodeData cheatCode)
     {
-        _cheatCodeResource = cheatCodeResource;
-        _onToggle = onToggle;
+        _cheatCode = cheatCode;
 
-        Name.Text = cheatCodeResource.Name;
-        Icon.Texture = cheatCodeResource.Icon;
-        CheckButton.SetPressed(isActivated);
+        NameLabel.Text = cheatCode.Name;
+        Icon.Texture = cheatCode.Icon;
+        CheckButton.SetPressed(activatedSet.Contains(cheatCode));
     }
 
     private void OnCheckButtonPressed()
     {
-        _onToggle(_cheatCodeResource.Name, CheckButton.IsPressed());
+        if (activatedSet.Contains(_cheatCode))
+        {
+            activatedSet.Remove(_cheatCode);
+        }
+        else
+        {
+            activatedSet.Add(_cheatCode);
+        }
     }
 }

@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://d05cgegldnxei"]
+[gd_scene load_steps=3 format=3 uid="uid://d05cgegldnxei"]
 
 [ext_resource type="Script" uid="uid://dbgpbjx6h2wit" path="res://Scripts/UI/CheatCode/CheatCodePage.cs" id="1_j7dlw"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_tiqmo"]
-[ext_resource type="Resource" uid="uid://dyvt8gfbdnlpr" path="res://Resources/CheatCode/CheatCodeCollection.tres" id="3_t6xf8"]
 
 [node name="CheatCodePage" type="Control"]
 layout_mode = 3
@@ -12,7 +11,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_j7dlw")
-cheatCodeCollection = ExtResource("3_t6xf8")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1

@@ -1,5 +1,4 @@
-﻿using SnekSweeper.CheatCode;
-using SnekSweeper.GameHistory;
+﻿using SnekSweeper.GameHistory;
 
 namespace SnekSweeper.SaveLoad;
 
@@ -9,9 +8,6 @@ public partial class PlayerData : Resource
 
     [Export]
     public History History { get; private set; } = new();
-
-    [Export]
-    public CheatCodeSaveData CheatCodeSaveData { get; private set; } = new();
 
     public void Save()
     {

@@ -1,8 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://cqm1vvb7i3u1o"]
+[gd_scene load_steps=2 format=3 uid="uid://cqm1vvb7i3u1o"]
 
 [ext_resource type="Script" uid="uid://ch0nb468nop3u" path="res://Scripts/Autoloads/HouseKeeper.cs" id="1_b31sp"]
-[ext_resource type="Resource" uid="uid://dyvt8gfbdnlpr" path="res://Resources/CheatCode/CheatCodeCollection.tres" id="2_ht2rd"]
 
 [node name="HouseKeeper" type="Node"]
 script = ExtResource("1_b31sp")
-cheatCodeCollection = ExtResource("2_ht2rd")

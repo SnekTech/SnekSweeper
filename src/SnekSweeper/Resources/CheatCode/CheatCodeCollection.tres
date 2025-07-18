@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="CheatCodeCollection" load_steps=3 format=3 uid="uid://dyvt8gfbdnlpr"]
-
-[ext_resource type="Resource" uid="uid://cb7fcfxa82jav" path="res://Resources/CheatCode/Alpha.tres" id="1_5jlfc"]
-[ext_resource type="Script" uid="uid://buv67r4mekci4" path="res://Scripts/CheatCode/CheatCodeCollection.cs" id="2_mbfkk"]
-
-[resource]
-script = ExtResource("2_mbfkk")
-cheatCodeResources = Array[Object]([ExtResource("1_5jlfc")])
