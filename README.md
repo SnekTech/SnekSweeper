@@ -18,7 +18,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] undo ability
 - [x] PRNG using PCG-random
     - [x] save random seed for each game history record
-- [ ] collectable cheat-code like Doom Eternal
 - [ ] *moving bombs every click, show the moving direction
 - [ ] 闪卡
 - [ ] 夜光，黑暗环境下某些元素发光提示
@@ -48,7 +47,11 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] what to save
     - [x] current difficulty
     - [x] current skin
-- [x] architecture using Godot Resource
+    - [x] activated cheat code set
+    - [x] game history
+- [x] use JSON
+- [ ] multiple save slots
+- [ ] migration across different versions
 - [ ] Steam cloud save
 
 ## UI
@@ -70,6 +73,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] skin assets
     - [x] default
     - [x] 麻将
+    - [ ] poker
 - [ ] UI
     - [x] change skin
 - [ ] change skin on all cell components
@@ -79,7 +83,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Game Modes
 
-- [x] original
+- [x] classic
 - [ ] zen mode, immersive minesweeper experience
 - [ ] timing
 - [ ] endless
@@ -90,8 +94,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] history screen
 - [x] save/load
 
-## Health / Damage System
-
 ## Tutorial
 
 - [ ] interactable grid & cell
@@ -99,11 +101,14 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Achievement
 
+- [ ] architecture
 - [ ] Steam integration
 
 ## Digital Museum
 
-- show off game assets
+- [ ] 百科全书
+- [ ] animation show off
+- [ ] skin show off
 
 ## Cheat Code
 

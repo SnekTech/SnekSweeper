@@ -5,7 +5,7 @@ namespace SnekSweeper.CheatCode;
 public class ActivatedCheatCodeSet
 {
     // ReSharper disable once MemberCanBePrivate.Global
-    public HashSet<CheatCodeId> ActivatedSet { get; } = [];
+    public HashSet<CheatCodeId> ActivatedSet { get; set; } = [];
 
     public void Add(CheatCodeData cheatCode)
     {
