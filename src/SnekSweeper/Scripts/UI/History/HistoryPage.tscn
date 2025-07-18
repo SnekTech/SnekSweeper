@@ -1,12 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://hk57xckul7ox"]
+[gd_scene load_steps=3 format=3 uid="uid://hk57xckul7ox"]
 
 [ext_resource type="Script" uid="uid://cewnqg33qno37" path="res://Scripts/UI/History/HistoryPage.cs" id="1_4aauc"]
-[ext_resource type="PackedScene" uid="uid://ch4rktebfoitb" path="res://Scripts/UI/History/RecordCard.tscn" id="2_7jss2"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="3_0nfvo"]
 
 [node name="HistoryPage" type="CanvasLayer"]
 script = ExtResource("1_4aauc")
-recordCardScene = ExtResource("2_7jss2")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15
@@ -27,10 +25,18 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="RecordsCountLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="RecordsCountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "7 records in total"
+
+[node name="ClearButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Clear"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(100, 200)

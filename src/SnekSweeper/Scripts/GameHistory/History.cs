@@ -4,7 +4,8 @@ namespace SnekSweeper.GameHistory;
 
 public class History
 {
-    public List<GameRunRecord> Records { get; } = [];
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    public List<GameRunRecord> Records { get; set; } = [];
 
     public void AddRecord(GameRunRecord gameRunRecord)
     {

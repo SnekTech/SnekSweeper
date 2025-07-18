@@ -88,4 +88,17 @@ public static class CustomExtensions
         list.Clear();
         list.AddRange(array);
     }
+
+    public static void ClearChildren(this Node node)
+    {
+        foreach (var child in node.GetChildren())
+        {
+            child.QueueFree();
+        }
+    }
+
+    public static IEnumerable<T> GetChildrenOfType<T>(this Node node)
+    {
+        return node.GetChildren().OfType<T>();
+    }
 }
