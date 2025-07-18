@@ -1,5 +1,4 @@
-﻿using SnekSweeper.Autoloads;
-using SnekSweeper.CheatCode;
+﻿using SnekSweeper.CheatCode;
 using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.CheatCode;
@@ -7,8 +6,6 @@ namespace SnekSweeper.UI.CheatCode;
 [SceneTree]
 public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
-    private readonly ActivatedCheatCodeSet activatedSet = HouseKeeper.ActivatedCheatCodeSet;
-
     private CheatCodeData _cheatCode = null!;
 
     public override void _EnterTree()
@@ -27,18 +24,11 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
         NameLabel.Text = cheatCode.Name;
         Icon.Texture = cheatCode.Icon;
-        CheckButton.SetPressed(activatedSet.Contains(cheatCode));
+        CheckButton.SetPressed(cheatCode.IsActivated);
     }
 
     private void OnCheckButtonPressed()
     {
-        if (activatedSet.Contains(_cheatCode))
-        {
-            activatedSet.Remove(_cheatCode);
-        }
-        else
-        {
-            activatedSet.Add(_cheatCode);
-        }
+        _cheatCode.IsActivated = !_cheatCode.IsActivated;
     }
 }

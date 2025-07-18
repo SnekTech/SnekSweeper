@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using SnekSweeper.Autoloads;
 
 namespace SnekSweeper.CheatCode;
 
@@ -11,10 +12,26 @@ public class CheatCodeData
 
     [JsonIgnore]
     public Texture2D Icon => SnekUtility.LoadTexture(IconPath);
+
+    [JsonIgnore]
+    public bool IsActivated
+    {
+        get => HouseKeeper.ActivatedCheatCodeSet.Contains(this);
+        set
+        {
+            if (value)
+            {
+                HouseKeeper.ActivatedCheatCodeSet.Add(this);
+            }
+            else
+            {
+                HouseKeeper.ActivatedCheatCodeSet.Remove(this);
+            }
+        }
+    }
 }
 
 public readonly record struct CheatCodeId(Guid Value)
 {
     public static CheatCodeId Empty => new(Guid.Empty);
-    public static CheatCodeId NewCheatCodeId => new(Guid.NewGuid());
 }
