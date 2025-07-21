@@ -13,4 +13,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Widgets\Widgets.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GodotGadgets">
+      <HintPath>..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets\bin\Debug\net8.0\GodotGadgets.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-﻿using SnekSweeper.Autoloads;
+﻿using GodotGadgets.Extensions;
+using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.History;

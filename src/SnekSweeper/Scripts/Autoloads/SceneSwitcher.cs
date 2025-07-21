@@ -1,4 +1,5 @@
-﻿using SnekSweeper.UI.Common;
+﻿using GodotGadgets.Extensions;
+using SnekSweeper.UI.Common;
 using SnekSweeper.Widgets;
 
 namespace SnekSweeper.Autoloads;

@@ -1,4 +1,5 @@
 ﻿using SnekSweeper.Widgets;
+using Widgets;
 using Widgets.MessageQueue;
 
 namespace SnekSweeper.Autoloads;
