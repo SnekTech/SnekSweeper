@@ -11,20 +11,21 @@ public class Referee
 {
     private readonly Grid _grid;
     private DateTime _currentRunStartAt = DateTime.MinValue;
+    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
 
     public Referee(Grid grid)
     {
         _grid = grid;
-        _grid.BatchRevealed += OnBatchRevealed;
-        _grid.BombRevealed += OnBombRevealed;
-        _grid.InitCompleted += OnGridInitCompleted;
+        _gridEventBus.BatchRevealed += OnBatchRevealed;
+        _gridEventBus.BombRevealed += OnBombRevealed;
+        _gridEventBus.InitCompleted += OnGridInitCompleted;
     }
 
-    public void OnDispose()
+    public void Dispose()
     {
-        _grid.BatchRevealed -= OnBatchRevealed;
-        _grid.BombRevealed -= OnBombRevealed;
-        _grid.InitCompleted -= OnGridInitCompleted;
+        _gridEventBus.BatchRevealed -= OnBatchRevealed;
+        _gridEventBus.BombRevealed -= OnBombRevealed;
+        _gridEventBus.InitCompleted -= OnGridInitCompleted;
     }
 
     private void SaveNewRecord(bool winning)

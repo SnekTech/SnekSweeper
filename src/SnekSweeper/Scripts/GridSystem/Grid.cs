@@ -7,10 +7,6 @@ namespace SnekSweeper.GridSystem;
 
 public class Grid
 {
-    public event Action<List<Cell>>? BombRevealed;
-    public event Action? BatchRevealed;
-    public event Action? InitCompleted;
-
     private readonly BombMatrix _bombMatrix;
     private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
@@ -90,7 +86,7 @@ public class Grid
 
         _hasCellInitialized = true;
 
-        InitCompleted?.Invoke();
+        _eventBus.EmitInitCompleted();
         _eventBus.EmitBombCountChanged(BombCount);
     }
 
@@ -181,10 +177,10 @@ public class Grid
         var bombCellsRevealed = cells.Where(cell => cell.HasBomb).ToList();
         if (bombCellsRevealed.Count > 0)
         {
-            BombRevealed?.Invoke(bombCellsRevealed);
+            _eventBus.EmitBombRevealed(bombCellsRevealed);
         }
 
-        BatchRevealed?.Invoke();
+        _eventBus.EmitBatchRevealed();
     }
 
     private async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal)

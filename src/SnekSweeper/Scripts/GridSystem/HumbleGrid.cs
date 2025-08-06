@@ -38,7 +38,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _ExitTree()
     {
-        _referee.OnDispose();
+        _referee.Dispose();
 
         _hudEventBus.UndoPressed -= OnUndoPressed;
         GridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
