@@ -11,7 +11,7 @@ public partial class ComboComponent : Node
 
     public IComboDisplay? ComboDisplay
     {
-        get => _comboDisplay;
+        private get => _comboDisplay;
         set
         {
             _comboDisplay = value;
