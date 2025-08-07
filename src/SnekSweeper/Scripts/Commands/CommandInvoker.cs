@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Godot;
-
-namespace SnekSweeper.Commands;
+﻿namespace SnekSweeper.Commands;
 
 public class CommandInvoker
 {
@@ -11,7 +7,6 @@ public class CommandInvoker
     public async Task ExecuteCommandAsync(ICommand command)
     {
         await command.ExecuteAsync();
-        GD.Print($"execute: {command.Name}");
         _undoStack.Push(command);
     }
 
@@ -21,7 +16,6 @@ public class CommandInvoker
             return;
 
         var activeCommand = _undoStack.Pop();
-        GD.Print($"undo: {activeCommand.Name}");
         await activeCommand.UndoAsync();
     }
 }
