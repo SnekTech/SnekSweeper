@@ -1,5 +1,4 @@
 ﻿using SnekSweeper.Autoloads;
-using SnekSweeper.Combo;
 using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
 
@@ -15,20 +14,13 @@ public partial class HUD : CanvasLayer, ISceneScript
     {
         _gridEventBus.BombCountChanged += OnBombCountChanged;
         _gridEventBus.FlagCountChanged += OnFlagCountChanged;
-        _gridEventBus.BatchRevealed += OnBatchRevealed;
         UndoButton.Pressed += OnUndoPressed;
-    }
-
-    public override void _Ready()
-    {
-        GridComboComponent.ComboDisplay = new BasicComboDisplay(ComboLevelTextLabel, ComboProgressBar);
     }
 
     public override void _ExitTree()
     {
         _gridEventBus.BombCountChanged -= OnBombCountChanged;
         _gridEventBus.FlagCountChanged -= OnFlagCountChanged;
-        _gridEventBus.BatchRevealed -= OnBatchRevealed;
         UndoButton.Pressed -= OnUndoPressed;
     }
 
@@ -36,6 +28,4 @@ public partial class HUD : CanvasLayer, ISceneScript
     private void OnFlagCountChanged(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
 
     private void OnUndoPressed() => _hudEventBus.EmitUndoPressed();
-
-    private void OnBatchRevealed() => GridComboComponent.IncreaseComboLevel();
 }

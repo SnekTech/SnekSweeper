@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://ofhobc7irrc4"]
+
+[ext_resource type="PackedScene" uid="uid://bgulr4c5sa6v" path="res://Scripts/Combo/ComboComponent.tscn" id="1_jg7dg"]
+[ext_resource type="Script" uid="uid://cypb3vhhtx0y1" path="res://Scripts/Combo/ComboRankCard.cs" id="1_xce2d"]
+
+[node name="ComboRankCard" type="VBoxContainer"]
+offset_right = 100.0
+offset_bottom = 30.0
+script = ExtResource("1_xce2d")
+
+[node name="ComboLevelTextLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Good"
+
+[node name="ComboProgressBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+value = 77.0
+show_percentage = false
+
+[node name="GridComboComponent" parent="." instance=ExtResource("1_jg7dg")]
+unique_name_in_owner = true

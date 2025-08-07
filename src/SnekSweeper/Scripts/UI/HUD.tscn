@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_exko8"]
 [ext_resource type="Script" uid="uid://y4bxhdwv6tsd" path="res://Scripts/UI/HUD.cs" id="1_udr3g"]
-[ext_resource type="PackedScene" uid="uid://bgulr4c5sa6v" path="res://Scripts/Combo/ComboComponent.tscn" id="3_vtae1"]
+[ext_resource type="PackedScene" uid="uid://ofhobc7irrc4" path="res://Scripts/Combo/ComboRankCard.tscn" id="3_vtae1"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_udr3g")
@@ -60,22 +60,8 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "0 flags"
 
-[node name="ComboInfoBox" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+[node name="ComboRankCard" parent="MarginContainer/HBoxContainer" instance=ExtResource("3_vtae1")]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
 size_flags_vertical = 0
-
-[node name="ComboLevelTextLabel" type="Label" parent="MarginContainer/HBoxContainer/ComboInfoBox"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Good"
-
-[node name="ComboProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/ComboInfoBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 8)
-layout_mode = 2
-value = 77.0
-show_percentage = false
-
-[node name="GridComboComponent" parent="MarginContainer/HBoxContainer/ComboInfoBox" instance=ExtResource("3_vtae1")]
-unique_name_in_owner = true
