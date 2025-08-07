@@ -1,3 +1,4 @@
+using GodotGadgets.Extensions;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GameSettings;
 using SnekSweeper.GridSystem;
@@ -12,19 +13,30 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 {
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
-    public override void _Ready()
+    #region lifecycle
+
+    public override void _EnterTree()
     {
-        GenerateDifficultyOptions();
-        GenerateSkinOptions();
         DifficultyOptionButton.ItemSelected += OnDifficultySelected;
         SkinOptionButton.ItemSelected += OnSkinSelected;
+        ComboRankDisplayToggle.Pressed += OnComboRankDisplayToggled;
+    }
+
+    public override void _Ready()
+    {
+        InitDifficultyOptions();
+        InitSkinOptions();
+        InitComboRankDisplayToggle();
     }
 
     public override void _ExitTree()
     {
         DifficultyOptionButton.ItemSelected -= OnDifficultySelected;
         SkinOptionButton.ItemSelected -= OnSkinSelected;
+        ComboRankDisplayToggle.Pressed -= OnComboRankDisplayToggled;
     }
+
+    #endregion
 
     private void OnDifficultySelected(long index)
     {
@@ -38,7 +50,13 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
         SaveLoadEventBus.EmitSaveRequested();
     }
 
-    private void GenerateDifficultyOptions()
+    private void OnComboRankDisplayToggled()
+    {
+        _mainSetting.ComboRankDisplay = !_mainSetting.ComboRankDisplay;
+        SaveLoadEventBus.EmitSaveRequested();
+    }
+
+    private void InitDifficultyOptions()
     {
         DifficultyOptionButton.Clear();
         var difficulties = DifficultyFactory.Difficulties;
@@ -52,7 +70,7 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
         DifficultyOptionButton.Select(savedDifficultyIndex);
     }
 
-    private void GenerateSkinOptions()
+    private void InitSkinOptions()
     {
         SkinOptionButton.Clear();
 
@@ -67,5 +85,10 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
         {
             SkinOptionButton.Select(savedSkinIndex);
         }
+    }
+
+    private void InitComboRankDisplayToggle()
+    {
+        ComboRankDisplayToggle.SetPressedNoSignal(_mainSetting.ComboRankDisplay);
     }
 }

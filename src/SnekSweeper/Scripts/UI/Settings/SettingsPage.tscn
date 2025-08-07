@@ -79,7 +79,7 @@ metadata/_edit_group_ = true
 layout_mode = 2
 text = "Combo Rank Display"
 
-[node name="ComboRankDisplayToggle" type="CheckButton" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/ComboRankToggleBox"]
+[node name="ComboRankDisplayToggle" type="CheckBox" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/ComboRankToggleBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
