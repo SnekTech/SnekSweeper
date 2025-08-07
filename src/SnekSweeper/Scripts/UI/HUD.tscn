@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cv3fler02wdew"]
+[gd_scene load_steps=4 format=3 uid="uid://cv3fler02wdew"]
 
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_exko8"]
 [ext_resource type="Script" uid="uid://y4bxhdwv6tsd" path="res://Scripts/UI/HUD.cs" id="1_udr3g"]
+[ext_resource type="PackedScene" uid="uid://bgulr4c5sa6v" path="res://Scripts/Combo/ComboComponent.tscn" id="3_vtae1"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_udr3g")
@@ -17,41 +18,64 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 10
 
-[node name="BackToMainButton" parent="MarginContainer/VBoxContainer" instance=ExtResource("1_exko8")]
+[node name="BackToMainButton" parent="MarginContainer/HBoxContainer/VBoxContainer" instance=ExtResource("1_exko8")]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="UndoButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="UndoButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Undo"
 
-[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="BombCountLabel" type="Label" parent="MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="BombCountLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 bombs"
 
-[node name="FlagCountLabel" type="Label" parent="MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="FlagCountLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 flags"
+
+[node name="ComboInfoBox" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 0
+
+[node name="ComboLevelTextLabel" type="Label" parent="MarginContainer/HBoxContainer/ComboInfoBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Good"
+
+[node name="ComboProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/ComboInfoBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+value = 77.0
+show_percentage = false
+
+[node name="GridComboComponent" parent="MarginContainer/HBoxContainer/ComboInfoBox" instance=ExtResource("3_vtae1")]
+unique_name_in_owner = true

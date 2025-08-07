@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bgulr4c5sa6v"]
+
+[ext_resource type="Script" uid="uid://4h3akv51pjb8" path="res://Scripts/Combo/ComboComponent.cs" id="1_y1e5b"]
+
+[node name="ComboComponent" type="Node"]
+script = ExtResource("1_y1e5b")
+
+[node name="ComboTimer" type="Timer" parent="."]
+unique_name_in_owner = true
