@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cq6jujql0gw5n"]
 
-[ext_resource type="Script" uid="uid://cl514kge2sa28" path="res://Scripts/UI/CheatCodeSystem/CheatCodeCard.cs" id="1_7tr6w"]
+[ext_resource type="Script" uid="uid://cl514kge2sa28" path="res://Scripts/CheatCodeSystem/UI/CheatCodeCard.cs" id="1_7tr6w"]
 [ext_resource type="Texture2D" uid="uid://cs5kniydl8aim" path="res://Art/relic_icon_alpha.png" id="2_ar3yn"]
 
 [node name="CheatCodeCard" type="PanelContainer"]

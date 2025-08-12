@@ -1,7 +1,6 @@
-﻿using SnekSweeper.CheatCodeSystem;
-using SnekSweeper.Widgets;
+﻿using SnekSweeper.Widgets;
 
-namespace SnekSweeper.UI.CheatCodeSystem;
+namespace SnekSweeper.CheatCodeSystem.UI;
 
 [SceneTree]
 public partial class CheatCodeCard : PanelContainer, ISceneScript
