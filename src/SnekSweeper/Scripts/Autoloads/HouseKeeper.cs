@@ -1,4 +1,4 @@
-﻿using SnekSweeper.CheatCode;
+﻿using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.GameHistory;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SaveLoad;

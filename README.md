@@ -2,7 +2,6 @@
 
 A minesweeper game with modern game features & nice pixel art assets.
 
-
 ## GamePlay
 
 - [x] different difficulties
@@ -11,7 +10,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] init grid after first click
 - [x] game loop
     - [x] scene change on game win or over
-- [ ] cell reveal combo
+- [x] cell reveal combo
     - [x] standalone combo test scene
     - [x] combo component
 - [ ] charging reveal
@@ -19,14 +18,10 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] PRNG using PCG-random
     - [x] save random seed for each game history record
 - [ ] *moving bombs every click, show the moving direction
-- [ ] 闪卡
-- [ ] 夜光，黑暗环境下某些元素发光提示
-- [ ] 拍卖机制
-- [ ] bingo game
 
 ## User Input
 
-- [ ] refactor InputListener autoload to an event bus
+- [ ] ?controller support
 
 ## Animation
 
@@ -41,6 +36,8 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] scrolling background
     - [x] using shader
     - [ ] random generated like Balatro
+- [ ] 闪卡
+- [ ] 夜光，黑暗环境下某些元素发光提示
 
 ## Save & Load
 
@@ -112,8 +109,12 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Cheat Code
 
-- [ ] 半透明单元格几秒
+- [ ] 半透明单元格
 - [ ] 15% 概率不受伤
+- [x] placeholder icon
 
 ### 新游戏
+
 - 自动售货机
+- [ ] 拍卖机制
+- [ ] bingo game

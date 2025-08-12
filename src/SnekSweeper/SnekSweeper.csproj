@@ -1,21 +1,27 @@
-<Project Sdk="Godot.NET.Sdk/4.4.0">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-    <Nullable>enable</Nullable>
-    <LangVersion>12</LangVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Dumpify" Version="0.6.6" />
-    <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0-250131-2115.Release" />
-    <PackageReference Include="GTweensGodot" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Widgets\Widgets.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="GodotGadgets">
-      <HintPath>..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets\bin\Debug\net8.0\GodotGadgets.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+<Project Sdk="Godot.NET.Sdk/4.4.1">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <Nullable>enable</Nullable>
+        <LangVersion>12</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- PlantUML diagrams for  development only-->
+        <None Include="**/*.puml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Dumpify" Version="0.6.6"/>
+        <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0-250131-2115.Release"/>
+        <PackageReference Include="GTweensGodot" Version="6.0.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Widgets\Widgets.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="GodotGadgets">
+            <HintPath>..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets\bin\Debug\net8.0\GodotGadgets.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 </Project>

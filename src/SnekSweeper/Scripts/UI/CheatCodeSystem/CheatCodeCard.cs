@@ -1,12 +1,12 @@
-﻿using SnekSweeper.CheatCode;
+﻿using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Widgets;
 
-namespace SnekSweeper.UI.CheatCode;
+namespace SnekSweeper.UI.CheatCodeSystem;
 
 [SceneTree]
 public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
-    private CheatCodeData _cheatCode = null!;
+    private CheatCode _cheatCode = null!;
 
     public override void _EnterTree()
     {
@@ -18,11 +18,11 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
         CheckButton.Pressed -= OnCheckButtonPressed;
     }
 
-    public void Init(CheatCodeData cheatCode)
+    public void Init(CheatCode cheatCode)
     {
         _cheatCode = cheatCode;
 
-        NameLabel.Text = cheatCode.Name;
+        NameLabel.Text = cheatCode.Data.Name;
         Icon.Texture = cheatCode.Icon;
         CheckButton.SetPressed(cheatCode.IsActivated);
     }

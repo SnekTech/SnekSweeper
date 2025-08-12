@@ -1,9 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cq6jujql0gw5n"]
 
-[ext_resource type="Script" uid="uid://cl514kge2sa28" path="res://Scripts/UI/CheatCode/CheatCodeCard.cs" id="1_7tr6w"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_a36ow"]
-size = Vector2(40, 40)
+[ext_resource type="Script" uid="uid://cl514kge2sa28" path="res://Scripts/UI/CheatCodeSystem/CheatCodeCard.cs" id="1_7tr6w"]
+[ext_resource type="Texture2D" uid="uid://cs5kniydl8aim" path="res://Art/relic_icon_alpha.png" id="2_ar3yn"]
 
 [node name="CheatCodeCard" type="PanelContainer"]
 custom_minimum_size = Vector2(80, 100)
@@ -23,8 +21,8 @@ size_flags_horizontal = 4
 [node name="Icon" type="TextureRect" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_a36ow")
-stretch_mode = 2
+texture = ExtResource("2_ar3yn")
+stretch_mode = 5
 
 [node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -34,3 +32,4 @@ text = "Alpha"
 [node name="CheckButton" type="CheckButton" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 8

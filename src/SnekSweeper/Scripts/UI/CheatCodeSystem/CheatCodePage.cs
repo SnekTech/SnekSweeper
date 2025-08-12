@@ -1,7 +1,7 @@
-﻿using SnekSweeper.CheatCode;
+﻿using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Widgets;
 
-namespace SnekSweeper.UI.CheatCode;
+namespace SnekSweeper.UI.CheatCodeSystem;
 
 [SceneTree]
 public partial class CheatCodePage : Control, ISceneScript

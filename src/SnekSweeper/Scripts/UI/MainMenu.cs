@@ -1,5 +1,5 @@
 ﻿using SnekSweeper.Levels;
-using SnekSweeper.UI.CheatCode;
+using SnekSweeper.UI.CheatCodeSystem;
 using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
 

@@ -1,0 +1,45 @@
+﻿@startuml
+'https://plantuml.com/class-diagram
+
+hide empty members
+
+class CheatCode
+{
+    CheatCodeId id
+    CheatCodeData data
+    ICheatCodeInitEffect? initEffect
+}
+
+struct CheatCodeId
+struct CheatCodeData
+
+CheatCodeId --* CheatCode::id
+CheatCodeData --* CheatCode::data
+
+class Grid
+{
+    + void SetCoverAlpha(normalizedAlpha)
+}
+
+class CheatCodeHandler
+{
+    List<ICheatCodeInitEffect> initEffects
+    void TriggerInitEffects()
+}
+
+
+ICheatCodeInitEffect --o CheatCodeHandler::initEffects
+
+interface ICheatCodeInitEffect
+{
+    void TakeEffect(Grid)
+}
+
+class SetCoverAlphaEffect
+
+SetCoverAlphaEffect ..|> ICheatCodeInitEffect
+
+SetCoverAlphaEffect --> Grid
+
+
+@enduml

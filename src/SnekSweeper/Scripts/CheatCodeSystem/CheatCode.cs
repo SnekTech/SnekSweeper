@@ -1,17 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 using SnekSweeper.Autoloads;
 
-namespace SnekSweeper.CheatCode;
+namespace SnekSweeper.CheatCodeSystem;
 
-public class CheatCodeData
+public class CheatCode
 {
-    public required CheatCodeId Id { get; init; } = CheatCodeId.Empty;
-    public required string Name { get; init; }
-    public required string Description { get; init; }
-    public required string IconPath { get; init; }
+    public required CheatCodeId Id { get; init; }
+    public required CheatCodeData Data { get; init; }
 
     [JsonIgnore]
-    public Texture2D Icon => SnekUtility.LoadTexture(IconPath);
+    public Texture2D Icon => SnekUtility.LoadTexture(Data.IconPath);
 
     [JsonIgnore]
     public bool IsActivated
@@ -31,7 +29,6 @@ public class CheatCodeData
     }
 }
 
-public readonly record struct CheatCodeId(Guid Value)
-{
-    public static CheatCodeId Empty => new(Guid.Empty);
-}
+public readonly record struct CheatCodeId(Guid Value);
+
+public readonly record struct CheatCodeData(string Name, string Description, string IconPath);

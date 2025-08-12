@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
-using SnekSweeper.CheatCode;
+using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.GameHistory;
 using SnekSweeper.GameSettings;
 

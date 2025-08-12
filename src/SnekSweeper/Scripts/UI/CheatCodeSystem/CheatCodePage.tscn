@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://d05cgegldnxei"]
 
-[ext_resource type="Script" uid="uid://dbgpbjx6h2wit" path="res://Scripts/UI/CheatCode/CheatCodePage.cs" id="1_j7dlw"]
+[ext_resource type="Script" uid="uid://dbgpbjx6h2wit" path="res://Scripts/UI/CheatCodeSystem/CheatCodePage.cs" id="1_j7dlw"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_tiqmo"]
 
 [node name="CheatCodePage" type="Control"]

@@ -1,23 +1,24 @@
 ﻿using SnekSweeper.SaveLoad;
 
-namespace SnekSweeper.CheatCode;
+namespace SnekSweeper.CheatCodeSystem;
 
 public class ActivatedCheatCodeSet
 {
     // ReSharper disable once MemberCanBePrivate.Global
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public HashSet<CheatCodeId> ActivatedSet { get; set; } = [];
 
-    public void Add(CheatCodeData cheatCode)
+    public void Add(CheatCode cheatCode)
     {
         ActivatedSet.Add(cheatCode.Id);
         SaveLoadEventBus.EmitSaveRequested();
     }
 
-    public void Remove(CheatCodeData cheatCode)
+    public void Remove(CheatCode cheatCode)
     {
         ActivatedSet.Remove(cheatCode.Id);
         SaveLoadEventBus.EmitSaveRequested();
     }
 
-    public bool Contains(CheatCodeData cheatCode) => ActivatedSet.Contains(cheatCode.Id);
+    public bool Contains(CheatCode cheatCode) => ActivatedSet.Contains(cheatCode.Id);
 }
