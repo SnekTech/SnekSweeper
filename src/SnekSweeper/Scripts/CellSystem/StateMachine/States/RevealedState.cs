@@ -6,11 +6,11 @@ public class RevealedState(CellStateMachine stateMachine) : CellState(stateMachi
 {
     public override async Task OnEnterAsync()
     {
-        await Cell.Cover.RevealAsync();
+        await HumbleCell.Cover.RevealAsync();
     }
 
     public override async Task OnExitAsync()
     {
-        await Cell.Cover.PutOnAsync();
+        await HumbleCell.Cover.PutOnAsync();
     }
 }

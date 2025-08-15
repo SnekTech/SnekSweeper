@@ -52,6 +52,8 @@ public class Grid
         return i >= 0 && i < rows && j >= 0 && j < columns;
     }
 
+    public IEnumerable<Cell> Cells => _cells.Indices().Select(GetCellAt);
+
     private int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
     private int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
 

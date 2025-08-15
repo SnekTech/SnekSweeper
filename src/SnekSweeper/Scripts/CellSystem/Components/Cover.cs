@@ -1,4 +1,5 @@
-﻿using GTweens.Extensions;
+﻿using GodotGadgets.Extensions;
+using GTweens.Extensions;
 using GTweensGodot.Extensions;
 using SnekSweeper.Widgets;
 
@@ -34,6 +35,8 @@ public partial class Cover : Node2D, ICover, ISceneScript
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 0, AnimationDuration);
         await tween.PlayAsync(CancellationToken.None);
     }
+
+    public void SetAlpha(float normalizedAlpha) => this.SetModulateAlpha(normalizedAlpha);
 
     private float GetDissolveProgress() =>
         (float)_shaderMaterial.GetShaderParameter(DissolveProgressName).AsDouble();

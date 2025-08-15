@@ -3,9 +3,9 @@ using SnekSweeper.FSM;
 
 namespace SnekSweeper.CellSystem.StateMachine;
 
-public class CellStateMachine(Cell cell) : StateMachine<CellState>
+public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
 {
-    public readonly Cell Cell = cell;
+    public readonly IHumbleCell HumbleCell = humbleCell;
 
     protected override void SetupStateInstances()
     {

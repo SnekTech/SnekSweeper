@@ -7,22 +7,20 @@ namespace SnekSweeper.CellSystem;
 
 public class Cell
 {
-    private readonly IHumbleCell _humbleCell;
     private readonly CellStateMachine _stateMachine;
 
     public Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = false)
     {
-        _humbleCell = humbleCell;
-        _stateMachine = new CellStateMachine(this);
+        HumbleCell = humbleCell;
+        _stateMachine = new CellStateMachine(humbleCell);
 
         GridIndex = gridIndex;
         HasBomb = hasBomb;
 
-        _humbleCell.SetPosition(gridIndex);
+        HumbleCell.SetPosition(gridIndex);
     }
 
-    public ICover Cover => _humbleCell.Cover;
-    public IFlag Flag => _humbleCell.Flag;
+    public IHumbleCell HumbleCell { get; }
 
     public GridIndex GridIndex { get; }
     public bool HasBomb { get; set; }
@@ -35,7 +33,7 @@ public class Cell
     public async Task InitAsync(int neighborBombCount)
     {
         NeighborBombCount = neighborBombCount;
-        _humbleCell.SetContent(HasBomb, NeighborBombCount);
+        HumbleCell.SetContent(HasBomb, NeighborBombCount);
         await _stateMachine.SetInitStateAsync<CoveredState>();
     }
 

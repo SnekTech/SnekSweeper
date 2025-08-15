@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SnekSweeper.GridSystem;
+﻿namespace SnekSweeper.GridSystem;
 
 public static class MatrixExtensions
 {

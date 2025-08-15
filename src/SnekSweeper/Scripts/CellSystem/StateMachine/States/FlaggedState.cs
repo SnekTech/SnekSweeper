@@ -6,11 +6,11 @@ public class FlaggedState(CellStateMachine stateMachine) : CellState(stateMachin
 {
     public override async Task OnEnterAsync()
     {
-        await Cell.Flag.RaiseAsync();
+        await HumbleCell.Flag.RaiseAsync();
     }
 
     public override async Task OnExitAsync()
     {
-        await Cell.Flag.PutDownAsync();
+        await HumbleCell.Flag.PutDownAsync();
     }
 }

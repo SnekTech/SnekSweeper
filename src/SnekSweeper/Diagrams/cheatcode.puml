@@ -7,7 +7,7 @@ class CheatCode
 {
     CheatCodeId id
     CheatCodeData data
-    ICheatCodeInitEffect? initEffect
+    ICheatCodeGridEffect? initEffect
 }
 
 struct CheatCodeId
@@ -16,30 +16,26 @@ struct CheatCodeData
 CheatCodeId --* CheatCode::id
 CheatCodeData --* CheatCode::data
 
-class Grid
-{
-    + void SetCoverAlpha(normalizedAlpha)
-}
-
 class CheatCodeHandler
 {
-    List<ICheatCodeInitEffect> initEffects
+    List<ICheatCodeGridEffect> initEffects
     void TriggerInitEffects()
 }
 
+ICheatCodeGridEffect --o CheatCodeHandler::initEffects
 
-ICheatCodeInitEffect --o CheatCodeHandler::initEffects
-
-interface ICheatCodeInitEffect
+interface ICheatCodeGridEffect
 {
-    void TakeEffect(Grid)
+    void TakeEffect(IHumbleGrid)
 }
+
+interface IHumbleGrid
 
 class SetCoverAlphaEffect
 
-SetCoverAlphaEffect ..|> ICheatCodeInitEffect
+SetCoverAlphaEffect ..|> ICheatCodeGridEffect
 
-SetCoverAlphaEffect --> Grid
+SetCoverAlphaEffect ..> IHumbleGrid
 
 
 @enduml

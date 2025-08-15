@@ -62,6 +62,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         return humbleCells;
     }
 
+    public IEnumerable<IHumbleCell> HumbleCells => _grid.Cells.Select(cell => cell.HumbleCell);
+
     private void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {
         var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);

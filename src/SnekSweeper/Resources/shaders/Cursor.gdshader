@@ -11,7 +11,7 @@ void fragment() {
     bool isBottomBorder = y < borderWidth;
     bool isLeftBorder = x < borderWidth;
     bool isRightBorder = x > 1.0 - borderWidth;
-    
+
     if (isTopBorder || isBottomBorder || isLeftBorder || isRightBorder) {
         COLOR = mix(COLOR, tint, sin(TIME * freq));
     }

@@ -7,6 +7,7 @@ public class CheatCode
 {
     public required CheatCodeId Id { get; init; }
     public required CheatCodeData Data { get; init; }
+    public ICheatCodeGridEffect? InitEffect { get; init; }
 
     [JsonIgnore]
     public Texture2D Icon => SnekUtility.LoadTexture(Data.IconPath);

@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SnekSweeper.FSM;
+﻿using SnekSweeper.FSM;
 
 namespace SnekSweeper.CellSystem.StateMachine;
 
 public abstract class CellState(CellStateMachine stateMachine) : IState
 {
-    protected Cell Cell => stateMachine.Cell;
+    protected IHumbleCell HumbleCell => stateMachine.HumbleCell;
 
     private readonly HashSet<Transition> _transitions = [];
 
