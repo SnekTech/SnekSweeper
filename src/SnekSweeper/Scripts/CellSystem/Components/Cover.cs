@@ -1,5 +1,4 @@
-﻿using GodotGadgets.Extensions;
-using GTweens.Extensions;
+﻿using GTweens.Extensions;
 using GTweensGodot.Extensions;
 using SnekSweeper.Widgets;
 
@@ -11,8 +10,6 @@ public partial class Cover : Node2D, ICover, ISceneScript
     private const float AnimationDuration = .4f;
 
     private ShaderMaterial _shaderMaterial = null!;
-    private static readonly StringName DissolveProgressName = "progress";
-    private static readonly StringName MaskName = "mask";
 
     public override void _Ready()
     {
@@ -36,18 +33,26 @@ public partial class Cover : Node2D, ICover, ISceneScript
         await tween.PlayAsync(CancellationToken.None);
     }
 
-    public void SetAlpha(float normalizedAlpha) => this.SetModulateAlpha(normalizedAlpha);
+    public void SetAlpha(float normalizedAlpha) =>
+        _shaderMaterial.SetShaderParameter(Uniforms.Alpha, normalizedAlpha);
 
     private float GetDissolveProgress() =>
-        (float)_shaderMaterial.GetShaderParameter(DissolveProgressName).AsDouble();
+        (float)_shaderMaterial.GetShaderParameter(Uniforms.DissolveProgress).AsDouble();
 
     private void SetDissolveProgress(float progress) =>
-        _shaderMaterial.SetShaderParameter(DissolveProgressName, progress);
+        _shaderMaterial.SetShaderParameter(Uniforms.DissolveProgress, progress);
 
     private void RandomizeNoise()
     {
-        var noiseTexture = (NoiseTexture2D)_shaderMaterial.GetShaderParameter(MaskName);
+        var noiseTexture = (NoiseTexture2D)_shaderMaterial.GetShaderParameter(Uniforms.Mask);
         var noiseLite = (FastNoiseLite)noiseTexture.Noise;
         noiseLite.Seed = (int)GD.Randi();
+    }
+
+    private static class Uniforms
+    {
+        public static readonly StringName DissolveProgress = "progress";
+        public static readonly StringName Alpha = "coverAlpha";
+        public static readonly StringName Mask = "mask";
     }
 }

@@ -1,6 +1,7 @@
 ﻿using GodotGadgets.Extensions;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
+using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
@@ -13,6 +14,7 @@ namespace SnekSweeper.GridSystem;
 public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
     private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
+    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
     private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
     private Grid _grid = null!;
@@ -30,6 +32,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     public override void _EnterTree()
     {
         _hudEventBus.UndoPressed += OnUndoPressed;
+        _gridEventBus.InitCompleted += OnGridInitCompleted;
+
         GridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
         GridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
         GridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
@@ -41,6 +45,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         _referee.Dispose();
 
         _hudEventBus.UndoPressed -= OnUndoPressed;
+        _gridEventBus.InitCompleted -= OnGridInitCompleted;
+
         GridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
         GridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
         GridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
@@ -77,6 +83,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     }
 
     private void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();
+
+    private void OnGridInitCompleted() => this.TriggerCheatCodeInitEffects();
 
     private void OnPrimaryReleasedAt(GridIndex gridIndex)
     {

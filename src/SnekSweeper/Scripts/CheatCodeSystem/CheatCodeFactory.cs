@@ -14,7 +14,7 @@ public static class CheatCodeFactory
             "Transparent Cover",
             "Make cells transparent",
             "res://Art/relic_icon_alpha.png"),
-        InitEffect = new SetGridCoverAlpha(0.15f),
+        InitEffect = new SetGridCoverAlpha(0.5f),
     };
 
     private static readonly Dictionary<CheatCodeId, CheatCode> CheatCodeCollection = [];
