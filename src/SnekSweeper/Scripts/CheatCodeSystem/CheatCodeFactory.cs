@@ -2,6 +2,11 @@
 
 public static class CheatCodeFactory
 {
+    static CheatCodeFactory()
+    {
+        TransparentCover.AddToCollection();
+    }
+
     public static readonly CheatCode TransparentCover = new()
     {
         Id = new CheatCodeId(new Guid("ccda89f7-86f6-462d-a318-6f1b3b4a3690")),
@@ -12,10 +17,7 @@ public static class CheatCodeFactory
         InitEffect = new SetGridCoverAlpha(0.15f),
     };
 
-    private static readonly Dictionary<CheatCodeId, CheatCode> CheatCodeCollection = new()
-    {
-        [TransparentCover.Id] = TransparentCover,
-    };
+    private static readonly Dictionary<CheatCodeId, CheatCode> CheatCodeCollection = [];
 
     public static IEnumerable<CheatCode> BuiltinCheatCodeList => CheatCodeCollection.Values;
 
@@ -24,4 +26,6 @@ public static class CheatCodeFactory
         CheatCodeCollection.TryGetValue(id, out var cheatCode);
         return cheatCode;
     }
+
+    private static void AddToCollection(this CheatCode cheatCode) => CheatCodeCollection[cheatCode.Id] = cheatCode;
 }
