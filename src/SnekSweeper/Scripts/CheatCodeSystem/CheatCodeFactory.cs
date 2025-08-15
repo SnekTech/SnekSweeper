@@ -19,7 +19,8 @@ public static class CheatCodeFactory
 
     private static readonly Dictionary<CheatCodeId, CheatCode> CheatCodeCollection = [];
 
-    public static IEnumerable<CheatCode> BuiltinCheatCodeList => CheatCodeCollection.Values;
+    public static IEnumerable<CheatCode> BuiltinCheatCodeList =>
+        CheatCodeCollection.Values.OrderBy(cheatCode => cheatCode.Data.Name);
 
     public static CheatCode? GetCheatCodeById(CheatCodeId id)
     {
