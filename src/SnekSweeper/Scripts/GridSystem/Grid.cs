@@ -62,7 +62,7 @@ public class Grid
         var humbleCells = _humbleGrid.InstantiateHumbleCells(_cells.Length);
         foreach (var (i, j) in _cells.Indices())
         {
-            var humbleCell = humbleCells[i * _cells.Size().columns + j];
+            var humbleCell = humbleCells[i * _cells.Size().Columns + j];
             var cell = new Cell(humbleCell, new GridIndex(i, j));
             _cells[i, j] = cell;
         }
