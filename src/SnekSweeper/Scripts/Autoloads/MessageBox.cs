@@ -1,6 +1,6 @@
 ﻿using SnekSweeper.Widgets;
-using Widgets;
 using Widgets.MessageQueue;
+using GodotGadgets.Extensions;
 
 namespace SnekSweeper.Autoloads;
 
@@ -25,7 +25,7 @@ public partial class MessageBox : Control, IMessageDisplay
         {
             OutputIntervalSeconds = 0.5f,
         };
-        _messageQueue.StartRunning().Fire();
+        _messageQueue.StartRunning(this.GetCancellationTokenOnTreeExit()).Fire();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -36,13 +36,13 @@ public partial class MessageBox : Control, IMessageDisplay
         }
     }
 
-    public async Task Display(string message)
+    public async Task Display(string message, CancellationToken token)
     {
         var messageLabel = new Label { Text = message };
         MessageContainer.AddChild(messageLabel);
 
-        await Task.Delay(TimeSpan.FromSeconds(MessageLifetime));
-        await messageLabel.FadeOutAsync( 1, messageLabel.QueueFree);
+        await SnekUtility.DelayGd(MessageLifetime, token);
+        await messageLabel.FadeOutAsync(1, token);
     }
 
     private void Enqueue(string message) => _messageQueue.Enqueue(message);

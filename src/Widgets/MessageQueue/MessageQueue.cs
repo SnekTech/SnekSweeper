@@ -5,9 +5,9 @@ public class MessageQueue(IMessageDisplay messageDisplay)
     private readonly Queue<string> _queue = [];
     private bool _isRunning;
 
-    public float OutputIntervalSeconds { get; set; } = 1;
+    public float OutputIntervalSeconds { get; init; } = 1;
 
-    public async Task StartRunning()
+    public async Task StartRunning(CancellationToken token)
     {
         if (_isRunning)
         {
@@ -18,8 +18,8 @@ public class MessageQueue(IMessageDisplay messageDisplay)
         _isRunning = true;
         while (_isRunning)
         {
-            OutputOneMessage();
-            await Task.Delay(TimeSpan.FromSeconds(OutputIntervalSeconds));
+            OutputOneMessage(token);
+            await Task.Delay(TimeSpan.FromSeconds(OutputIntervalSeconds), token);
         }
     }
 
@@ -33,12 +33,12 @@ public class MessageQueue(IMessageDisplay messageDisplay)
         _queue.Enqueue(message);
     }
 
-    private void OutputOneMessage()
+    private void OutputOneMessage(CancellationToken token)
     {
         if (_queue.Count == 0)
             return;
 
         var message = _queue.Dequeue();
-        messageDisplay.Display(message).Fire();
+        messageDisplay.Display(message, token).Fire();
     }
 }

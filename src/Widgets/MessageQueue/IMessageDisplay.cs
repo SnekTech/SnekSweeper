@@ -2,5 +2,5 @@
 
 public interface IMessageDisplay
 {
-    Task Display(string message);
+    Task Display(string message, CancellationToken token);
 }
