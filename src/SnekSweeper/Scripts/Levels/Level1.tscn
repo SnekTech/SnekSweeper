@@ -14,7 +14,7 @@ metadata/_edit_lock_ = true
 position = Vector2(320, 180)
 
 [node name="GridStartPosition" type="Marker2D" parent="."]
-position = Vector2(336, 128)
+position = Vector2(128, 64)
 gizmo_extents = 16.0
 
 [node name="Grid" parent="GridStartPosition" instance=ExtResource("3_27cws")]

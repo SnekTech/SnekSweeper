@@ -18,6 +18,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] PRNG using PCG-random
     - [x] save random seed for each game history record
 - [ ] *moving bombs every click, show the moving direction
+- [x] no-guess
 
 ## User Input
 

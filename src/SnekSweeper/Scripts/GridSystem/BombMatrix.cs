@@ -1,10 +1,13 @@
-﻿using Widgets.Roguelike;
+﻿using SnekSweeper.NativeTools;
+using Widgets.Roguelike;
 
 namespace SnekSweeper.GridSystem;
 
 public class BombMatrix
 {
     private readonly bool[,] _bombs;
+
+    private BombMatrix(bool[,] bombs) => _bombs = bombs;
 
     public BombMatrix(GridDifficulty gridDifficulty)
     {
@@ -32,5 +35,11 @@ public class BombMatrix
     {
         var (i, j) = gridIndex;
         _bombs[i, j] = false;
+    }
+
+    public static BombMatrix GenerateSolvable(GridSize gridSize, GridIndex startIndex, int bombCount, int maxTimes = 100_0000)
+    {
+        var mat = LayMineEngine.LayMineSolvable(gridSize.Row, gridSize.Columns, bombCount, startIndex.I, startIndex.J, maxTimes);
+        return new BombMatrix(mat);
     }
 }

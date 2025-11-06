@@ -7,7 +7,6 @@ namespace SnekSweeper.GridSystem;
 
 public class Grid
 {
-    private readonly BombMatrix _bombMatrix;
     private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
     private bool _hasCellInitialized;
@@ -15,19 +14,18 @@ public class Grid
     private readonly CommandInvoker _commandInvoker;
     private readonly TransitioningCellsSet _transitioningCellsSet = new();
 
-    private bool IsTransitioning => !_transitioningCellsSet.IsEmpty;
-
-    public Grid(IHumbleGrid humbleGrid, BombMatrix bombMatrix)
+    public Grid(IHumbleGrid humbleGrid, GridSize size)
     {
         _humbleGrid = humbleGrid;
         _commandInvoker = humbleGrid.GridCommandInvoker;
-        _bombMatrix = bombMatrix;
 
-        var (rows, columns) = bombMatrix.Size;
+        var (rows, columns) = size;
         _cells = new Cell[rows, columns];
 
         InstantiateHumbleCells();
     }
+
+    private GridSize Size => _cells.Size();
 
     public bool IsResolved
     {
@@ -45,10 +43,12 @@ public class Grid
         }
     }
 
+    private bool IsTransitioning => !_transitioningCellsSet.IsEmpty;
+
     public bool IsValidIndex(GridIndex gridIndex)
     {
         var (i, j) = gridIndex;
-        var (rows, columns) = _cells.Size();
+        var (rows, columns) = Size;
         return i >= 0 && i < rows && j >= 0 && j < columns;
     }
 
@@ -62,7 +62,7 @@ public class Grid
         var humbleCells = _humbleGrid.InstantiateHumbleCells(_cells.Length);
         foreach (var (i, j) in _cells.Indices())
         {
-            var humbleCell = humbleCells[i * _cells.Size().Columns + j];
+            var humbleCell = humbleCells[i * Size.Columns + j];
             var cell = new Cell(humbleCell, new GridIndex(i, j));
             _cells[i, j] = cell;
         }
@@ -70,10 +70,10 @@ public class Grid
 
     private async Task InitCellsAsync(GridIndex firstClickGridIndex)
     {
-        _bombMatrix.ClearBombAt(firstClickGridIndex);
+        var solvableBombs = BombMatrix.GenerateSolvable(Size, firstClickGridIndex, 99);
         foreach (var (i, j) in _cells.Indices())
         {
-            _cells[i, j].HasBomb = _bombMatrix[i, j];
+            _cells[i, j].HasBomb = solvableBombs[i, j];
         }
 
         // must init individual cells after bombs planted
