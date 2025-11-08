@@ -7,6 +7,7 @@ namespace SnekSweeper.GridSystem;
 
 public class Grid
 {
+    private readonly GridDifficultyData _difficultyData;
     private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
     private bool _hasCellInitialized;
@@ -14,18 +15,19 @@ public class Grid
     private readonly CommandInvoker _commandInvoker;
     private readonly TransitioningCellsSet _transitioningCellsSet = new();
 
-    public Grid(IHumbleGrid humbleGrid, GridSize size)
+    public Grid(IHumbleGrid humbleGrid, GridDifficultyData difficultyData)
     {
         _humbleGrid = humbleGrid;
         _commandInvoker = humbleGrid.GridCommandInvoker;
+        _difficultyData = difficultyData;
 
-        var (rows, columns) = size;
+        var (rows, columns) = difficultyData.Size;
         _cells = new Cell[rows, columns];
 
         InstantiateHumbleCells();
     }
 
-    private GridSize Size => _cells.Size();
+    private GridSize Size => _difficultyData.Size;
 
     public bool IsResolved
     {
@@ -70,7 +72,7 @@ public class Grid
 
     private async Task InitCellsAsync(GridIndex firstClickGridIndex)
     {
-        var solvableBombs = BombMatrix.GenerateSolvable(Size, firstClickGridIndex, 99);
+        var solvableBombs = BombMatrix.GenerateSolvable(_difficultyData, firstClickGridIndex);
         foreach (var (i, j) in _cells.Indices())
         {
             _cells[i, j].HasBomb = solvableBombs[i, j];

@@ -1,45 +1,15 @@
 ﻿using SnekSweeper.NativeTools;
-using Widgets.Roguelike;
 
 namespace SnekSweeper.GridSystem;
 
-public class BombMatrix
+public static class BombMatrix
 {
-    private readonly bool[,] _bombs;
-
-    private BombMatrix(bool[,] bombs) => _bombs = bombs;
-
-    public BombMatrix(GridDifficulty gridDifficulty)
+    public static bool[,] GenerateSolvable(GridDifficultyData gridDifficultyData, GridIndex startIndex,
+        int maxTimes = 100_0000)
     {
-        var probability = gridDifficulty.BombPercent;
-        if (probability is < 0 or > 1)
-        {
-            throw new ArgumentException("0 ~ 1", nameof(gridDifficulty));
-        }
-
-        var (rows, columns) = gridDifficulty.Size;
-        var matrix = new bool[rows, columns];
-        foreach (var (i, j) in matrix.Indices())
-        {
-            matrix[i, j] = Rand.Float() < probability;
-        }
-
-        _bombs = matrix;
-    }
-
-    public GridSize Size => _bombs.Size();
-
-    public bool this[int i, int j] => _bombs[i, j];
-
-    public void ClearBombAt(GridIndex gridIndex)
-    {
-        var (i, j) = gridIndex;
-        _bombs[i, j] = false;
-    }
-
-    public static BombMatrix GenerateSolvable(GridSize gridSize, GridIndex startIndex, int bombCount, int maxTimes = 100_0000)
-    {
-        var mat = LayMineEngine.LayMineSolvable(gridSize.Row, gridSize.Columns, bombCount, startIndex.I, startIndex.J, maxTimes);
-        return new BombMatrix(mat);
+        var (gridSize, bombCount) = gridDifficultyData;
+        var mat = LayMineEngine.LayMineSolvable(gridSize.Row, gridSize.Columns, bombCount, startIndex.I, startIndex.J,
+            maxTimes);
+        return mat;
     }
 }

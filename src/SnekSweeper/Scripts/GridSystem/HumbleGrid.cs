@@ -24,7 +24,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _Ready()
     {
-        _grid = new Grid(this, new GridSize(16, 30));
+        _grid = new Grid(this, _mainSetting.CurrentDifficulty.DifficultyData);
         _referee = new Referee(_grid);
     }
 

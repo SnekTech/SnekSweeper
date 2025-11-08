@@ -7,8 +7,8 @@ public static class LayMineEngine
         var bombMatrix = new bool[rows, columns];
         unsafe
         {
-            var buffer = NativeMethods.lay_mine_solvable_cs((nuint)rows, (UIntPtr)columns, (UIntPtr)mineNum,
-                (UIntPtr)x0, (UIntPtr)y0, (UIntPtr)maxTimes);
+            var buffer = NativeMethods.lay_mine_solvable_cs((nuint)rows, (nuint)columns, (nuint)mineNum,
+                (nuint)x0, (nuint)y0, (nuint)maxTimes);
             var bombs1d = buffer->AsSpan<int>().ToArray();
             for (var i = 0u; i < rows; i++)
             {
