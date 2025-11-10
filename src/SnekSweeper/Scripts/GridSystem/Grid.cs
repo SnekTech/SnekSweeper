@@ -45,7 +45,7 @@ public class Grid
         }
     }
 
-    private bool IsTransitioning => !_transitioningCellsSet.IsEmpty;
+    private bool IsTransitioningAt(GridIndex index) => _transitioningCellsSet.Contains(index);
 
     public bool IsValidIndex(GridIndex gridIndex)
     {
@@ -101,21 +101,21 @@ public class Grid
             await InitCellsAsync(gridIndex);
         }
 
-        if (IsTransitioning) return;
+        if (IsTransitioningAt(gridIndex)) return;
 
         await RevealAt(gridIndex);
     }
 
     public async Task OnPrimaryDoubleClickedAt(GridIndex gridIndex)
     {
-        if (IsTransitioning) return;
+        if (IsTransitioningAt(gridIndex)) return;
 
         await RevealAround(gridIndex);
     }
 
     public async Task OnSecondaryReleasedAt(GridIndex gridIndex)
     {
-        if (IsTransitioning) return;
+        if (IsTransitioningAt(gridIndex)) return;
 
         await GetCellAt(gridIndex).SwitchFlag();
         _eventBus.EmitFlagCountChanged(FlagCount);
@@ -169,7 +169,7 @@ public class Grid
         await RevealCells(cellsToReveal);
     }
 
-    private async Task RevealCells(ICollection<Cell> cells)
+    private async Task RevealCells(HashSet<Cell> cells)
     {
         if (cells.Count == 0)
             return;

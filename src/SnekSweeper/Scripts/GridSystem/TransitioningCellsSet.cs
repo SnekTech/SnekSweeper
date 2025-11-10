@@ -6,7 +6,7 @@ public class TransitioningCellsSet
 {
     private readonly HashSet<GridIndex> _transitioningCellIndexes = [];
 
-    public bool IsEmpty => _transitioningCellIndexes.Count == 0;
+    public bool Contains(GridIndex gridIndex) => _transitioningCellIndexes.Contains(gridIndex);
 
     public void AddRange(IEnumerable<Cell> cells)
     {
