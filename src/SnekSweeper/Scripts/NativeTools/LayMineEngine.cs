@@ -10,6 +10,8 @@ public static class LayMineEngine
             var buffer = NativeMethods.lay_mine_solvable_cs((nuint)rows, (nuint)columns, (nuint)mineNum,
                 (nuint)x0, (nuint)y0, (nuint)maxTimes);
             var bombs1d = buffer->AsSpan<int>().ToArray();
+            NativeMethods.free_i32_buffer(buffer);
+
             for (var i = 0u; i < rows; i++)
             {
                 for (var j = 0u; j < columns; j++)
