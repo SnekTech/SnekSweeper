@@ -18,4 +18,7 @@ public static class MatrixExtensions
             }
         }
     }
+
+    public static T At<T>(this T[,] matrix, GridIndex index) => matrix[index.I, index.J];
+    public static void SetAt<T>(this T[,] matrix, GridIndex index, T value) => matrix[index.I, index.J] = value;
 }

@@ -110,7 +110,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Cheat Code
 
-- [ ] 半透明单元格
+- [x] 半透明单元格
 - [ ] 15% 概率不受伤
 - [x] placeholder icon
 

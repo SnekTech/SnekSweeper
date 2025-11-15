@@ -49,14 +49,6 @@ text = "Difficulty"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
-selected = 0
-item_count = 3
-popup/item_0/text = "simple"
-popup/item_0/id = 0
-popup/item_1/text = "medium"
-popup/item_1/id = 1
-popup/item_2/text = "hard"
-popup/item_2/id = 2
 
 [node name="SkinSelect" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

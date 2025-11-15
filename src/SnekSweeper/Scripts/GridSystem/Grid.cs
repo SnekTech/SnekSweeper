@@ -2,12 +2,12 @@
 using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.Constants;
+using SnekSweeper.GridSystem.LayMineStrategies;
 
 namespace SnekSweeper.GridSystem;
 
 public class Grid
 {
-    private readonly GridDifficultyData _difficultyData;
     private readonly Cell[,] _cells;
     private readonly IHumbleGrid _humbleGrid;
     private bool _hasCellInitialized;
@@ -15,19 +15,20 @@ public class Grid
     private readonly CommandInvoker _commandInvoker;
     private readonly TransitioningCellsSet _transitioningCellsSet = new();
 
-    public Grid(IHumbleGrid humbleGrid, GridDifficultyData difficultyData)
+    public Grid(IHumbleGrid humbleGrid, GridSize size, ILayMineStrategy layMineStrategy)
     {
         _humbleGrid = humbleGrid;
         _commandInvoker = humbleGrid.GridCommandInvoker;
-        _difficultyData = difficultyData;
+        Size = size;
+        LayMineStrategy = layMineStrategy;
 
-        var (rows, columns) = difficultyData.Size;
-        _cells = new Cell[rows, columns];
+        _cells = new Cell[Size.Rows, Size.Columns];
 
         InstantiateHumbleCells();
     }
 
-    private GridSize Size => _difficultyData.Size;
+    private ILayMineStrategy LayMineStrategy { get; }
+    private GridSize Size { get; }
 
     public bool IsResolved
     {
@@ -72,10 +73,10 @@ public class Grid
 
     private async Task InitCellsAsync(GridIndex firstClickGridIndex)
     {
-        var solvableBombs = BombMatrix.GenerateSolvable(_difficultyData, firstClickGridIndex);
-        foreach (var (i, j) in _cells.Indices())
+        var bombs = LayMineStrategy.Generate(firstClickGridIndex);
+        foreach (var index in _cells.Indices())
         {
-            _cells[i, j].HasBomb = solvableBombs[i, j];
+            _cells.At(index).HasBomb = bombs.At(index);
         }
 
         // must init individual cells after bombs planted

@@ -2,7 +2,7 @@ namespace SnekSweeper.NativeTools;
 
 public static class LayMineEngine
 {
-    public static bool[,] LayMineSolvable(int rows, int columns, int mineNum, int x0, int y0, int maxTimes)
+    public static bool[,] LayMineSolvable(int rows, int columns, int mineNum, int x0, int y0, int maxTimes = 100_0000)
     {
         var bombMatrix = new bool[rows, columns];
         unsafe

@@ -5,6 +5,7 @@ using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
+using SnekSweeper.GridSystem.LayMineStrategies;
 using SnekSweeper.UI;
 using SnekSweeper.Widgets;
 
@@ -24,8 +25,23 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _Ready()
     {
-        _grid = new Grid(this, _mainSetting.CurrentDifficulty.DifficultyData);
+        _grid = CreateGrid(this, _mainSetting.CurrentDifficulty.DifficultyData, _mainSetting.CurrentStrategy);
         _referee = new Referee(_grid);
+        return;
+
+        static Grid CreateGrid(IHumbleGrid humbleGrid, GridDifficultyData difficultyData,
+            LayMineStrategyName strategyName)
+        {
+            ILayMineStrategy currentStrategy = strategyName switch
+            {
+                LayMineStrategyName.Solvable => new Solvable(difficultyData),
+                LayMineStrategyName.Classic => new Classic(difficultyData),
+                _ => new Solvable(difficultyData),
+            };
+            difficultyData.DumpGd();
+
+            return new Grid(humbleGrid, difficultyData.Size, currentStrategy);
+        }
     }
 
     public override void _EnterTree()
