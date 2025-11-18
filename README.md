@@ -19,6 +19,7 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [x] save random seed for each game history record
 - [ ] *moving bombs every click, show the moving direction
 - [x] no-guess
+- [ ] after win or lose, don't switch scene until player confirmed
 
 ## User Input
 

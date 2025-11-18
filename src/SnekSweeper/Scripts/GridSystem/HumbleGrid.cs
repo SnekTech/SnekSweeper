@@ -38,7 +38,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
                 LayMineStrategyName.Classic => new Classic(difficultyData),
                 _ => new Solvable(difficultyData),
             };
-            difficultyData.DumpGd();
 
             return new Grid(humbleGrid, difficultyData.Size, currentStrategy);
         }
