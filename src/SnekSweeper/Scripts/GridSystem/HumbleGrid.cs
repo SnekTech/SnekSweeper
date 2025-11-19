@@ -25,22 +25,10 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _Ready()
     {
-        _grid = CreateGrid(this, _mainSetting.CurrentDifficulty.DifficultyData, _mainSetting.CurrentStrategy);
+        var currentDifficulty = _mainSetting.CurrentDifficulty.DifficultyData;
+        var currentStrategy = _mainSetting.CurrentStrategyName.ToStrategy(currentDifficulty);
+        _grid = new Grid(this, currentDifficulty.Size, currentStrategy);
         _referee = new Referee(_grid);
-        return;
-
-        static Grid CreateGrid(IHumbleGrid humbleGrid, GridDifficultyData difficultyData,
-            LayMineStrategyName strategyName)
-        {
-            ILayMineStrategy currentStrategy = strategyName switch
-            {
-                LayMineStrategyName.Solvable => new Solvable(difficultyData),
-                LayMineStrategyName.Classic => new Classic(difficultyData),
-                _ => new Solvable(difficultyData),
-            };
-
-            return new Grid(humbleGrid, difficultyData.Size, currentStrategy);
-        }
     }
 
     public override void _EnterTree()

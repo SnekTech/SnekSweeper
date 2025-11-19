@@ -9,5 +9,5 @@ public class MainSetting
     public GridDifficulty CurrentDifficulty { get; set; } = DifficultyFactory.Intermediate;
     public SkinData CurrentSkin { get; set; } = SkinFactory.Classic;
     public bool ComboRankDisplay { get; set; } = true;
-    public LayMineStrategyName CurrentStrategy { get; set; } = LayMineStrategyName.Solvable;
+    public LayMineStrategyName CurrentStrategyName { get; set; } = LayMineStrategyName.Solvable;
 }
