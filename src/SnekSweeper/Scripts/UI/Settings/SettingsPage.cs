@@ -1,9 +1,7 @@
-using GodotGadgets.Extensions;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GameSettings;
 using SnekSweeper.GridSystem;
 using SnekSweeper.SaveLoad;
-using SnekSweeper.SkinSystem;
 using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.Settings;
@@ -18,21 +16,18 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
     public override void _EnterTree()
     {
         DifficultyOptionButton.ItemSelected += OnDifficultySelected;
-        SkinOptionButton.ItemSelected += OnSkinSelected;
         ComboRankDisplayToggle.Pressed += OnComboRankDisplayToggled;
     }
 
     public override void _Ready()
     {
         InitDifficultyOptions();
-        InitSkinOptions();
         InitComboRankDisplayToggle();
     }
 
     public override void _ExitTree()
     {
         DifficultyOptionButton.ItemSelected -= OnDifficultySelected;
-        SkinOptionButton.ItemSelected -= OnSkinSelected;
         ComboRankDisplayToggle.Pressed -= OnComboRankDisplayToggled;
     }
 
@@ -44,11 +39,6 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
         SaveLoadEventBus.EmitSaveRequested();
     }
 
-    private void OnSkinSelected(long index)
-    {
-        _mainSetting.CurrentSkin = SkinFactory.GetSkinById(SkinOptionButton.GetSelectedId()) ?? SkinFactory.Classic;
-        SaveLoadEventBus.EmitSaveRequested();
-    }
 
     private void OnComboRankDisplayToggled()
     {
@@ -70,22 +60,6 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
         DifficultyOptionButton.Select(savedDifficultyIndex);
     }
 
-    private void InitSkinOptions()
-    {
-        SkinOptionButton.Clear();
-
-        var skins = SkinFactory.Skins.ToList();
-        foreach (var skin in skins)
-        {
-            SkinOptionButton.AddItem(skin.Name, skin.Id);
-        }
-
-        var savedSkinIndex = skins.FindIndex(skin => skin.Id == _mainSetting.CurrentSkin.Id);
-        if (savedSkinIndex != -1)
-        {
-            SkinOptionButton.Select(savedSkinIndex);
-        }
-    }
 
     private void InitComboRankDisplayToggle()
     {
