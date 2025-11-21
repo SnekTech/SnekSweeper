@@ -2,8 +2,17 @@
 
 namespace SnekSweeper.SkinSystem;
 
-public record SkinData(int Id, string Name, string TexturePath)
+public record GridSkin(SkinKey Key, string TexturePath)
 {
     [JsonIgnore]
+    public string Name => Key.ToString();
+
+    [JsonIgnore]
     public Texture2D Texture => SnekUtility.LoadTexture(TexturePath);
+}
+
+public enum SkinKey
+{
+    Classic,
+    Mahjong,
 }

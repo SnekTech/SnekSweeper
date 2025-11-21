@@ -2,20 +2,41 @@
 
 public static class SkinFactory
 {
-    public static readonly SkinData Classic = new(0, nameof(Classic), "res://Art/SnekSweeperSpriteSheet.png");
-    public static readonly SkinData Mahjong = new(1, nameof(Mahjong), "res://Art/SnekSweeperSpriteSheet02.png");
+    private static readonly GridSkin[] BuiltinSkins =
+    [
+        new(SkinKey.Classic, "res://Art/SnekSweeperSpriteSheet.png"),
+        new(SkinKey.Mahjong, "res://Art/SnekSweeperSpriteSheet02.png"),
+    ];
+    private static readonly Dictionary<SkinKey, GridSkin> SkinCache = [];
 
-    private static readonly Dictionary<int, SkinData> BuiltinSkins = new()
+    static SkinFactory()
     {
-        [Classic.Id] = Classic,
-        [Mahjong.Id] = Mahjong,
-    };
+        foreach (var builtinSkin in BuiltinSkins)
+        {
+            builtinSkin.CacheToDict();
+        }
+    }
 
-    public static IEnumerable<SkinData> Skins => BuiltinSkins.Values;
+    public static IEnumerable<GridSkin> Skins => SkinCache.Values.OrderBy(skin => skin.Key);
 
-    public static SkinData? GetSkinById(int id)
+    extension(SkinKey key)
     {
-        BuiltinSkins.TryGetValue(id, out var skin);
-        return skin;
+        public static SkinKey FromInt(int index) => (SkinKey)index;
+        public static SkinKey FromLong(long index) => (SkinKey)index;
+
+        public GridSkin ToSkin()
+        {
+            SkinCache.TryGetValue(key, out var skin);
+            if (skin is not null)
+                return skin;
+
+            GD.Print($"grid skin with key {key} not found, use classic instead");
+            return SkinCache[SkinKey.Classic];
+        }
+    }
+
+    extension(GridSkin skin)
+    {
+        private void CacheToDict() => SkinCache.Add(skin.Key, skin);
     }
 }

@@ -6,6 +6,7 @@ using SnekSweeper.Commands;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
 using SnekSweeper.GridSystem.LayMineStrategies;
+using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
 using SnekSweeper.Widgets;
 
@@ -63,7 +64,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         {
             var humbleCell = SceneFactory.Instantiate<HumbleCell>();
             humbleCells.Add(humbleCell);
-            humbleCell.UseSkin(_mainSetting.CurrentSkin);
+            humbleCell.UseSkin(_mainSetting.CurrentSkinKey.ToSkin());
             AddChild(humbleCell);
         }
 

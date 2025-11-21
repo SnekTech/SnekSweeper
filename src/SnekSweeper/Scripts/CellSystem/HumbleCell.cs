@@ -33,7 +33,7 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
 
     public void SetCoverAlpha(float normalizedAlpha) => Cover.SetAlpha(normalizedAlpha);
 
-    public void UseSkin(SkinData newSkin)
+    public void UseSkin(GridSkin newSkin)
     {
         Content.ChangeTexture(newSkin.Texture);
     }
