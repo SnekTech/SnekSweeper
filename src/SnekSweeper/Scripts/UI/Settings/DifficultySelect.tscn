@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://drs0wut85d15m"]
+
+[ext_resource type="Script" uid="uid://cjqeueesy3rpk" path="res://Scripts/UI/Settings/DifficultySelect.cs" id="1_0n7yu"]
+
+[node name="DifficultySelect" type="HBoxContainer"]
+script = ExtResource("1_0n7yu")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Difficulty"
+
+[node name="DifficultyOptionButton" type="OptionButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
