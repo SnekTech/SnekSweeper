@@ -33,9 +33,9 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 
     #endregion
 
-    private void OnDifficultySelected(long index)
+    private static void OnDifficultySelected(long index)
     {
-        _mainSetting.CurrentDifficulty = DifficultyFactory.GetDifficultyById(DifficultyOptionButton.GetSelectedId());
+        HouseKeeper.MainSetting.CurrentDifficultyKey = GridDifficultyKey.FromLong(index);
         SaveLoadEventBus.EmitSaveRequested();
     }
 
@@ -49,14 +49,14 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
     private void InitDifficultyOptions()
     {
         DifficultyOptionButton.Clear();
-        var difficulties = DifficultyFactory.Difficulties;
+        var difficulties = DifficultyFactory.Difficulties.ToList();
         foreach (var difficulty in difficulties)
         {
-            DifficultyOptionButton.AddItem(difficulty.Name, difficulty.Id);
+            DifficultyOptionButton.AddItem(difficulty.Name, difficulty.Key.ToInt());
         }
 
         var savedDifficultyIndex =
-            difficulties.FindIndex(difficulty => difficulty.Id == _mainSetting.CurrentDifficulty.Id);
+            difficulties.FindIndex(difficulty => difficulty.Key == _mainSetting.CurrentDifficultyKey);
         DifficultyOptionButton.Select(savedDifficultyIndex);
     }
 

@@ -26,7 +26,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _Ready()
     {
-        var currentDifficulty = _mainSetting.CurrentDifficulty.DifficultyData;
+        var currentDifficulty = _mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
         var currentStrategy = _mainSetting.CurrentStrategyName.ToStrategy(currentDifficulty);
         _grid = new Grid(this, currentDifficulty.Size, currentStrategy);
         _referee = new Referee(_grid);

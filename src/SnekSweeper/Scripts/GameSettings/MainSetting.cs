@@ -6,7 +6,7 @@ namespace SnekSweeper.GameSettings;
 
 public class MainSetting
 {
-    public GridDifficulty CurrentDifficulty { get; set; } = DifficultyFactory.Intermediate;
+    public GridDifficultyKey CurrentDifficultyKey { get; set; } = GridDifficultyKey.Intermediate;
     public SkinKey CurrentSkinKey { get; set; } = SkinKey.Classic;
     public bool ComboRankDisplay { get; set; } = true;
     public LayMineStrategyName CurrentStrategyName { get; set; } = LayMineStrategyName.Solvable;
