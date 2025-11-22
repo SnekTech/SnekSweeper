@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using GodotGadgets.Extensions;
 using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.GameHistory;
 using SnekSweeper.GameSettings;
@@ -17,7 +18,17 @@ public class PlayerDataJson
     public static PlayerDataJson Load()
     {
         var json = File.ReadAllText(SavePath);
-        return JsonSerializer.Deserialize<PlayerDataJson>(json) ?? new PlayerDataJson();
+        PlayerDataJson? playerData = null;
+        try
+        {
+            playerData = JsonSerializer.Deserialize<PlayerDataJson>(json);
+        }
+        catch (Exception jsonException)
+        {
+            jsonException.Message.DumpGd();
+        }
+        
+        return playerData ?? new PlayerDataJson();
     }
 }
 
