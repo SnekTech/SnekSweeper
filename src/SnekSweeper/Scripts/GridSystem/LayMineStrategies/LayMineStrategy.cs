@@ -5,22 +5,22 @@ public interface ILayMineStrategy
     bool[,] Generate(GridIndex startIndex);
 }
 
-public enum LayMineStrategyName
+public enum LayMineStrategyKey
 {
     Classic,
     Solvable,
     Hardcoded,
 }
 
-public static class LayMineStrategyNameExtensions
+public static class LayMineStrategyKeyExtension
 {
-    extension(LayMineStrategyName strategyName)
+    extension(LayMineStrategyKey key)
     {
         public ILayMineStrategy ToStrategy(GridDifficultyData difficultyData) =>
-            strategyName switch
+            key switch
             {
-                LayMineStrategyName.Solvable => new Solvable(difficultyData),
-                LayMineStrategyName.Classic => new Classic(difficultyData),
+                LayMineStrategyKey.Solvable => new Solvable(difficultyData),
+                LayMineStrategyKey.Classic => new Classic(difficultyData),
                 _ => new Solvable(difficultyData),
             };
     }
