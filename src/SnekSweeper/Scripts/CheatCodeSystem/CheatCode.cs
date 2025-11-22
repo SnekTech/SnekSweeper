@@ -1,35 +1,39 @@
-﻿using System.Text.Json.Serialization;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 
 namespace SnekSweeper.CheatCodeSystem;
 
-public class CheatCode
+public record CheatCode(CheatCodeKey Key, CheatCodeData Data)
 {
-    public required CheatCodeId Id { get; init; }
-    public required CheatCodeData Data { get; init; }
     public ICheatCodeGridEffect? InitEffect { get; init; }
+}
 
-    [JsonIgnore]
-    public Texture2D Icon => SnekUtility.LoadTexture(Data.IconPath);
-
-    [JsonIgnore]
-    public bool IsActivated
+public static class CheatCodeExtension
+{
+    extension(CheatCode cheatCode)
     {
-        get => HouseKeeper.ActivatedCheatCodeSet.Contains(this);
-        set
+        public Texture2D Icon => SnekUtility.LoadTexture(cheatCode.Data.IconPath);
+        
+        public bool IsActivated
         {
-            if (value)
+            get => HouseKeeper.ActivatedCheatCodeSet.Contains(cheatCode.Key);
+            set
             {
-                HouseKeeper.ActivatedCheatCodeSet.Add(this);
-            }
-            else
-            {
-                HouseKeeper.ActivatedCheatCodeSet.Remove(this);
+                if (value)
+                {
+                    HouseKeeper.ActivatedCheatCodeSet.Add(cheatCode.Key);
+                }
+                else
+                {
+                    HouseKeeper.ActivatedCheatCodeSet.Remove(cheatCode.Key);
+                }
             }
         }
     }
 }
 
-public readonly record struct CheatCodeId(Guid Value);
+public record CheatCodeData(string Name, string Description, string IconPath);
 
-public readonly record struct CheatCodeData(string Name, string Description, string IconPath);
+public enum CheatCodeKey
+{
+    TransparentCover,
+}

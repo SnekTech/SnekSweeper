@@ -6,19 +6,19 @@ public class ActivatedCheatCodeSet
 {
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public HashSet<CheatCodeId> ActivatedSet { get; set; } = [];
+    public HashSet<CheatCodeKey> ActivatedSet { get; set; } = [];
 
-    public void Add(CheatCode cheatCode)
+    public void Add(CheatCodeKey cheatCodeKey)
     {
-        ActivatedSet.Add(cheatCode.Id);
+        ActivatedSet.Add(cheatCodeKey);
         SaveLoadEventBus.EmitSaveRequested();
     }
 
-    public void Remove(CheatCode cheatCode)
+    public void Remove(CheatCodeKey cheatCodeKey)
     {
-        ActivatedSet.Remove(cheatCode.Id);
+        ActivatedSet.Remove(cheatCodeKey);
         SaveLoadEventBus.EmitSaveRequested();
     }
 
-    public bool Contains(CheatCode cheatCode) => ActivatedSet.Contains(cheatCode.Id);
+    public bool Contains(CheatCodeKey cheatCodeKey) => ActivatedSet.Contains(cheatCodeKey);
 }
