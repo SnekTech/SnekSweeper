@@ -9,5 +9,4 @@ public interface IHumbleCell
     IFlag Flag { get; }
     void SetContent(bool hasBomb, int neighborBombCount);
     void SetPosition(GridIndex gridIndex);
-    void SetCoverAlpha(float normalizedAlpha);
 }

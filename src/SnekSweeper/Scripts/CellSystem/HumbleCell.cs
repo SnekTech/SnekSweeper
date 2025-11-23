@@ -31,8 +31,6 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
         Position = new Vector2(j * cellSize, i * cellSize);
     }
 
-    public void SetCoverAlpha(float normalizedAlpha) => Cover.SetAlpha(normalizedAlpha);
-
     public void UseSkin(GridSkin newSkin)
     {
         Content.ChangeTexture(newSkin.Texture);

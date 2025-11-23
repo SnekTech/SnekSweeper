@@ -13,7 +13,7 @@ public class SetGridCoverAlpha(float normalizedAlpha) : ICheatCodeGridEffect
     {
         foreach (var humbleCell in humbleGrid.HumbleCells)
         {
-            humbleCell.SetCoverAlpha(normalizedAlpha);
+            humbleCell.Cover.SetAlpha(normalizedAlpha);
         }
     }
 }
