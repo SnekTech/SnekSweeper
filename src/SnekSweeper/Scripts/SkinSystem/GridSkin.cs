@@ -1,14 +1,15 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace SnekSweeper.SkinSystem;
 
-namespace SnekSweeper.SkinSystem;
+public record GridSkin(SkinKey Key, string TexturePath);
 
-public record GridSkin(SkinKey Key, string TexturePath)
+public static class GridSkinExtensions
 {
-    [JsonIgnore]
-    public string Name => Key.ToString();
+    extension(GridSkin skin)
+    {
+        public string Name => skin.Key.ToString();
 
-    [JsonIgnore]
-    public Texture2D Texture => SnekUtility.LoadTexture(TexturePath);
+        public Texture2D Texture => SnekUtility.LoadTexture(skin.TexturePath);
+    }
 }
 
 public enum SkinKey

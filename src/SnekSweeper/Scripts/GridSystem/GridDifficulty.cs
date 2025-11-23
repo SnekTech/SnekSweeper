@@ -1,14 +1,23 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace SnekSweeper.GridSystem;
 
-namespace SnekSweeper.GridSystem;
+public record GridDifficulty(GridDifficultyKey Key, GridDifficultyData DifficultyData);
 
-public record GridDifficulty(GridDifficultyKey Key, GridDifficultyData DifficultyData)
+public static class GridDifficultyExtensions
 {
-    [JsonIgnore]
-    public string Name => Key.ToString();
+    extension(GridDifficulty difficulty)
+    {
+        public string Name => difficulty.Key.ToString();
+    }
 }
 
 public readonly record struct GridDifficultyData(GridSize Size, int BombCount);
+
+public enum GridDifficultyKey
+{
+    Beginner,
+    Intermediate,
+    Expert,
+}
 
 public static class DifficultyFactory
 {
@@ -35,14 +44,15 @@ public static class DifficultyFactory
     {
         public static GridDifficultyKey FromLong(long index) => (GridDifficultyKey)index;
         public int ToInt() => (int)key;
-        
+
         public GridDifficulty ToDifficulty()
         {
             DifficultyCache.TryGetValue(key, out var difficulty);
             if (difficulty is not null)
                 return difficulty;
 
-            GD.Print($"difficulty key {key.ToString()} not found, use {nameof(GridDifficultyKey.Intermediate)} instead");
+            GD.Print(
+                $"difficulty key {key.ToString()} not found, use {nameof(GridDifficultyKey.Intermediate)} instead");
             return DifficultyCache[GridDifficultyKey.Intermediate];
         }
     }
@@ -51,11 +61,4 @@ public static class DifficultyFactory
     {
         private void CacheToDict() => DifficultyCache.Add(difficulty.Key, difficulty);
     }
-}
-
-public enum GridDifficultyKey
-{
-    Beginner,
-    Intermediate,
-    Expert,
 }
