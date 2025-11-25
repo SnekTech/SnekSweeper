@@ -1,5 +1,4 @@
 using SnekSweeper.CellSystem.Components;
-using SnekSweeper.Constants;
 using SnekSweeper.GridSystem;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.Widgets;
@@ -24,12 +23,7 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
         }
     }
 
-    public void SetPosition(GridIndex gridIndex)
-    {
-        var (i, j) = gridIndex;
-        const int cellSize = CoreStats.CellSizePixels;
-        Position = new Vector2(j * cellSize, i * cellSize);
-    }
+    public void SetPosition(GridIndex gridIndex) => Position = gridIndex.ToPosition();
 
     public void UseSkin(GridSkin newSkin)
     {

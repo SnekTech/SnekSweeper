@@ -1,7 +1,4 @@
-﻿using Godot;
-using SnekSweeper.Constants;
-
-namespace SnekSweeper.GridSystem;
+﻿namespace SnekSweeper.GridSystem;
 
 public partial class GridCursor : Sprite2D
 {
@@ -16,8 +13,6 @@ public partial class GridCursor : Sprite2D
     public void ShowAtHoveringCell(GridIndex hoveringGridIndex)
     {
         Show();
-        var (i, j) = hoveringGridIndex;
-        const int cellSize = CoreStats.CellSizePixels;
-        Position = new Vector2(j * cellSize, i * cellSize);
+        Position = hoveringGridIndex.ToPosition();
     }
 }
