@@ -1,4 +1,6 @@
-﻿namespace SnekSweeper.GridSystem.LayMineStrategies;
+﻿using SnekSweeper.GridSystem.Difficulty;
+
+namespace SnekSweeper.GridSystem.LayMineStrategies;
 
 public interface ILayMineStrategy
 {

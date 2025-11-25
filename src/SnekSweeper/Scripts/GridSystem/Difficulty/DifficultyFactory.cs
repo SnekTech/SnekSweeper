@@ -1,31 +1,21 @@
-﻿namespace SnekSweeper.GridSystem;
-
-public record GridDifficulty(GridDifficultyKey Key, GridDifficultyData DifficultyData);
-
-public static class GridDifficultyExtensions
-{
-    extension(GridDifficulty difficulty)
-    {
-        public string Name => difficulty.Key.ToString();
-    }
-}
-
-public readonly record struct GridDifficultyData(GridSize Size, int BombCount);
-
-public enum GridDifficultyKey
-{
-    Beginner,
-    Intermediate,
-    Expert,
-}
+﻿namespace SnekSweeper.GridSystem.Difficulty;
 
 public static class DifficultyFactory
 {
     private static readonly GridDifficulty[] BuiltinDifficulties =
     [
-        new(GridDifficultyKey.Beginner, new GridDifficultyData(new GridSize(9, 9), 10)),
-        new(GridDifficultyKey.Intermediate, new GridDifficultyData(new GridSize(16, 16), 40)),
-        new(GridDifficultyKey.Expert, new GridDifficultyData(new GridSize(16, 30), 99)),
+        A.GridDifficulty
+            .WithKey(GridDifficultyKey.Beginner)
+            .WithSize(new GridSize(9, 9))
+            .WithBombCount(10),
+        A.GridDifficulty
+            .WithKey(GridDifficultyKey.Intermediate)
+            .WithSize(new GridSize(16, 16))
+            .WithBombCount(40),
+        A.GridDifficulty
+            .WithKey(GridDifficultyKey.Expert)
+            .WithSize(new GridSize(16, 30))
+            .WithBombCount(99),
     ];
     private static readonly Dictionary<GridDifficultyKey, GridDifficulty> DifficultyCache = [];
 

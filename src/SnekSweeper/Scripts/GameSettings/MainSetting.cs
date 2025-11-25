@@ -1,4 +1,4 @@
-﻿using SnekSweeper.GridSystem;
+﻿using SnekSweeper.GridSystem.Difficulty;
 using SnekSweeper.GridSystem.LayMineStrategies;
 using SnekSweeper.SkinSystem;
 
