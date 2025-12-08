@@ -22,20 +22,20 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
         ClearButton.Pressed -= OnClearButtonPressed;
     }
 
-    private void PopulateRecords()
+    void PopulateRecords()
     {
         var records = HouseKeeper.History.Records;
         RecordsCountLabel.Text = $"{records.Count} records in total";
 
         foreach (var record in records)
         {
-            var recordCard = SceneFactory.Instantiate<RecordCard>();
+            var recordCard = RecordCard.Instantiate();
             recordCard.SetContent(record);
             RecordsContainer.AddChild(recordCard);
         }
     }
 
-    private void OnClearButtonPressed()
+    void OnClearButtonPressed()
     {
         HouseKeeper.History.ClearRecords();
         RecordsContainer.ClearChildren();

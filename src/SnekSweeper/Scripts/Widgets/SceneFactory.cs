@@ -2,8 +2,11 @@
 
 public static class SceneFactory
 {
-    public static T Instantiate<T>() where T : Node, ISceneScript =>
-        ResourceLoader.Load<PackedScene>(T.TscnFilePath).Instantiate<T>();
+    extension<T>(T) where T : Node, ISceneScript
+    {
+        public static T Instantiate() =>
+            ResourceLoader.Load<PackedScene>(T.TscnFilePath).Instantiate<T>();
+    }
 }
 
 public interface ISceneScript

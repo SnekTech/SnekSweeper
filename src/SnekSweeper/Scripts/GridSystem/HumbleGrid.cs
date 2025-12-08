@@ -63,7 +63,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
         for (var i = 0; i < count; i++)
         {
-            var humbleCell = SceneFactory.Instantiate<HumbleCell>();
+            var humbleCell = HumbleCell.Instantiate();
             humbleCells.Add(humbleCell);
             humbleCell.UseSkin(_mainSetting.CurrentSkinKey.ToSkin());
             AddChild(humbleCell);

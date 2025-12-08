@@ -19,11 +19,11 @@ public partial class SceneSwitcher : Node
         Callable.From(() => DeferredGotoScene(SceneFactory.Instantiate<T>()).Fire()).CallDeferred();
     }
 
-    private async Task DeferredGotoScene(Node newSceneRoot)
+    async Task DeferredGotoScene(Node newSceneRoot)
     {
         var rootWindow = GetTree().Root;
 
-        var fadingMask = SceneFactory.Instantiate<FadingMask>();
+        var fadingMask = FadingMask.Instantiate();
         rootWindow.AddChild(fadingMask);
         await fadingMask.FadeInAsync();
 

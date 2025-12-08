@@ -10,11 +10,11 @@ public partial class CheatCodePage : Control, ISceneScript
         PopulateCheatCodeCards();
     }
 
-    private void PopulateCheatCodeCards()
+    void PopulateCheatCodeCards()
     {
         foreach (var cheatCode in CheatCodeFactory.BuiltinCheatCodeList)
         {
-            var card = SceneFactory.Instantiate<CheatCodeCard>();
+            var card = CheatCodeCard.Instantiate();
             card.Init(cheatCode);
             CardContainer.AddChild(card);
         }
