@@ -14,8 +14,7 @@ public partial class CheatCodePage : Control, ISceneScript
     {
         foreach (var cheatCode in CheatCodeFactory.BuiltinCheatCodeList)
         {
-            var card = CheatCodeCard.Instantiate();
-            CardContainer.AddChild(card);
+            var card = CheatCodeCard.InstantiateOnParent(CardContainer);
             card.Init(cheatCode, _.TooltipLayer);
         }
     }

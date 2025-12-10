@@ -29,9 +29,8 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
 
         foreach (var record in records)
         {
-            var recordCard = RecordCard.Instantiate();
+            var recordCard = RecordCard.InstantiateOnParent(RecordsContainer);
             recordCard.SetContent(record);
-            RecordsContainer.AddChild(recordCard);
         }
     }
 

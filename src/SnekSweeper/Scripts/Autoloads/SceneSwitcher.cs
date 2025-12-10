@@ -23,8 +23,7 @@ public partial class SceneSwitcher : Node
     {
         var rootWindow = GetTree().Root;
 
-        var fadingMask = FadingMask.Instantiate();
-        rootWindow.AddChild(fadingMask);
+        var fadingMask = FadingMask.InstantiateOnParent(rootWindow);
         await fadingMask.FadeInAsync();
 
         // It is now safe to remove the current scene.
