@@ -1,11 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://cq6jujql0gw5n"]
+[gd_scene load_steps=4 format=3 uid="uid://cq6jujql0gw5n"]
 
 [ext_resource type="Script" uid="uid://cl514kge2sa28" path="res://Scripts/CheatCodeSystem/UI/CheatCodeCard.cs" id="1_7tr6w"]
 [ext_resource type="Texture2D" uid="uid://cs5kniydl8aim" path="res://Art/relic_icon_alpha.png" id="2_ar3yn"]
+[ext_resource type="Script" uid="uid://bqyxsgs1wevtr" path="res://addons/SnekTech.Tooltip/ControlTooltipTrigger.cs" id="2_v2r87"]
 
 [node name="CheatCodeCard" type="PanelContainer"]
 custom_minimum_size = Vector2(80, 100)
 script = ExtResource("1_7tr6w")
+
+[node name="ControlTooltipTrigger" type="Node" parent="."]
+script = ExtResource("2_v2r87")
+metadata/_custom_type_script = "uid://bqyxsgs1wevtr"
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2

@@ -12,5 +12,6 @@ obj/
 *.blend1
 
 **/.idea
+addons/
 AssetsRaw/
 src/SnekSweeper/ms_toollib_cs.dll

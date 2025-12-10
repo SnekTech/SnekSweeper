@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://noy7w7ol2kkj"]
+
+[ext_resource type="Script" uid="uid://ot4qdv30lpui" path="res://Scripts/UI/TooltipSystem/TooltipLayer.cs" id="1_i017q"]
+[ext_resource type="PackedScene" uid="uid://dgosx5ht6w130" path="res://Scripts/UI/TooltipSystem/Tooltip.tscn" id="2_iglk4"]
+
+[node name="TooltipLayer" type="CanvasLayer"]
+script = ExtResource("1_i017q")
+
+[node name="Tooltip" parent="." instance=ExtResource("2_iglk4")]
+unique_name_in_owner = true

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://d05cgegldnxei"]
+[gd_scene load_steps=4 format=3 uid="uid://d05cgegldnxei"]
 
 [ext_resource type="Script" uid="uid://dbgpbjx6h2wit" path="res://Scripts/CheatCodeSystem/UI/CheatCodePage.cs" id="1_j7dlw"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_tiqmo"]
+[ext_resource type="PackedScene" uid="uid://noy7w7ol2kkj" path="res://Scripts/UI/TooltipSystem/TooltipLayer.tscn" id="3_oy5jd"]
 
 [node name="CheatCodePage" type="Control"]
 layout_mode = 3
@@ -40,3 +41,5 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/h_separation = 10
 columns = 3
+
+[node name="TooltipLayer" parent="." instance=ExtResource("3_oy5jd")]

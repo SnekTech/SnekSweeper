@@ -1,11 +1,14 @@
-﻿using SnekSweeper.Widgets;
+﻿using GodotGadgets.Extensions;
+using GodotGadgets.TooltipSystem;
+using SnekSweeper.Widgets;
+using SnekTech.Tooltip;
 
 namespace SnekSweeper.CheatCodeSystem.UI;
 
 [SceneTree]
 public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
-    private CheatCode _cheatCode = null!;
+    CheatCode _cheatCode = null!;
 
     public override void _EnterTree()
     {
@@ -17,16 +20,26 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
         CheckButton.Pressed -= OnCheckButtonPressed;
     }
 
-    public void Init(CheatCode cheatCode)
+    public void Init(CheatCode cheatCode, ITooltipDisplay tooltipDisplay)
     {
         _cheatCode = cheatCode;
 
         NameLabel.Text = cheatCode.Data.Name;
         Icon.Texture = cheatCode.Icon;
         CheckButton.SetPressed(cheatCode.IsActivated);
+        
+        InitTooltip();
+        return;
+
+        void InitTooltip()
+        {
+            var tooltipTrigger = this.GetFirstChildOfType<ControlTooltipTrigger>();
+            tooltipTrigger.SetTooltipContent(TooltipContent.New(cheatCode.Data.Name, cheatCode.Data.Description));
+            tooltipTrigger.SetTooltipDisplay(tooltipDisplay);
+        }
     }
 
-    private void OnCheckButtonPressed()
+    void OnCheckButtonPressed()
     {
         _cheatCode.IsActivated = !_cheatCode.IsActivated;
     }
