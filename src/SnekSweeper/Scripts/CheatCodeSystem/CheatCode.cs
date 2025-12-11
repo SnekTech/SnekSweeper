@@ -36,4 +36,5 @@ public record CheatCodeData(string Name, string Description, string IconPath);
 public enum CheatCodeKey
 {
     TransparentCover,
+    Messenger,
 }

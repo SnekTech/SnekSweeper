@@ -10,7 +10,7 @@ public static class CheatCodeFactory
         }
     }
 
-    private static readonly CheatCode[] AvailableCheatCodes =
+    static readonly CheatCode[] AvailableCheatCodes =
     [
         new(CheatCodeKey.TransparentCover, new CheatCodeData(
             "Transparent Cover",
@@ -19,9 +19,17 @@ public static class CheatCodeFactory
         {
             InitEffect = new SetGridCoverAlpha(0.5f),
         },
+        new(CheatCodeKey.Messenger, new CheatCodeData(
+            "Messenger",
+            "Send message while playing.",
+            "res://Art/relic_icon_alpha.png"
+        ))
+        {
+            InitEffect = new SendMessage(),
+        },
     ];
 
-    private static readonly Dictionary<CheatCodeKey, CheatCode> CheatCodeCollection = [];
+    static readonly Dictionary<CheatCodeKey, CheatCode> CheatCodeCollection = [];
 
     public static IEnumerable<CheatCode> BuiltinCheatCodeList =>
         CheatCodeCollection.Values.OrderBy(cheatCode => cheatCode.Key);

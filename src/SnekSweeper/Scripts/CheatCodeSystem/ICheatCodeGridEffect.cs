@@ -1,4 +1,5 @@
-﻿using SnekSweeper.GridSystem;
+﻿using SnekSweeper.Autoloads;
+using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CheatCodeSystem;
 
@@ -15,5 +16,13 @@ public class SetGridCoverAlpha(float normalizedAlpha) : ICheatCodeGridEffect
         {
             humbleCell.Cover.SetAlpha(normalizedAlpha);
         }
+    }
+}
+
+public class SendMessage : ICheatCodeGridEffect
+{
+    public void Trigger(IHumbleGrid humbleGrid)
+    {
+        MessageBox.Print("Hello from messenger!");
     }
 }
