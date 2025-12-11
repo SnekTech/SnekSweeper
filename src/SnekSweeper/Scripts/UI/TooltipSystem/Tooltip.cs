@@ -49,7 +49,7 @@ public partial class Tooltip : Control
 
         return new Vector2(tooltipX, tooltipY);
 
-        bool IsOverflowHorizontally() => targetPosition.X + tooltipMarginX + tooltipSize.X > viewportSize.X;
+        bool IsOverflowHorizontally() => targetPosition.X + targetSize.X + tooltipMarginX + tooltipSize.X > viewportSize.X;
         bool IsOverflowVertically() => targetPosition.Y + tooltipSize.Y > viewportSize.Y;
     }
 }
