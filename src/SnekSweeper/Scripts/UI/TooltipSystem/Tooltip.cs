@@ -10,8 +10,8 @@ public partial class Tooltip : Control
 
     internal Task ShowAsync(TooltipContent content, Rect2 targetGlobalRect, CancellationToken token)
     {
-        Header.Text = content.Title;
-        Content.Text = content.Content;
+        HeaderLabel.Text = content.Title;
+        ContentLabel.Text = content.Content;
         Show();
         
         Callable.From(UpdateTooltipPosition).CallDeferred();

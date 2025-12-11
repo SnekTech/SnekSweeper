@@ -14,7 +14,7 @@ public static class CheatCodeFactory
     [
         new(CheatCodeKey.TransparentCover, new CheatCodeData(
             "Transparent Cover",
-            "Make cells transparent",
+            "Make cells transparent Make cells transparent Make cells transparent Make cells transparent  ",
             "res://Art/relic_icon_alpha.png"))
         {
             InitEffect = new SetGridCoverAlpha(0.5f),
