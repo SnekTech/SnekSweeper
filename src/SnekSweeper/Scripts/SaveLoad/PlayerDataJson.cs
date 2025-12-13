@@ -21,7 +21,7 @@ public class PlayerDataJson
         PlayerDataJson? playerData = null;
         try
         {
-            playerData = JsonSerializer.Deserialize<PlayerDataJson>(json);
+            playerData = JsonSerializer.Deserialize(json, PlayerDataJsonExtensions.SerializerContext.PlayerDataJson);
         }
         catch (Exception jsonException)
         {
@@ -34,11 +34,12 @@ public class PlayerDataJson
 
 public static class PlayerDataJsonExtensions
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = OS.IsDebugBuild() };
+    static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = OS.IsDebugBuild() };
+    internal static readonly PlayerDataSerializerContext SerializerContext = new(SerializerOptions);
 
     public static void Save(this PlayerDataJson playerDataJson)
     {
-        var json = JsonSerializer.Serialize(playerDataJson, SerializerOptions);
+        var json = JsonSerializer.Serialize(playerDataJson, SerializerContext.PlayerDataJson);
         File.WriteAllText(PlayerDataJson.SavePath, json);
     }
 
