@@ -7,39 +7,39 @@ namespace SnekSweeper.Autoloads;
 
 public partial class HouseKeeper : Node
 {
-    private static PlayerDataJson _playerDataJson = null!;
+    static PlayerDataJson _currentPlayerSaveData = null!;
 
     public override void _Ready()
     {
         CreateOrLoadPlayerData();
 
-        SaveLoadEventBus.SaveRequested += SavePlayerData;
+        SaveLoadEventBus.SaveRequested += SaveCurrentPlayerData;
     }
 
     public override void _ExitTree()
     {
-        SaveLoadEventBus.SaveRequested -= SavePlayerData;
+        SaveLoadEventBus.SaveRequested -= SaveCurrentPlayerData;
     }
 
-    private void CreateOrLoadPlayerData()
+    static void CreateOrLoadPlayerData()
     {
-        if (_playerDataJson.Exists())
+        if (PlayerDataJson.TryLoad(out var loaded))
         {
-            _playerDataJson = PlayerDataJson.Load();
+            _currentPlayerSaveData = loaded;
         }
         else
         {
-            _playerDataJson = new PlayerDataJson();
-            _playerDataJson.Save();
+            _currentPlayerSaveData = PlayerDataJson.CreateEmpty();
+            SaveCurrentPlayerData();
         }
     }
 
-    private void SavePlayerData()
+    static void SaveCurrentPlayerData()
     {
-        _playerDataJson.Save();
+        _currentPlayerSaveData.Save();
     }
 
-    public static MainSetting MainSetting => _playerDataJson.MainSetting;
-    public static History History => _playerDataJson.History;
-    public static ActivatedCheatCodeSet ActivatedCheatCodeSet => _playerDataJson.ActivatedCheatCodeSet;
+    internal static MainSetting MainSetting => _currentPlayerSaveData.MainSetting;
+    internal static History History => _currentPlayerSaveData.History;
+    internal static ActivatedCheatCodeSet ActivatedCheatCodeSet => _currentPlayerSaveData.ActivatedCheatCodeSet;
 }

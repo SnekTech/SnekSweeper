@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text.Json;
 using GodotGadgets.Extensions;
 using SnekSweeper.CheatCodeSystem;
@@ -7,44 +8,47 @@ using SnekSweeper.GameSettings;
 
 namespace SnekSweeper.SaveLoad;
 
-public class PlayerDataJson
+record PlayerDataJson(MainSetting MainSetting, ActivatedCheatCodeSet ActivatedCheatCodeSet, History History);
+
+static class PlayerDataJsonExtensions
 {
-    public static readonly string SavePath = Path.Combine(OS.GetUserDataDir(), "playerData.json");
+    const string SaveFileName = "playerData.json";
+    static readonly string SavePath = Path.Combine(OS.GetUserDataDir(), SaveFileName);
 
-    public MainSetting MainSetting { get; init; } = new();
-    public ActivatedCheatCodeSet ActivatedCheatCodeSet { get; init; } = new();
-    public History History { get; init; } = new();
-
-    public static PlayerDataJson Load()
-    {
-        var json = File.ReadAllText(SavePath);
-        PlayerDataJson? playerData = null;
-        try
-        {
-            playerData = JsonSerializer.Deserialize(json, PlayerDataJsonExtensions.SerializerContext.PlayerDataJson);
-        }
-        catch (Exception jsonException)
-        {
-            jsonException.Message.DumpGd();
-        }
-        
-        return playerData ?? new PlayerDataJson();
-    }
-}
-
-public static class PlayerDataJsonExtensions
-{
     static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = OS.IsDebugBuild() };
-    internal static readonly PlayerDataSerializerContext SerializerContext = new(SerializerOptions);
+    static readonly PlayerDataSerializerContext SerializerContext = new(SerializerOptions);
 
-    public static void Save(this PlayerDataJson playerDataJson)
+    extension(PlayerDataJson playerDataJson)
     {
-        var json = JsonSerializer.Serialize(playerDataJson, SerializerContext.PlayerDataJson);
-        File.WriteAllText(PlayerDataJson.SavePath, json);
-    }
+        internal static PlayerDataJson CreateEmpty() =>
+            new(new MainSetting(), new ActivatedCheatCodeSet(), new History());
 
-    public static bool Exists(this PlayerDataJson playerDataJson)
-    {
-        return File.Exists(PlayerDataJson.SavePath);
+        internal void Save()
+        {
+            var json = JsonSerializer.Serialize(playerDataJson, SerializerContext.PlayerDataJson);
+            File.WriteAllText(SavePath, json);
+        }
+
+        internal static bool TryLoad([MaybeNullWhen(false)]out PlayerDataJson outPlayerData)
+        {
+            PlayerDataJson? loaded = null;
+            
+            try
+            {
+                var json = File.ReadAllText(SavePath);
+                loaded = JsonSerializer.Deserialize(json, SerializerContext.PlayerDataJson);
+            }
+            catch (Exception e)
+            {
+                e.DumpGd();
+                if (OS.IsDebugBuild())
+                {
+                    throw;
+                }
+            }
+            
+            outPlayerData = loaded;
+            return loaded != null;
+        }
     }
 }
