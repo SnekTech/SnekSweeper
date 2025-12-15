@@ -4,7 +4,7 @@ public static class MatrixExtensions
 {
     extension<T>(T[,] matrix)
     {
-        private GridSize Size() => new(matrix.GetLength(0), matrix.GetLength(1));
+        GridSize Size() => new(matrix.GetLength(0), matrix.GetLength(1));
 
         public IEnumerable<GridIndex> Indices()
         {
@@ -16,6 +16,19 @@ public static class MatrixExtensions
                     yield return new GridIndex(i, j);
                 }
             }
+        }
+
+        internal IEnumerable<T> Elements => matrix.Indices().Select(matrix.At);
+
+        internal TU[,] MapTo<TU>(Func<T, TU> f)
+        {
+            var size = matrix.Size();
+            var mappedMatrix = new TU[size.Rows, size.Columns];
+            foreach (var gridIndex in matrix.Indices())
+            {
+                mappedMatrix.SetAt(gridIndex, f(matrix.At(gridIndex)));
+            }
+            return mappedMatrix;
         }
 
         public T At(GridIndex index) => matrix[index.I, index.J];
