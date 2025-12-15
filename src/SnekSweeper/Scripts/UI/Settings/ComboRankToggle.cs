@@ -1,5 +1,4 @@
 ﻿using SnekSweeper.Autoloads;
-using SnekSweeper.SaveLoad;
 
 namespace SnekSweeper.UI.Settings;
 
@@ -21,14 +20,14 @@ public partial class ComboRankToggle : HBoxContainer
         ComboRankDisplayToggle.Toggled -= OnComboRankDisplayToggled;
     }
 
-    private void InitComboRankDisplayToggle()
+    void InitComboRankDisplayToggle()
     {
         ComboRankDisplayToggle.SetPressedNoSignal(HouseKeeper.MainSetting.ComboRankDisplay);
     }
 
-    private static void OnComboRankDisplayToggled(bool toggledOn)
+    static void OnComboRankDisplayToggled(bool toggledOn)
     {
         HouseKeeper.MainSetting.ComboRankDisplay = toggledOn;
-        SaveLoadEventBus.EmitSaveRequested();
+        HouseKeeper.SaveCurrentPlayerData();
     }
 }

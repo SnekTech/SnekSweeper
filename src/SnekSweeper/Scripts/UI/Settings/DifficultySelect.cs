@@ -1,6 +1,5 @@
 ﻿using SnekSweeper.Autoloads;
 using SnekSweeper.GridSystem.Difficulty;
-using SnekSweeper.SaveLoad;
 
 namespace SnekSweeper.UI.Settings;
 
@@ -22,7 +21,7 @@ public partial class DifficultySelect : HBoxContainer
         DifficultyOptionButton.ItemSelected -= OnDifficultySelected;
     }
 
-    private void InitDifficultyOptions()
+    void InitDifficultyOptions()
     {
         DifficultyOptionButton.Clear();
         var difficulties = DifficultyFactory.Difficulties.ToList();
@@ -36,9 +35,9 @@ public partial class DifficultySelect : HBoxContainer
         DifficultyOptionButton.Select(savedDifficultyIndex);
     }
 
-    private static void OnDifficultySelected(long index)
+    static void OnDifficultySelected(long index)
     {
         HouseKeeper.MainSetting.CurrentDifficultyKey = GridDifficultyKey.FromLong(index);
-        SaveLoadEventBus.EmitSaveRequested();
+        HouseKeeper.SaveCurrentPlayerData();
     }
 }

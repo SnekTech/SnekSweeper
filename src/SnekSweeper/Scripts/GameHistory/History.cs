@@ -1,4 +1,4 @@
-﻿using SnekSweeper.SaveLoad;
+﻿using SnekSweeper.Autoloads;
 
 namespace SnekSweeper.GameHistory;
 
@@ -10,12 +10,12 @@ public class History
     public void AddRecord(GameRunRecord gameRunRecord)
     {
         Records.Add(gameRunRecord);
-        SaveLoadEventBus.EmitSaveRequested();
+        HouseKeeper.SaveCurrentPlayerData();
     }
 
     public void ClearRecords()
     {
         Records.Clear();
-        SaveLoadEventBus.EmitSaveRequested();
+        HouseKeeper.SaveCurrentPlayerData();
     }
 }

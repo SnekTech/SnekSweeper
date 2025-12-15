@@ -12,13 +12,6 @@ public partial class HouseKeeper : Node
     public override void _Ready()
     {
         CreateOrLoadPlayerData();
-
-        SaveLoadEventBus.SaveRequested += SaveCurrentPlayerData;
-    }
-
-    public override void _ExitTree()
-    {
-        SaveLoadEventBus.SaveRequested -= SaveCurrentPlayerData;
     }
 
     static void CreateOrLoadPlayerData()
@@ -34,7 +27,7 @@ public partial class HouseKeeper : Node
         }
     }
 
-    static void SaveCurrentPlayerData()
+    public static void SaveCurrentPlayerData()
     {
         _currentPlayerSaveData.Save();
     }

@@ -1,4 +1,4 @@
-﻿using SnekSweeper.SaveLoad;
+﻿using SnekSweeper.Autoloads;
 
 namespace SnekSweeper.CheatCodeSystem;
 
@@ -11,13 +11,13 @@ public class ActivatedCheatCodeSet
     public void Add(CheatCodeKey cheatCodeKey)
     {
         ActivatedSet.Add(cheatCodeKey);
-        SaveLoadEventBus.EmitSaveRequested();
+        HouseKeeper.SaveCurrentPlayerData();
     }
 
     public void Remove(CheatCodeKey cheatCodeKey)
     {
         ActivatedSet.Remove(cheatCodeKey);
-        SaveLoadEventBus.EmitSaveRequested();
+        HouseKeeper.SaveCurrentPlayerData();
     }
 
     public bool Contains(CheatCodeKey cheatCodeKey) => ActivatedSet.Contains(cheatCodeKey);

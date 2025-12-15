@@ -1,5 +1,4 @@
 ﻿using SnekSweeper.Autoloads;
-using SnekSweeper.SaveLoad;
 using SnekSweeper.SkinSystem;
 
 namespace SnekSweeper.UI.Settings;
@@ -22,13 +21,13 @@ public partial class SkinSelect : HBoxContainer
         SkinOptionButton.ItemSelected -= OnSkinSelected;
     }
     
-    private static void OnSkinSelected(long index)
+    static void OnSkinSelected(long index)
     {
         HouseKeeper.MainSetting.CurrentSkinKey = SkinKey.FromLong(index);
-        SaveLoadEventBus.EmitSaveRequested();
+        HouseKeeper.SaveCurrentPlayerData();
     }
     
-    private void InitSkinOptions()
+    void InitSkinOptions()
     {
         SkinOptionButton.Clear();
 
