@@ -8,7 +8,7 @@ public readonly record struct RunDuration(DateTime StartAt, DateTime EndAt);
 
 public record GameRunRecord(RunDuration Duration, bool Winning, RngData RngData)
 {
-    [JsonConverter(typeof(Mat2DConverter2))]
+    [JsonConverter(typeof(Mat2DConverter))]
     public required bool[,] BombMatrix { get; init; }
 }
 

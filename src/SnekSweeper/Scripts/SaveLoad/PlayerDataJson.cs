@@ -15,8 +15,8 @@ static class PlayerDataJsonExtensions
     const string SaveFileName = "playerData.json";
     static readonly string SavePath = Path.Combine(OS.GetUserDataDir(), SaveFileName);
 
-    internal static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = OS.IsDebugBuild() };
-    static readonly PlayerDataSerializerContext SerializerContext = new(SerializerOptions);
+    static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = OS.IsDebugBuild() };
+    internal static readonly PlayerDataSerializerContext SerializerContext = new(SerializerOptions);
 
     extension(PlayerDataJson playerDataJson)
     {

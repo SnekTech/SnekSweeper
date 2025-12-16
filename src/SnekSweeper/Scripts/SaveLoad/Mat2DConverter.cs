@@ -6,31 +6,12 @@ namespace SnekSweeper.SaveLoad;
 
 public class Mat2DConverter : JsonConverter<bool[,]>
 {
-    static readonly JsonConverter<int[][]> DefaultJaggedArrayConverter
-        = (JsonConverter<int[][]>)PlayerDataJsonExtensions.SerializerOptions.GetConverter(typeof(int[][]));
-
-    public override bool[,]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var mat = DefaultJaggedArrayConverter.Read(ref reader, typeToConvert, options);
-
-        return mat?.ToMat2D();
-    }
-
-    public override void Write(Utf8JsonWriter writer, bool[,] value, JsonSerializerOptions options)
-    {
-        var jagged = value.ToJagged();
-        DefaultJaggedArrayConverter.Write(writer, jagged, options);
-    }
-}
-
-public class Mat2DConverter2 : JsonConverter<bool[,]>
-{
     static readonly JsonConverter<List<string>> DefaultStringListConverter
-        = (JsonConverter<List<string>>)PlayerDataJsonExtensions.SerializerOptions.GetConverter(typeof(List<string>));
+        = (JsonConverter<List<string>>)PlayerDataJsonExtensions.SerializerContext.Options.GetConverter(typeof(List<string>));
 
     public override bool[,]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var mat = DefaultStringListConverter.Read(ref reader, typeToConvert, options);
+        var mat = DefaultStringListConverter.Read(ref reader, typeof(List<string>), options);
         if (mat == null)
             return null;
 
