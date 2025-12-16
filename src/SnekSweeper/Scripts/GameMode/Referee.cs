@@ -3,7 +3,6 @@ using SnekSweeper.CellSystem;
 using SnekSweeper.GameHistory;
 using SnekSweeper.GridSystem;
 using SnekSweeper.UI.GameResult;
-using Widgets.Roguelike;
 
 namespace SnekSweeper.GameMode;
 
@@ -30,11 +29,9 @@ public class Referee
 
     void SaveNewRecord(bool winning)
     {
-        var (seed, state) = Rand.Data;
         var record = GameRunRecord.Create(
             RunDuration.Create(_currentRunStartAt, DateTime.Now),
             winning,
-            new RngData(seed, state),
             _grid.BombMatrix
         );
         HouseKeeper.History.AddRecord(record);

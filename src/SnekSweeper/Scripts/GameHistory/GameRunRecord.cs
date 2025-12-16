@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 using SnekSweeper.SaveLoad;
-using Widgets.Roguelike;
 
 namespace SnekSweeper.GameHistory;
 
 public readonly record struct RunDuration(DateTime StartAt, DateTime EndAt);
 
-public record GameRunRecord(RunDuration Duration, bool Winning, RngData RngData)
+public record GameRunRecord(RunDuration Duration, bool Winning)
 {
     [JsonConverter(typeof(Mat2DConverter))]
     public required bool[,] BombMatrix { get; init; }
@@ -21,7 +20,7 @@ static class GameRunRecordExtensions
 
     extension(GameRunRecord)
     {
-        internal static GameRunRecord Create(RunDuration duration, bool winning, RngData rngData, bool[,] bombMatrix) =>
-            new(duration, winning, rngData) { BombMatrix = bombMatrix };
+        internal static GameRunRecord Create(RunDuration duration, bool winning, bool[,] bombMatrix)
+            => new(duration, winning) { BombMatrix = bombMatrix };
     }
 }

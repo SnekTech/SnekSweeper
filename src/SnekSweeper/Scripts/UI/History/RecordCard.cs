@@ -10,7 +10,6 @@ public partial class RecordCard : PanelContainer, ISceneScript
     {
         SetTimeLabel(gameRunRecord.Duration);
         SetWinningLabel(gameRunRecord.Winning);
-        SetSeedLabel(gameRunRecord.RngData.Seed);
     }
 
     void SetTimeLabel(RunDuration duration)
@@ -26,10 +25,5 @@ public partial class RecordCard : PanelContainer, ISceneScript
             false => ("Fail", Colors.Red),
         };
         (WinningLabel.Text, WinningLabel.Modulate) = (labelText, labelColor);
-    }
-
-    void SetSeedLabel(ulong seed)
-    {
-        SeedLabel.Text = $"seed: {seed}";
     }
 }
