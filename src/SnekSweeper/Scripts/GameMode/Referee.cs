@@ -9,9 +9,9 @@ namespace SnekSweeper.GameMode;
 
 public class Referee
 {
-    private readonly Grid _grid;
-    private DateTime _currentRunStartAt = DateTime.MinValue;
-    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
+    readonly Grid _grid;
+    DateTime _currentRunStartAt = DateTime.MinValue;
+    readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
 
     public Referee(Grid grid)
     {
@@ -28,20 +28,19 @@ public class Referee
         _gridEventBus.InitCompleted -= OnGridInitCompleted;
     }
 
-    private void SaveNewRecord(bool winning)
+    void SaveNewRecord(bool winning)
     {
         var (seed, state) = Rand.Data;
-        var record = new GameRunRecord
-        {
-            StartAt = _currentRunStartAt,
-            EndAt = DateTime.Now,
-            Winning = winning,
-            RngData = new RngData(seed, state),
-        };
+        var record = GameRunRecord.Create(
+            RunDuration.Create(_currentRunStartAt, DateTime.Now),
+            winning,
+            new RngData(seed, state),
+            _grid.BombMatrix
+        );
         HouseKeeper.History.AddRecord(record);
     }
 
-    private void OnBombRevealed(List<Cell> bombsRevealed)
+    void OnBombRevealed(List<Cell> bombsRevealed)
     {
         MessageBox.Print("Game over! Bomb revealed!");
         SaveNewRecord(false);
@@ -49,7 +48,7 @@ public class Referee
         Autoload.SceneSwitcher.GotoScene<LosingPage>();
     }
 
-    private void OnBatchRevealed()
+    void OnBatchRevealed()
     {
         if (_grid.IsResolved)
         {
@@ -60,5 +59,5 @@ public class Referee
         }
     }
 
-    private void OnGridInitCompleted() => _currentRunStartAt = DateTime.Now;
+    void OnGridInitCompleted() => _currentRunStartAt = DateTime.Now;
 }

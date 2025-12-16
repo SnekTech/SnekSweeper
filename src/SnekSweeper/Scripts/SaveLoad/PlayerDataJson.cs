@@ -15,7 +15,7 @@ static class PlayerDataJsonExtensions
     const string SaveFileName = "playerData.json";
     static readonly string SavePath = Path.Combine(OS.GetUserDataDir(), SaveFileName);
 
-    static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = OS.IsDebugBuild() };
+    internal static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = OS.IsDebugBuild() };
     static readonly PlayerDataSerializerContext SerializerContext = new(SerializerOptions);
 
     extension(PlayerDataJson playerDataJson)
@@ -29,14 +29,20 @@ static class PlayerDataJsonExtensions
             File.WriteAllText(SavePath, json);
         }
 
-        internal static bool TryLoad([MaybeNullWhen(false)]out PlayerDataJson outPlayerData)
+        internal static bool TryLoad([MaybeNullWhen(false)] out PlayerDataJson outPlayerData)
         {
             PlayerDataJson? loaded = null;
-            
+
             try
             {
                 var json = File.ReadAllText(SavePath);
                 loaded = JsonSerializer.Deserialize(json, SerializerContext.PlayerDataJson);
+            }
+            catch (FileNotFoundException fileNotFoundException)
+            {
+                fileNotFoundException.Message.DumpGd();
+                outPlayerData = null;
+                return false;
             }
             catch (Exception e)
             {
@@ -46,7 +52,7 @@ static class PlayerDataJsonExtensions
                     throw;
                 }
             }
-            
+
             outPlayerData = loaded;
             return loaded != null;
         }

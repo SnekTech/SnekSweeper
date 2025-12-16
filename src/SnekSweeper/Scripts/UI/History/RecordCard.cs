@@ -8,17 +8,17 @@ public partial class RecordCard : PanelContainer, ISceneScript
 {
     public void SetContent(GameRunRecord gameRunRecord)
     {
-        SetTimeLabel(gameRunRecord.StartAt, gameRunRecord.EndAt);
+        SetTimeLabel(gameRunRecord.Duration);
         SetWinningLabel(gameRunRecord.Winning);
         SetSeedLabel(gameRunRecord.RngData.Seed);
     }
 
-    private void SetTimeLabel(DateTime startAt, DateTime endAt)
+    void SetTimeLabel(RunDuration duration)
     {
-        TimeLabel.Text = $"from {startAt} to {endAt}";
+        TimeLabel.Text = $"from {duration.StartAt} to {duration.EndAt}";
     }
 
-    private void SetWinningLabel(bool winning)
+    void SetWinningLabel(bool winning)
     {
         if (winning)
         {
@@ -32,7 +32,7 @@ public partial class RecordCard : PanelContainer, ISceneScript
         }
     }
 
-    private void SetSeedLabel(ulong seed)
+    void SetSeedLabel(ulong seed)
     {
         SeedLabel.Text = $"seed: {seed}";
     }
