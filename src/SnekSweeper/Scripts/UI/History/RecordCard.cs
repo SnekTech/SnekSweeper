@@ -20,16 +20,12 @@ public partial class RecordCard : PanelContainer, ISceneScript
 
     void SetWinningLabel(bool winning)
     {
-        if (winning)
+        var (labelText, labelColor) = winning switch
         {
-            WinningLabel.Text = "Success";
-            WinningLabel.Modulate = Colors.Green;
-        }
-        else
-        {
-            WinningLabel.Text = "Fail";
-            WinningLabel.Modulate = Colors.Red;
-        }
+            true => ("Success", Colors.Green),
+            false => ("Fail", Colors.Red),
+        };
+        (WinningLabel.Text, WinningLabel.Modulate) = (labelText, labelColor);
     }
 
     void SetSeedLabel(ulong seed)
