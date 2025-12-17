@@ -16,27 +16,21 @@ namespace SnekSweeper.GridSystem;
 [SceneTree]
 public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
-    private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
-    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
-    private readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
+    readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
+    readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
-    private Grid _grid = null!;
-    private Referee _referee = null!;
+    Grid _grid = null!;
 
     public CommandInvoker GridCommandInvoker { get; } = new();
+    public Referee Referee { get; } = new();
 
-    public override void _Ready()
+    public override void _EnterTree()
     {
         var currentDifficulty = _mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
         var currentStrategy = _mainSetting.CurrentStrategyKey.ToStrategy(currentDifficulty);
         _grid = new Grid(this, currentDifficulty.Size, currentStrategy);
-        _referee = new Referee(_grid);
-    }
 
-    public override void _EnterTree()
-    {
         _hudEventBus.UndoPressed += OnUndoPressed;
-        _gridEventBus.InitCompleted += OnGridInitCompleted;
 
         GridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
         GridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
@@ -46,10 +40,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _ExitTree()
     {
-        _referee.Dispose();
-
         _hudEventBus.UndoPressed -= OnUndoPressed;
-        _gridEventBus.InitCompleted -= OnGridInitCompleted;
 
         GridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
         GridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
@@ -73,7 +64,9 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public IEnumerable<IHumbleCell> HumbleCells => _grid.Cells.Select(cell => cell.HumbleCell);
 
-    private void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
+    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects();
+
+    void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {
         var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);
         if (!shouldShowCursor)
@@ -85,25 +78,23 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         Cursor.ShowAtHoveringCell(hoveringGridIndex);
     }
 
-    private void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();
+    void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();
 
-    private void OnGridInitCompleted() => this.TriggerCheatCodeInitEffects();
-
-    private void OnPrimaryReleasedAt(GridIndex gridIndex)
+    void OnPrimaryReleasedAt(GridIndex gridIndex)
     {
         if (!_grid.IsValidIndex(gridIndex))
             return;
         _grid.OnPrimaryReleasedAt(gridIndex).Fire();
     }
 
-    private void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
+    void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
     {
         if (!_grid.IsValidIndex(gridIndex))
             return;
         _grid.OnPrimaryDoubleClickedAt(gridIndex).Fire();
     }
 
-    private void OnSecondaryReleasedAt(GridIndex gridIndex)
+    void OnSecondaryReleasedAt(GridIndex gridIndex)
     {
         if (!_grid.IsValidIndex(gridIndex))
             return;

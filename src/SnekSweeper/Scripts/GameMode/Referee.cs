@@ -8,55 +8,37 @@ namespace SnekSweeper.GameMode;
 
 public class Referee
 {
-    readonly Grid _grid;
     DateTime _currentRunStartAt = DateTime.MinValue;
-    readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
 
-    public Referee(Grid grid)
-    {
-        _grid = grid;
-        _gridEventBus.BatchRevealed += OnBatchRevealed;
-        _gridEventBus.BombRevealed += OnBombRevealed;
-        _gridEventBus.InitCompleted += OnGridInitCompleted;
-    }
+    internal void MarkRunStartTime() => _currentRunStartAt = DateTime.Now;
 
-    public void Dispose()
-    {
-        _gridEventBus.BatchRevealed -= OnBatchRevealed;
-        _gridEventBus.BombRevealed -= OnBombRevealed;
-        _gridEventBus.InitCompleted -= OnGridInitCompleted;
-    }
-
-    void SaveNewRecord(bool winning)
-    {
-        var record = GameRunRecord.Create(
-            RunDuration.Create(_currentRunStartAt, DateTime.Now),
-            winning,
-            _grid.BombMatrix
-        );
-        HouseKeeper.History.AddRecord(record);
-    }
-
-    void OnBombRevealed(List<Cell> bombsRevealed)
+    internal void HandleGameLose(Grid grid, List<Cell> bombsRevealed)
     {
         MessageBox.Print("Game over! Bomb revealed!");
-        SaveNewRecord(false);
+        SaveNewRecord(false, grid.BombMatrix);
 
         Autoload.SceneSwitcher.GotoScene<LosingPage>();
     }
 
-    void OnBatchRevealed()
+    internal void CheckIfGridResolved(Grid grid)
     {
-        if (_grid.IsResolved)
-        {
-            MessageBox.Print("You win!");
-            SaveNewRecord(true);
+        if (!grid.IsResolved) return;
 
-            Autoload.SceneSwitcher.GotoScene<WinningPage>();
-        }
+        MessageBox.Print("You win!");
+        SaveNewRecord(true, grid.BombMatrix);
+
+        Autoload.SceneSwitcher.GotoScene<WinningPage>();
     }
 
-    void OnGridInitCompleted() => _currentRunStartAt = DateTime.Now;
+    void SaveNewRecord(bool winning, bool[,] bombMatrix)
+    {
+        var record = GameRunRecord.Create(
+            RunDuration.Create(_currentRunStartAt, DateTime.Now),
+            winning,
+            bombMatrix
+        );
+        HouseKeeper.History.AddRecord(record);
+    }
 }
 
 static class GridExtensionsForReferee

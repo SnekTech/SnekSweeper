@@ -73,7 +73,8 @@ public class Grid
 
         _hasCellInitialized = true;
 
-        _eventBus.EmitInitCompleted();
+        _humbleGrid.Referee.MarkRunStartTime();
+        _humbleGrid.TriggerInitEffects();
         _eventBus.EmitBombCountChanged(BombCount);
     }
 
@@ -158,9 +159,11 @@ public class Grid
         var bombCellsRevealed = cells.Where(cell => cell.HasBomb).ToList();
         if (bombCellsRevealed.Count > 0)
         {
-            _eventBus.EmitBombRevealed(bombCellsRevealed);
+            _humbleGrid.Referee.HandleGameLose(this, bombCellsRevealed);
+            return;
         }
 
+        _humbleGrid.Referee.CheckIfGridResolved(this);
         _eventBus.EmitBatchRevealed();
     }
 
