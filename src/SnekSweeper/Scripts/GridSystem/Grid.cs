@@ -28,23 +28,7 @@ public class Grid
     }
 
     ILayMineStrategy LayMineStrategy { get; }
-    GridSize Size { get; }
-
-    public bool IsResolved
-    {
-        get
-        {
-            foreach (var cell in _cells)
-            {
-                if (cell is { HasBomb: false, IsRevealed: false })
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
+    internal GridSize Size { get; }
 
     bool IsTransitioningAt(GridIndex index) => _transitioningCellsSet.Contains(index);
 
@@ -56,7 +40,6 @@ public class Grid
     }
 
     public IEnumerable<Cell> Cells => _cells.Elements;
-    internal bool[,] BombMatrix => _cells.MapTo(cell => cell.HasBomb);
 
     int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
     int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);

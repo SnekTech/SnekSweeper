@@ -20,17 +20,6 @@ public static class MatrixExtensions
 
         internal IEnumerable<T> Elements => matrix.Indices().Select(matrix.At);
 
-        internal TU[,] MapTo<TU>(Func<T, TU> f)
-        {
-            var size = matrix.Size();
-            var mappedMatrix = new TU[size.Rows, size.Columns];
-            foreach (var gridIndex in matrix.Indices())
-            {
-                mappedMatrix.SetAt(gridIndex, f(matrix.At(gridIndex)));
-            }
-            return mappedMatrix;
-        }
-
         public T At(GridIndex index) => matrix[index.I, index.J];
         public void SetAt(GridIndex index, T value) => matrix[index.I, index.J] = value;
     }
