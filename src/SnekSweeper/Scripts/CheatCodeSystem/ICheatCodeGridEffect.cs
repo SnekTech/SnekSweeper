@@ -3,12 +3,12 @@ using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CheatCodeSystem;
 
-public interface ICheatCodeGridEffect
+interface ICheatCodeGridEffect
 {
     void Trigger(IHumbleGrid humbleGrid);
 }
 
-public class SetGridCoverAlpha(float normalizedAlpha) : ICheatCodeGridEffect
+sealed class SetGridCoverAlpha(float normalizedAlpha) : ICheatCodeGridEffect
 {
     public void Trigger(IHumbleGrid humbleGrid)
     {
@@ -19,7 +19,7 @@ public class SetGridCoverAlpha(float normalizedAlpha) : ICheatCodeGridEffect
     }
 }
 
-public class SendMessage : ICheatCodeGridEffect
+sealed class SendMessage : ICheatCodeGridEffect
 {
     public void Trigger(IHumbleGrid humbleGrid)
     {

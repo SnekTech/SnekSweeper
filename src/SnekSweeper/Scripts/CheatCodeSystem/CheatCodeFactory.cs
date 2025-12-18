@@ -1,6 +1,6 @@
 ﻿namespace SnekSweeper.CheatCodeSystem;
 
-public static class CheatCodeFactory
+static class CheatCodeFactory
 {
     static CheatCodeFactory()
     {
@@ -31,7 +31,7 @@ public static class CheatCodeFactory
 
     static readonly Dictionary<CheatCodeKey, CheatCode> CheatCodeCollection = [];
 
-    public static IEnumerable<CheatCode> BuiltinCheatCodeList =>
+    internal static IEnumerable<CheatCode> BuiltinCheatCodeList =>
         CheatCodeCollection.Values.OrderBy(cheatCode => cheatCode.Key);
 
     extension(CheatCode cheatCode)

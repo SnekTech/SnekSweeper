@@ -6,7 +6,7 @@ using SnekSweeper.GridSystem.LayMineStrategies;
 
 namespace SnekSweeper.GridSystem;
 
-public class Grid
+class Grid
 {
     readonly Cell[,] _cells;
     readonly IHumbleGrid _humbleGrid;
@@ -15,7 +15,7 @@ public class Grid
     readonly CommandInvoker _commandInvoker;
     readonly TransitioningCellsSet _transitioningCellsSet = new();
 
-    public Grid(IHumbleGrid humbleGrid, GridSize size, ILayMineStrategy layMineStrategy)
+    internal Grid(IHumbleGrid humbleGrid, GridSize size, ILayMineStrategy layMineStrategy)
     {
         _humbleGrid = humbleGrid;
         _commandInvoker = humbleGrid.GridCommandInvoker;

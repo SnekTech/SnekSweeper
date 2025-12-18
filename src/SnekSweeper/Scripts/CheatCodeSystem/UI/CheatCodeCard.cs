@@ -20,7 +20,7 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
         CheckButton.Pressed -= OnCheckButtonPressed;
     }
 
-    public void Init(CheatCode cheatCode, ITooltipDisplay tooltipDisplay)
+    internal void Init(CheatCode cheatCode, ITooltipDisplay tooltipDisplay)
     {
         _cheatCode = cheatCode;
 

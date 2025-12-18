@@ -2,18 +2,18 @@
 
 namespace SnekSweeper.CheatCodeSystem;
 
-public record CheatCode(CheatCodeKey Key, CheatCodeData Data)
+record CheatCode(CheatCodeKey Key, CheatCodeData Data)
 {
-    public ICheatCodeGridEffect? InitEffect { get; init; }
+    internal ICheatCodeGridEffect? InitEffect { get; init; }
 }
 
-public static class CheatCodeExtension
+static class CheatCodeExtension
 {
     extension(CheatCode cheatCode)
     {
-        public Texture2D Icon => SnekUtility.LoadTexture(cheatCode.Data.IconPath);
+        internal Texture2D Icon => SnekUtility.LoadTexture(cheatCode.Data.IconPath);
         
-        public bool IsActivated
+        internal bool IsActivated
         {
             get => HouseKeeper.ActivatedCheatCodeSet.Contains(cheatCode.Key);
             set
@@ -31,9 +31,9 @@ public static class CheatCodeExtension
     }
 }
 
-public record CheatCodeData(string Name, string Description, string IconPath);
+record CheatCodeData(string Name, string Description, string IconPath);
 
-public enum CheatCodeKey
+enum CheatCodeKey
 {
     TransparentCover,
     Messenger,
