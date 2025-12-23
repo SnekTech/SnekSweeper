@@ -6,25 +6,14 @@ using SnekSweeper.GridSystem.LayMineStrategies;
 
 namespace SnekSweeper.GridSystem;
 
-class Grid
+class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrategy)
 {
-    readonly Cell[,] _cells;
-    readonly IHumbleGrid _humbleGrid;
     bool _hasCellInitialized;
     readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
     readonly TransitioningCellsSet _transitioningCellsSet = new();
 
-    internal Grid(IHumbleGrid humbleGrid, GridSize size, ILayMineStrategy layMineStrategy)
-    {
-        _humbleGrid = humbleGrid;
-        Size = size;
-        LayMineStrategy = layMineStrategy;
-
-        _cells = InstantiateHumbleCells(humbleGrid, size);
-    }
-
-    ILayMineStrategy LayMineStrategy { get; }
-    internal GridSize Size { get; }
+    ILayMineStrategy LayMineStrategy { get; } = layMineStrategy;
+    internal GridSize Size { get; } = cells.Size;
 
     bool IsTransitioningAt(GridIndex index) => _transitioningCellsSet.Contains(index);
 
@@ -35,20 +24,17 @@ class Grid
         return i >= 0 && i < rows && j >= 0 && j < columns;
     }
 
-    public IEnumerable<Cell> Cells => _cells.Elements;
+    public IEnumerable<Cell> Cells => cells.Elements;
 
-    int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
-    int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
-
-    static Cell[,] InstantiateHumbleCells(IHumbleGrid humbleGrid, GridSize gridSize)
-        => humbleGrid.InstantiateHumbleCells(gridSize).MapTo((humbleCell, index) => new Cell(humbleCell, index));
+    int BombCount => cells.Cast<Cell>().Count(cell => cell.HasBomb);
+    int FlagCount => cells.Cast<Cell>().Count(cell => cell.IsFlagged);
 
     async Task InitCellsAsync(GridIndex firstClickGridIndex)
     {
         var bombs = LayMineStrategy.Generate(firstClickGridIndex);
-        foreach (var index in _cells.Indices())
+        foreach (var index in cells.Indices())
         {
-            _cells.At(index).HasBomb = bombs.At(index);
+            cells.At(index).HasBomb = bombs.At(index);
         }
 
         // must init individual cells after bombs planted
@@ -61,8 +47,8 @@ class Grid
 
         _hasCellInitialized = true;
 
-        _humbleGrid.Referee.MarkRunStartTime();
-        _humbleGrid.TriggerInitEffects();
+        humbleGrid.Referee.MarkRunStartTime();
+        humbleGrid.TriggerInitEffects();
         _eventBus.EmitBombCountChanged(BombCount);
     }
 
@@ -89,7 +75,7 @@ class Grid
     {
         if (IsTransitioningAt(gridIndex)) return;
 
-        await _cells.At(gridIndex).SwitchFlag();
+        await cells.At(gridIndex).SwitchFlag();
         _eventBus.EmitFlagCountChanged(FlagCount);
     }
 
@@ -101,7 +87,7 @@ class Grid
             var neighborIndex = new GridIndex(i + offsetI, j + offsetJ);
             if (IsValidIndex(neighborIndex))
             {
-                yield return _cells.At(neighborIndex);
+                yield return cells.At(neighborIndex);
             }
         }
     }
@@ -116,7 +102,7 @@ class Grid
 
     async Task RevealAround(GridIndex gridIndex)
     {
-        var cell = _cells.At(gridIndex);
+        var cell = cells.At(gridIndex);
         var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
         if (!canRevealAround)
             return;
@@ -135,30 +121,30 @@ class Grid
         await RevealCells(cellsToReveal);
     }
 
-    async Task RevealCells(HashSet<Cell> cells)
+    async Task RevealCells(HashSet<Cell> cellsToReveal)
     {
-        if (cells.Count == 0)
+        if (cellsToReveal.Count == 0)
             return;
 
-        _transitioningCellsSet.AddRange(cells);
-        await ExecuteRevealBatchCommandAsync(cells);
-        _transitioningCellsSet.RemoveRange(cells);
+        _transitioningCellsSet.AddRange(cellsToReveal);
+        await ExecuteRevealBatchCommandAsync(cellsToReveal);
+        _transitioningCellsSet.RemoveRange(cellsToReveal);
 
-        var bombCellsRevealed = cells.Where(cell => cell.HasBomb).ToList();
+        var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
         if (bombCellsRevealed.Count > 0)
         {
-            _humbleGrid.Referee.HandleGameLose(this, bombCellsRevealed);
+            humbleGrid.Referee.HandleGameLose(this, bombCellsRevealed);
             return;
         }
 
-        _humbleGrid.Referee.CheckIfGridResolved(this);
+        humbleGrid.Referee.CheckIfGridResolved(this);
         _eventBus.EmitBatchRevealed();
     }
 
     async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal)
     {
         var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-        await _humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands));
+        await humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands));
     }
 
     void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)
@@ -166,7 +152,7 @@ class Grid
         if (!IsValidIndex(gridIndex))
             return;
 
-        var cell = _cells.At(gridIndex);
+        var cell = cells.At(gridIndex);
         var visited = cellsToReveal.Contains(cell);
         if (visited || !cell.IsCovered)
             return;

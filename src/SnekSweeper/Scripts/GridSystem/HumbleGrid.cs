@@ -26,9 +26,9 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _EnterTree()
     {
-        var currentDifficulty = _mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
-        var currentStrategy = _mainSetting.CurrentStrategyKey.ToStrategy(currentDifficulty);
-        _grid = new Grid(this, currentDifficulty.Size, currentStrategy);
+        var (size, currentStrategy, currentSkin) = ExtractGridInfoFromMainSettings(_mainSetting);
+        var cells = CreateCells(size, currentSkin);
+        _grid = new Grid(this, cells, currentStrategy);
 
         _hudEventBus.UndoPressed += OnUndoPressed;
 
@@ -36,6 +36,16 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         GridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
         GridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
         GridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
+        return;
+
+        static (GridSize size, ILayMineStrategy strategy, GridSkin gridSkin) ExtractGridInfoFromMainSettings(
+            MainSetting mainSetting)
+        {
+            var currentDifficulty = mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
+            var currentStrategy = mainSetting.CurrentStrategyKey.ToStrategy(currentDifficulty);
+            var currentSkin = mainSetting.CurrentSkinKey.ToSkin();
+            return (currentDifficulty.Size, currentStrategy, currentSkin);
+        }
     }
 
     public override void _ExitTree()
@@ -48,17 +58,20 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
-    public IHumbleCell[,] InstantiateHumbleCells(GridSize gridSize)
+    Cell[,] CreateCells(GridSize gridSize, GridSkin skin)
     {
-        var humbleCells = new IHumbleCell[gridSize.Rows, gridSize.Columns];
-        foreach (var gridIndex in humbleCells.Indices())
+        var cells = new Cell[gridSize.Rows, gridSize.Columns];
+        foreach (var gridIndex in cells.Indices())
         {
             var humbleCell = HumbleCell.InstantiateOnParent(this);
-            humbleCells.SetAt(gridIndex, humbleCell);
             humbleCell.SetPosition(gridIndex);
-            humbleCell.UseSkin(_mainSetting.CurrentSkinKey.ToSkin());
+            humbleCell.UseSkin(skin);
+
+            var cell = new Cell(humbleCell, gridIndex);
+            cells.SetAt(gridIndex, cell);
         }
-        return humbleCells;
+
+        return cells;
     }
 
     public IEnumerable<IHumbleCell> HumbleCells => _grid.Cells.Select(cell => cell.HumbleCell);

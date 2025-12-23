@@ -4,7 +4,7 @@ public static class MatrixExtensions
 {
     extension<T>(T[,] matrix)
     {
-        GridSize Size => new(matrix.GetLength(0), matrix.GetLength(1));
+        public GridSize Size => new(matrix.GetLength(0), matrix.GetLength(1));
 
         public IEnumerable<GridIndex> Indices()
         {
