@@ -20,9 +20,7 @@ class Grid
         Size = size;
         LayMineStrategy = layMineStrategy;
 
-        _cells = new Cell[Size.Rows, Size.Columns];
-
-        InstantiateHumbleCells();
+        _cells = InstantiateHumbleCells(humbleGrid, size);
     }
 
     ILayMineStrategy LayMineStrategy { get; }
@@ -42,16 +40,8 @@ class Grid
     int BombCount => _cells.Cast<Cell>().Count(cell => cell.HasBomb);
     int FlagCount => _cells.Cast<Cell>().Count(cell => cell.IsFlagged);
 
-    void InstantiateHumbleCells()
-    {
-        var humbleCells = _humbleGrid.InstantiateHumbleCells(_cells.Length);
-        foreach (var (i, j) in _cells.Indices())
-        {
-            var humbleCell = humbleCells[i * Size.Columns + j];
-            var cell = new Cell(humbleCell, new GridIndex(i, j));
-            _cells[i, j] = cell;
-        }
-    }
+    static Cell[,] InstantiateHumbleCells(IHumbleGrid humbleGrid, GridSize gridSize)
+        => humbleGrid.InstantiateHumbleCells(gridSize).MapTo((humbleCell, index) => new Cell(humbleCell, index));
 
     async Task InitCellsAsync(GridIndex firstClickGridIndex)
     {

@@ -7,7 +7,7 @@ namespace SnekSweeper.GridSystem;
 interface IHumbleGrid
 {
     CommandInvoker GridCommandInvoker { get; }
-    List<IHumbleCell> InstantiateHumbleCells(int count);
+    IHumbleCell[,] InstantiateHumbleCells(GridSize gridSize);
     IEnumerable<IHumbleCell> HumbleCells { get; }
     Referee Referee { get; }
     void TriggerInitEffects();

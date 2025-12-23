@@ -48,17 +48,16 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
-    public List<IHumbleCell> InstantiateHumbleCells(int count)
+    public IHumbleCell[,] InstantiateHumbleCells(GridSize gridSize)
     {
-        var humbleCells = new List<IHumbleCell>();
-
-        for (var i = 0; i < count; i++)
+        var humbleCells = new IHumbleCell[gridSize.Rows, gridSize.Columns];
+        foreach (var gridIndex in humbleCells.Indices())
         {
             var humbleCell = HumbleCell.InstantiateOnParent(this);
-            humbleCells.Add(humbleCell);
+            humbleCells.SetAt(gridIndex, humbleCell);
+            humbleCell.SetPosition(gridIndex);
             humbleCell.UseSkin(_mainSetting.CurrentSkinKey.ToSkin());
         }
-
         return humbleCells;
     }
 

@@ -1,29 +1,17 @@
-﻿using SnekSweeper.CellSystem.Components;
-using SnekSweeper.CellSystem.StateMachine;
+﻿using SnekSweeper.CellSystem.StateMachine;
 using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.GridSystem;
 
 namespace SnekSweeper.CellSystem;
 
-public class Cell
+public class Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = false)
 {
-    private readonly CellStateMachine _stateMachine;
+    readonly CellStateMachine _stateMachine = new(humbleCell);
 
-    public Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = false)
-    {
-        HumbleCell = humbleCell;
-        _stateMachine = new CellStateMachine(humbleCell);
+    public IHumbleCell HumbleCell { get; } = humbleCell;
 
-        GridIndex = gridIndex;
-        HasBomb = hasBomb;
-
-        HumbleCell.SetPosition(gridIndex);
-    }
-
-    public IHumbleCell HumbleCell { get; }
-
-    public GridIndex GridIndex { get; }
-    public bool HasBomb { get; set; }
+    public GridIndex GridIndex { get; } = gridIndex;
+    public bool HasBomb { get; set; } = hasBomb;
     public int NeighborBombCount { get; private set; }
 
     public bool IsCovered => _stateMachine.IsAtState<CoveredState>();
