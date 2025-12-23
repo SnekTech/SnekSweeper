@@ -12,13 +12,11 @@ class Grid
     readonly IHumbleGrid _humbleGrid;
     bool _hasCellInitialized;
     readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
-    readonly CommandInvoker _commandInvoker;
     readonly TransitioningCellsSet _transitioningCellsSet = new();
 
     internal Grid(IHumbleGrid humbleGrid, GridSize size, ILayMineStrategy layMineStrategy)
     {
         _humbleGrid = humbleGrid;
-        _commandInvoker = humbleGrid.GridCommandInvoker;
         Size = size;
         LayMineStrategy = layMineStrategy;
 
@@ -170,7 +168,7 @@ class Grid
     async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal)
     {
         var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-        await _commandInvoker.ExecuteCommandAsync(new CompoundCommand(commands));
+        await _humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands));
     }
 
     void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)
