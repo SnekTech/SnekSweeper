@@ -23,6 +23,7 @@
         <PackageReference Include="GTweensGodot" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\SnekSweeperCore\SnekSweeperCore.csproj" />
         <ProjectReference Include="..\Widgets\Widgets.csproj" />
     </ItemGroup>
     <ItemGroup>

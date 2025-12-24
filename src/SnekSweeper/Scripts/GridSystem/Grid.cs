@@ -3,6 +3,7 @@ using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.Constants;
 using SnekSweeper.GridSystem.LayMineStrategies;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.GridSystem;
 
@@ -41,7 +42,11 @@ class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrate
         var initCellTasks =
             Cells.Select(cell =>
                     (cell, neighborBombCount: GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb)))
-                .Select(t => t.cell.InitAsync(t.neighborBombCount)).ToList();
+                .Select(t =>
+                {
+                    var (cell, neighborBombCount) = t;
+                    return cell.InitAsync(neighborBombCount);
+                }).ToList();
 
         await Task.WhenAll(initCellTasks);
 

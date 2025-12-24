@@ -1,4 +1,5 @@
 ﻿using SnekSweeper.CellSystem;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.GridSystem;
 

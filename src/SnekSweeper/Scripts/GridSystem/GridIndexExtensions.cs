@@ -1,10 +1,9 @@
 ﻿using SnekSweeper.Constants;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.GridSystem;
 
-public readonly record struct GridIndex(int I, int J);
-
-internal static class GridIndexExtensions
+static class GridIndexExtensions
 {
     extension(GridIndex index)
     {
@@ -15,5 +14,3 @@ internal static class GridIndexExtensions
         }
     }
 }
-
-public readonly record struct GridSize(int Rows, int Columns);

@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.GridSystem.Difficulty;
+﻿namespace SnekSweeperCore.GridSystem.Difficulty;
 
 public record GridDifficulty(GridDifficultyKey Key, GridDifficultyData DifficultyData);
 

@@ -1,8 +1,8 @@
-﻿namespace SnekSweeper.GridSystem.Difficulty;
+﻿namespace SnekSweeperCore.GridSystem.Difficulty;
 
 public static class DifficultyFactory
 {
-    private static readonly GridDifficulty[] BuiltinDifficulties =
+    static readonly GridDifficulty[] BuiltinDifficulties =
     [
         A.GridDifficulty
             .WithKey(GridDifficultyKey.Beginner)
@@ -17,7 +17,7 @@ public static class DifficultyFactory
             .WithSize(new GridSize(16, 30))
             .WithBombCount(99),
     ];
-    private static readonly Dictionary<GridDifficultyKey, GridDifficulty> DifficultyCache = [];
+    static readonly Dictionary<GridDifficultyKey, GridDifficulty> DifficultyCache = [];
 
     static DifficultyFactory()
     {
@@ -38,17 +38,12 @@ public static class DifficultyFactory
         public GridDifficulty ToDifficulty()
         {
             DifficultyCache.TryGetValue(key, out var difficulty);
-            if (difficulty is not null)
-                return difficulty;
-
-            GD.Print(
-                $"difficulty key {key.ToString()} not found, use {nameof(GridDifficultyKey.Intermediate)} instead");
-            return DifficultyCache[GridDifficultyKey.Intermediate];
+            return difficulty ?? DifficultyCache[GridDifficultyKey.Intermediate];
         }
     }
 
     extension(GridDifficulty difficulty)
     {
-        private void CacheToDict() => DifficultyCache.Add(difficulty.Key, difficulty);
+        void CacheToDict() => DifficultyCache.Add(difficulty.Key, difficulty);
     }
 }

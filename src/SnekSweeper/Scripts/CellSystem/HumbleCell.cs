@@ -2,6 +2,7 @@ using SnekSweeper.CellSystem.Components;
 using SnekSweeper.GridSystem;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.CellSystem;
 

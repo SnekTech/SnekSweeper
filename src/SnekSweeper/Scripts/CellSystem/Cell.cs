@@ -1,6 +1,7 @@
 ﻿using SnekSweeper.CellSystem.StateMachine;
 using SnekSweeper.CellSystem.StateMachine.States;
 using SnekSweeper.GridSystem;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.CellSystem;
 

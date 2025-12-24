@@ -1,4 +1,6 @@
-﻿namespace SnekSweeper.GridSystem;
+﻿using SnekSweeperCore.GridSystem.Difficulty;
+
+namespace SnekSweeper.GridSystem;
 
 public static class MatrixExtensions
 {

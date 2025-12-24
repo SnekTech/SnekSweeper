@@ -5,11 +5,11 @@ using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
-using SnekSweeper.GridSystem.Difficulty;
 using SnekSweeper.GridSystem.LayMineStrategies;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.GridSystem;
 

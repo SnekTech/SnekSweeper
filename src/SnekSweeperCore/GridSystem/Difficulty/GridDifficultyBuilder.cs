@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.GridSystem.Difficulty;
+﻿namespace SnekSweeperCore.GridSystem.Difficulty;
 
 internal sealed class GridDifficultyBuilder
 {

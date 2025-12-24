@@ -1,10 +1,9 @@
-﻿using System;
-using Godot;
-using SnekSweeper.Constants;
+﻿using SnekSweeper.Constants;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.GridSystem;
 
-public partial class GridInputListener : Node2D, IGridInputListener
+public partial class GridInputListener : Node2D
 {
     public event Action<GridIndex>? PrimaryReleased;
     public event Action<GridIndex>? PrimaryDoubleClicked;
