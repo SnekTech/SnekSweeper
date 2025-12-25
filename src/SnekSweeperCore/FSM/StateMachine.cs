@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.FSM;
+﻿namespace SnekSweeperCore.FSM;
 
 public abstract class StateMachine<TState>
     where TState : class, IState

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace SnekSweeper.FSM;
+﻿namespace SnekSweeperCore.FSM;
 
 public interface IState
 {
