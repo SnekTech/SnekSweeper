@@ -15,64 +15,68 @@ public class Referee(History history, Action onGameWin, Action onGameLose)
     {
         var result = GetGameResult(grid, bombCellsRevealed);
         HandleGameResult(result);
-        return;
+    }
 
-        static JudgedResult GetGameResult(Grid grid, List<Cell> bombCellsRevealed)
+    void HandleGameResult(JudgedResult gameResult)
+    {
+        switch (gameResult)
         {
-            if (bombCellsRevealed.Count > 0)
-            {
-                return JudgedResult.Lose;
-            }
-
-            return grid.IsResolved ? JudgedResult.Win : JudgedResult.NothingHappens;
-        }
-
-        void HandleGameResult(JudgedResult gameResult)
-        {
-            switch (gameResult)
-            {
-                case JudgedResult.Win:
-                    HandleGameWin(grid);
-                    break;
-                case JudgedResult.Lose:
-                    HandleGameLose(grid, bombCellsRevealed);
-                    break;
-                case JudgedResult.NothingHappens:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(gameResult), gameResult, null);
-            }
+            case GameWin winResult:
+                HandleGameWin(winResult.Record);
+                break;
+            case GameLose loseResult:
+                HandleGameLose(loseResult.Record);
+                break;
+            case NothingHappens:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(gameResult), gameResult, null);
         }
     }
 
-    void HandleGameLose(Grid grid, List<Cell> bombsRevealed)
+    JudgedResult GetGameResult(Grid grid, List<Cell> bombCellsRevealed)
     {
-        SaveNewRecord(false, grid.BombMatrix, _currentRunStartAt, history);
+        if (bombCellsRevealed.Count > 0)
+        {
+            var loseRecord = CreateRecord(false);
+            return new GameLose(loseRecord);
+        }
+
+        if (grid.IsResolved)
+        {
+            var winRecord = CreateRecord(true);
+            return new GameWin(winRecord);
+        }
+
+        return new NothingHappens();
+
+        GameRunRecord CreateRecord(bool winning) =>
+            GameRunRecord.Create(
+                RunDuration.Create(_currentRunStartAt, DateTime.Now),
+                winning,
+                grid.BombMatrix
+            );
+    }
+
+    void HandleGameLose(GameRunRecord loseRecord)
+    {
+        history.AddRecord(loseRecord);
         onGameLose();
     }
 
-    void HandleGameWin(Grid grid)
+    void HandleGameWin(GameRunRecord winRecord)
     {
-        SaveNewRecord(true, grid.BombMatrix, _currentRunStartAt, history);
+        history.AddRecord(winRecord);
         onGameWin();
     }
 
-    static void SaveNewRecord(bool winning, bool[,] bombMatrix, DateTime runStartAt, History history)
-    {
-        var record = GameRunRecord.Create(
-            RunDuration.Create(runStartAt, DateTime.Now),
-            winning,
-            bombMatrix
-        );
-        history.AddRecord(record);
-    }
+    abstract record JudgedResult;
 
-    enum JudgedResult
-    {
-        Win,
-        Lose,
-        NothingHappens,
-    }
+    sealed record GameWin(GameRunRecord Record) : JudgedResult;
+
+    sealed record GameLose(GameRunRecord Record) : JudgedResult;
+
+    sealed record NothingHappens : JudgedResult;
 }
 
 static class GridExtensionsForReferee
