@@ -1,6 +1,6 @@
-﻿using SnekSweeper.FSM;
+﻿using SnekSweeperCore.FSM;
 
-namespace SnekSweeper.CellSystem.StateMachine;
+namespace SnekSweeperCore.CellSystem.StateMachine;
 
 public abstract class CellState(CellStateMachine stateMachine) : IState
 {

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace SnekSweeper.CellSystem.StateMachine.States;
+﻿namespace SnekSweeperCore.CellSystem.StateMachine.States;
 
 public class RevealedState(CellStateMachine stateMachine) : CellState(stateMachine)
 {

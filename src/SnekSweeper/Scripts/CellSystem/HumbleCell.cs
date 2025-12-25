@@ -1,7 +1,8 @@
-using SnekSweeper.CellSystem.Components;
 using SnekSweeper.GridSystem;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.CellSystem;
+using SnekSweeperCore.CellSystem.Components;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.CellSystem;

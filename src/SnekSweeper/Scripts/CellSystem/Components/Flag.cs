@@ -2,6 +2,7 @@
 using GTweensGodot.Extensions;
 using SnekSweeper.Constants;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.CellSystem.Components;
 
 namespace SnekSweeper.CellSystem.Components;
 

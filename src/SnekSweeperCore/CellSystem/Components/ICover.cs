@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.CellSystem.Components;
+﻿namespace SnekSweeperCore.CellSystem.Components;
 
 public interface ICover
 {

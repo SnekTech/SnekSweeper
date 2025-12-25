@@ -1,8 +1,8 @@
-﻿using SnekSweeper.CellSystem.StateMachine;
-using SnekSweeper.CellSystem.StateMachine.States;
+﻿using SnekSweeperCore.CellSystem.StateMachine;
+using SnekSweeperCore.CellSystem.StateMachine.States;
 using SnekSweeperCore.GridSystem;
 
-namespace SnekSweeper.CellSystem;
+namespace SnekSweeperCore.CellSystem;
 
 public class Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = false)
 {

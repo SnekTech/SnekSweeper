@@ -1,4 +1,4 @@
-﻿using SnekSweeper.CellSystem;
+﻿using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;

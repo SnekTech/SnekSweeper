@@ -1,6 +1,6 @@
-﻿using SnekSweeper.CellSystem.Components;
+﻿using SnekSweeperCore.CellSystem.Components;
 
-namespace SnekSweeper.CellSystem;
+namespace SnekSweeperCore.CellSystem;
 
 public interface IHumbleCell
 {

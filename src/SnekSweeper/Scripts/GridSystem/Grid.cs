@@ -1,8 +1,8 @@
 ﻿using SnekSweeper.Autoloads;
-using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.Constants;
 using SnekSweeper.GridSystem.LayMineStrategies;
+using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;

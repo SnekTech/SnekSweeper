@@ -1,6 +1,6 @@
-﻿using SnekSweeper.CellSystem;
-using SnekSweeper.Commands;
+﻿using SnekSweeper.Commands;
 using SnekSweeper.GameMode;
+using SnekSweeperCore.CellSystem;
 
 namespace SnekSweeper.GridSystem;
 

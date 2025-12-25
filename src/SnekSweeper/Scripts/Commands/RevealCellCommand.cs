@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using SnekSweeper.CellSystem;
+﻿using SnekSweeperCore.CellSystem;
 
 namespace SnekSweeper.Commands;
 

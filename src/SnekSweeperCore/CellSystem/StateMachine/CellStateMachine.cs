@@ -1,7 +1,7 @@
-﻿using SnekSweeper.CellSystem.StateMachine.States;
-using SnekSweeper.FSM;
+﻿using SnekSweeperCore.CellSystem.StateMachine.States;
+using SnekSweeperCore.FSM;
 
-namespace SnekSweeper.CellSystem.StateMachine;
+namespace SnekSweeperCore.CellSystem.StateMachine;
 
 public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
 {

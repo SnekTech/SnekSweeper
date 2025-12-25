@@ -10,6 +10,7 @@ using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
 using SnekSweeper.UI.GameResult;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
 
