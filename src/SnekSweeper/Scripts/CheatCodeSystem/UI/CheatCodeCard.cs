@@ -1,5 +1,6 @@
 ﻿using GodotGadgets.Extensions;
 using GodotGadgets.TooltipSystem;
+using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekTech.Tooltip;
 
@@ -9,15 +10,16 @@ namespace SnekSweeper.CheatCodeSystem.UI;
 public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
     CheatCode _cheatCode = null!;
+    readonly ActivatedCheatCodeSet _activatedCheatCodeSet = HouseKeeper.ActivatedCheatCodeSet;
 
     public override void _EnterTree()
     {
-        CheckButton.Pressed += OnCheckButtonPressed;
+        CheckButton.Toggled += OnCheckButtonToggled;
     }
 
     public override void _ExitTree()
     {
-        CheckButton.Pressed -= OnCheckButtonPressed;
+        CheckButton.Toggled -= OnCheckButtonToggled;
     }
 
     internal void Init(CheatCode cheatCode, ITooltipDisplay tooltipDisplay)
@@ -26,7 +28,7 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
         NameLabel.Text = cheatCode.Data.Name;
         Icon.Texture = cheatCode.Icon;
-        CheckButton.SetPressed(cheatCode.IsActivated);
+        CheckButton.SetPressed(cheatCode.IsActivatedIn(_activatedCheatCodeSet));
         
         InitTooltip();
         return;
@@ -39,8 +41,8 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
         }
     }
 
-    void OnCheckButtonPressed()
+    void OnCheckButtonToggled(bool toggledOn)
     {
-        _cheatCode.IsActivated = !_cheatCode.IsActivated;
+        _cheatCode.SetActivatedIn(_activatedCheatCodeSet, toggledOn);
     }
 }

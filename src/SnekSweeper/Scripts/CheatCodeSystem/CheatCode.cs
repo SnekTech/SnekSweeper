@@ -1,6 +1,4 @@
-﻿using SnekSweeper.Autoloads;
-
-namespace SnekSweeper.CheatCodeSystem;
+﻿namespace SnekSweeper.CheatCodeSystem;
 
 record CheatCode(CheatCodeKey Key, CheatCodeData Data)
 {
@@ -12,20 +10,19 @@ static class CheatCodeExtension
     extension(CheatCode cheatCode)
     {
         internal Texture2D Icon => SnekUtility.LoadTexture(cheatCode.Data.IconPath);
-        
-        internal bool IsActivated
+
+        internal bool IsActivatedIn(ActivatedCheatCodeSet activatedCheatCodeSet)
+            => activatedCheatCodeSet.Contains(cheatCode.Key);
+
+        internal void SetActivatedIn(ActivatedCheatCodeSet activatedCheatCodeSet, bool activated)
         {
-            get => HouseKeeper.ActivatedCheatCodeSet.Contains(cheatCode.Key);
-            set
+            if (activated)
             {
-                if (value)
-                {
-                    HouseKeeper.ActivatedCheatCodeSet.Add(cheatCode.Key);
-                }
-                else
-                {
-                    HouseKeeper.ActivatedCheatCodeSet.Remove(cheatCode.Key);
-                }
+                activatedCheatCodeSet.Add(cheatCode.Key);
+            }
+            else
+            {
+                activatedCheatCodeSet.Remove(cheatCode.Key);
             }
         }
     }

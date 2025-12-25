@@ -1,4 +1,5 @@
-﻿using SnekSweeper.Widgets;
+﻿using SnekSweeper.Autoloads;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.CheatCodeSystem.UI;
 
@@ -8,6 +9,11 @@ public partial class CheatCodePage : Control, ISceneScript
     public override void _Ready()
     {
         PopulateCheatCodeCards();
+    }
+
+    public override void _ExitTree()
+    {
+        HouseKeeper.SaveCurrentPlayerData();
     }
 
     void PopulateCheatCodeCards()

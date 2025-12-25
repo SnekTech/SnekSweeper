@@ -91,7 +91,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public IEnumerable<IHumbleCell> HumbleCells => _grid.Cells.Select(cell => cell.HumbleCell);
 
-    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects();
+    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(HouseKeeper.ActivatedCheatCodeSet);
 
     void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {

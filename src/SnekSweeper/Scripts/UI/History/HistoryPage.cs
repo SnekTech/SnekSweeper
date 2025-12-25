@@ -38,5 +38,6 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
     {
         HouseKeeper.History.ClearRecords();
         RecordsContainer.ClearChildren();
+        HouseKeeper.SaveCurrentPlayerData();
     }
 }
