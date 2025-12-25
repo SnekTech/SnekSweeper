@@ -9,6 +9,7 @@ using SnekSweeper.GridSystem.LayMineStrategies;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.GridSystem;

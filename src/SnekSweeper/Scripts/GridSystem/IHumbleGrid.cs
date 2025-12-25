@@ -4,7 +4,7 @@ using SnekSweeper.GameMode;
 
 namespace SnekSweeper.GridSystem;
 
-interface IHumbleGrid
+public interface IHumbleGrid
 {
     CommandInvoker GridCommandInvoker { get; }
     IEnumerable<IHumbleCell> HumbleCells { get; }

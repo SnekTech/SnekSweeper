@@ -1,4 +1,5 @@
-﻿using SnekSweeperCore.GridSystem.Difficulty;
+﻿using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.GridSystem.Difficulty;
 
 namespace SnekSweeper.GridSystem.LayMineStrategies;
 

@@ -1,5 +1,5 @@
 ﻿using SnekSweeper.Constants;
-using SnekSweeperCore.GridSystem.Difficulty;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;
 

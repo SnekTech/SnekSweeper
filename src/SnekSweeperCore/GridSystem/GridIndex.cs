@@ -1,4 +1,4 @@
-﻿namespace SnekSweeperCore.GridSystem.Difficulty;
+﻿namespace SnekSweeperCore.GridSystem;
 
 public readonly record struct GridIndex(int I, int J);
 

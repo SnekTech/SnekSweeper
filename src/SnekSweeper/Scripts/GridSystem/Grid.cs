@@ -3,11 +3,11 @@ using SnekSweeper.CellSystem;
 using SnekSweeper.Commands;
 using SnekSweeper.Constants;
 using SnekSweeper.GridSystem.LayMineStrategies;
-using SnekSweeperCore.GridSystem.Difficulty;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;
 
-class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrategy)
+public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrategy)
 {
     bool _hasCellInitialized;
     readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
