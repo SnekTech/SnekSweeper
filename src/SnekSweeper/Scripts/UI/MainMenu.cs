@@ -8,19 +8,50 @@ namespace SnekSweeper.UI;
 [SceneTree]
 public partial class MainMenu : CanvasLayer
 {
-    public override void _Ready()
+    public override void _EnterTree() => RegisterEvents();
+    public override void _ExitTree() => UnregisterEvents();
+
+    void RegisterEvents()
     {
-        RegisterEvents();
+        StartButton.Pressed += OnStartButtonPressed;
+        SettingsButton.Pressed += OnSettingsButtonPressed;
+        CheatCodeButton.Pressed += OnCheatCodeButtonPressed;
+        HistoryButton.Pressed += OnHistoryButtonPressed;
+        QuitButton.Pressed += OnQuitPressed;
     }
 
-    private void RegisterEvents()
+    void UnregisterEvents()
     {
-        var sceneSwitcher = Autoload.SceneSwitcher;
-        StartButton.Pressed += () => sceneSwitcher.GotoScene<Level1>();
-        SettingsButton.Pressed += () => sceneSwitcher.GotoScene<SettingsPage>();
-        CheatCodeButton.Pressed += () => sceneSwitcher.GotoScene<CheatCodePage>();
-        HistoryButton.Pressed += () => sceneSwitcher.GotoScene<HistoryPage>();
+        StartButton.Pressed -= OnStartButtonPressed;
+        SettingsButton.Pressed -= OnSettingsButtonPressed;
+        CheatCodeButton.Pressed -= OnCheatCodeButtonPressed;
+        HistoryButton.Pressed -= OnHistoryButtonPressed;
+        QuitButton.Pressed -= OnQuitPressed;
+    }
 
-        QuitButton.Pressed += () => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+    void OnHistoryButtonPressed()
+    {
+        Autoload.SceneSwitcher.GotoScene<HistoryPage>();
+    }
+
+    void OnCheatCodeButtonPressed()
+    {
+        Autoload.SceneSwitcher.GotoScene<CheatCodePage>();
+    }
+
+    void OnSettingsButtonPressed()
+    {
+        Autoload.SceneSwitcher.GotoScene<SettingsPage>();
+    }
+
+
+    void OnStartButtonPressed()
+    {
+        Autoload.SceneSwitcher.GotoScene<Level1>();
+    }
+
+    void OnQuitPressed()
+    {
+        GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
     }
 }
