@@ -1,6 +1,4 @@
-﻿using SnekSweeperCore.GridSystem;
-
-namespace SnekSweeper.GridSystem;
+﻿namespace SnekSweeperCore.GridSystem;
 
 public static class MatrixExtensions
 {
@@ -20,7 +18,7 @@ public static class MatrixExtensions
             }
         }
 
-        internal IEnumerable<T> Elements => matrix.Indices().Select(matrix.At);
+        public IEnumerable<T> Elements => matrix.Indices().Select(matrix.At);
 
         public T At(GridIndex index) => matrix[index.I, index.J];
         public void SetAt(GridIndex index, T value) => matrix[index.I, index.J] = value;
