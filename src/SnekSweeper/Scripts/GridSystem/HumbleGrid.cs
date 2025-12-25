@@ -8,6 +8,7 @@ using SnekSweeper.GameSettings;
 using SnekSweeper.GridSystem.LayMineStrategies;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
+using SnekSweeper.UI.GameResult;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
@@ -23,7 +24,20 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     Grid _grid = null!;
 
     public CommandInvoker GridCommandInvoker { get; } = new();
-    public Referee Referee { get; } = new();
+
+    public Referee Referee { get; } = new(
+        HouseKeeper.History,
+        () =>
+        {
+            MessageBox.Print("You win!");
+            Autoload.SceneSwitcher.GotoScene<WinningPage>();
+        },
+        () =>
+        {
+            MessageBox.Print("Game over! Bomb revealed!");
+            Autoload.SceneSwitcher.GotoScene<LosingPage>();
+        }
+    );
 
     public override void _EnterTree()
     {

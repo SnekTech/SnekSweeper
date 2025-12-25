@@ -1,43 +1,76 @@
-﻿using SnekSweeper.Autoloads;
-using SnekSweeper.CellSystem;
+﻿using SnekSweeper.CellSystem;
 using SnekSweeper.GameHistory;
 using SnekSweeper.GridSystem;
-using SnekSweeper.UI.GameResult;
 
 namespace SnekSweeper.GameMode;
 
-public class Referee
+public class Referee(History history, Action onGameWin, Action onGameLose)
 {
     DateTime _currentRunStartAt = DateTime.MinValue;
 
     internal void MarkRunStartTime() => _currentRunStartAt = DateTime.Now;
 
-    internal void HandleGameLose(Grid grid, List<Cell> bombsRevealed)
+    internal void JudgeGame(Grid grid, List<Cell> bombCellsRevealed)
     {
-        MessageBox.Print("Game over! Bomb revealed!");
-        SaveNewRecord(false, grid.BombMatrix);
+        var result = GetGameResult(grid, bombCellsRevealed);
+        HandleGameResult(result);
+        return;
 
-        Autoload.SceneSwitcher.GotoScene<LosingPage>();
+        static JudgedResult GetGameResult(Grid grid, List<Cell> bombCellsRevealed)
+        {
+            if (bombCellsRevealed.Count > 0)
+            {
+                return JudgedResult.Lose;
+            }
+
+            return grid.IsResolved ? JudgedResult.Win : JudgedResult.NothingHappens;
+        }
+
+        void HandleGameResult(JudgedResult gameResult)
+        {
+            switch (gameResult)
+            {
+                case JudgedResult.Win:
+                    HandleGameWin(grid);
+                    break;
+                case JudgedResult.Lose:
+                    HandleGameLose(grid, bombCellsRevealed);
+                    break;
+                case JudgedResult.NothingHappens:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(gameResult), gameResult, null);
+            }
+        }
     }
 
-    internal void CheckIfGridResolved(Grid grid)
+    void HandleGameLose(Grid grid, List<Cell> bombsRevealed)
     {
-        if (!grid.IsResolved) return;
-
-        MessageBox.Print("You win!");
-        SaveNewRecord(true, grid.BombMatrix);
-
-        Autoload.SceneSwitcher.GotoScene<WinningPage>();
+        SaveNewRecord(false, grid.BombMatrix, _currentRunStartAt, history);
+        onGameLose();
     }
 
-    void SaveNewRecord(bool winning, bool[,] bombMatrix)
+    void HandleGameWin(Grid grid)
+    {
+        SaveNewRecord(true, grid.BombMatrix, _currentRunStartAt, history);
+        onGameWin();
+    }
+
+    static void SaveNewRecord(bool winning, bool[,] bombMatrix, DateTime runStartAt, History history)
     {
         var record = GameRunRecord.Create(
-            RunDuration.Create(_currentRunStartAt, DateTime.Now),
+            RunDuration.Create(runStartAt, DateTime.Now),
             winning,
             bombMatrix
         );
-        HouseKeeper.History.AddRecord(record);
+        history.AddRecord(record);
+    }
+
+    enum JudgedResult
+    {
+        Win,
+        Lose,
+        NothingHappens,
     }
 }
 

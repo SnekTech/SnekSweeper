@@ -136,13 +136,8 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
         _transitioningCellsSet.RemoveRange(cellsToReveal);
 
         var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
-        if (bombCellsRevealed.Count > 0)
-        {
-            humbleGrid.Referee.HandleGameLose(this, bombCellsRevealed);
-            return;
-        }
+        humbleGrid.Referee.JudgeGame(this, bombCellsRevealed);
 
-        humbleGrid.Referee.CheckIfGridResolved(this);
         _eventBus.EmitBatchRevealed();
     }
 
