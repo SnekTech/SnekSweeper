@@ -1,4 +1,4 @@
-﻿using GodotGadgets.Extensions;
+﻿using GodotGadgets.Tasks;
 using GTweens.Extensions;
 using GTweensGodot.Extensions;
 using SnekSweeper.Widgets;

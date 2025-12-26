@@ -1,4 +1,4 @@
-﻿using GodotGadgets.Extensions;
+﻿using GodotGadgets.Tasks;
 using GodotGadgets.TooltipSystem;
 
 namespace SnekSweeper.UI.TooltipSystem;

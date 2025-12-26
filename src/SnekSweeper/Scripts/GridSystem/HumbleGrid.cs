@@ -1,4 +1,4 @@
-﻿using GodotGadgets.Extensions;
+﻿using GodotGadgets.Tasks;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.CheatCodeSystem;
