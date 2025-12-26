@@ -2,7 +2,7 @@
 
 public interface ICover
 {
-    Task RevealAsync();
-    Task PutOnAsync();
+    Task RevealAsync(CancellationToken cancellationToken);
+    Task PutOnAsync(CancellationToken cancellationToken);
     void SetAlpha(float normalizedAlpha);
 }

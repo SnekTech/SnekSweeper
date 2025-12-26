@@ -12,7 +12,7 @@ public abstract class CellState(CellStateMachine stateMachine) : IState
 
     public void AddTransition(Transition transition) => _transitions.Add(transition);
 
-    public virtual Task OnEnterAsync() => Task.CompletedTask;
+    public virtual Task OnEnterAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 
-    public virtual Task OnExitAsync() => Task.CompletedTask;
+    public virtual Task OnExitAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 }

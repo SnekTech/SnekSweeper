@@ -2,11 +2,11 @@
 
 public class CommandInvoker
 {
-    private readonly Stack<ICommand> _undoStack = new();
+    readonly Stack<ICommand> _undoStack = new();
 
-    public async Task ExecuteCommandAsync(ICommand command)
+    public async Task ExecuteCommandAsync(ICommand command, CancellationToken cancellationToken = default)
     {
-        await command.ExecuteAsync();
+        await command.ExecuteAsync(cancellationToken);
         _undoStack.Push(command);
     }
 

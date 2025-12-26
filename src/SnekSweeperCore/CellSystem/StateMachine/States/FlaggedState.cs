@@ -2,13 +2,13 @@
 
 public class FlaggedState(CellStateMachine stateMachine) : CellState(stateMachine)
 {
-    public override async Task OnEnterAsync()
+    public override async Task OnEnterAsync(CancellationToken cancellationToken = default)
     {
-        await HumbleCell.Flag.RaiseAsync();
+        await HumbleCell.Flag.RaiseAsync(cancellationToken);
     }
 
-    public override async Task OnExitAsync()
+    public override async Task OnExitAsync(CancellationToken cancellationToken = default)
     {
-        await HumbleCell.Flag.PutDownAsync();
+        await HumbleCell.Flag.PutDownAsync(cancellationToken);
     }
 }

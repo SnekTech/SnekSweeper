@@ -30,7 +30,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
     int BombCount => cells.Cast<Cell>().Count(cell => cell.HasBomb);
     int FlagCount => cells.Cast<Cell>().Count(cell => cell.IsFlagged);
 
-    async Task InitCellsAsync(GridIndex firstClickGridIndex)
+    async Task InitCellsAsync(GridIndex firstClickGridIndex, CancellationToken cancellationToken = default)
     {
         var bombs = LayMineStrategy.Generate(firstClickGridIndex);
         foreach (var index in cells.Indices())
@@ -45,7 +45,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
                 .Select(t =>
                 {
                     var (cell, neighborBombCount) = t;
-                    return cell.InitAsync(neighborBombCount);
+                    return cell.InitAsync(neighborBombCount, cancellationToken);
                 }).ToList();
 
         await Task.WhenAll(initCellTasks);
@@ -57,16 +57,16 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
         _eventBus.EmitBombCountChanged(BombCount);
     }
 
-    public async Task OnPrimaryReleasedAt(GridIndex gridIndex)
+    public async Task OnPrimaryReleasedAt(GridIndex gridIndex, CancellationToken cancellationToken = default)
     {
         if (!_hasCellInitialized)
         {
-            await InitCellsAsync(gridIndex);
+            await InitCellsAsync(gridIndex, cancellationToken);
         }
 
         if (IsTransitioningAt(gridIndex)) return;
 
-        await RevealAt(gridIndex);
+        await RevealAt(gridIndex, cancellationToken);
     }
 
     public async Task OnPrimaryDoubleClickedAt(GridIndex gridIndex)
@@ -97,12 +97,12 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
         }
     }
 
-    async Task RevealAt(GridIndex gridIndex)
+    async Task RevealAt(GridIndex gridIndex, CancellationToken cancellationToken = default)
     {
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
 
-        await RevealCells(cellsToReveal);
+        await RevealCells(cellsToReveal, cancellationToken);
     }
 
     async Task RevealAround(GridIndex gridIndex)
@@ -126,13 +126,13 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
         await RevealCells(cellsToReveal);
     }
 
-    async Task RevealCells(HashSet<Cell> cellsToReveal)
+    async Task RevealCells(HashSet<Cell> cellsToReveal, CancellationToken cancellationToken = default)
     {
         if (cellsToReveal.Count == 0)
             return;
 
         _transitioningCellsSet.AddRange(cellsToReveal);
-        await ExecuteRevealBatchCommandAsync(cellsToReveal);
+        await ExecuteRevealBatchCommandAsync(cellsToReveal, cancellationToken);
         _transitioningCellsSet.RemoveRange(cellsToReveal);
 
         var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
@@ -141,10 +141,10 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
         _eventBus.EmitBatchRevealed();
     }
 
-    async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal)
+    async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal, CancellationToken cancellationToken = default)
     {
         var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-        await humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands));
+        await humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands), cancellationToken);
     }
 
     void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)

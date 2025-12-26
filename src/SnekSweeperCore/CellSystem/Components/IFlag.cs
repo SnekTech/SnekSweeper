@@ -2,6 +2,6 @@
 
 public interface IFlag
 {
-    Task RaiseAsync();
-    Task PutDownAsync();
+    Task RaiseAsync(CancellationToken cancellationToken);
+    Task PutDownAsync(CancellationToken cancellationToken);
 }

@@ -9,8 +9,8 @@ namespace SnekSweeper.CellSystem.Components;
 [SceneTree]
 public partial class Flag : Node2D, IFlag, ISceneScript
 {
-    private const float AnimationDuration = 0.2f;
-    private const int StartPositionY = CoreStats.CellSizePixels;
+    const float AnimationDuration = 0.2f;
+    const int StartPositionY = CoreStats.CellSizePixels;
 
     public override void _Ready()
     {
@@ -18,17 +18,17 @@ public partial class Flag : Node2D, IFlag, ISceneScript
         FlagSprite.Position = FlagSprite.Position with { Y = StartPositionY };
     }
 
-    public async Task RaiseAsync()
+    public async Task RaiseAsync(CancellationToken cancellationToken = default)
     {
         Show();
         var tween = FlagSprite.TweenPositionY(0, AnimationDuration).SetEasing(Easing.OutQuad);
-        await tween.PlayAsync(CancellationToken.None);
+        await tween.PlayAsync(cancellationToken);
     }
 
-    public async Task PutDownAsync()
+    public async Task PutDownAsync(CancellationToken cancellationToken = default)
     {
         var tween = FlagSprite.TweenPositionY(StartPositionY, AnimationDuration).SetEasing(Easing.InQuad);
-        await tween.PlayAsync(CancellationToken.None);
+        await tween.PlayAsync(cancellationToken);
         Hide();
     }
 }

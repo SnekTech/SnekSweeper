@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace SnekSweeper.Commands;
 
 public class CompoundCommand : ICommand
 {
-    private readonly IList<ICommand> _commands;
+    readonly IList<ICommand> _commands;
 
     public CompoundCommand(IEnumerable<ICommand> commands)
     {
@@ -17,9 +14,9 @@ public class CompoundCommand : ICommand
 
     public string Name { get; }
 
-    public Task ExecuteAsync()
+    public Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        var executeTasks = _commands.Select(command => command.ExecuteAsync()).ToList();
+        var executeTasks = _commands.Select(command => command.ExecuteAsync(cancellationToken)).ToList();
         return Task.WhenAll(executeTasks);
     }
 

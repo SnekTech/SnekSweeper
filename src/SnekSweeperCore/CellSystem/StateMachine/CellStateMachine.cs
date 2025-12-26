@@ -16,7 +16,7 @@ public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
         ConfigStateTransitions();
     }
 
-    public async Task HandleCellRequestAsync(CellRequest request)
+    public async Task HandleCellRequestAsync(CellRequest request, CancellationToken cancellationToken = default)
     {
         if (CurrentState == null)
             return;
@@ -25,12 +25,12 @@ public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
         {
             if (onRequest != request) continue;
 
-            await ChangeStateAsync(to);
+            await ChangeStateAsync(to, cancellationToken);
             return;
         }
     }
 
-    private void ConfigStateTransitions()
+    void ConfigStateTransitions()
     {
         var coveredState = GetState<CoveredState>();
         var revealedState = GetState<RevealedState>();

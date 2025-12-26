@@ -8,9 +8,9 @@ namespace SnekSweeper.CellSystem.Components;
 [SceneTree]
 public partial class Cover : Node2D, ICover, ISceneScript
 {
-    private const float AnimationDuration = .4f;
+    const float AnimationDuration = 4f; // 0.4s is the proper value
 
-    private ShaderMaterial _shaderMaterial = null!;
+    ShaderMaterial _shaderMaterial = null!;
 
     public override void _Ready()
     {
@@ -18,39 +18,39 @@ public partial class Cover : Node2D, ICover, ISceneScript
         SetDissolveProgress(0);
     }
 
-    public async Task RevealAsync()
+    public async Task RevealAsync(CancellationToken cancellationToken = default)
     {
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
-        await tween.PlayAsync(CancellationToken.None);
+        await tween.PlayAsync(cancellationToken);
         Hide();
     }
 
-    public async Task PutOnAsync()
+    public async Task PutOnAsync(CancellationToken cancellationToken = default)
     {
         RandomizeNoise();
         Show();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 0, AnimationDuration);
-        await tween.PlayAsync(CancellationToken.None);
+        await tween.PlayAsync(cancellationToken);
     }
 
     public void SetAlpha(float normalizedAlpha) =>
         _shaderMaterial.SetShaderParameter(Uniforms.Alpha, normalizedAlpha);
 
-    private float GetDissolveProgress() =>
+    float GetDissolveProgress() =>
         (float)_shaderMaterial.GetShaderParameter(Uniforms.DissolveProgress).AsDouble();
 
-    private void SetDissolveProgress(float progress) =>
+    void SetDissolveProgress(float progress) =>
         _shaderMaterial.SetShaderParameter(Uniforms.DissolveProgress, progress);
 
-    private void RandomizeNoise()
+    void RandomizeNoise()
     {
         var noiseTexture = (NoiseTexture2D)_shaderMaterial.GetShaderParameter(Uniforms.Mask);
         var noiseLite = (FastNoiseLite)noiseTexture.Noise;
         noiseLite.Seed = (int)GD.Randi();
     }
 
-    private static class Uniforms
+    static class Uniforms
     {
         public static readonly StringName DissolveProgress = "progress";
         public static readonly StringName Alpha = "coverAlpha";

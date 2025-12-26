@@ -18,14 +18,15 @@ public class Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = fa
     public bool IsRevealed => _stateMachine.IsAtState<RevealedState>();
     public bool IsFlagged => _stateMachine.IsAtState<FlaggedState>();
 
-    public async Task InitAsync(int neighborBombCount)
+    public async Task InitAsync(int neighborBombCount, CancellationToken cancellationToken = default)
     {
         NeighborBombCount = neighborBombCount;
         HumbleCell.SetContent(HasBomb, NeighborBombCount);
-        await _stateMachine.SetInitStateAsync<CoveredState>();
+        await _stateMachine.SetInitStateAsync<CoveredState>(cancellationToken);
     }
 
-    public Task Reveal() => _stateMachine.HandleCellRequestAsync(CellRequest.RevealCover);
+    public Task RevealAsync(CancellationToken cancellationToken = default) =>
+        _stateMachine.HandleCellRequestAsync(CellRequest.RevealCover, cancellationToken);
 
     public Task PutOnCover() => _stateMachine.HandleCellRequestAsync(CellRequest.PutOnCover);
 
