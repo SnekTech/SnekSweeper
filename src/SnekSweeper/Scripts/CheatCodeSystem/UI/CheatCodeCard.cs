@@ -35,7 +35,7 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
         void InitTooltip()
         {
-            var tooltipTrigger = this.GetFirstChildOfType<ControlTooltipTrigger>();
+            var tooltipTrigger = this.GetFirstChildOfType<ControlTooltipTrigger>()!;
             tooltipTrigger.SetTooltipContent(TooltipContent.New(cheatCode.Data.Name, cheatCode.Data.Description));
             tooltipTrigger.SetTooltipDisplay(tooltipDisplay);
         }

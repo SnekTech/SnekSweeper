@@ -1,4 +1,5 @@
-﻿using GTweens.Extensions;
+﻿using GodotGadgets.Extensions;
+using GTweens.Extensions;
 using GTweensGodot.Extensions;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem.Components;
@@ -8,7 +9,7 @@ namespace SnekSweeper.CellSystem.Components;
 [SceneTree]
 public partial class Cover : Node2D, ICover, ISceneScript
 {
-    const float AnimationDuration = 4f; // 0.4s is the proper value
+    const float AnimationDuration = .4f;
 
     ShaderMaterial _shaderMaterial = null!;
 
@@ -20,18 +21,22 @@ public partial class Cover : Node2D, ICover, ISceneScript
 
     public async Task RevealAsync(CancellationToken cancellationToken = default)
     {
+        var tokenLinkedWithTreeExit = cancellationToken.LinkWithNodeDestroy(this);
+
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
-        await tween.PlayAsync(cancellationToken);
+        await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
         Hide();
     }
 
     public async Task PutOnAsync(CancellationToken cancellationToken = default)
     {
+        var tokenLinkedWithTreeExit = cancellationToken.LinkWithNodeDestroy(this);
+
         RandomizeNoise();
         Show();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 0, AnimationDuration);
-        await tween.PlayAsync(cancellationToken);
+        await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
     }
 
     public void SetAlpha(float normalizedAlpha) =>
