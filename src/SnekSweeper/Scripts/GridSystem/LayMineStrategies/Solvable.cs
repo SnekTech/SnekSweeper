@@ -1,4 +1,4 @@
-using SnekSweeper.NativeTools;
+using MineSweeperTools;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
 

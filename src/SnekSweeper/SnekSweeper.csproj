@@ -4,7 +4,6 @@
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <Nullable>enable</Nullable>
         <LangVersion>14</LangVersion>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,9 +11,6 @@
                  
         <!-- PlantUML diagrams for  development only-->
         <None Include="**/*.puml" />
-        <None Include="ms_toollib_cs.dll">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -23,6 +19,7 @@
         <PackageReference Include="GTweensGodot" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\..\GodotSandbox\src\MineSweeperTools\MineSweeperTools.csproj" />
         <ProjectReference Include="..\SnekSweeperCore\SnekSweeperCore.csproj" />
         <ProjectReference Include="..\Widgets\Widgets.csproj" />
     </ItemGroup>
