@@ -7,10 +7,10 @@ namespace SnekSweeper.Autoloads;
 [SceneTree]
 public partial class MessageBox : Control, IMessageDisplay
 {
-    private const float MessageLifetime = 3;
-    private MessageQueue _messageQueue = null!;
+    const float MessageLifetime = 3;
+    MessageQueue _messageQueue = null!;
 
-    private static MessageBox Instance { get; set; } = null!;
+    static MessageBox Instance { get; set; } = null!;
 
     public static void Print(string message)
     {
@@ -32,18 +32,25 @@ public partial class MessageBox : Control, IMessageDisplay
     {
         if (@event is InputEventKey eventKey && eventKey.IsReleased() && eventKey.Keycode == Key.M)
         {
-            _messageQueue.Enqueue("Rider!");
+            Enqueue("Rider!");
         }
     }
 
-    public async Task Display(string message, CancellationToken token)
+    public void FireOneMessage(string message)
     {
-        var messageLabel = new Label { Text = message };
-        MessageContainer.AddChild(messageLabel);
+        DisplayAsync().Fire();
+        return;
 
-        await SnekUtility.DelayGd(MessageLifetime, token);
-        await messageLabel.FadeOutAsync(1, token);
+        async Task DisplayAsync()
+        {
+            var messageLabel = new Label { Text = message };
+            MessageContainer.AddChild(messageLabel);
+
+            var cancelTokenOnTreeExit = this.GetCancellationTokenOnTreeExit();
+            await SnekUtility.DelayGd(MessageLifetime, cancelTokenOnTreeExit);
+            await messageLabel.FadeOutAsync(1, cancelTokenOnTreeExit);
+        }
     }
 
-    private void Enqueue(string message) => _messageQueue.Enqueue(message);
+    void Enqueue(string message) => _messageQueue.Enqueue(message);
 }

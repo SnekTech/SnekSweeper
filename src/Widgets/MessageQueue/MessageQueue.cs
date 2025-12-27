@@ -2,8 +2,8 @@
 
 public class MessageQueue(IMessageDisplay messageDisplay)
 {
-    private readonly Queue<string> _queue = [];
-    private bool _isRunning;
+    readonly Queue<string> _queue = [];
+    bool _isRunning;
 
     public float OutputIntervalSeconds { get; init; } = 1;
 
@@ -16,9 +16,11 @@ public class MessageQueue(IMessageDisplay messageDisplay)
         }
 
         _isRunning = true;
+        
         while (_isRunning)
         {
-            OutputOneMessage(token);
+            token.ThrowIfCancellationRequested();
+            FireOneMessage();
             await Task.Delay(TimeSpan.FromSeconds(OutputIntervalSeconds), token);
         }
     }
@@ -33,12 +35,12 @@ public class MessageQueue(IMessageDisplay messageDisplay)
         _queue.Enqueue(message);
     }
 
-    private void OutputOneMessage(CancellationToken token)
+    void FireOneMessage()
     {
         if (_queue.Count == 0)
             return;
 
         var message = _queue.Dequeue();
-        messageDisplay.Display(message, token).Fire();
+        messageDisplay.FireOneMessage(message);
     }
 }
