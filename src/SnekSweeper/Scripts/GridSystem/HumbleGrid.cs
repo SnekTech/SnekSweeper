@@ -4,7 +4,6 @@ using SnekSweeper.CellSystem;
 using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.GameMode;
 using SnekSweeper.GameSettings;
-using SnekSweeper.GridSystem.LayMineStrategies;
 using SnekSweeper.SkinSystem;
 using SnekSweeper.UI;
 using SnekSweeper.UI.GameResult;
@@ -13,6 +12,7 @@ using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
+using SnekSweeperCore.GridSystem.LayMineStrategies;
 
 namespace SnekSweeper.GridSystem;
 

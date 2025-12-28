@@ -1,6 +1,4 @@
-using SnekSweeperCore.GridSystem;
-
-namespace SnekSweeper.GridSystem.LayMineStrategies;
+namespace SnekSweeperCore.GridSystem.LayMineStrategies;
 
 public sealed class Hardcoded(bool[,] hardcodedBombs) : ILayMineStrategy
 {

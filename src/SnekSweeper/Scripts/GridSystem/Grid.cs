@@ -1,7 +1,7 @@
-﻿using SnekSweeper.GridSystem.LayMineStrategies;
-using SnekSweeperCore.CellSystem;
+﻿using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.GridSystem.LayMineStrategies;
 
 namespace SnekSweeper.GridSystem;
 

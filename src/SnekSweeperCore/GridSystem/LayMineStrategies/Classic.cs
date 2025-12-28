@@ -1,7 +1,6 @@
-﻿using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.GridSystem.Difficulty;
+﻿using SnekSweeperCore.GridSystem.Difficulty;
 
-namespace SnekSweeper.GridSystem.LayMineStrategies;
+namespace SnekSweeperCore.GridSystem.LayMineStrategies;
 
 public sealed class Classic(GridDifficultyData difficultyData) : ILayMineStrategy
 {

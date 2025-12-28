@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\libs\MineSweeperTools\MineSweeperTools.csproj" />
+    </ItemGroup>
+
 </Project>

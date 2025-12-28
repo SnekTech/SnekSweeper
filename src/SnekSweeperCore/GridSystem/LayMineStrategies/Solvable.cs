@@ -1,8 +1,7 @@
 using MineSweeperTools;
-using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
 
-namespace SnekSweeper.GridSystem.LayMineStrategies;
+namespace SnekSweeperCore.GridSystem.LayMineStrategies;
 
 public sealed class Solvable(GridDifficultyData difficultyData) : ILayMineStrategy
 {
