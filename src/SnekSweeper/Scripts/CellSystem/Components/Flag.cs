@@ -11,7 +11,7 @@ namespace SnekSweeper.CellSystem.Components;
 public partial class Flag : Node2D, IFlag, ISceneScript
 {
     const float AnimationDuration = .2f;
-    const int StartPositionY = CoreStats.CellSizePixels;
+    const int StartPositionY = HumbleCell.CellSizeInPixels;
 
     public override void _Ready()
     {

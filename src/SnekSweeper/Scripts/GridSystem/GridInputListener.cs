@@ -1,4 +1,5 @@
-﻿using SnekSweeper.Constants;
+﻿using SnekSweeper.CellSystem;
+using SnekSweeper.Constants;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;
@@ -10,9 +11,7 @@ public partial class GridInputListener : Node2D
     public event Action<GridIndex>? SecondaryReleased;
     public event Action<GridIndex>? HoveringGridIndexChanged;
 
-    private const int CellSize = CoreStats.CellSizePixels;
-
-    private GridIndex _hoveringGridIndex = new GridIndex(0, 0);
+    GridIndex _hoveringGridIndex = new(0, 0);
 
     public override void _UnhandledInput(InputEvent @event)
     {
@@ -44,11 +43,11 @@ public partial class GridInputListener : Node2D
         }
     }
 
-    private GridIndex GetHoveringGridIndex(Vector2 globalMousePosition)
+    GridIndex GetHoveringGridIndex(Vector2 globalMousePosition)
     {
         var localMousePosition = globalMousePosition - GlobalPosition;
-        var i = Mathf.FloorToInt(localMousePosition.Y / CellSize);
-        var j = Mathf.FloorToInt(localMousePosition.X / CellSize);
+        var i = Mathf.FloorToInt(localMousePosition.Y / HumbleCell.CellSizeInPixels);
+        var j = Mathf.FloorToInt(localMousePosition.X / HumbleCell.CellSizeInPixels);
         return new GridIndex(i, j);
     }
 }

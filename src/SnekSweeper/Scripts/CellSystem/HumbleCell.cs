@@ -10,6 +10,8 @@ namespace SnekSweeper.CellSystem;
 [SceneTree]
 public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
 {
+    public const int CellSizeInPixels = 16;
+    
     public ICover Cover => CellCover;
     public IFlag Flag => CellFlag;
 
