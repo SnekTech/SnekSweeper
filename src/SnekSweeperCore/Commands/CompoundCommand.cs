@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SnekSweeper.Commands;
+namespace SnekSweeperCore.Commands;
 
 public class CompoundCommand : ICommand
 {

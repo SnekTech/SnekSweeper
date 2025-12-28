@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.Commands;
+﻿namespace SnekSweeperCore.Commands;
 
 public interface ICommand
 {

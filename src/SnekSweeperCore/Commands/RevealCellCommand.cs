@@ -1,6 +1,6 @@
 ﻿using SnekSweeperCore.CellSystem;
 
-namespace SnekSweeper.Commands;
+namespace SnekSweeperCore.Commands;
 
 public class RevealCellCommand(Cell cell) : ICommand
 {
