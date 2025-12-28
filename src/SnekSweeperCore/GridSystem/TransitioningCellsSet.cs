@@ -1,11 +1,10 @@
 ﻿using SnekSweeperCore.CellSystem;
-using SnekSweeperCore.GridSystem;
 
-namespace SnekSweeper.GridSystem;
+namespace SnekSweeperCore.GridSystem;
 
 public class TransitioningCellsSet
 {
-    private readonly HashSet<GridIndex> _transitioningCellIndexes = [];
+    readonly HashSet<GridIndex> _transitioningCellIndexes = [];
 
     public bool Contains(GridIndex gridIndex) => _transitioningCellIndexes.Contains(gridIndex);
 
