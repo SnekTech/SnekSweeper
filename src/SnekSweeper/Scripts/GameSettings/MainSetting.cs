@@ -1,6 +1,6 @@
-﻿using SnekSweeper.SkinSystem;
-using SnekSweeperCore.GridSystem.Difficulty;
+﻿using SnekSweeperCore.GridSystem.Difficulty;
 using SnekSweeperCore.GridSystem.LayMineStrategies;
+using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.GameSettings;
 

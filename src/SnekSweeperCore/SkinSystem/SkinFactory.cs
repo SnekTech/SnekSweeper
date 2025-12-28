@@ -1,13 +1,13 @@
-﻿namespace SnekSweeper.SkinSystem;
+﻿namespace SnekSweeperCore.SkinSystem;
 
 public static class SkinFactory
 {
-    private static readonly GridSkin[] BuiltinSkins =
+    static readonly GridSkin[] BuiltinSkins =
     [
         new(SkinKey.Classic, "res://Art/SnekSweeperSpriteSheet.png"),
         new(SkinKey.Mahjong, "res://Art/SnekSweeperSpriteSheet02.png"),
     ];
-    private static readonly Dictionary<SkinKey, GridSkin> SkinCache = [];
+    static readonly Dictionary<SkinKey, GridSkin> SkinCache = [];
 
     static SkinFactory()
     {
@@ -21,22 +21,15 @@ public static class SkinFactory
 
     extension(SkinKey key)
     {
-        public static SkinKey FromInt(int index) => (SkinKey)index;
-        public static SkinKey FromLong(long index) => (SkinKey)index;
-
         public GridSkin ToSkin()
         {
             SkinCache.TryGetValue(key, out var skin);
-            if (skin is not null)
-                return skin;
-
-            GD.Print($"grid skin with key {key} not found, use classic instead");
-            return SkinCache[SkinKey.Classic];
+            return skin ?? SkinCache[SkinKey.Classic];
         }
     }
 
     extension(GridSkin skin)
     {
-        private void CacheToDict() => SkinCache.Add(skin.Key, skin);
+        void CacheToDict() => SkinCache.Add(skin.Key, skin);
     }
 }

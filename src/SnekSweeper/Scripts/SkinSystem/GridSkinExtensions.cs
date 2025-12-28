@@ -1,6 +1,6 @@
-﻿namespace SnekSweeper.SkinSystem;
+﻿using SnekSweeperCore.SkinSystem;
 
-public record GridSkin(SkinKey Key, string TexturePath);
+namespace SnekSweeper.SkinSystem;
 
 public static class GridSkinExtensions
 {
@@ -10,10 +10,9 @@ public static class GridSkinExtensions
 
         public Texture2D Texture => SnekUtility.LoadTexture(skin.TexturePath);
     }
-}
 
-public enum SkinKey
-{
-    Classic,
-    Mahjong,
+    extension(SkinKey skinKey)
+    {
+        public static SkinKey FromLong(long index) => (SkinKey)index;
+    }
 }

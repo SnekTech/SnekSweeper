@@ -1,5 +1,6 @@
 ﻿using SnekSweeper.Autoloads;
 using SnekSweeper.SkinSystem;
+using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.UI.Settings;
 
