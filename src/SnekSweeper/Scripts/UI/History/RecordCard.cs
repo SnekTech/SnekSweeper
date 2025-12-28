@@ -1,5 +1,5 @@
-﻿using SnekSweeper.GameHistory;
-using SnekSweeper.Widgets;
+﻿using SnekSweeper.Widgets;
+using SnekSweeperCore.GameHistory;
 
 namespace SnekSweeper.UI.History;
 

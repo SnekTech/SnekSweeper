@@ -1,8 +1,8 @@
-﻿using SnekSweeper.GameMode;
-using SnekSweeperCore.CellSystem;
+﻿using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
+using SnekSweeperCore.GameMode;
 
-namespace SnekSweeper.GridSystem;
+namespace SnekSweeperCore.GridSystem;
 
 public interface IHumbleGrid
 {

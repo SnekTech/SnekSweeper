@@ -2,12 +2,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace SnekSweeper.SaveLoad;
+namespace SnekSweeperCore.SaveLoad;
 
 public class Mat2DConverter : JsonConverter<bool[,]>
 {
     static readonly JsonConverter<List<string>> DefaultStringListConverter
-        = (JsonConverter<List<string>>)PlayerDataJsonExtensions.SerializerContext.Options.GetConverter(typeof(List<string>));
+        = (JsonConverter<List<string>>)JsonSerializerOptions.Default.GetConverter(typeof(List<string>));
 
     public override bool[,]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

@@ -1,9 +1,8 @@
 ﻿using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
-using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.LayMineStrategies;
 
-namespace SnekSweeper.GridSystem;
+namespace SnekSweeperCore.GridSystem;
 
 public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrategy, GridEventBus gridEventBus)
 {

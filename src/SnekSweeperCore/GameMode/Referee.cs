@@ -1,9 +1,8 @@
-﻿using SnekSweeper.GameHistory;
-using SnekSweeper.GridSystem;
-using SnekSweeperCore.CellSystem;
+﻿using SnekSweeperCore.CellSystem;
+using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 
-namespace SnekSweeper.GameMode;
+namespace SnekSweeperCore.GameMode;
 
 public class Referee(History history, Action onGameWin, Action onGameLose)
 {

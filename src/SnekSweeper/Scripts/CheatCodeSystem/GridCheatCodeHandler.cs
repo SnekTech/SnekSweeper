@@ -1,4 +1,4 @@
-﻿using SnekSweeper.GridSystem;
+﻿using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.CheatCodeSystem;
 

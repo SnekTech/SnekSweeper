@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.GameHistory;
+﻿namespace SnekSweeperCore.GameHistory;
 
 public class History
 {

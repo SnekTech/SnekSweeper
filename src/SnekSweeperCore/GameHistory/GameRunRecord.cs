@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using SnekSweeper.SaveLoad;
+using SnekSweeperCore.SaveLoad;
 
-namespace SnekSweeper.GameHistory;
+namespace SnekSweeperCore.GameHistory;
 
 public readonly record struct RunDuration(DateTime StartAt, DateTime EndAt);
 

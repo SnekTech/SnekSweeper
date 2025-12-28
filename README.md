@@ -10,6 +10,7 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] 怪物猎人式转盘
 - [ ] multiple save slots
 - [ ] balatro-like background shader
+- [ ] use DTO when doing serialization
 
 ## Done
 

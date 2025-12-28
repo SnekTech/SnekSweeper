@@ -1,7 +1,7 @@
 ﻿using SnekSweeper.CheatCodeSystem;
-using SnekSweeper.GameHistory;
 using SnekSweeper.GameSettings;
 using SnekSweeper.SaveLoad;
+using SnekSweeperCore.GameHistory;
 
 namespace SnekSweeper.Autoloads;
 
