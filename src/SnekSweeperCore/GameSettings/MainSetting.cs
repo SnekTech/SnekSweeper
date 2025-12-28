@@ -2,7 +2,7 @@
 using SnekSweeperCore.GridSystem.LayMineStrategies;
 using SnekSweeperCore.SkinSystem;
 
-namespace SnekSweeper.GameSettings;
+namespace SnekSweeperCore.GameSettings;
 
 public class MainSetting
 {
