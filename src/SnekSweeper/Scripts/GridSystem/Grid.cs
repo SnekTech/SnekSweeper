@@ -1,5 +1,4 @@
-﻿using SnekSweeper.Autoloads;
-using SnekSweeper.Commands;
+﻿using SnekSweeper.Commands;
 using SnekSweeper.Constants;
 using SnekSweeper.GridSystem.LayMineStrategies;
 using SnekSweeperCore.CellSystem;
@@ -7,10 +6,9 @@ using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;
 
-public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrategy)
+public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrategy, GridEventBus gridEventBus)
 {
     bool _hasCellInitialized;
-    readonly GridEventBus _eventBus = EventBusOwner.GridEventBus;
     readonly TransitioningCellsSet _transitioningCellsSet = new();
 
     ILayMineStrategy LayMineStrategy { get; } = layMineStrategy;
@@ -54,7 +52,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
 
         humbleGrid.Referee.MarkRunStartTime();
         humbleGrid.TriggerInitEffects();
-        _eventBus.EmitBombCountChanged(BombCount);
+        gridEventBus.EmitBombCountChanged(BombCount);
     }
 
     public async Task OnPrimaryReleasedAt(GridIndex gridIndex, CancellationToken cancellationToken = default)
@@ -81,7 +79,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
         if (IsTransitioningAt(gridIndex)) return;
 
         await cells.At(gridIndex).SwitchFlag();
-        _eventBus.EmitFlagCountChanged(FlagCount);
+        gridEventBus.EmitFlagCountChanged(FlagCount);
     }
 
     IEnumerable<Cell> GetNeighborsOf(Cell cell)
@@ -138,10 +136,11 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
         var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
         humbleGrid.Referee.JudgeGame(this, bombCellsRevealed);
 
-        _eventBus.EmitBatchRevealed();
+        gridEventBus.EmitBatchRevealed();
     }
 
-    async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal, CancellationToken cancellationToken = default)
+    async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal,
+        CancellationToken cancellationToken = default)
     {
         var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
         await humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands), cancellationToken);

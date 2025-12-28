@@ -44,7 +44,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     {
         var (size, currentStrategy, currentSkin) = ExtractGridInfoFromMainSettings(_mainSetting);
         var cells = CreateCells(size, currentSkin);
-        _grid = new Grid(this, cells, currentStrategy);
+        _grid = new Grid(this, cells, currentStrategy, EventBusOwner.GridEventBus);
 
         _hudEventBus.UndoPressed += OnUndoPressed;
 

@@ -1,5 +1,5 @@
-﻿using SnekSweeper.GridSystem;
-using SnekSweeper.UI;
+﻿using SnekSweeper.UI;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.Autoloads;
 

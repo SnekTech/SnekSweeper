@@ -1,6 +1,6 @@
 ﻿using SnekSweeper.Autoloads;
-using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.UI;
 

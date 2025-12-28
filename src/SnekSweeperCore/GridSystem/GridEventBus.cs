@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.GridSystem;
+﻿namespace SnekSweeperCore.GridSystem;
 
 public class GridEventBus
 {

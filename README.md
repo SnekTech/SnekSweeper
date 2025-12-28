@@ -4,15 +4,17 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Todo
 
-- [ ] add the GodotGadgets project to this solution, remove the dll reference
 - [ ] move non-godot stuff to core project
 - [ ] load level from game run records
 - [ ] controller support
   - [ ] 怪物猎人式转盘
+- [ ] multiple save slots
+- [ ] balatro-like background shader
 
 ## Done
 
 - [x] pack rust ms-toollib to a tiny library
+- [x] add the GodotGadgets project to this solution, remove the dll reference
 
 ## GamePlay
 
