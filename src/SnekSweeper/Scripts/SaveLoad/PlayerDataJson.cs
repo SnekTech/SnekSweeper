@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using GodotGadgets.Extensions;
-using SnekSweeper.CheatCodeSystem;
+using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
 

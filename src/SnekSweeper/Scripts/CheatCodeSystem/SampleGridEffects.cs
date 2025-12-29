@@ -1,12 +1,8 @@
 ﻿using SnekSweeper.Autoloads;
+using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.CheatCodeSystem;
-
-interface ICheatCodeGridEffect
-{
-    void Trigger(IHumbleGrid humbleGrid);
-}
 
 sealed class SetGridCoverAlpha(float normalizedAlpha) : ICheatCodeGridEffect
 {

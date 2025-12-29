@@ -1,15 +1,9 @@
-﻿namespace SnekSweeper.CheatCodeSystem;
+﻿using SnekSweeperCore.CheatCodeSystem;
 
-static class CheatCodeFactory
+namespace SnekSweeper.CheatCodeSystem;
+
+public static class CheatCodeFactory
 {
-    static CheatCodeFactory()
-    {
-        foreach (var availableCheatCode in AvailableCheatCodes)
-        {
-            availableCheatCode.CacheToDict();
-        }
-    }
-
     static readonly CheatCode[] AvailableCheatCodes =
     [
         new(CheatCodeKey.TransparentCover, new CheatCodeData(
@@ -31,11 +25,19 @@ static class CheatCodeFactory
 
     static readonly Dictionary<CheatCodeKey, CheatCode> CheatCodeCollection = [];
 
-    internal static IEnumerable<CheatCode> BuiltinCheatCodeList =>
+    public static IEnumerable<CheatCode> BuiltinCheatCodeList =>
         CheatCodeCollection.Values.OrderBy(cheatCode => cheatCode.Key);
+
+    static CheatCodeFactory()
+    {
+        foreach (var availableCheatCode in AvailableCheatCodes)
+        {
+            availableCheatCode.CacheToDict();
+        }
+    }
 
     extension(CheatCode cheatCode)
     {
-        private void CacheToDict() => CheatCodeCollection[cheatCode.Key] = cheatCode;
+        void CacheToDict() => CheatCodeCollection[cheatCode.Key] = cheatCode;
     }
 }

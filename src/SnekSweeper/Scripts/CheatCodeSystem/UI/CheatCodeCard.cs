@@ -2,6 +2,7 @@
 using GodotGadgets.TooltipSystem;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.CheatCodeSystem;
 using SnekTech.Tooltip;
 
 namespace SnekSweeper.CheatCodeSystem.UI;

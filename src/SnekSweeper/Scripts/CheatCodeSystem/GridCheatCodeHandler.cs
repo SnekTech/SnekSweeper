@@ -1,10 +1,11 @@
-﻿using SnekSweeperCore.GridSystem;
+﻿using SnekSweeperCore.CheatCodeSystem;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.CheatCodeSystem;
 
-static class GridCheatCodeHandler
+public static class GridCheatCodeHandler
 {
-    internal static void TriggerCheatCodeInitEffects(this IHumbleGrid humbleGrid, ActivatedCheatCodeSet activatedCheatCodeSet)
+    public static void TriggerCheatCodeInitEffects(this IHumbleGrid humbleGrid, ActivatedCheatCodeSet activatedCheatCodeSet)
     {
         var initGridEffects = CheatCodeFactory.BuiltinCheatCodeList
             .Where(cheatCode => cheatCode.IsActivatedIn(activatedCheatCodeSet))

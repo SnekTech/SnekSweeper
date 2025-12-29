@@ -1,5 +1,5 @@
-﻿using SnekSweeper.CheatCodeSystem;
-using SnekSweeper.SaveLoad;
+﻿using SnekSweeper.SaveLoad;
+using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
 

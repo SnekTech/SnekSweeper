@@ -1,6 +1,6 @@
-﻿namespace SnekSweeper.CheatCodeSystem;
+﻿namespace SnekSweeperCore.CheatCodeSystem;
 
-class ActivatedCheatCodeSet
+public class ActivatedCheatCodeSet
 {
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
