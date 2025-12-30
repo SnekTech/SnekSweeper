@@ -1,8 +1,7 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using SnekSweeperCore.CheatCodeSystem;
+﻿using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
+using SnekSweeperCore.SaveLoad.SerializationService;
 
 namespace SnekSweeperCore.SaveLoad;
 
@@ -11,49 +10,24 @@ public record PlayerSaveData(
     ActivatedCheatCodeSet ActivatedCheatCodeSet,
     History History);
 
-[JsonSerializable(typeof(PlayerSaveDataDto))]
-[JsonSerializable(typeof(List<string>))]
-partial class PlayerSaveDataDtoSerializerContext : JsonSerializerContext;
-
-public static class PlayerSaveDataJsonExtensions
+public static class PlayerSaveDataExtensions
 {
-    const string SaveFileName = "playerSaveData.json";
-    static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
-    static readonly PlayerSaveDataDtoSerializerContext SerializerContext = new(SerializerOptions);
+    static readonly SerializationStrategy DefaultStrategy = SerializationStrategy.MemoryPack;
 
     extension(PlayerSaveData playerSaveData)
     {
-        public static PlayerSaveData CreateEmpty() => new(new MainSetting(), new ActivatedCheatCodeSet(), new History());
+        public static PlayerSaveData CreateEmpty() =>
+            new(new MainSetting(), new ActivatedCheatCodeSet(), new History());
 
-        public void Save(string userDataDir)
-        {
-            var json = JsonSerializer.Serialize(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
-            File.WriteAllText(userDataDir.SaveFilePath, json);
-        }
+        public void Save(string userDataDir) =>
+            DefaultStrategy.SaveDataFn(playerSaveData, userDataDir.Combine(DefaultStrategy.SaveFileName));
 
-        public static PlayerSaveData? Load(string userDataDir)
-        {
-            PlayerSaveDataDto? loadedDto = null;
-            try
-            {
-                var json = File.ReadAllText(userDataDir.SaveFilePath);
-                loadedDto = JsonSerializer.Deserialize(json, SerializerContext.PlayerSaveDataDto);
-            }
-            catch (Exception)
-            {
-                // ignored, will create an empty save later
-            }
-
-            return loadedDto switch
-            {
-                not null => loadedDto.ToPlayerSaveData(),
-                null => null,
-            };
-        }
+        public static PlayerSaveData? Load(string userDataDir) =>
+            DefaultStrategy.LoadDataFn(userDataDir.Combine(DefaultStrategy.SaveFileName));
     }
 
     extension(string userDataDir)
     {
-        string SaveFilePath => Path.Combine(userDataDir, SaveFileName);
+        string Combine(string fileName) => Path.Combine(userDataDir, fileName);
     }
 }

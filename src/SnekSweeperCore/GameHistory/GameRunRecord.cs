@@ -1,11 +1,13 @@
 ﻿using System.Text.Json.Serialization;
+using MemoryPack;
 using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeperCore.GameHistory;
 
 public readonly record struct RunDuration(DateTime StartAt, DateTime EndAt);
 
-public record GameRunRecord(RunDuration Duration, bool Winning)
+[MemoryPackable]
+public partial record GameRunRecord(RunDuration Duration, bool Winning)
 {
     [JsonConverter(typeof(Mat2DConverter))]
     public required bool[,] BombMatrix { get; init; }

@@ -1,4 +1,5 @@
-﻿using Riok.Mapperly.Abstractions;
+﻿using MemoryPack;
+using Riok.Mapperly.Abstractions;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem.Difficulty;
@@ -7,18 +8,22 @@ using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.SaveLoad;
 
-record MainSettingDto(
+[MemoryPackable]
+partial record MainSettingDto(
     GridDifficultyKey CurrentDifficultyKey,
     SkinKey CurrentSkinKey,
     bool ComboRankDisplay,
     LayMineStrategyKey CurrentStrategyKey
 );
 
-record ActivatedCheatCodeSetDto(HashSet<CheatCodeKey> ActivatedSet);
+[MemoryPackable]
+partial record ActivatedCheatCodeSetDto(HashSet<CheatCodeKey> ActivatedSet);
 
-record HistoryDto(List<GameRunRecord> Records);
+[MemoryPackable]
+partial record HistoryDto(List<GameRunRecord> Records);
 
-record PlayerSaveDataDto(
+[MemoryPackable]
+partial record PlayerSaveDataDto(
     MainSettingDto MainSetting,
     ActivatedCheatCodeSetDto ActivatedCheatCodeSet,
     HistoryDto History);
