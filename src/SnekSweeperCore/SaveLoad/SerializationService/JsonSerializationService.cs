@@ -11,7 +11,19 @@ static class JsonSerializationService
     }
 
     const string SaveJsonFileName = "playerSaveData.json";
-    static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
+
+    static readonly JsonSerializerOptions SerializerOptions = CreateSerializerOptions();
+
+    static JsonSerializerOptions CreateSerializerOptions()
+    {
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+        };
+        options.Converters.Add(new Mat2DConverter());
+        return options;
+    }
+
     static readonly PlayerSaveDataDtoSerializerContext SerializerContext = new(SerializerOptions);
 
     public static SaveDataFn SaveByJson => (playerSaveData, filePath) =>
