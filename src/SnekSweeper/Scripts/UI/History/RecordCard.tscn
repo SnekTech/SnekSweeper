@@ -25,8 +25,3 @@ unique_name_in_owner = true
 modulate = Color(0, 1, 0, 1)
 layout_mode = 2
 text = "Success"
-
-[node name="SeedLabel" type="Label" parent="MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "seed: 123456"

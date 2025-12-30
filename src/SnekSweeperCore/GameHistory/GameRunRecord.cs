@@ -5,10 +5,7 @@ namespace SnekSweeperCore.GameHistory;
 public readonly record struct RunDuration(DateTime StartAt, DateTime EndAt);
 
 [MemoryPackable]
-public partial record GameRunRecord(RunDuration Duration, bool Winning)
-{
-    public required bool[,] BombMatrix { get; init; }
-}
+public partial record GameRunRecord(RunDuration Duration, bool Winning, bool[,] BombMatrix);
 
 static class GameRunRecordExtensions
 {
@@ -20,6 +17,6 @@ static class GameRunRecordExtensions
     extension(GameRunRecord)
     {
         internal static GameRunRecord Create(RunDuration duration, bool winning, bool[,] bombMatrix)
-            => new(duration, winning) { BombMatrix = bombMatrix };
+            => new(duration, winning, bombMatrix);
     }
 }
