@@ -6,7 +6,7 @@ public partial class QuitHandler : Node
     {
         if (what != NotificationWMCloseRequest) return;
 
-        GD.Print("Saving player data json...");
+        GD.Print("Saving player data...");
         HouseKeeper.SaveCurrentPlayerData();
 
         GD.Print("Bye");

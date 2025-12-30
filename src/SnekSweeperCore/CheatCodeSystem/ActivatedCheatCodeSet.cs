@@ -1,19 +1,18 @@
 ﻿namespace SnekSweeperCore.CheatCodeSystem;
 
-public class ActivatedCheatCodeSet
+public class ActivatedCheatCodeSet(HashSet<CheatCodeKey> activatedSet)
 {
     // ReSharper disable once MemberCanBePrivate.Global
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public HashSet<CheatCodeKey> ActivatedSet { get; set; } = [];
+    public IReadOnlySet<CheatCodeKey> ActivatedSet => activatedSet;
 
     public void Add(CheatCodeKey cheatCodeKey)
     {
-        ActivatedSet.Add(cheatCodeKey);
+        activatedSet.Add(cheatCodeKey);
     }
 
     public void Remove(CheatCodeKey cheatCodeKey)
     {
-        ActivatedSet.Remove(cheatCodeKey);
+        activatedSet.Remove(cheatCodeKey);
     }
 
     public bool Contains(CheatCodeKey cheatCodeKey) => ActivatedSet.Contains(cheatCodeKey);

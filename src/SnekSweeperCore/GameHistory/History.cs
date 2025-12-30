@@ -1,17 +1,17 @@
 ﻿namespace SnekSweeperCore.GameHistory;
 
-public class History
+public class History(List<GameRunRecord> records)
 {
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public List<GameRunRecord> Records { get; set; } = [];
+    public IReadOnlyList<GameRunRecord> Records { get; } = records;
 
     public void AddRecord(GameRunRecord gameRunRecord)
     {
-        Records.Add(gameRunRecord);
+        records.Add(gameRunRecord);
     }
 
     public void ClearRecords()
     {
-        Records.Clear();
+        records.Clear();
     }
 }

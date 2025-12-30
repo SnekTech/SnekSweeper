@@ -17,7 +17,7 @@ public static class PlayerSaveDataExtensions
     extension(PlayerSaveData playerSaveData)
     {
         public static PlayerSaveData CreateEmpty() =>
-            new(new MainSetting(), new ActivatedCheatCodeSet(), new History());
+            new(new MainSetting(), new ActivatedCheatCodeSet([]), new History([]));
 
         public void Save(string userDataDir) =>
             DefaultStrategy.SaveDataFn(playerSaveData, userDataDir.Combine(DefaultStrategy.SaveFileName));
