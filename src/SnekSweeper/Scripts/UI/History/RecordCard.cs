@@ -1,5 +1,6 @@
 ﻿using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.UI.History;
 
@@ -10,6 +11,7 @@ public partial class RecordCard : PanelContainer, ISceneScript
     {
         SetTimeLabel(gameRunRecord.Duration);
         SetWinningLabel(gameRunRecord.Winning);
+        SetStartIndexLabel(gameRunRecord.StartIndex);
     }
 
     void SetTimeLabel(RunDuration duration)
@@ -25,5 +27,10 @@ public partial class RecordCard : PanelContainer, ISceneScript
             false => ("Fail", Colors.Red),
         };
         (WinningLabel.Text, WinningLabel.Modulate) = (labelText, labelColor);
+    }
+
+    void SetStartIndexLabel(GridIndex gridIndex)
+    {
+        StartIndexLabel.Text = gridIndex.ToString();
     }
 }

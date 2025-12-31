@@ -20,8 +20,15 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "from A to B"
 
-[node name="WinningLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="WinningLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 modulate = Color(0, 1, 0, 1)
 layout_mode = 2
 text = "Success"
+
+[node name="StartIndexLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
