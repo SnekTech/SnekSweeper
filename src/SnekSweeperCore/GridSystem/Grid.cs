@@ -48,7 +48,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
 
         _hasCellInitialized = true;
 
-        humbleGrid.Referee.MarkRunStartTime();
+        humbleGrid.Referee.MarkRunStartInfo(DateTime.Now, firstClickGridIndex);
         humbleGrid.TriggerInitEffects();
         gridEventBus.EmitBombCountChanged(BombCount);
     }

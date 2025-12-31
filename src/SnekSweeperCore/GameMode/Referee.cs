@@ -7,8 +7,10 @@ namespace SnekSweeperCore.GameMode;
 public class Referee(History history, Action onGameWin, Action onGameLose)
 {
     DateTime _currentRunStartAt = DateTime.MinValue;
+    GridIndex _startIndex;
 
-    internal void MarkRunStartTime() => _currentRunStartAt = DateTime.Now;
+    internal void MarkRunStartInfo(DateTime startAt, GridIndex startIndex) =>
+        (_currentRunStartAt, _startIndex) = (startAt, startIndex);
 
     internal void JudgeGame(Grid grid, List<Cell> bombCellsRevealed)
     {
@@ -53,7 +55,8 @@ public class Referee(History history, Action onGameWin, Action onGameLose)
             GameRunRecord.Create(
                 RunDuration.Create(_currentRunStartAt, DateTime.Now),
                 winning,
-                grid.BombMatrix
+                grid.BombMatrix,
+                _startIndex
             );
     }
 
