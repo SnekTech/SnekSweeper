@@ -1,4 +1,5 @@
 ﻿using SnekSweeperCore.CheatCodeSystem;
+using Widgets.CustomExtensions;
 
 namespace SnekSweeper.CheatCodeSystem;
 
@@ -23,21 +24,11 @@ public static class CheatCodeFactory
         },
     ];
 
-    static readonly Dictionary<CheatCodeKey, CheatCode> CheatCodeCollection = [];
+    static readonly Dictionary<CheatCodeKey, CheatCode> CheatCodeCache = [];
 
     public static IEnumerable<CheatCode> BuiltinCheatCodeList =>
-        CheatCodeCollection.Values.OrderBy(cheatCode => cheatCode.Key);
+        CheatCodeCache.Values.OrderBy(cheatCode => cheatCode.Key);
 
-    static CheatCodeFactory()
-    {
-        foreach (var availableCheatCode in AvailableCheatCodes)
-        {
-            availableCheatCode.CacheToDict();
-        }
-    }
-
-    extension(CheatCode cheatCode)
-    {
-        void CacheToDict() => CheatCodeCollection[cheatCode.Key] = cheatCode;
-    }
+    static CheatCodeFactory() =>
+        CheatCodeCache.AddRange(AvailableCheatCodes.Select(cheatCode => (cheatCode.Key, cheatCode)));
 }

@@ -1,4 +1,6 @@
-﻿namespace SnekSweeperCore.SkinSystem;
+﻿using Widgets.CustomExtensions;
+
+namespace SnekSweeperCore.SkinSystem;
 
 public static class SkinFactory
 {
@@ -9,13 +11,7 @@ public static class SkinFactory
     ];
     static readonly Dictionary<SkinKey, GridSkin> SkinCache = [];
 
-    static SkinFactory()
-    {
-        foreach (var builtinSkin in BuiltinSkins)
-        {
-            builtinSkin.CacheToDict();
-        }
-    }
+    static SkinFactory() => SkinCache.AddRange(BuiltinSkins.Select(skin => (skin.Key, skin)));
 
     public static IEnumerable<GridSkin> Skins => SkinCache.Values.OrderBy(skin => skin.Key);
 
@@ -26,10 +22,5 @@ public static class SkinFactory
             SkinCache.TryGetValue(key, out var skin);
             return skin ?? SkinCache[SkinKey.Classic];
         }
-    }
-
-    extension(GridSkin skin)
-    {
-        void CacheToDict() => SkinCache.Add(skin.Key, skin);
     }
 }

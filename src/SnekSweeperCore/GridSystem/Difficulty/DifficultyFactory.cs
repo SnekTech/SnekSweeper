@@ -21,12 +21,8 @@ public static class DifficultyFactory
     ];
     static readonly Dictionary<GridDifficultyKey, GridDifficulty> DifficultyCache = [];
 
-    static DifficultyFactory()
-    {
-        DifficultyCache.AddRange(BuiltinDifficulties.Select(difficulty =>
-            (difficulty.Key, difficulty)
-        ));
-    }
+    static DifficultyFactory() =>
+        DifficultyCache.AddRange(BuiltinDifficulties.Select(difficulty => (difficulty.Key, difficulty)));
 
     public static IEnumerable<GridDifficulty> Difficulties =>
         DifficultyCache.Values.OrderBy(difficulty => difficulty.Key);
