@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\libs\MineSweeperTools\MineSweeperTools.csproj" />
+      <ProjectReference Include="..\Widgets\Widgets.csproj" />
     </ItemGroup>
 
     <ItemGroup>
