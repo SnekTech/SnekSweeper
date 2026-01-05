@@ -1,6 +1,4 @@
-﻿using Widgets.CustomExtensions;
-
-namespace SnekSweeperCore.GridSystem.Difficulty;
+﻿namespace SnekSweeperCore.GridSystem.Difficulty;
 
 public static class DifficultyFactory
 {
@@ -19,10 +17,8 @@ public static class DifficultyFactory
             .WithSize(new GridSize(16, 30))
             .WithBombCount(99),
     ];
-    static readonly Dictionary<GridDifficultyKey, GridDifficulty> DifficultyCache = [];
-
-    static DifficultyFactory() =>
-        DifficultyCache.AddRange(BuiltinDifficulties.Select(difficulty => (difficulty.Key, difficulty)));
+    static readonly Dictionary<GridDifficultyKey, GridDifficulty> DifficultyCache =
+        BuiltinDifficulties.ToDictionary(difficulty => difficulty.Key);
 
     public static IEnumerable<GridDifficulty> Difficulties =>
         DifficultyCache.Values.OrderBy(difficulty => difficulty.Key);

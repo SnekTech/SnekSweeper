@@ -1,6 +1,4 @@
-﻿using Widgets.CustomExtensions;
-
-namespace SnekSweeperCore.SkinSystem;
+﻿namespace SnekSweeperCore.SkinSystem;
 
 public static class SkinFactory
 {
@@ -9,9 +7,8 @@ public static class SkinFactory
         new(SkinKey.Classic, "res://Art/SnekSweeperSpriteSheet.png"),
         new(SkinKey.Mahjong, "res://Art/SnekSweeperSpriteSheet02.png"),
     ];
-    static readonly Dictionary<SkinKey, GridSkin> SkinCache = [];
 
-    static SkinFactory() => SkinCache.AddRange(BuiltinSkins.Select(skin => (skin.Key, skin)));
+    static readonly Dictionary<SkinKey, GridSkin> SkinCache = BuiltinSkins.ToDictionary(skin => skin.Key);
 
     public static IEnumerable<GridSkin> Skins => SkinCache.Values.OrderBy(skin => skin.Key);
 
