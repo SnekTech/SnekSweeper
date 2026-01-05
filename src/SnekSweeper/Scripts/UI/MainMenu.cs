@@ -1,7 +1,11 @@
-﻿using SnekSweeper.CheatCodeSystem.UI;
+﻿using GodotGadgets.Tasks;
+using SnekSweeper.Autoloads;
+using SnekSweeper.CheatCodeSystem.UI;
 using SnekSweeper.Levels;
 using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
+using SnekSweeperCore.GridSystem.Difficulty;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI;
 
@@ -31,17 +35,17 @@ public partial class MainMenu : CanvasLayer
 
     void OnHistoryButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoScene<HistoryPage>();
+        Autoload.SceneSwitcher.GotoSceneAsync<HistoryPage>().Fire();
     }
 
     void OnCheatCodeButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoScene<CheatCodePage>();
+        Autoload.SceneSwitcher.GotoSceneAsync<CheatCodePage>().Fire();
     }
 
     void OnSettingsButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoScene<SettingsPage>();
+        Autoload.SceneSwitcher.GotoSceneAsync<SettingsPage>().Fire();
     }
 
 

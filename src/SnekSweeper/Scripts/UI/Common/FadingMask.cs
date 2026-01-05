@@ -8,6 +8,15 @@ public partial class FadingMask : CanvasLayer, ISceneScript
 {
     private const float FadingDuration = 0.3f;
 
-    public Task FadeInAsync() => Panel.FadeInAsync(FadingDuration, this.GetCancellationTokenOnTreeExit());
-    public Task FadeOutAsync() => Panel.FadeOutAsync(FadingDuration, this.GetCancellationTokenOnTreeExit());
+    public Task FadeInAsync(CancellationToken cancellationToken = default)
+    {
+        var linked = cancellationToken.LinkWithNodeDestroy(this);
+        return Panel.FadeInAsync(FadingDuration, linked.Token);
+    }
+
+    public Task FadeOutAsync(CancellationToken cancellationToken = default)
+    {
+        var linked = cancellationToken.LinkWithNodeDestroy(this);
+        return Panel.FadeOutAsync(FadingDuration, linked.Token);
+    }
 }
