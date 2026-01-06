@@ -10,12 +10,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
     bool IsTransitioningAt(GridIndex index) => _transitioningCellsSet.Contains(index);
 
-    public bool IsValidIndex(GridIndex gridIndex)
-    {
-        var (i, j) = gridIndex;
-        var (rows, columns) = Size;
-        return i >= 0 && i < rows && j >= 0 && j < columns;
-    }
+    public bool IsValidIndex(GridIndex gridIndex) => gridIndex.IsWithin(Size);
 
     public IEnumerable<Cell> Cells => cells.Elements;
 
@@ -38,10 +33,13 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         gridEventBus.EmitBombCountChanged(BombCount);
         return;
 
+        int GetNeighborBombCount(Cell cell)
+            => cell.GetNeighbors(Size, cells.At).Count(neighbor => neighbor.HasBomb);
+
         Task InitAllCellsAsync()
         {
-            var initCellTasks = Cells.Select(cell =>
-                    (cell, neighborBombCount: GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb)))
+            var initCellTasks = Cells
+                .Select(cell => (cell, neighborBombCount: GetNeighborBombCount(cell)))
                 .Select(t => t.cell.InitAsync(t.neighborBombCount, cancellationToken));
             return Task.WhenAll(initCellTasks);
         }
@@ -70,16 +68,6 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         gridEventBus.EmitFlagCountChanged(FlagCount);
     }
 
-    IEnumerable<Cell> GetNeighborsOf(Cell cell)
-    {
-        // todo: move to Cell extension
-        var (i, j) = cell.GridIndex;
-        return GridIndex.NeighborOffsets
-            .Select(offset => new GridIndex(i + offset.offsetI, j + offset.offsetJ))
-            .Where(IsValidIndex)
-            .Select(cells.At);
-    }
-
     async Task RevealAt(GridIndex gridIndex, CancellationToken cancellationToken = default)
     {
         var cellsToReveal = new HashSet<Cell>();
@@ -95,7 +83,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         if (!canRevealAround)
             return;
 
-        var neighbors = GetNeighborsOf(cell).ToList();
+        var neighbors = cell.GetNeighbors(Size, cells.At).ToList();
         var flaggedNeighborCount = neighbors.Count(neighbor => neighbor.IsFlagged);
         if (flaggedNeighborCount != cell.NeighborBombCount)
             return;
@@ -133,9 +121,6 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
     void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)
     {
-        if (!IsValidIndex(gridIndex))
-            return;
-
         var cell = cells.At(gridIndex);
         var visited = cellsToReveal.Contains(cell);
         if (visited || !cell.IsCovered)
@@ -146,9 +131,9 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         if (cell.HasBomb || cell.NeighborBombCount > 0)
             return;
 
-        foreach (var neighbor in GetNeighborsOf(cell))
+        foreach (var neighborIndex in cell.GridIndex.GetNeighborIndicesWithin(Size))
         {
-            FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
+            FindCellsToReveal(neighborIndex, cellsToReveal);
         }
     }
 }

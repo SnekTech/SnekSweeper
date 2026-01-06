@@ -18,6 +18,9 @@ public class Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = fa
     public bool IsRevealed => _stateMachine.IsAtState<RevealedState>();
     public bool IsFlagged => _stateMachine.IsAtState<FlaggedState>();
 
+    public IEnumerable<Cell> GetNeighbors(GridSize size, Func<GridIndex, Cell> cellGetter)
+        => GridIndex.GetNeighborIndicesWithin(size).Select(cellGetter);
+
     public async Task InitAsync(int neighborBombCount, CancellationToken cancellationToken = default)
     {
         NeighborBombCount = neighborBombCount;
