@@ -1,15 +1,11 @@
 ﻿using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
-using SnekSweeperCore.GridSystem.LayMineStrategies;
 
 namespace SnekSweeperCore.GridSystem;
 
-public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMineStrategy, GridEventBus gridEventBus)
+public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventBus)
 {
-    bool _hasCellInitialized;
     readonly TransitioningCellsSet _transitioningCellsSet = new();
-
-    ILayMineStrategy LayMineStrategy { get; } = layMineStrategy;
     internal GridSize Size { get; } = cells.Size;
 
     bool IsTransitioningAt(GridIndex index) => _transitioningCellsSet.Contains(index);
@@ -26,40 +22,34 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
     int BombCount => Cells.Count(cell => cell.HasBomb);
     int FlagCount => Cells.Count(cell => cell.IsFlagged);
 
-    async Task InitCellsAsync(GridIndex firstClickGridIndex, CancellationToken cancellationToken = default)
+    public async Task InitCellsAsync(GridIndex firstClickGridIndex, bool[,] bombs,
+        CancellationToken cancellationToken = default)
     {
-        var bombs = LayMineStrategy.Generate(firstClickGridIndex);
-        foreach (var index in cells.Indices())
+        foreach (var cell in cells)
         {
-            cells.At(index).HasBomb = bombs.At(index);
+            cell.HasBomb = bombs.At(cell.GridIndex);
         }
 
         // must init individual cells after bombs planted
-        var initCellTasks =
-            Cells.Select(cell =>
-                    (cell, neighborBombCount: GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb)))
-                .Select(t =>
-                {
-                    var (cell, neighborBombCount) = t;
-                    return cell.InitAsync(neighborBombCount, cancellationToken);
-                }).ToList();
-
-        await Task.WhenAll(initCellTasks);
-
-        _hasCellInitialized = true;
+        await InitAllCellsAsync();
 
         humbleGrid.Referee.MarkRunStartInfo(DateTime.Now, firstClickGridIndex);
         humbleGrid.TriggerInitEffects();
         gridEventBus.EmitBombCountChanged(BombCount);
+        return;
+
+        Task InitAllCellsAsync()
+        {
+            var initCellTasks = Cells.Select(cell =>
+                    (cell, neighborBombCount: GetNeighborsOf(cell).Count(neighbor => neighbor.HasBomb)))
+                .Select(t => t.cell.InitAsync(t.neighborBombCount, cancellationToken));
+            return Task.WhenAll(initCellTasks);
+        }
     }
 
     public async Task OnPrimaryReleasedAt(GridIndex gridIndex, CancellationToken cancellationToken = default)
     {
-        if (!_hasCellInitialized)
-        {
-            await InitCellsAsync(gridIndex, cancellationToken);
-        }
-
+        // todo: DDD for player input
         if (IsTransitioningAt(gridIndex)) return;
 
         await RevealAt(gridIndex, cancellationToken);
@@ -82,15 +72,12 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, ILayMineStrategy layMin
 
     IEnumerable<Cell> GetNeighborsOf(Cell cell)
     {
+        // todo: move to Cell extension
         var (i, j) = cell.GridIndex;
-        foreach (var (offsetI, offsetJ) in GridIndex.NeighborOffsets)
-        {
-            var neighborIndex = new GridIndex(i + offsetI, j + offsetJ);
-            if (IsValidIndex(neighborIndex))
-            {
-                yield return cells.At(neighborIndex);
-            }
-        }
+        return GridIndex.NeighborOffsets
+            .Select(offset => new GridIndex(i + offset.offsetI, j + offset.offsetJ))
+            .Where(IsValidIndex)
+            .Select(cells.At);
     }
 
     async Task RevealAt(GridIndex gridIndex, CancellationToken cancellationToken = default)

@@ -4,7 +4,6 @@ using SnekSweeper.CheatCodeSystem.UI;
 using SnekSweeper.Levels;
 using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
-using SnekSweeperCore.GridSystem.Difficulty;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI;
@@ -48,10 +47,16 @@ public partial class MainMenu : CanvasLayer
         Autoload.SceneSwitcher.GotoSceneAsync<SettingsPage>().Fire();
     }
 
-
     void OnStartButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoScene<Level1>();
+        LoadLevelAsync().Fire();
+        return;
+
+        async Task LoadLevelAsync(CancellationToken cancellationToken = default)
+        {
+            var level = await Autoload.SceneSwitcher.GotoSceneAsync<Level1>(cancellationToken);
+            level.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting));
+        }
     }
 
     void OnQuitPressed()

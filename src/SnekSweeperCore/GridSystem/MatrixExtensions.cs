@@ -22,5 +22,22 @@ public static class MatrixExtensions
 
         public T At(GridIndex index) => matrix[index.I, index.J];
         public void SetAt(GridIndex index, T value) => matrix[index.I, index.J] = value;
+
+        public TU[,] MapTo<TU>(Func<T, TU> mapper) => matrix.MapTo((element, _) => mapper(element));
+
+        public TU[,] MapTo<TU>(Func<T, GridIndex, TU> mapper) =>
+            Create<TU>(matrix.Size, gridIndex => mapper(matrix.At(gridIndex), gridIndex));
+
+        public static T[,] Create(GridSize size, Func<GridIndex, T> createFn)
+        {
+            var mat = new T[size.Rows, size.Columns];
+            foreach (var gridIndex in mat.Indices())
+            {
+                var value = createFn(gridIndex);
+                mat.SetAt(gridIndex, value);
+            }
+
+            return mat;
+        }
     }
 }

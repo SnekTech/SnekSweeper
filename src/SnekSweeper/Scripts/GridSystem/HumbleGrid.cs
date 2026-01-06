@@ -8,10 +8,8 @@ using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameMode;
-using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.GridSystem.Difficulty;
-using SnekSweeperCore.GridSystem.LayMineStrategies;
+using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.GridSystem;
@@ -20,9 +18,9 @@ namespace SnekSweeper.GridSystem;
 public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
     readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
-    readonly MainSetting _mainSetting = HouseKeeper.MainSetting;
 
     Grid _grid = null!;
+    GridInitializer _gridInitializer = null!;
 
     public CommandInvoker GridCommandInvoker { get; } = new();
 
@@ -31,63 +29,42 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         () =>
         {
             MessageBox.Print("You win!");
-            Autoload.SceneSwitcher.GotoScene<WinningPage>();
+            Autoload.SceneSwitcher.GotoSceneAsync<WinningPage>().Fire();
         },
         () =>
         {
             MessageBox.Print("Game over! Bomb revealed!");
-            Autoload.SceneSwitcher.GotoScene<LosingPage>();
+            Autoload.SceneSwitcher.GotoSceneAsync<LosingPage>().Fire();
         }
     );
 
     public override void _EnterTree()
     {
-        var (size, currentStrategy, currentSkin) = ExtractGridInfoFromMainSettings(_mainSetting);
-        var cells = CreateCells(size, currentSkin);
-        _grid = new Grid(this, cells, currentStrategy, EventBusOwner.GridEventBus);
-
         _hudEventBus.UndoPressed += OnUndoPressed;
-
         GridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
         GridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
         GridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
         GridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
-        return;
-
-        static (GridSize size, ILayMineStrategy strategy, GridSkin gridSkin) ExtractGridInfoFromMainSettings(
-            MainSetting mainSetting)
-        {
-            var currentDifficulty = mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
-            var currentStrategy = mainSetting.CurrentStrategyKey.ToStrategy(currentDifficulty);
-            var currentSkin = mainSetting.CurrentSkinKey.ToSkin();
-            return (currentDifficulty.Size, currentStrategy, currentSkin);
-        }
     }
 
     public override void _ExitTree()
     {
         _hudEventBus.UndoPressed -= OnUndoPressed;
-
         GridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
         GridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
         GridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
-    Cell[,] CreateCells(GridSize gridSize, GridSkin skin)
+    public void InitWithGrid(Grid grid, GridInitializer gridInitializer) =>
+        (_grid, _gridInitializer) = (grid, gridInitializer);
+
+    public IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin)
     {
-        var cells = new Cell[gridSize.Rows, gridSize.Columns];
-        foreach (var gridIndex in cells.Indices())
-        {
-            var humbleCell = HumbleCell.InstantiateOnParent(this);
-            humbleCell.SetPosition(gridIndex);
-            humbleCell.UseSkin(skin);
-
-            var cell = new Cell(humbleCell, gridIndex);
-            cells.SetAt(gridIndex, cell);
-        }
-
-        return cells;
+        var humbleCell = HumbleCell.InstantiateOnParent(this);
+        humbleCell.SetPosition(gridIndex);
+        humbleCell.UseSkin(gridSkin);
+        return humbleCell;
     }
 
     public IEnumerable<IHumbleCell> HumbleCells => _grid.Cells.Select(cell => cell.HumbleCell);
@@ -112,7 +89,16 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     {
         if (!_grid.IsValidIndex(gridIndex))
             return;
-        _grid.OnPrimaryReleasedAt(gridIndex).Fire();
+
+        HandleAsync().Fire();
+        return;
+
+        async Task HandleAsync()
+        {
+            await _gridInitializer.TryHandleFirstPrimaryClickAsync(_grid, gridIndex,
+                this.GetCancellationTokenOnTreeExit());
+            await _grid.OnPrimaryReleasedAt(gridIndex, this.GetCancellationTokenOnTreeExit());
+        }
     }
 
     void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
