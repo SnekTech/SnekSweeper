@@ -1,4 +1,5 @@
-﻿using SnekSweeperCore.CellSystem;
+﻿using System.Runtime.CompilerServices;
+using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 
 namespace SnekSweeperCore.GridSystem;
@@ -20,6 +21,8 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
     public async Task InitCellsAsync(GridIndex firstClickGridIndex, bool[,] bombs,
         CancellationToken cancellationToken = default)
     {
+        // todo: set cells transitioning
+
         foreach (var cell in cells)
         {
             cell.HasBomb = bombs.At(cell.GridIndex);
@@ -45,30 +48,20 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         }
     }
 
-    public async Task OnPrimaryReleasedAt(GridIndex gridIndex, CancellationToken cancellationToken = default)
+    public async Task HandleInputAsync(GridInput gridInput, CancellationToken cancellationToken = default)
     {
-        // todo: DDD for player input
-        if (IsTransitioningAt(gridIndex)) return;
+        if (IsTransitioningAt(gridInput.Index)) return;
 
-        await RevealAt(gridIndex, cancellationToken);
+        await (gridInput switch
+        {
+            PrimaryReleased => RevealAtAsync(gridInput.Index, cancellationToken),
+            PrimaryDoubleClicked => RevealAroundAsync(gridInput.Index, cancellationToken),
+            SecondaryReleased => SwitchFlagAtAsync(gridInput.Index, cancellationToken),
+            _ => throw new SwitchExpressionException(),
+        });
     }
 
-    public async Task OnPrimaryDoubleClickedAt(GridIndex gridIndex)
-    {
-        if (IsTransitioningAt(gridIndex)) return;
-
-        await RevealAround(gridIndex);
-    }
-
-    public async Task OnSecondaryReleasedAt(GridIndex gridIndex)
-    {
-        if (IsTransitioningAt(gridIndex)) return;
-
-        await cells.At(gridIndex).SwitchFlag();
-        gridEventBus.EmitFlagCountChanged(FlagCount);
-    }
-
-    async Task RevealAt(GridIndex gridIndex, CancellationToken cancellationToken = default)
+    async Task RevealAtAsync(GridIndex gridIndex, CancellationToken cancellationToken = default)
     {
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
@@ -76,7 +69,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         await RevealCells(cellsToReveal, cancellationToken);
     }
 
-    async Task RevealAround(GridIndex gridIndex)
+    async Task RevealAroundAsync(GridIndex gridIndex, CancellationToken cancellationToken = default)
     {
         var cell = cells.At(gridIndex);
         var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
@@ -94,7 +87,13 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
 
-        await RevealCells(cellsToReveal);
+        await RevealCells(cellsToReveal, cancellationToken);
+    }
+
+    async Task SwitchFlagAtAsync(GridIndex gridIndex, CancellationToken cancellationToken = default)
+    {
+        await cells.At(gridIndex).SwitchFlagAsync(cancellationToken);
+        gridEventBus.EmitFlagCountChanged(FlagCount);
     }
 
     async Task RevealCells(HashSet<Cell> cellsToReveal, CancellationToken cancellationToken = default)

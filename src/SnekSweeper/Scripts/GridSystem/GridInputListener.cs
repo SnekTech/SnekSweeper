@@ -6,9 +6,7 @@ namespace SnekSweeper.GridSystem;
 
 public partial class GridInputListener : Node2D
 {
-    public event Action<GridIndex>? PrimaryReleased;
-    public event Action<GridIndex>? PrimaryDoubleClicked;
-    public event Action<GridIndex>? SecondaryReleased;
+    public event Action<GridInput>? GridInputEmitted;
     public event Action<GridIndex>? HoveringGridIndexChanged;
 
     GridIndex _hoveringGridIndex = new(0, 0);
@@ -29,17 +27,17 @@ public partial class GridInputListener : Node2D
         }
         else if (@event.IsActionReleased(InputActions.Primary))
         {
-            PrimaryReleased?.Invoke(_hoveringGridIndex);
+            EmitGridInput(new PrimaryReleased(_hoveringGridIndex));
         }
         else if (@event is InputEventMouseButton eventMouseButton &&
                  eventMouseButton.IsAction(InputActions.Primary) &&
                  eventMouseButton.DoubleClick)
         {
-            PrimaryDoubleClicked?.Invoke(_hoveringGridIndex);
+            EmitGridInput(new PrimaryDoubleClicked(_hoveringGridIndex));
         }
         else if (@event.IsActionReleased(InputActions.Secondary))
         {
-            SecondaryReleased?.Invoke(_hoveringGridIndex);
+            EmitGridInput(new SecondaryReleased(_hoveringGridIndex));
         }
     }
 
@@ -50,4 +48,6 @@ public partial class GridInputListener : Node2D
         var j = Mathf.FloorToInt(localMousePosition.X / HumbleCell.CellSizeInPixels);
         return new GridIndex(i, j);
     }
+
+    void EmitGridInput(GridInput gridInput) => GridInputEmitted?.Invoke(gridInput);
 }

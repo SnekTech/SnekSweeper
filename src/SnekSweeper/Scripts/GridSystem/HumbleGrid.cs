@@ -34,6 +34,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         () =>
         {
             MessageBox.Print("Game over! Bomb revealed!");
+            // BUG: AddChild() failed, 'cause the parent is busy
+            // 可能和赢两次有关
             Autoload.SceneSwitcher.GotoSceneAsync<LosingPage>().Fire();
         }
     );
@@ -41,18 +43,14 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     public override void _EnterTree()
     {
         _hudEventBus.UndoPressed += OnUndoPressed;
-        GridInputListener.PrimaryReleased += OnPrimaryReleasedAt;
-        GridInputListener.PrimaryDoubleClicked += OnPrimaryDoubleClickedAt;
-        GridInputListener.SecondaryReleased += OnSecondaryReleasedAt;
+        GridInputListener.GridInputEmitted += OnGridInputEmitted;
         GridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
     }
 
     public override void _ExitTree()
     {
         _hudEventBus.UndoPressed -= OnUndoPressed;
-        GridInputListener.PrimaryReleased -= OnPrimaryReleasedAt;
-        GridInputListener.PrimaryDoubleClicked -= OnPrimaryDoubleClickedAt;
-        GridInputListener.SecondaryReleased -= OnSecondaryReleasedAt;
+        GridInputListener.GridInputEmitted -= OnGridInputEmitted;
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
@@ -85,33 +83,23 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();
 
-    void OnPrimaryReleasedAt(GridIndex gridIndex)
+    void OnGridInputEmitted(GridInput input)
     {
-        if (!_grid.IsValidIndex(gridIndex))
-            return;
+        if (!_grid.IsValidIndex(input.Index)) return;
 
-        HandleAsync().Fire();
-        return;
-
-        async Task HandleAsync()
+        var tokenOnDestroy = this.GetCancellationTokenOnTreeExit();
+        var handleInputTask = input switch
         {
-            await _gridInitializer.TryHandleFirstPrimaryClickAsync(_grid, gridIndex,
-                this.GetCancellationTokenOnTreeExit());
-            await _grid.OnPrimaryReleasedAt(gridIndex, this.GetCancellationTokenOnTreeExit());
-        }
+            PrimaryReleased primaryReleased => HandlePrimaryReleasedAsync(primaryReleased, tokenOnDestroy),
+            _ => _grid.HandleInputAsync(input, tokenOnDestroy),
+        };
+        handleInputTask.Fire();
     }
 
-    void OnPrimaryDoubleClickedAt(GridIndex gridIndex)
+    async Task HandlePrimaryReleasedAsync(PrimaryReleased primaryReleased,
+        CancellationToken cancellationToken = default)
     {
-        if (!_grid.IsValidIndex(gridIndex))
-            return;
-        _grid.OnPrimaryDoubleClickedAt(gridIndex).Fire();
-    }
-
-    void OnSecondaryReleasedAt(GridIndex gridIndex)
-    {
-        if (!_grid.IsValidIndex(gridIndex))
-            return;
-        _grid.OnSecondaryReleasedAt(gridIndex).Fire();
+        await _gridInitializer.TryHandleFirstPrimaryClickAsync(_grid, primaryReleased.Index, cancellationToken);
+        await _grid.HandleInputAsync(primaryReleased, cancellationToken);
     }
 }

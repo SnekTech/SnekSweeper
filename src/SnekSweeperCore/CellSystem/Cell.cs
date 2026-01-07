@@ -33,6 +33,6 @@ public class Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = fa
 
     public Task PutOnCover() => _stateMachine.HandleCellRequestAsync(CellRequest.PutOnCover);
 
-    public Task SwitchFlag() =>
-        _stateMachine.HandleCellRequestAsync(IsFlagged ? CellRequest.PutDownFlag : CellRequest.RaiseFlag);
+    public Task SwitchFlagAsync(CancellationToken cancellationToken = default) =>
+        _stateMachine.HandleCellRequestAsync(IsFlagged ? CellRequest.PutDownFlag : CellRequest.RaiseFlag, cancellationToken);
 }
