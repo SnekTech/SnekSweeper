@@ -21,15 +21,15 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
     public async Task InitCellsAsync(GridIndex firstClickGridIndex, bool[,] bombs,
         CancellationToken cancellationToken = default)
     {
-        // todo: set cells transitioning
-
         foreach (var cell in cells)
         {
             cell.HasBomb = bombs.At(cell.GridIndex);
         }
 
         // must init individual cells after bombs planted
+        _transitioningCellsSet.AddRange(Cells);
         await InitAllCellsAsync();
+        _transitioningCellsSet.RemoveRange(Cells);
 
         humbleGrid.Referee.MarkRunStartInfo(DateTime.Now, firstClickGridIndex);
         humbleGrid.TriggerInitEffects();
