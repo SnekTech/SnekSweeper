@@ -49,7 +49,7 @@ enabled=PackedStringArray("res://addons/SnekTech.Tooltip/plugin.cfg")
 
 theme/default_font_antialiasing=0
 theme/custom="res://Resources/theme.tres"
-theme/custom_font="res://Font/Tiny5-Regular.ttf"
+theme/custom_font="uid://dptr2fvtc7t6m"
 
 [input]
 

@@ -31,7 +31,7 @@ public partial class RecordCard : PanelContainer, ISceneScript
 
     void SetStartIndexLabel(GridIndex gridIndex)
     {
-        // todo: set non-pixel font
+        // todo: start level from run record
 
         StartIndexLabel.Text = gridIndex.ToString();
     }

@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://b1wc84sk17sey" path="res://Art/UI/button_hover.png" id="1_evyrx"]
 [ext_resource type="Texture2D" uid="uid://dbf71tcqffqen" path="res://Art/UI/button.png" id="1_ylbcj"]
-[ext_resource type="FontFile" uid="uid://gnxkwd3ixyl3" path="res://Font/Tiny5-Regular.ttf" id="2_6diob"]
 [ext_resource type="Texture2D" uid="uid://m4d1mfmhjtp5" path="res://Art/UI/button_pressed.png" id="2_ogdm8"]
+[ext_resource type="FontFile" uid="uid://dptr2fvtc7t6m" path="res://Font/NotoSansSC-Regular.ttf" id="4_0abbe"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bfrs7"]
 texture = ExtResource("1_evyrx")
@@ -43,7 +43,7 @@ axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
 [resource]
-default_font = ExtResource("2_6diob")
+default_font = ExtResource("4_0abbe")
 default_font_size = 16
 Button/styles/hover = SubResource("StyleBoxTexture_bfrs7")
 Button/styles/hover_pressed = SubResource("StyleBoxTexture_8lter")

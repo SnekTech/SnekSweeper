@@ -15,7 +15,7 @@ public static class CheatCodeFactory
         },
         new(CheatCodeKey.Messenger, new CheatCodeData(
             "Messenger",
-            "Send message while playing.",
+            "发消息",
             "res://Art/relic_icon_alpha.png"
         ))
         {
