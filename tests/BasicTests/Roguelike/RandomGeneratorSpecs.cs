@@ -1,13 +1,14 @@
-﻿using Widgets.Roguelike;
+﻿using TUnit.Assertions.Enums;
+using Widgets.Roguelike;
 
 namespace BasicTests.Roguelike;
 
 public class RandomGeneratorSpecs
 {
-    private const int TestSequenceLength = 3;
+    const int TestSequenceLength = 3;
 
     [Test]
-    public void should_generate_same_first_number_when_created_with_same_seed()
+    public async Task should_generate_same_first_number_when_created_with_same_seed()
     {
         var rngData = new RngData(12345, 1);
         var generatorA = new RandomGenerator(rngData);
@@ -16,11 +17,11 @@ public class RandomGeneratorSpecs
         var sequenceA = GenerateSequence(generatorA);
         var sequenceB = GenerateSequence(generatorB);
 
-        sequenceA.Should().Equal(sequenceB);
+        await Assert.That(sequenceA).IsEquivalentTo(sequenceB, CollectionOrdering.Matching);
     }
 
     [Test]
-    public void should_generate_same_before_and_after_reset()
+    public async Task should_generate_same_before_and_after_reset()
     {
         var rngData = new RngData(12345, 0);
         var generator = new RandomGenerator(rngData);
@@ -29,11 +30,11 @@ public class RandomGeneratorSpecs
         generator.Reset(rngData);
         var sequenceAfterReset = GenerateSequence(generator);
 
-        firstSequence.Should().Equal(sequenceAfterReset);
+        await Assert.That(firstSequence).IsEquivalentTo(sequenceAfterReset, CollectionOrdering.Matching);
     }
 
     [Test]
-    public void should_generate_same_before_and_after_setting_state_property()
+    public async Task should_generate_same_before_and_after_setting_state_property()
     {
         var rngData = new RngData(12345, 10);
         var generator = new RandomGenerator(rngData);
@@ -45,11 +46,11 @@ public class RandomGeneratorSpecs
         generator.State = oldState;
         var sequenceAfter = GenerateSequence(generator);
 
-        sequenceBefore.Should().Equal(sequenceAfter);
+        await Assert.That(sequenceBefore).IsEquivalentTo(sequenceAfter, CollectionOrdering.Matching);
     }
 
     [Test]
-    public void should_evenly_generate_true_or_false_when_picking_bool()
+    public async Task should_evenly_generate_true_or_false_when_picking_bool()
     {
         var generator = new RandomGenerator(RngData.Empty);
 
@@ -63,10 +64,12 @@ public class RandomGeneratorSpecs
                 falseCount++;
         }
 
-        trueCount.Should().BeCloseTo(falseCount, 20);
+        var difference = Math.Abs(trueCount - falseCount);
+
+        await Assert.That(difference).IsLessThan(20);
     }
 
-    private static List<int> GenerateSequence(RandomGenerator generator, int length = TestSequenceLength)
+    static List<int> GenerateSequence(RandomGenerator generator, int length = TestSequenceLength)
     {
         var result = new List<int>();
         for (var i = 0; i < length; i++)
