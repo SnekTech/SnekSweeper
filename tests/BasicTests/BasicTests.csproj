@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\SnekSweeperCore\SnekSweeperCore.csproj" />
       <ProjectReference Include="..\..\src\Widgets\Widgets.csproj" />
     </ItemGroup>
 
