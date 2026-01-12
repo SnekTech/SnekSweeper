@@ -9,11 +9,32 @@ public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
 
     protected override void SetupStateInstances()
     {
-        StateInstances[typeof(CoveredState)] = new CoveredState(this);
-        StateInstances[typeof(RevealedState)] = new RevealedState(this);
-        StateInstances[typeof(FlaggedState)] = new FlaggedState(this);
+        var coveredState = new CoveredState(this);
+        var revealedState = new RevealedState(this);
+        var flaggedState = new FlaggedState(this);
 
-        ConfigStateTransitions();
+        StateInstances[typeof(CoveredState)] = coveredState;
+        StateInstances[typeof(RevealedState)] = revealedState;
+        StateInstances[typeof(FlaggedState)] = flaggedState;
+
+        SetupTransitions();
+        return;
+
+        void SetupTransitions()
+        {
+            coveredState.SetTransitions([
+                new Transition(revealedState, CellRequest.RevealCover),
+                new Transition(flaggedState, CellRequest.RaiseFlag),
+            ]);
+
+            revealedState.SetTransitions([
+                new Transition(coveredState, CellRequest.PutOnCover),
+            ]);
+
+            flaggedState.SetTransitions([
+                new Transition(coveredState, CellRequest.PutDownFlag),
+            ]);
+        }
     }
 
     public async Task HandleCellRequestAsync(CellRequest request, CancellationToken cancellationToken = default)
@@ -28,19 +49,5 @@ public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
             await ChangeStateAsync(to, cancellationToken);
             return;
         }
-    }
-
-    void ConfigStateTransitions()
-    {
-        var coveredState = GetState<CoveredState>();
-        var revealedState = GetState<RevealedState>();
-        var flaggedState = GetState<FlaggedState>();
-
-        coveredState.AddTransition(new Transition(revealedState, CellRequest.RevealCover));
-        coveredState.AddTransition(new Transition(flaggedState, CellRequest.RaiseFlag));
-
-        revealedState.AddTransition(new Transition(coveredState, CellRequest.PutOnCover));
-
-        flaggedState.AddTransition(new Transition(coveredState, CellRequest.PutDownFlag));
     }
 }
