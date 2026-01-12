@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Dumpify" Version="0.6.6" />
       <PackageReference Include="TUnit" Version="1.9.26" />
     </ItemGroup>
 
