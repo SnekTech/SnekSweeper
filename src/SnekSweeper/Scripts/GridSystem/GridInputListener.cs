@@ -9,7 +9,7 @@ public partial class GridInputListener : Node2D
     public event Action<GridInput>? GridInputEmitted;
     public event Action<GridIndex>? HoveringGridIndexChanged;
 
-    GridIndex _hoveringGridIndex = new(0, 0);
+    GridIndex _hoveringGridIndex = GridIndex.Zero;
 
     public override void _UnhandledInput(InputEvent @event)
     {

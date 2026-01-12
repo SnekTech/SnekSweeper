@@ -8,6 +8,8 @@ public static class GridIndexExtensions
 {
     extension(GridIndex gridIndex)
     {
+        public static GridIndex Zero => new(0, 0);
+        
         public bool IsWithin(GridSize size)
         {
             var (i, j) = gridIndex;
