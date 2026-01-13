@@ -26,7 +26,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
             cell.HasBomb = bombs.At(cell.GridIndex);
         }
 
-        // must init individual cells after bombs planted
+        // must init individual cells *after* bombs planted
         _transitioningCellsSet.AddRange(Cells);
         await InitAllCellsAsync();
         _transitioningCellsSet.RemoveRange(Cells);
@@ -35,9 +35,6 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         humbleGrid.TriggerInitEffects();
         gridEventBus.EmitBombCountChanged(BombCount);
         return;
-
-        int GetNeighborBombCount(Cell cell)
-            => cell.GetNeighbors(Size, cells.At).Count(neighbor => neighbor.HasBomb);
 
         Task InitAllCellsAsync()
         {
@@ -76,19 +73,21 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         if (!canRevealAround)
             return;
 
-        var neighbors = cell.GetNeighbors(Size, cells.At).ToList();
-        var flaggedNeighborCount = neighbors.Count(neighbor => neighbor.IsFlagged);
-        if (flaggedNeighborCount != cell.NeighborBombCount)
+        if (GetNeighborFlagCount(cell) != GetNeighborBombCount(cell))
             return;
 
         var cellsToReveal = new HashSet<Cell>();
-        foreach (var neighbor in neighbors)
+        foreach (var neighbor in GetNeighbors(cell))
         {
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
 
         await RevealCells(cellsToReveal, cancellationToken);
     }
+
+    IEnumerable<Cell> GetNeighbors(Cell cell) => cell.GridIndex.GetNeighborIndicesWithin(Size).Select(cells.At);
+    int GetNeighborBombCount(Cell cell) => GetNeighbors(cell).Count(neighbor => neighbor.HasBomb);
+    int GetNeighborFlagCount(Cell cell) => GetNeighbors(cell).Count(neighbor => neighbor.IsFlagged);
 
     async Task SwitchFlagAtAsync(GridIndex gridIndex, CancellationToken cancellationToken = default)
     {
@@ -127,7 +126,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
         cellsToReveal.Add(cell);
 
-        if (cell.HasBomb || cell.NeighborBombCount > 0)
+        if (cell.HasBomb || GetNeighborBombCount(cell) > 0)
             return;
 
         foreach (var neighborIndex in cell.GridIndex.GetNeighborIndicesWithin(Size))
