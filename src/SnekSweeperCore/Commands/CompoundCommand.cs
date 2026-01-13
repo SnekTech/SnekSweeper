@@ -16,13 +16,13 @@ public class CompoundCommand : ICommand
 
     public Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        var executeTasks = _commands.Select(command => command.ExecuteAsync(cancellationToken)).ToList();
+        var executeTasks = _commands.Select(command => command.ExecuteAsync(cancellationToken));
         return Task.WhenAll(executeTasks);
     }
 
-    public Task UndoAsync()
+    public Task UndoAsync(CancellationToken cancellationToken = default)
     {
-        var undoTasks = _commands.Select(command => command.UndoAsync()).ToList();
+        var undoTasks = _commands.Select(command => command.UndoAsync(cancellationToken));
         return Task.WhenAll(undoTasks);
     }
 

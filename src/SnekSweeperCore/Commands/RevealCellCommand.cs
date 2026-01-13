@@ -11,8 +11,8 @@ public class RevealCellCommand(Cell cell) : ICommand
         return cell.RevealAsync(cancellationToken);
     }
 
-    public Task UndoAsync()
+    public Task UndoAsync(CancellationToken cancellationToken = default)
     {
-        return cell.PutOnCover();
+        return cell.PutOnCoverAsync(cancellationToken);
     }
 }

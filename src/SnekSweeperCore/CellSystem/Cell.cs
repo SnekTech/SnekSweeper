@@ -31,7 +31,7 @@ public class Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = fa
     public Task RevealAsync(CancellationToken cancellationToken = default) =>
         _stateMachine.HandleCellRequestAsync(CellRequest.RevealCover, cancellationToken);
 
-    public Task PutOnCover() => _stateMachine.HandleCellRequestAsync(CellRequest.PutOnCover);
+    public Task PutOnCoverAsync(CancellationToken cancellationToken = default) => _stateMachine.HandleCellRequestAsync(CellRequest.PutOnCover, cancellationToken);
 
     public Task SwitchFlagAsync(CancellationToken cancellationToken = default) =>
         _stateMachine.HandleCellRequestAsync(IsFlagged ? CellRequest.PutDownFlag : CellRequest.RaiseFlag, cancellationToken);

@@ -10,12 +10,12 @@ public class CommandInvoker
         _undoStack.Push(command);
     }
 
-    public async Task UndoCommandAsync()
+    public async Task UndoCommandAsync(CancellationToken cancellationToken = default)
     {
         if (_undoStack.Count == 0)
             return;
 
         var activeCommand = _undoStack.Pop();
-        await activeCommand.UndoAsync();
+        await activeCommand.UndoAsync(cancellationToken);
     }
 }
