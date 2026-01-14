@@ -1,6 +1,8 @@
 ﻿using Dumpify;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.CellSystem.Components;
+using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.SkinSystem;
 
 namespace BasicTests.CellTests;
 
@@ -8,6 +10,16 @@ class MockHumbleCell : IHumbleCell
 {
     public ICover Cover { get; } = new MockCover();
     public IFlag Flag { get; } = new MockFlag();
+    public void SetPosition(GridIndex gridIndex)
+    {
+        $"setting cell position with index {gridIndex}".Dump();
+    }
+
+    public void SetSkin(GridSkin skin)
+    {
+        $"setting cell skin to {skin}".Dump();
+    }
+
     public void SetContent(bool hasBomb, int neighborBombCount)
     {
         var initInfo = $"hasBomb = {hasBomb}, neighbor bomb count = {neighborBombCount}";

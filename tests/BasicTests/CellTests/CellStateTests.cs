@@ -1,5 +1,4 @@
 ﻿using SnekSweeperCore.CellSystem;
-using SnekSweeperCore.GridSystem;
 
 namespace BasicTests.CellTests;
 
@@ -81,10 +80,10 @@ public class CellStateTests
         await Assert.That(cell.IsFlagged).IsTrue();
     }
 
-    static async Task<Cell> CreateAndInitCellAsync()
+    static async Task<CellLogic> CreateAndInitCellAsync()
     {
-        var cell = new Cell(MockHumbleCell, GridIndex.Zero);
-        await cell.InitAsync(0);
+        var cell = new CellLogic(MockHumbleCell);
+        await cell.InitAsync();
         return cell;
     }
 }

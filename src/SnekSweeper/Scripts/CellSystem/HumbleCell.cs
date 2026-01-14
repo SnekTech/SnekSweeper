@@ -12,7 +12,7 @@ namespace SnekSweeper.CellSystem;
 public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
 {
     public const int CellSizeInPixels = 16;
-    
+
     public ICover Cover => CellCover;
     public IFlag Flag => CellFlag;
 
@@ -30,7 +30,7 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
 
     public void SetPosition(GridIndex gridIndex) => Position = gridIndex.ToPosition();
 
-    public void UseSkin(GridSkin newSkin)
+    public void SetSkin(GridSkin newSkin)
     {
         Content.ChangeTexture(newSkin.Texture);
     }
