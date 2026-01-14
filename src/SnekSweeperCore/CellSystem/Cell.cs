@@ -2,22 +2,23 @@
 
 namespace SnekSweeperCore.CellSystem;
 
-public class Cell(IHumbleCell humbleCell, GridIndex gridIndex, bool hasBomb = false)
+public class Cell(IHumbleCell humbleCell, GridIndex gridIndex)
 {
     readonly CellLogic _logic = new(humbleCell);
 
     public IHumbleCell HumbleCell { get; } = humbleCell;
 
     public GridIndex GridIndex { get; } = gridIndex;
-    public bool HasBomb { get; set; } = hasBomb;
+    public bool HasBomb { get; set; }
 
     public bool IsCovered => _logic.IsCovered;
     public bool IsRevealed => _logic.IsRevealed;
     public bool IsFlagged => _logic.IsFlagged;
 
-    public async Task InitAsync(int neighborBombCount, CancellationToken cancellationToken = default)
+    public async Task InitAsync(CellInitData cellInitData, CancellationToken cancellationToken = default)
     {
-        HumbleCell.SetContent(HasBomb, neighborBombCount);
+        HumbleCell.OnInit(cellInitData);
+        HasBomb = cellInitData.HasBomb;
         await _logic.InitAsync(cancellationToken);
     }
 

@@ -10,20 +10,14 @@ class MockHumbleCell : IHumbleCell
 {
     public ICover Cover { get; } = new MockCover();
     public IFlag Flag { get; } = new MockFlag();
-    public void SetPosition(GridIndex gridIndex)
+    public void OnInstantiate(GridIndex gridIndex, GridSkin skin)
     {
-        $"setting cell position with index {gridIndex}".Dump();
+        $"{nameof(OnInstantiate)}, grid index: {gridIndex}, skin: {skin}".Dump();
     }
 
-    public void SetSkin(GridSkin skin)
+    public void OnInit(CellInitData initData)
     {
-        $"setting cell skin to {skin}".Dump();
-    }
-
-    public void SetContent(bool hasBomb, int neighborBombCount)
-    {
-        var initInfo = $"hasBomb = {hasBomb}, neighbor bomb count = {neighborBombCount}";
-        $"setting cell content with {initInfo}".Dump();
+        $"{nameof(OnInit)}, init data: {initData}".Dump();
     }
 }
 

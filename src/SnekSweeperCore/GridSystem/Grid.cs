@@ -39,8 +39,8 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         Task InitAllCellsAsync()
         {
             var initCellTasks = Cells
-                .Select(cell => (cell, neighborBombCount: GetNeighborBombCount(cell)))
-                .Select(t => t.cell.InitAsync(t.neighborBombCount, cancellationToken));
+                .Select(cell =>
+                    cell.InitAsync(new CellInitData(cell.HasBomb, GetNeighborBombCount(cell)), cancellationToken));
             return Task.WhenAll(initCellTasks);
         }
     }

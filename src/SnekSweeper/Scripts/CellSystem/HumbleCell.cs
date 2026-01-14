@@ -16,22 +16,30 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
     public ICover Cover => CellCover;
     public IFlag Flag => CellFlag;
 
-    public void SetContent(bool hasBomb, int neighborBombCount)
+    public void OnInstantiate(GridIndex gridIndex, GridSkin skin)
     {
-        if (hasBomb)
+        SetPosition(gridIndex);
+        SetSkin(skin);
+    }
+
+    public void OnInit(CellInitData initData)
+    {
+        SetContent(initData);
+    }
+
+    void SetContent(CellInitData initData)
+    {
+        if (initData.HasBomb)
         {
             Content.ShowBomb();
         }
         else
         {
-            Content.ShowNeighbourBombCount(neighborBombCount);
+            Content.ShowNeighbourBombCount(initData.NeighborBombCount);
         }
     }
 
-    public void SetPosition(GridIndex gridIndex) => Position = gridIndex.ToPosition();
+    void SetPosition(GridIndex gridIndex) => Position = gridIndex.ToPosition();
 
-    public void SetSkin(GridSkin newSkin)
-    {
-        Content.ChangeTexture(newSkin.Texture);
-    }
+    void SetSkin(GridSkin newSkin) => Content.ChangeTexture(newSkin.Texture);
 }

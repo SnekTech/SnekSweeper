@@ -8,7 +8,8 @@ public interface IHumbleCell
 {
     ICover Cover { get; }
     IFlag Flag { get; }
-    void SetPosition(GridIndex gridIndex);
-    void SetSkin(GridSkin skin);
-    void SetContent(bool hasBomb, int neighborBombCount);
+    void OnInstantiate(GridIndex gridIndex, GridSkin skin);
+    void OnInit(CellInitData initData);
 }
+
+public readonly record struct CellInitData(bool HasBomb, int NeighborBombCount);

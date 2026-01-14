@@ -46,10 +46,10 @@ public static class LevelLoading
                     var humbleCell = humbleGrid.InstantiateHumbleCell(gridIndex, skin);
                     return new Cell(humbleCell, gridIndex);
                 }),
-                FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.MapTo((hasBomb, gridIndex) =>
+                FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.MapTo((_, gridIndex) =>
                 {
                     var humbleCell = humbleGrid.InstantiateHumbleCell(gridIndex, skin);
-                    return new Cell(humbleCell, gridIndex, hasBomb);
+                    return new Cell(humbleCell, gridIndex);
                 }),
                 _ => throw new SwitchExpressionException(),
             };
