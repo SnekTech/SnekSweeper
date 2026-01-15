@@ -12,6 +12,17 @@ public class MatrixConverterSpecs
 
         await Assert.That(list).IsEquivalentTo(expectedList);
     }
+
+    [Test]
+    [MethodDataSource(typeof(MatrixDataSources), nameof(MatrixDataSources.TestData))]
+    public async Task from_list_of_string_to_matrix(MatrixListPair pair)
+    {
+        var (expectedMatrix, matrixInList) = pair;
+
+        var list = MatrixConverter.ToMatrix(matrixInList);
+
+        await Assert.That(list).IsEquivalentTo(expectedMatrix);
+    }
 }
 
 public readonly record struct MatrixListPair(bool[,] Matrix, List<string> MatrixInList);
@@ -52,7 +63,7 @@ public static class MatrixDataSources
                 "001",
             ]);
         yield return () => new MatrixListPair(new bool[,] { }, []);
-        yield return () => new MatrixListPair(new bool[,] { { } }, []);
-        yield return () => new MatrixListPair(new bool[,] { { }, { } }, []);
+        yield return () => new MatrixListPair(new bool[,] { { } }, [""]);
+        yield return () => new MatrixListPair(new bool[,] { { }, { } }, ["", ""]);
     }
 }
