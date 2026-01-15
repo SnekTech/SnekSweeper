@@ -1,27 +1,36 @@
 namespace SnekSweeperCore.SaveLoad.SerializationService;
 
-public delegate void SaveDataFn(PlayerSaveData playerSaveData, string saveDir);
+public readonly record struct FilePath(string Value);
 
-public delegate PlayerSaveData? LoadDataFn(string saveDir);
+public readonly record struct SaveDir(string Value);
 
-record SerializationStrategy(SaveDataFn SaveDataFn, LoadDataFn LoadDataFn);
+public delegate void SaveDataFn(PlayerSaveData playerSaveData, SaveDir saveDir, string fileName);
+
+public delegate PlayerSaveData? LoadDataFn(SaveDir saveDir, string fileName);
+
+record SerializationStrategy(SaveDataFn SaveDataFn, LoadDataFn LoadDataFn, string SaveFileName);
 
 static class SerializationStrategyExtensions
 {
-    extension(SerializationStrategy)
+    extension(SerializationStrategy strategy)
     {
         internal static SerializationStrategy MemoryPackWithJsonWriting =>
-            new((playerSaveData, saveDir) =>
+            new((playerSaveData, saveDir, _) =>
                 {
-                    SerializationStrategy.Json.SaveDataFn(playerSaveData, saveDir);
-                    SerializationStrategy.MemoryPack.SaveDataFn(playerSaveData, saveDir);
+                    SerializationStrategy.Json.Save(playerSaveData, saveDir);
+                    SerializationStrategy.MemoryPack.Save(playerSaveData, saveDir);
                 },
-                saveDir => SerializationStrategy.MemoryPack.LoadDataFn(saveDir)
-            );
+                (saveDir, _) => SerializationStrategy.MemoryPack.Load(saveDir)
+                , "playerSave.debug");
+
+        internal void Save(PlayerSaveData playerSaveData, SaveDir saveDir) =>
+            strategy.SaveDataFn(playerSaveData, saveDir, strategy.SaveFileName);
+
+        internal PlayerSaveData? Load(SaveDir saveDir) => strategy.LoadDataFn(saveDir, strategy.SaveFileName);
     }
 
-    extension(string userDataDir)
+    extension(SaveDir userDataDir)
     {
-        internal string Combine(string fileName) => Path.Combine(userDataDir, fileName);
+        internal FilePath Combine(string fileName) => new(Path.Combine(userDataDir.Value, fileName));
     }
 }

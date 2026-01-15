@@ -20,9 +20,14 @@ public static class PlayerSaveDataExtensions
             new(new MainSetting(), new ActivatedCheatCodeSet([]), new History([]));
 
         public void Save(string userDataDir) =>
-            DefaultStrategy.SaveDataFn(playerSaveData, userDataDir);
+            DefaultStrategy.Save(playerSaveData,userDataDir.ToDir());
 
         public static PlayerSaveData? Load(string userDataDir) =>
-            DefaultStrategy.LoadDataFn(userDataDir);
+            DefaultStrategy.Load(userDataDir.ToDir());
+    }
+
+    extension(string saveDir)
+    {
+        SaveDir ToDir() => new(saveDir);
     }
 }
