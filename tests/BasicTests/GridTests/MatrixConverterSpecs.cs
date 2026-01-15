@@ -1,4 +1,6 @@
-﻿namespace BasicTests.GridTests;
+﻿using SnekSweeperCore.GridSystem;
+
+namespace BasicTests.GridTests;
 
 public class MatrixConverterSpecs
 {
@@ -8,7 +10,7 @@ public class MatrixConverterSpecs
     {
         var (matrix, expectedList) = pair;
 
-        var list = MatrixConverter.ToMatrixInList(matrix);
+        var list = MatrixExtensions.ToMatrixInList(matrix);
 
         await Assert.That(list).IsEquivalentTo(expectedList);
     }
@@ -19,7 +21,7 @@ public class MatrixConverterSpecs
     {
         var (expectedMatrix, matrixInList) = pair;
 
-        var list = MatrixConverter.ToMatrix(matrixInList);
+        var list = MatrixExtensions.ToMatrix(matrixInList);
 
         await Assert.That(list).IsEquivalentTo(expectedMatrix);
     }
