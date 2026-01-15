@@ -33,6 +33,9 @@ static class MatrixConverter
     {
         var rowList = new List<string>();
         var (rows, columns) = (matrix.GetLength(0), matrix.GetLength(1));
+        if (columns == 0)
+            return rowList;
+        
         var sb = new StringBuilder();
         for (var i = 0; i < rows; i++)
         {

@@ -3,44 +3,56 @@
 public class MatrixConverterSpecs
 {
     [Test]
-    public async Task from_matrix_to_list_of_string()
+    [MethodDataSource(typeof(MatrixDataSources), nameof(MatrixDataSources.TestData))]
+    public async Task from_matrix_to_list_of_string(MatrixListPair pair)
     {
-        // todo: data-driven test
-        var (matrix, expectedList) = Examples[1];
+        var (matrix, expectedList) = pair;
 
         var list = MatrixConverter.ToMatrixInList(matrix);
 
         await Assert.That(list).IsEquivalentTo(expectedList);
     }
-
-    static readonly MatrixListPair[] Examples =
-    [
-        new(new[,]
-            {
-                { false, false, false },
-                { false, true, false },
-                { false, false, false },
-            },
-            [
-                "000",
-                "010",
-                "000",
-            ]),
-        
-        new(new[,]
-            {
-                { false, false, false },
-                { false, true, false },
-                { false, true, true },
-            },
-            [
-                "000",
-                "010",
-                "011",
-            ]),
-
-        new(new bool[,] { }, []),
-    ];
 }
 
-readonly record struct MatrixListPair(bool[,] Matrix, List<string> MatrixInList);
+public readonly record struct MatrixListPair(bool[,] Matrix, List<string> MatrixInList);
+
+public static class MatrixDataSources
+{
+    public static IEnumerable<Func<MatrixListPair>> TestData()
+    {
+        yield return () => new MatrixListPair(new[,]
+            {
+                { false, false, false },
+                { false, true, false },
+                { false, false, false },
+            },
+            [
+                "000",
+                "010",
+                "000",
+            ]);
+        yield return () => new MatrixListPair(new[,]
+            {
+                { false, false, false },
+                { false, true, false },
+            },
+            [
+                "000",
+                "010",
+            ]);
+        yield return () => new MatrixListPair(new[,]
+            {
+                { false, false, false },
+                { false, true, true },
+                { false, false, true },
+            },
+            [
+                "000",
+                "011",
+                "001",
+            ]);
+        yield return () => new MatrixListPair(new bool[,] { }, []);
+        yield return () => new MatrixListPair(new bool[,] { { } }, []);
+        yield return () => new MatrixListPair(new bool[,] { { }, { } }, []);
+    }
+}
