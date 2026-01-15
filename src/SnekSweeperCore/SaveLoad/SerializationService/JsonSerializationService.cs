@@ -7,7 +7,7 @@ static class JsonSerializationService
 {
     extension(SerializationStrategy)
     {
-        internal static SerializationStrategy Json => new(SaveByJson, LoadByJson, SaveJsonFileName);
+        internal static SerializationStrategy Json => new(SaveByJson, LoadByJson);
     }
 
     const string SaveJsonFileName = "playerSaveData.json";
@@ -26,18 +26,18 @@ static class JsonSerializationService
 
     static readonly PlayerSaveDataDtoSerializerContext SerializerContext = new(SerializerOptions);
 
-    public static SaveDataFn SaveByJson => (playerSaveData, filePath) =>
+    public static SaveDataFn SaveByJson => (playerSaveData, saveDir) =>
     {
         var json = JsonSerializer.Serialize(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
-        File.WriteAllText(filePath, json);
+        File.WriteAllText(saveDir.Combine(SaveJsonFileName), json);
     };
 
-    public static readonly LoadDataFn LoadByJson = filePath =>
+    public static readonly LoadDataFn LoadByJson = saveDir =>
     {
         PlayerSaveDataDto? loadedDto = null;
         try
         {
-            var json = File.ReadAllText(filePath);
+            var json = File.ReadAllText(saveDir.Combine(SaveJsonFileName));
             loadedDto = JsonSerializer.Deserialize(json, SerializerContext.PlayerSaveDataDto);
         }
         catch (Exception)

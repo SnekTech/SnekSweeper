@@ -12,7 +12,7 @@ public record PlayerSaveData(
 
 public static class PlayerSaveDataExtensions
 {
-    static readonly SerializationStrategy DefaultStrategy = SerializationStrategy.MemoryPack;
+    static readonly SerializationStrategy DefaultStrategy = SerializationStrategy.MemoryPackWithJsonWriting;
 
     extension(PlayerSaveData playerSaveData)
     {
@@ -20,14 +20,9 @@ public static class PlayerSaveDataExtensions
             new(new MainSetting(), new ActivatedCheatCodeSet([]), new History([]));
 
         public void Save(string userDataDir) =>
-            DefaultStrategy.SaveDataFn(playerSaveData, userDataDir.Combine(DefaultStrategy.SaveFileName));
+            DefaultStrategy.SaveDataFn(playerSaveData, userDataDir);
 
         public static PlayerSaveData? Load(string userDataDir) =>
-            DefaultStrategy.LoadDataFn(userDataDir.Combine(DefaultStrategy.SaveFileName));
-    }
-
-    extension(string userDataDir)
-    {
-        string Combine(string fileName) => Path.Combine(userDataDir, fileName);
+            DefaultStrategy.LoadDataFn(userDataDir);
     }
 }
