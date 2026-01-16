@@ -1,12 +1,24 @@
 ﻿@startuml
 'https://plantuml.com/state-diagram
 
-state init : cells instantiated
-state gameStart : set cells' content
+hide empty description
 
-[*] -> init : enter level scene
-init --> gameStart : first click
+state "regular instantiated" as regularInstantiated
+state "fixed instantiated" as fixedInstantiated
+state "game start" as gameStart
+state win
+state lose
 
-gameStart -> [*] : win or lose the level
+[*] --> regularInstantiated : enter level from main menu
+[*] --> fixedInstantiated : enter level from history record
+
+regularInstantiated --> gameStart : first click
+fixedInstantiated --> gameStart : first click
+
+gameStart --> win
+gameStart --> lose
+
+win --> [*]
+lose --> [*]
 
 @enduml
