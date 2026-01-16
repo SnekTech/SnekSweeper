@@ -8,9 +8,6 @@
 
     <ItemGroup>
         <Content Include="**/*.gdshader" />
-                 
-        <!-- PlantUML diagrams for  development only-->
-        <None Include="**/*.puml" />
     </ItemGroup>
 
     <ItemGroup>

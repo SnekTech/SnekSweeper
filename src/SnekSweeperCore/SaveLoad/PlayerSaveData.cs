@@ -12,7 +12,7 @@ public record PlayerSaveData(
 
 public static class PlayerSaveDataExtensions
 {
-    static readonly SerializationStrategy DefaultStrategy = SerializationStrategy.MemoryPackWithJsonWriting;
+    static readonly SerializationStrategy DefaultStrategy = SerializationStrategy.MemoryPack;
 
     extension(PlayerSaveData playerSaveData)
     {
