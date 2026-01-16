@@ -52,11 +52,12 @@ public partial class MainMenu : CanvasLayer
         LoadLevelAsync().Fire();
         return;
 
-        async Task LoadLevelAsync(CancellationToken cancellationToken = default)
-        {
-            var level = await Autoload.SceneSwitcher.GotoSceneAsync<Level1>(cancellationToken);
-            level.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting));
-        }
+        Task LoadLevelAsync(CancellationToken ct = default) =>
+            Autoload.SceneSwitcher.GotoSceneAsync<Level1>(level =>
+            {
+                level.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting));
+                return Task.CompletedTask;
+            }, ct);
     }
 
     void OnQuitPressed()

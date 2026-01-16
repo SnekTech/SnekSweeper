@@ -13,13 +13,13 @@ public partial class SceneSwitcher : Node
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    public async Task<T> GotoSceneAsync<T>(CancellationToken cancellationToken = default) where T : Node, ISceneScript
+    public async Task GotoSceneAsync<T>(Func<T, Task>? onSceneAddedToTree = null, CancellationToken ct = default) where T : Node, ISceneScript
     {
         var newScene = SceneFactory.Instantiate<T>();
         var rootWindow = GetTree().Root;
 
         var fadingMask = FadingMask.InstantiateOnParent(rootWindow);
-        await fadingMask.FadeInAsync(cancellationToken);
+        await fadingMask.FadeInAsync(ct);
 
         // It is now safe to remove the current scene.
         _currentScene.Free();
@@ -27,11 +27,15 @@ public partial class SceneSwitcher : Node
         _currentScene = newScene;
         rootWindow.AddChild(newScene);
 
-        await fadingMask.FadeOutAsync(cancellationToken);
+        if (onSceneAddedToTree is not null)
+        {
+            await onSceneAddedToTree(newScene);
+        }
+
+        await fadingMask.FadeOutAsync(ct);
         fadingMask.QueueFree();
 
         // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
         GetTree().CurrentScene = _currentScene;
-        return newScene;
     }
 }
