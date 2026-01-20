@@ -15,8 +15,8 @@ state lose
 regularInstantiated --> gameStart : first click
 fixedInstantiated --> gameStart : first click
 
-gameStart --> win
-gameStart --> lose
+gameStart --> win : judged by referee
+gameStart --> lose : judged by referee
 
 win --> [*]
 lose --> [*]

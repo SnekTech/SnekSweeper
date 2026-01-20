@@ -2,6 +2,6 @@
 
 public interface IState
 {
-    Task OnEnterAsync(CancellationToken cancellationToken);
-    Task OnExitAsync(CancellationToken cancellationToken);
+    Task OnEnterAsync(CancellationToken ct);
+    Task OnExitAsync(CancellationToken ct);
 }

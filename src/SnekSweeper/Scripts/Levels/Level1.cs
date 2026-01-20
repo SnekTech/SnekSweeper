@@ -2,7 +2,6 @@
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
-using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.Levels;
 
@@ -16,10 +15,10 @@ public partial class Level1 : Node2D, ISceneScript
         HouseKeeper.SaveCurrentPlayerData();
     }
 
-    public void LoadLevel(LoadLevelSource loadLevelSource)
+    public async Task LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
     {
-        var skin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
-        var grid = loadLevelSource.CreateGrid(HumbleGrid, EventBusOwner.GridEventBus, skin);
+        var grid = await loadLevelSource.CreateGridAsync(HumbleGrid, EventBusOwner.GridEventBus, ct);
+
         HumbleGrid.InitWithGrid(grid, new GridInitializer(loadLevelSource));
     }
 }

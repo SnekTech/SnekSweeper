@@ -18,7 +18,7 @@ public abstract class StateMachine<TState>
 
     protected abstract void SetupStateInstances();
 
-    public async Task SetInitStateAsync<T>(CancellationToken cancellationToken = default) where T : TState
+    public async Task SetInitStateAsync<T>(CancellationToken ct = default) where T : TState
     {
         SetupStateInstances();
 
@@ -27,11 +27,11 @@ public abstract class StateMachine<TState>
 
         _isTransitioning = true;
         CurrentState = GetState<T>();
-        await CurrentState.OnEnterAsync(cancellationToken);
+        await CurrentState.OnEnterAsync(ct);
         _isTransitioning = false;
     }
 
-    protected async Task ChangeStateAsync(TState newState, CancellationToken cancellationToken = default)
+    protected async Task ChangeStateAsync(TState newState, CancellationToken ct = default)
     {
         if (CurrentState == null)
             throw new InvalidOperationException("cannot change state from a null state");
@@ -42,9 +42,12 @@ public abstract class StateMachine<TState>
             return;
 
         _isTransitioning = true;
-        await CurrentState.OnExitAsync(cancellationToken);
+        await CurrentState.OnExitAsync(ct);
         CurrentState = newState;
-        await CurrentState.OnEnterAsync(cancellationToken);
+        await CurrentState.OnEnterAsync(ct);
         _isTransitioning = false;
     }
+
+    public Task ChangeStateAsync<T>(CancellationToken ct = default) where T : TState =>
+        ChangeStateAsync(GetState<T>(), ct);
 }
