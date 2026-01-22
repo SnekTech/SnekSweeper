@@ -50,6 +50,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
     public async Task HandleInputAsync(GridInput gridInput, CancellationToken cancellationToken = default)
     {
+        if (!IsValidIndex(gridInput.Index)) return;
         if (IsTransitioningAt(gridInput.Index)) return;
 
         await (gridInput switch
