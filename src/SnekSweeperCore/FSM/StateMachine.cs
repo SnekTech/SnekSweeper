@@ -10,16 +10,19 @@ public abstract class StateMachine<TState>
         return CurrentState == GetState<T>();
     }
 
-    protected TState GetState<T>() => StateInstances[typeof(T)];
+    TState GetState<T>() => StateInstances[typeof(T)];
 
     protected readonly Dictionary<Type, TState> StateInstances = [];
     protected TState? CurrentState { get; private set; }
-    private bool _isTransitioning;
+    bool HasInitialized => CurrentState is not null;
+    bool _isTransitioning;
 
     protected abstract void SetupStateInstances();
 
     public async Task SetInitStateAsync<T>(CancellationToken ct = default) where T : TState
     {
+        if (HasInitialized) return;
+        
         SetupStateInstances();
 
         if (StateInstances.Count == 0)
