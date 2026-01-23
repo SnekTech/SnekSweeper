@@ -1,6 +1,7 @@
 ﻿using SnekSweeper.Autoloads;
+using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
-using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.Levels;
@@ -8,17 +9,20 @@ namespace SnekSweeper.Levels;
 [SceneTree]
 public partial class Level1 : Node2D, ISceneScript
 {
-    IHumbleGrid HumbleGrid => _.GridStartPosition.Grid;
+    HumbleGrid HumbleGrid => _.GridStartPosition.Grid;
 
     public override void _ExitTree()
     {
+        // todo: move this to grid FSM
         HouseKeeper.SaveCurrentPlayerData();
     }
 
     public async Task LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
     {
-        var grid = await loadLevelSource.CreateGridAsync(HumbleGrid, EventBusOwner.GridEventBus, ct);
+        var grid = loadLevelSource.CreateGrid(HumbleGrid, EventBusOwner.GridEventBus);
+        var gridStateMachine = new GridStateMachine(loadLevelSource, grid);
+        await gridStateMachine.InitAsync(ct);
 
-        HumbleGrid.InitWithGrid(grid, new GridInitializer(loadLevelSource));
+        HumbleGrid.Init(grid, gridStateMachine);
     }
 }

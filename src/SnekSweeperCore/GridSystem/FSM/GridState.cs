@@ -5,7 +5,10 @@ namespace SnekSweeperCore.GridSystem.FSM;
 
 public abstract class GridState(GridStateMachine stateMachine) : IState
 {
-    protected GridStateMachine StateMachine => stateMachine;
+    protected Grid Grid => stateMachine.Grid;
+
+    protected Task ChangeStateAsync<T>(CancellationToken ct = default) where T : GridState =>
+        stateMachine.ChangeStateAsync<T>(ct);
 
     public virtual Task OnEnterAsync(CancellationToken ct = default) => Task.CompletedTask;
 

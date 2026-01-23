@@ -4,7 +4,6 @@ using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
-using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.GridSystem.LayMineStrategies;
 using SnekSweeperCore.SkinSystem;
 
@@ -47,8 +46,7 @@ public static class LevelLoading
             _ => throw new SwitchExpressionException(),
         };
 
-        public async Task<Grid> CreateGridAsync(IHumbleGrid humbleGrid, GridEventBus gridEventBus,
-            CancellationToken ct = default)
+        public Grid CreateGrid(IHumbleGrid humbleGrid, GridEventBus gridEventBus)
         {
             var cells = loadLevelSource switch
             {
@@ -65,10 +63,7 @@ public static class LevelLoading
                 _ => throw new SwitchExpressionException(),
             };
 
-            var gridStateMachine = new GridStateMachine(loadLevelSource);
-            var grid = new Grid(humbleGrid, cells, gridEventBus, gridStateMachine);
-            await grid.InitAsync(ct);
-            return grid;
+            return new Grid(humbleGrid, cells, gridEventBus);
         }
     }
 }

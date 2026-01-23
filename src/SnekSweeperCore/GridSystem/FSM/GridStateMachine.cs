@@ -5,11 +5,13 @@ using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem.FSM;
 
-public class GridStateMachine(LoadLevelSource loadLevelSource) : StateMachine<GridState>
+public class GridStateMachine(LoadLevelSource loadLevelSource, Grid grid) : StateMachine<GridState>
 {
+    public Grid Grid => grid;
+    
     protected override void SetupStateInstances()
     {
-        var regularInstantiated = new RegularInstantiated(this);
+        var regularInstantiated = new RegularInstantiated(loadLevelSource, this);
         var fixedInstantiated = new FixedInstantiated(this);
         var gameStart = new GameStart(this);
 
@@ -29,4 +31,7 @@ public class GridStateMachine(LoadLevelSource loadLevelSource) : StateMachine<Gr
 
         await setInitStateTask;
     }
+
+    public Task HandleInputAsync(GridInput gridInput, CancellationToken ct = default) =>
+        CurrentState?.HandleInputAsync(gridInput, ct) ?? Task.CompletedTask;
 }

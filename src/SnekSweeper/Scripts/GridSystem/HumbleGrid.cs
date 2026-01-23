@@ -9,7 +9,7 @@ using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.LevelManagement;
+using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.GridSystem;
@@ -20,7 +20,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
 
     Grid _grid = null!;
-    GridInitializer _gridInitializer = null!;
+    GridStateMachine _gridStateMachine = null!;
 
     public CommandInvoker GridCommandInvoker { get; } = new();
 
@@ -54,8 +54,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
-    public void InitWithGrid(Grid grid, GridInitializer gridInitializer) =>
-        (_grid, _gridInitializer) = (grid, gridInitializer);
+    public void Init(Grid grid, GridStateMachine gridStateMachine) =>
+        (_grid, _gridStateMachine) = (grid, gridStateMachine);
 
     public IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin)
     {
@@ -86,19 +86,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     {
         if (!_grid.IsValidIndex(input.Index)) return;
 
-        var tokenOnDestroy = this.GetCancellationTokenOnTreeExit();
-        var handleInputTask = input switch
-        {
-            PrimaryReleased primaryReleased => HandlePrimaryReleasedAsync(primaryReleased, tokenOnDestroy),
-            _ => _grid.HandleInputAsync(input, tokenOnDestroy),
-        };
-        handleInputTask.Fire();
-    }
-
-    async Task HandlePrimaryReleasedAsync(PrimaryReleased primaryReleased,
-        CancellationToken cancellationToken = default)
-    {
-        await _gridInitializer.TryHandleFirstPrimaryClickAsync(_grid, primaryReleased.Index, cancellationToken);
-        await _grid.HandleInputAsync(primaryReleased, cancellationToken);
+        _gridStateMachine.HandleInputAsync(input, this.GetCancellationTokenOnTreeExit()).Fire();
     }
 }

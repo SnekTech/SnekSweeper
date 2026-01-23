@@ -1,11 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
-using SnekSweeperCore.GridSystem.FSM;
 
 namespace SnekSweeperCore.GridSystem;
 
-public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventBus, GridStateMachine stateMachine)
+public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventBus)
 {
     readonly TransitioningCellsSet _transitioningCellsSet = new();
     internal GridSize Size { get; } = cells.Size;
@@ -18,8 +17,6 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
     int BombCount => Cells.Count(cell => cell.HasBomb);
     int FlagCount => Cells.Count(cell => cell.IsFlagged);
-
-    public Task InitAsync(CancellationToken ct = default) => stateMachine.InitAsync(ct);
 
     public async Task InitCellsAsync(GridIndex firstClickGridIndex, bool[,] bombs,
         CancellationToken cancellationToken = default)
