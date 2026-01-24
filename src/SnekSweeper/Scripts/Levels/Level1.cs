@@ -20,7 +20,7 @@ public partial class Level1 : Node2D, ISceneScript
     public async Task LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
     {
         var grid = loadLevelSource.CreateGrid(HumbleGrid, EventBusOwner.GridEventBus);
-        var gridStateMachine = new GridStateMachine(loadLevelSource, grid);
+        var gridStateMachine = new GridStateMachine(loadLevelSource, new GridStateContext(grid, HumbleGrid));
         await gridStateMachine.InitAsync(ct);
 
         HumbleGrid.Init(grid, gridStateMachine);

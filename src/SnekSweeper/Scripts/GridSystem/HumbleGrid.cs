@@ -68,6 +68,12 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(HouseKeeper.ActivatedCheatCodeSet);
 
+    public void LockStartIndexTo(GridIndex startIndex)
+    {
+        // todo: use actual implementation of locking
+        MessageBox.Print($"start index has been locked to {startIndex}");
+    }
+
     void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {
         var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);

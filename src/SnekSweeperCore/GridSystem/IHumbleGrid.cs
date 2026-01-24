@@ -12,4 +12,5 @@ public interface IHumbleGrid
     Referee Referee { get; }
     void TriggerInitEffects();
     IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin);
+    void LockStartIndexTo(GridIndex startIndex);
 }

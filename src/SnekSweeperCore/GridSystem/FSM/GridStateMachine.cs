@@ -5,32 +5,28 @@ using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem.FSM;
 
-public class GridStateMachine(LoadLevelSource loadLevelSource, Grid grid) : StateMachine<GridState>
+public record GridStateContext(Grid Grid, IHumbleGrid HumbleGrid);
+
+public class GridStateMachine(LoadLevelSource loadLevelSource, GridStateContext context) : StateMachine<GridState>
 {
-    public Grid Grid => grid;
-    
+    public GridStateContext Context => context;
+
     protected override void SetupStateInstances()
     {
-        var regularInstantiated = new RegularInstantiated(loadLevelSource, this);
-        var fixedInstantiated = new FixedInstantiated(this);
-        var gameStart = new GameStart(this);
-
-        StateInstances[typeof(RegularInstantiated)] = regularInstantiated;
-        StateInstances[typeof(FixedInstantiated)] = fixedInstantiated;
-        StateInstances[typeof(GameStart)] = gameStart;
-    }
-
-    public async Task InitAsync(CancellationToken ct = default)
-    {
-        var setInitStateTask = loadLevelSource switch
+        Instantiated instantiated = loadLevelSource switch
         {
-            RegularStart => SetInitStateAsync<RegularInstantiated>(ct),
-            FromRunRecord => SetInitStateAsync<FixedInstantiated>(ct),
+            RegularStart regularStart => new RegularInstantiated(regularStart, this),
+            FromRunRecord fromRunRecord => new InstantiatedFromRecord(fromRunRecord.RunRecord, this),
             _ => throw new SwitchExpressionException(),
         };
 
-        await setInitStateTask;
+        var gameStart = new GameStart(this);
+
+        StateInstances[typeof(Instantiated)] = instantiated;
+        StateInstances[typeof(GameStart)] = gameStart;
     }
+
+    public Task InitAsync(CancellationToken ct = default) => SetInitStateAsync<Instantiated>(ct);
 
     public Task HandleInputAsync(GridInput gridInput, CancellationToken ct = default) =>
         CurrentState?.HandleInputAsync(gridInput, ct) ?? Task.CompletedTask;

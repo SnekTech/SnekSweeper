@@ -5,8 +5,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 ## Todo
 
 - [ ] move non-godot stuff to core project
-- [ ] load level from game run records
-  - extinguish different load level sources
 - [ ] controller support
   - [ ] 怪物猎人式转盘
 - [ ] multiple save slots
@@ -17,6 +15,10 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] use DTO when doing serialization
 - [x] pack rust ms-toollib to a tiny library
 - [x] add the GodotGadgets project to this solution, remove the dll reference
+- [x] load level from game run records
+  - extinguish different load level sources
+  - [x] lay mine use the bomb matrix from the run record
+  - [x] lock input to the start index before run start
 
 ## GamePlay
 
