@@ -1,7 +1,6 @@
 ﻿using GodotGadgets.Tasks;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCodeSystem.UI;
-using SnekSweeper.Levels;
 using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
 using SnekSweeperCore.LevelManagement;
@@ -49,12 +48,7 @@ public partial class MainMenu : CanvasLayer
 
     void OnStartButtonPressed()
     {
-        LoadLevelAsync().Fire();
-        return;
-
-        Task LoadLevelAsync(CancellationToken ct = default) =>
-            Autoload.SceneSwitcher.GotoSceneAsync<Level1>(
-                level => level.LoadLevelAsync(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting), ct), ct);
+        Autoload.SceneSwitcher.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting)).Fire();
     }
 
     void OnQuitPressed()

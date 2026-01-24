@@ -1,5 +1,7 @@
-﻿using SnekSweeper.UI.Common;
+﻿using SnekSweeper.Levels;
+using SnekSweeper.UI.Common;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.Autoloads;
 
@@ -13,7 +15,10 @@ public partial class SceneSwitcher : Node
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    public async Task GotoSceneAsync<T>(Func<T, Task>? onSceneAddedToTree = null, CancellationToken ct = default) where T : Node, ISceneScript
+    public Task LoadLevel(LoadLevelSource loadLevelSource, CancellationToken ct = default) => GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource, ct), ct);
+
+    public async Task GotoSceneAsync<T>(Func<T, Task>? onSceneAddedToTree = null, CancellationToken ct = default)
+        where T : Node, ISceneScript
     {
         var newScene = SceneFactory.Instantiate<T>();
         var rootWindow = GetTree().Root;
