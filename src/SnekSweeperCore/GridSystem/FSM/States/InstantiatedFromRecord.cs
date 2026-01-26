@@ -9,7 +9,13 @@ public sealed class InstantiatedFromRecord(GameRunRecord runRecord, GridStateMac
     {
         await Grid.InitCellsAsync(runRecord.StartIndex, runRecord.BombMatrix, ct);
 
-        HumbleGrid.LockStartIndexTo(runRecord.StartIndex);
+        HumbleGrid.GridCursor.LockTo(runRecord.StartIndex, Grid.Size);
+    }
+
+    public override Task OnExitAsync(CancellationToken ct = default)
+    {
+        HumbleGrid.GridCursor.Unlock();
+        return Task.CompletedTask;
     }
 
     public override async Task HandleInputAsync(GridInput gridInput, CancellationToken ct = default)

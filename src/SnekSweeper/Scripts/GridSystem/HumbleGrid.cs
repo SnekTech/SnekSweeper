@@ -66,32 +66,19 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public IEnumerable<IHumbleCell> HumbleCells => _grid.Cells.Select(cell => cell.HumbleCell);
 
-    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(HouseKeeper.ActivatedCheatCodeSet);
+    public IGridCursor GridCursor => Cursor;
 
-    public void LockStartIndexTo(GridIndex startIndex)
-    {
-        // todo: use actual implementation of locking
-        MessageBox.Print($"start index has been locked to {startIndex}");
-    }
+    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(HouseKeeper.ActivatedCheatCodeSet);
 
     void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {
-        var shouldShowCursor = _grid.IsValidIndex(hoveringGridIndex);
-        if (!shouldShowCursor)
-        {
-            Cursor.Hide();
-            return;
-        }
-
-        Cursor.ShowAtHoveringCell(hoveringGridIndex);
+        Cursor.ShowAt(hoveringGridIndex, _grid.Size);
     }
 
     void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();
 
     void OnGridInputEmitted(GridInput input)
     {
-        if (!_grid.IsValidIndex(input.Index)) return;
-
         _gridStateMachine.HandleInputAsync(input, this.GetCancellationTokenOnTreeExit()).Fire();
     }
 }
