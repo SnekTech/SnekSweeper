@@ -23,6 +23,7 @@ public partial class Cover : Node2D, ICover, ISceneScript
     {
         var tokenLinkedWithTreeExit = cancellationToken.LinkWithNodeDestroy(this);
 
+        // todo: process noise properly
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
         await tween.PlayAsync(tokenLinkedWithTreeExit.Token);

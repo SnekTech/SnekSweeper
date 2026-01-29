@@ -8,6 +8,9 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] 怪物猎人式转盘
 - [ ] multiple save slots
 - [ ] balatro-like background shader
+- [ ] mark bomb cell when bomb revealed
+  - [ ] mark the revealed one red
+  - [ ] mark the wrong-flagged ones with cross
 
 ## Done
 

@@ -16,7 +16,6 @@ public partial class Level1 : Node2D, ISceneScript
 
     public override void _ExitTree()
     {
-        // todo: move this to grid FSM
         HouseKeeper.SaveCurrentPlayerData();
     }
 

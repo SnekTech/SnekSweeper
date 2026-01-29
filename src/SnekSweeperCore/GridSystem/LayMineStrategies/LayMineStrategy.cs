@@ -51,7 +51,7 @@ static class LayMineStrategies
 
 public enum LayMineStrategyKey
 {
-    Classic,
+    Classic, // todo: add an option to toggle solvable
     Solvable,
     Hardcoded,
 }
