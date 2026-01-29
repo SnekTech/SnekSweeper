@@ -5,18 +5,19 @@ namespace SnekSweeperCore.GridSystem.FSM;
 
 public abstract class GridState(GridStateMachine stateMachine) : IState
 {
-    protected Grid Grid => stateMachine.Context.Grid;
-    protected IHumbleGrid HumbleGrid => stateMachine.Context.HumbleGrid;
+    protected GridStateMachine StateMachine { get; } = stateMachine;
+    protected Grid Grid => StateMachine.Context.Grid;
+    protected IHumbleGrid HumbleGrid => StateMachine.Context.HumbleGrid;
+    protected GameRunRecorder RunRecorder => StateMachine.Context.RunRecorder;
 
     protected Task ChangeStateAsync<T>(CancellationToken ct = default) where T : GridState =>
-        stateMachine.ChangeStateAsync<T>(ct);
+        StateMachine.ChangeStateAsync<T>(ct);
 
     public virtual Task OnEnterAsync(CancellationToken ct = default) => Task.CompletedTask;
 
     public virtual Task OnExitAsync(CancellationToken ct = default) => Task.CompletedTask;
 
     public virtual Task HandleInputAsync(GridInput gridInput, CancellationToken ct = default) => Task.CompletedTask;
-    public virtual Task JudgedBy(Referee referee, CancellationToken ct = default) => Task.CompletedTask;
 }
 
 public abstract class Instantiated(GridStateMachine stateMachine)

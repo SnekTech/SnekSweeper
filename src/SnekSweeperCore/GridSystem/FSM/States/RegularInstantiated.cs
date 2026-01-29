@@ -10,9 +10,10 @@ public sealed class RegularInstantiated(RegularStart regularStart, GridStateMach
         if (gridInput is PrimaryReleased primaryReleased)
         {
             var firstClickIndex = primaryReleased.Index;
-            await Grid.InitCellsAsync(firstClickIndex, regularStart.LayMineFn(firstClickIndex), ct);
+            RunRecorder.MarkRunStartInfo(DateTime.Now, firstClickIndex);
+            await Grid.InitCellsAsync(regularStart.LayMineFn(firstClickIndex), ct);
             await ChangeStateAsync<GameStart>(ct);
-            await Grid.HandleInputAsync(gridInput, ct);
+            await StateMachine.HandleInputAsync(gridInput, ct);
         }
     }
 }

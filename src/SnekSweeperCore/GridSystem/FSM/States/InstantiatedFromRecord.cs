@@ -7,7 +7,7 @@ public sealed class InstantiatedFromRecord(GameRunRecord runRecord, GridStateMac
 {
     public override async Task OnEnterAsync(CancellationToken ct = default)
     {
-        await Grid.InitCellsAsync(runRecord.StartIndex, runRecord.BombMatrix, ct);
+        await Grid.InitCellsAsync(runRecord.BombMatrix, ct);
 
         HumbleGrid.GridCursor.LockTo(runRecord.StartIndex, Grid.Size);
     }
@@ -22,7 +22,8 @@ public sealed class InstantiatedFromRecord(GameRunRecord runRecord, GridStateMac
     {
         if (gridInput.Index != runRecord.StartIndex) return;
 
+        RunRecorder.MarkRunStartInfo(DateTime.Now, gridInput.Index);
         await ChangeStateAsync<GameStart>(ct);
-        await Grid.HandleInputAsync(gridInput, ct);
+        await StateMachine.HandleInputAsync(gridInput, ct);
     }
 }

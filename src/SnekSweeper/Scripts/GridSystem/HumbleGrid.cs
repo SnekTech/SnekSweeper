@@ -3,11 +3,9 @@ using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.UI;
-using SnekSweeper.UI.GameResult;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
-using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.SkinSystem;
@@ -23,22 +21,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     GridStateMachine _gridStateMachine = null!;
 
     public CommandInvoker GridCommandInvoker { get; } = new();
-
-    public Referee Referee { get; } = new(
-        HouseKeeper.History,
-        () =>
-        {
-            MessageBox.Print("You win!");
-            Autoload.SceneSwitcher.GotoSceneAsync<WinningPage>().Fire();
-        },
-        () =>
-        {
-            MessageBox.Print("Game over! Bomb revealed!");
-            // BUG: AddChild() failed, 'cause the parent is busy
-            // 可能和赢两次有关
-            Autoload.SceneSwitcher.GotoSceneAsync<LosingPage>().Fire();
-        }
-    );
 
     public override void _EnterTree()
     {

@@ -1,84 +1,42 @@
 ﻿using SnekSweeperCore.CellSystem;
-using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeperCore.GameMode;
 
-public class Referee(History history, Action onGameWin, Action onGameLose)
+public static class Referee
 {
-    DateTime _currentRunStartAt = DateTime.MinValue;
-    GridIndex _startIndex;
-
-    internal void MarkRunStartInfo(DateTime startAt, GridIndex startIndex) =>
-        (_currentRunStartAt, _startIndex) = (startAt, startIndex);
-
-    internal void JudgeGame(Grid grid, List<Cell> bombCellsRevealed)
-    {
-        var result = GetGameResult(grid, bombCellsRevealed);
-        HandleGameResult(result);
-    }
-
-    void HandleGameResult(JudgedResult gameResult)
-    {
-        switch (gameResult)
+    public static JudgedResult Judge(GridInputProcessResult processResult) =>
+        processResult switch
         {
-            case GameWin winResult:
-                HandleGameWin(winResult.Record);
-                break;
-            case GameLose loseResult:
-                HandleGameLose(loseResult.Record);
-                break;
-            case NothingHappens:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(gameResult), gameResult, null);
-        }
-    }
+            BatchRevealed batchRevealed => GetGameResult(batchRevealed.Grid, batchRevealed.BombCellsRevealed),
+            _ => Surviving.Instance,
+        };
 
-    JudgedResult GetGameResult(Grid grid, List<Cell> bombCellsRevealed)
+    static JudgedResult GetGameResult(Grid grid, List<Cell> bombCellsRevealed)
     {
         if (bombCellsRevealed.Count > 0)
         {
-            var loseRecord = CreateRecord(false);
-            return new GameLose(loseRecord);
+            return new GameLose(grid.BombMatrix);
         }
 
         if (grid.IsResolved)
         {
-            var winRecord = CreateRecord(true);
-            return new GameWin(winRecord);
+            return new GameWin(grid.BombMatrix);
         }
 
-        return new NothingHappens();
-
-        GameRunRecord CreateRecord(bool winning) =>
-            GameRunRecord.Create(
-                RunDuration.Create(_currentRunStartAt, DateTime.Now),
-                winning,
-                grid.BombMatrix,
-                _startIndex
-            );
+        return Surviving.Instance;
     }
+}
 
-    void HandleGameLose(GameRunRecord loseRecord)
-    {
-        history.AddRecord(loseRecord);
-        onGameLose();
-    }
+public abstract record JudgedResult;
 
-    void HandleGameWin(GameRunRecord winRecord)
-    {
-        history.AddRecord(winRecord);
-        onGameWin();
-    }
+public sealed record GameWin(bool[,] Bombs) : JudgedResult;
 
-    abstract record JudgedResult;
+public sealed record GameLose(bool[,] Bombs) : JudgedResult;
 
-    sealed record GameWin(GameRunRecord Record) : JudgedResult;
-
-    sealed record GameLose(GameRunRecord Record) : JudgedResult;
-
-    sealed record NothingHappens : JudgedResult;
+public sealed record Surviving : JudgedResult
+{
+    public static Surviving Instance { get; } = new();
 }
 
 static class GridExtensionsForReferee

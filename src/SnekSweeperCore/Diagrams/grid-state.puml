@@ -4,19 +4,20 @@
 hide empty description
 
 state "regular instantiated" as regularInstantiated
-state "fixed instantiated" as fixedInstantiated
+state "instantiated from record" as instantiatedFromRecord
 state "game start" as gameStart
 state win
 state lose
 
-[*] --> regularInstantiated : enter level from main menu
-[*] --> fixedInstantiated : enter level from history record
+[*] --> regularInstantiated
+[*] --> instantiatedFromRecord 
 
 regularInstantiated --> gameStart : first click
-fixedInstantiated --> gameStart : first click
+instantiatedFromRecord --> gameStart : first click
 
-gameStart --> win : judged by referee
-gameStart --> lose : judged by referee
+gameStart --> gameStart : judge result survived
+gameStart --> win : judge result win
+gameStart --> lose : judge result lose
 
 win --> [*]
 lose --> [*]

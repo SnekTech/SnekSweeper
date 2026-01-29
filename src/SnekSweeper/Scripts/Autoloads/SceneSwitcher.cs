@@ -15,7 +15,7 @@ public partial class SceneSwitcher : Node
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    public Task LoadLevel(LoadLevelSource loadLevelSource, CancellationToken ct = default) => GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource, ct), ct);
+    public Task LoadLevel(LoadLevelSource loadLevelSource) => GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource));
 
     public async Task GotoSceneAsync<T>(Func<T, Task>? onSceneAddedToTree = null, CancellationToken ct = default)
         where T : Node, ISceneScript

@@ -1,11 +1,18 @@
 ﻿using System.Runtime.CompilerServices;
 using SnekSweeperCore.FSM;
+using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem.FSM.States;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem.FSM;
 
-public record GridStateContext(Grid Grid, IHumbleGrid HumbleGrid);
+public record GridStateContext(
+    Grid Grid,
+    IHumbleGrid HumbleGrid,
+    GameRunRecorder RunRecorder,
+    Action OnWin,
+    Action OnLose
+);
 
 public class GridStateMachine(LoadLevelSource loadLevelSource, GridStateContext context) : StateMachine<GridState>
 {
@@ -21,9 +28,13 @@ public class GridStateMachine(LoadLevelSource loadLevelSource, GridStateContext 
         };
 
         var gameStart = new GameStart(this);
+        var win = new Win(this);
+        var lose = new Lose(this);
 
         StateInstances[typeof(Instantiated)] = instantiated;
         StateInstances[typeof(GameStart)] = gameStart;
+        StateInstances[typeof(Win)] = win;
+        StateInstances[typeof(Lose)] = lose;
     }
 
     public Task InitAsync(CancellationToken ct = default) => SetInitStateAsync<Instantiated>(ct);

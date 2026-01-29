@@ -7,19 +7,18 @@ namespace SnekSweeperCore.GridSystem;
 public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventBus)
 {
     readonly TransitioningCellsSet _transitioningCellsSet = new();
-    internal GridSize Size { get; } = cells.Size;
+    public GridSize Size { get; } = cells.Size;
 
     bool IsTransitioningAt(GridIndex index) => _transitioningCellsSet.Contains(index);
 
-    public bool IsValidIndex(GridIndex gridIndex) => gridIndex.IsWithin(Size);
+    bool IsValidIndex(GridIndex gridIndex) => gridIndex.IsWithin(Size);
 
     public IEnumerable<Cell> Cells => cells.Elements;
 
     int BombCount => Cells.Count(cell => cell.HasBomb);
     int FlagCount => Cells.Count(cell => cell.IsFlagged);
 
-    public async Task InitCellsAsync(GridIndex firstClickGridIndex, bool[,] bombs,
-        CancellationToken cancellationToken = default)
+    public async Task InitCellsAsync(bool[,] bombs, CancellationToken ct = default)
     {
         foreach (var cell in cells)
         {
@@ -31,51 +30,49 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         await InitAllCellsAsync();
         _transitioningCellsSet.RemoveRange(Cells);
 
-        humbleGrid.Referee.MarkRunStartInfo(DateTime.Now, firstClickGridIndex);
-        humbleGrid.TriggerInitEffects();
         gridEventBus.EmitBombCountChanged(BombCount);
         return;
 
         Task InitAllCellsAsync()
         {
             var initCellTasks = Cells
-                .Select(cell =>
-                    cell.InitAsync(new CellInitData(cell.HasBomb, GetNeighborBombCount(cell)), cancellationToken));
+                .Select(cell => cell.InitAsync(new CellInitData(cell.HasBomb, GetNeighborBombCount(cell)), ct));
             return Task.WhenAll(initCellTasks);
         }
     }
 
-    public async Task HandleInputAsync(GridInput gridInput, CancellationToken cancellationToken = default)
+    public async Task<GridInputProcessResult> HandleInputAsync(GridInput gridInput, CancellationToken ct = default)
     {
-        if (!IsValidIndex(gridInput.Index)) return;
-        if (IsTransitioningAt(gridInput.Index)) return;
+        if (!IsValidIndex(gridInput.Index) || IsTransitioningAt(gridInput.Index))
+            return NothingHappens.Instance;
 
-        await (gridInput switch
+        return await (gridInput switch
         {
-            PrimaryReleased => RevealAtAsync(gridInput.Index, cancellationToken),
-            PrimaryDoubleClicked => RevealAroundAsync(gridInput.Index, cancellationToken),
-            SecondaryReleased => SwitchFlagAtAsync(gridInput.Index, cancellationToken),
+            PrimaryReleased => RevealAtAsync(gridInput.Index, ct),
+            PrimaryDoubleClicked => RevealAroundAsync(gridInput.Index, ct),
+            SecondaryReleased => SwitchFlagAtAsync(gridInput.Index, ct),
             _ => throw new SwitchExpressionException(),
         });
     }
 
-    async Task RevealAtAsync(GridIndex gridIndex, CancellationToken cancellationToken = default)
+    async Task<GridInputProcessResult> RevealAtAsync(GridIndex gridIndex, CancellationToken ct = default)
     {
         var cellsToReveal = new HashSet<Cell>();
         FindCellsToReveal(gridIndex, cellsToReveal);
 
-        await RevealCells(cellsToReveal, cancellationToken);
+        return await RevealCells(cellsToReveal, ct);
     }
 
-    async Task RevealAroundAsync(GridIndex gridIndex, CancellationToken cancellationToken = default)
+    async Task<GridInputProcessResult> RevealAroundAsync(GridIndex gridIndex, CancellationToken ct = default)
     {
         var cell = cells.At(gridIndex);
         var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
         if (!canRevealAround)
-            return;
+            return NothingHappens.Instance;
 
-        if (GetNeighborFlagCount(cell) != GetNeighborBombCount(cell))
-            return;
+        var flagCountMatchesBomb = GetNeighborFlagCount(cell) != GetNeighborBombCount(cell);
+        if (flagCountMatchesBomb)
+            return NothingHappens.Instance;
 
         var cellsToReveal = new HashSet<Cell>();
         foreach (var neighbor in GetNeighbors(cell))
@@ -83,39 +80,40 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
         }
 
-        await RevealCells(cellsToReveal, cancellationToken);
+        return await RevealCells(cellsToReveal, ct);
     }
 
     IEnumerable<Cell> GetNeighbors(Cell cell) => cell.GridIndex.GetNeighborIndicesWithin(Size).Select(cells.At);
     int GetNeighborBombCount(Cell cell) => GetNeighbors(cell).Count(neighbor => neighbor.HasBomb);
     int GetNeighborFlagCount(Cell cell) => GetNeighbors(cell).Count(neighbor => neighbor.IsFlagged);
 
-    async Task SwitchFlagAtAsync(GridIndex gridIndex, CancellationToken cancellationToken = default)
+    async Task<GridInputProcessResult> SwitchFlagAtAsync(GridIndex gridIndex, CancellationToken ct = default)
     {
-        await cells.At(gridIndex).SwitchFlagAsync(cancellationToken);
+        await cells.At(gridIndex).SwitchFlagAsync(ct);
         gridEventBus.EmitFlagCountChanged(FlagCount);
+        return FlagSwitched.Instance;
     }
 
-    async Task RevealCells(HashSet<Cell> cellsToReveal, CancellationToken cancellationToken = default)
+    async Task<GridInputProcessResult> RevealCells(HashSet<Cell> cellsToReveal, CancellationToken ct = default)
     {
         if (cellsToReveal.Count == 0)
-            return;
+            return NothingHappens.Instance;
 
         _transitioningCellsSet.AddRange(cellsToReveal);
-        await ExecuteRevealBatchCommandAsync(cellsToReveal, cancellationToken);
+        await ExecuteRevealBatchCommandAsync(cellsToReveal, ct);
         _transitioningCellsSet.RemoveRange(cellsToReveal);
 
-        var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
-        humbleGrid.Referee.JudgeGame(this, bombCellsRevealed);
-
         gridEventBus.EmitBatchRevealed();
+
+        var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
+        return new BatchRevealed(this, bombCellsRevealed);
     }
 
     async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-        await humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands), cancellationToken);
+        await humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands), ct);
     }
 
     void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)

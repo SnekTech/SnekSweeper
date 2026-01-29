@@ -4,7 +4,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Todo
 
-- [ ] move non-godot stuff to core project
 - [ ] controller support
   - [ ] 怪物猎人式转盘
 - [ ] multiple save slots
@@ -12,6 +11,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Done
 
+- [x] move non-godot stuff to core project
 - [x] use DTO when doing serialization
 - [x] pack rust ms-toollib to a tiny library
 - [x] add the GodotGadgets project to this solution, remove the dll reference
