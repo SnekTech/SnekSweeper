@@ -9,7 +9,7 @@ namespace SnekSweeper.CellSystem.Components;
 [SceneTree]
 public partial class Cover : Node2D, ICover, ISceneScript
 {
-    const float AnimationDuration = .4f;
+    const float AnimationDuration = .2f;
 
     ShaderMaterial _shaderMaterial = null!;
 

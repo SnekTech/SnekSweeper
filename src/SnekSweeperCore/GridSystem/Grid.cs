@@ -6,12 +6,8 @@ namespace SnekSweeperCore.GridSystem;
 
 public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventBus)
 {
-    readonly TransitioningCellsSet _transitioningCellsSet = new();
+    bool _isAnyCellProcessing;
     public GridSize Size { get; } = cells.Size;
-
-    bool IsTransitioningAt(GridIndex index) => _transitioningCellsSet.Contains(index);
-
-    bool IsValidIndex(GridIndex gridIndex) => gridIndex.IsWithin(Size);
 
     public IEnumerable<Cell> Cells => cells.Elements;
 
@@ -26,9 +22,9 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         }
 
         // must init individual cells *after* bombs planted
-        _transitioningCellsSet.AddRange(Cells);
+        _isAnyCellProcessing = true;
         await InitAllCellsAsync();
-        _transitioningCellsSet.RemoveRange(Cells);
+        _isAnyCellProcessing = false;
 
         gridEventBus.EmitBombCountChanged(BombCount);
         return;
@@ -43,16 +39,20 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
     public async Task<GridInputProcessResult> HandleInputAsync(GridInput gridInput, CancellationToken ct = default)
     {
-        if (!IsValidIndex(gridInput.Index) || IsTransitioningAt(gridInput.Index))
+        if (!gridInput.Index.IsWithin(Size) || _isAnyCellProcessing)
             return NothingHappens.Instance;
 
-        return await (gridInput switch
+        _isAnyCellProcessing = true;
+        var processResult = await (gridInput switch
         {
             PrimaryReleased => RevealAtAsync(gridInput.Index, ct),
             PrimaryDoubleClicked => RevealAroundAsync(gridInput.Index, ct),
             SecondaryReleased => SwitchFlagAtAsync(gridInput.Index, ct),
             _ => throw new SwitchExpressionException(),
         });
+        _isAnyCellProcessing = false;
+
+        return processResult;
     }
 
     async Task<GridInputProcessResult> RevealAtAsync(GridIndex gridIndex, CancellationToken ct = default)
@@ -99,21 +99,18 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         if (cellsToReveal.Count == 0)
             return NothingHappens.Instance;
 
-        _transitioningCellsSet.AddRange(cellsToReveal);
-        await ExecuteRevealBatchCommandAsync(cellsToReveal, ct);
-        _transitioningCellsSet.RemoveRange(cellsToReveal);
+        await ExecuteRevealBatchCommandAsync();
 
         gridEventBus.EmitBatchRevealed();
 
         var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
         return new BatchRevealed(this, bombCellsRevealed);
-    }
 
-    async Task ExecuteRevealBatchCommandAsync(ICollection<Cell> cellsToReveal,
-        CancellationToken ct = default)
-    {
-        var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-        await humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands), ct);
+        Task ExecuteRevealBatchCommandAsync()
+        {
+            var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
+            return humbleGrid.GridCommandInvoker.ExecuteCommandAsync(new CompoundCommand(commands), ct);
+        }
     }
 
     void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)

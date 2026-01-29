@@ -11,6 +11,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Done
 
+- [x] accelerate cell animation, ignore player input during transition
 - [x] move non-godot stuff to core project
 - [x] use DTO when doing serialization
 - [x] pack rust ms-toollib to a tiny library
