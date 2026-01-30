@@ -1,16 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://coyamyg4ppe21"]
+[gd_scene format=3 uid="uid://coyamyg4ppe21"]
 
 [ext_resource type="Script" uid="uid://bmhklriai3m45" path="res://Scripts/UI/Settings/ComboRankToggle.cs" id="1_kwew6"]
 
-[node name="ComboRankToggle" type="HBoxContainer"]
+[node name="ComboRankToggle" type="HBoxContainer" unique_id=1027775962]
 script = ExtResource("1_kwew6")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=1345411408]
 layout_mode = 2
 text = "Combo Rank Display"
 
-[node name="ComboRankDisplayToggle" type="CheckBox" parent="."]
+[node name="ComboRankDisplayToggle" type="CheckBox" parent="." unique_id=2023817359]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10

@@ -1,15 +1,16 @@
-[gd_scene load_steps=6 format=3 uid="uid://c3v16clfuvy6n"]
+[gd_scene format=3 uid="uid://c3v16clfuvy6n"]
 
 [ext_resource type="Script" uid="uid://dn3rxc1nqx581" path="res://Scripts/UI/Settings/SettingsPage.cs" id="1_f6ywa"]
 [ext_resource type="PackedScene" uid="uid://dy5mogbh8bhwt" path="res://Scripts/UI/Settings/SkinSelect.tscn" id="3_7i8bk"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="3_wsdol"]
 [ext_resource type="PackedScene" uid="uid://drs0wut85d15m" path="res://Scripts/UI/Settings/DifficultySelect.tscn" id="3_xnkgw"]
 [ext_resource type="PackedScene" uid="uid://coyamyg4ppe21" path="res://Scripts/UI/Settings/ComboRankToggle.tscn" id="5_wsdol"]
+[ext_resource type="PackedScene" uid="uid://cvgpqwita0oi7" path="res://Scripts/UI/Settings/GenerateSolvableGridToggle.tscn" id="6_pu1rf"]
 
-[node name="SettingsPage" type="CanvasLayer"]
+[node name="SettingsPage" type="CanvasLayer" unique_id=648935808]
 script = ExtResource("1_f6ywa")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=397593]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -20,31 +21,35 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("3_wsdol")]
+[node name="BackToMainButton" parent="MarginContainer" unique_id=331485562 instance=ExtResource("3_wsdol")]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer" unique_id=993732788]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/PanelContainer" unique_id=1821642578]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer" unique_id=1004610066]
 layout_mode = 2
 
-[node name="DifficultySelect" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" instance=ExtResource("3_xnkgw")]
+[node name="DifficultySelect" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1853304410 instance=ExtResource("3_xnkgw")]
 layout_mode = 2
 
-[node name="SkinSelect" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" instance=ExtResource("3_7i8bk")]
+[node name="SkinSelect" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=242314164 instance=ExtResource("3_7i8bk")]
 layout_mode = 2
 
-[node name="ComboRankToggle" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" instance=ExtResource("5_wsdol")]
+[node name="ComboRankToggle" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1374229354 instance=ExtResource("5_wsdol")]
 layout_mode = 2
+
+[node name="GenerateSolvableGridToggle" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1546627792 instance=ExtResource("6_pu1rf")]
+layout_mode = 2
+metadata/_edit_group_ = true
