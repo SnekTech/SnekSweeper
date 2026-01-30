@@ -3,7 +3,6 @@ using Riok.Mapperly.Abstractions;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem.Difficulty;
-using SnekSweeperCore.GridSystem.LayMineStrategies;
 using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.SaveLoad;
@@ -13,7 +12,7 @@ partial record MainSettingDto(
     GridDifficultyKey CurrentDifficultyKey,
     SkinKey CurrentSkinKey,
     bool ComboRankDisplay,
-    LayMineStrategyKey CurrentStrategyKey
+    bool GenerateSolvableGrid
 );
 
 [MemoryPackable]

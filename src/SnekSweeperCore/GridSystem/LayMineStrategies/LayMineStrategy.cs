@@ -48,10 +48,3 @@ static class LayMineStrategies
 
     internal static bool[,] LayMineHardcoded(bool[,] bombs) => bombs;
 }
-
-public enum LayMineStrategyKey
-{
-    Classic, // todo: add an option to toggle solvable
-    Solvable,
-    Hardcoded,
-}

@@ -31,7 +31,7 @@ public static class LevelLoading
         public static LoadLevelSource CreateRegularStart(MainSetting mainSetting)
         {
             var difficulty = mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
-            var solvable = mainSetting.CurrentStrategyKey == LayMineStrategyKey.Solvable;
+            var solvable = mainSetting.GenerateSolvableGrid;
             var skin = mainSetting.CurrentSkinKey.ToSkin();
             return new RegularStart(difficulty, solvable, skin);
         }
