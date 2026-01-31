@@ -1,4 +1,5 @@
-﻿using GodotGadgets.Tasks;
+﻿using GodotGadgets.ShaderStuff;
+using GodotGadgets.Tasks;
 using GTweens.Extensions;
 using GTweensGodot.Extensions;
 using SnekSweeper.Widgets;
@@ -11,11 +12,17 @@ public partial class Cover : Node2D, ICover, ISceneScript
 {
     const float AnimationDuration = .2f;
 
-    ShaderMaterial _shaderMaterial = null!;
+    Uniform<float> dissolveProgress = null!;
+    Uniform<float> coverAlpha = null!;
+    Uniform<float> noiseSeed = null!;
 
     public override void _Ready()
     {
-        _shaderMaterial = (ShaderMaterial)_.Sprite.Material;
+        var shaderMaterial = (ShaderMaterial)_.Sprite.Material;
+        dissolveProgress = new Uniform<float>(shaderMaterial, "progress");
+        coverAlpha = new Uniform<float>(shaderMaterial, "coverAlpha");
+        noiseSeed = new Uniform<float>(shaderMaterial, "noiseSeed");
+
         SetDissolveProgress(0);
     }
 
@@ -23,7 +30,6 @@ public partial class Cover : Node2D, ICover, ISceneScript
     {
         var tokenLinkedWithTreeExit = cancellationToken.LinkWithNodeDestroy(this);
 
-        // todo: process noise properly
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
         await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
@@ -40,26 +46,10 @@ public partial class Cover : Node2D, ICover, ISceneScript
         await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
     }
 
-    public void SetAlpha(float normalizedAlpha) =>
-        _shaderMaterial.SetShaderParameter(Uniforms.Alpha, normalizedAlpha);
+    public void SetAlpha(float normalizedAlpha) => coverAlpha.Value = normalizedAlpha;
 
-    float GetDissolveProgress() =>
-        (float)_shaderMaterial.GetShaderParameter(Uniforms.DissolveProgress).AsDouble();
+    float GetDissolveProgress() => dissolveProgress.Value;
+    void SetDissolveProgress(float progress) => dissolveProgress.Value = progress;
 
-    void SetDissolveProgress(float progress) =>
-        _shaderMaterial.SetShaderParameter(Uniforms.DissolveProgress, progress);
-
-    void RandomizeNoise()
-    {
-        var noiseTexture = (NoiseTexture2D)_shaderMaterial.GetShaderParameter(Uniforms.Mask);
-        var noiseLite = (FastNoiseLite)noiseTexture.Noise;
-        noiseLite.Seed = (int)GD.Randi();
-    }
-
-    static class Uniforms
-    {
-        public static readonly StringName DissolveProgress = "progress";
-        public static readonly StringName Alpha = "coverAlpha";
-        public static readonly StringName Mask = "mask";
-    }
+    void RandomizeNoise() => noiseSeed.Value = GD.Randf();
 }
