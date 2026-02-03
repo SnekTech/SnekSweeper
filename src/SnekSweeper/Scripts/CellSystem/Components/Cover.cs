@@ -19,9 +19,9 @@ public partial class Cover : Node2D, ICover, ISceneScript
     public override void _Ready()
     {
         var shaderMaterial = (ShaderMaterial)_.Sprite.Material;
-        dissolveProgress = new Uniform<float>(shaderMaterial, "progress");
-        coverAlpha = new Uniform<float>(shaderMaterial, "coverAlpha");
-        noiseSeed = new Uniform<float>(shaderMaterial, "noiseSeed");
+        dissolveProgress = shaderMaterial.GetUniform<float>("progress");
+        coverAlpha = shaderMaterial.GetUniform<float>("coverAlpha");
+        noiseSeed = shaderMaterial.GetUniform<float>("noiseSeed");
 
         SetDissolveProgress(0);
     }
