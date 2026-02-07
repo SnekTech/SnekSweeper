@@ -16,6 +16,10 @@ public static class DifficultyFactory
             .WithKey(GridDifficultyKey.Expert)
             .WithSize(new GridSize(16, 30))
             .WithBombCount(99),
+        A.GridDifficulty
+            .WithKey(GridDifficultyKey.Test)
+            .WithSize(new GridSize(9, 9))
+            .WithBombCount(3),
     ];
     static readonly Dictionary<GridDifficultyKey, GridDifficulty> DifficultyCache =
         BuiltinDifficulties.ToDictionary(difficulty => difficulty.Key);

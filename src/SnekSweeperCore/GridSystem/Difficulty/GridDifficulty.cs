@@ -17,4 +17,5 @@ public enum GridDifficultyKey
     Beginner,
     Intermediate,
     Expert,
+    Test,
 }
