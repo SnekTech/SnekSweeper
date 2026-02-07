@@ -1,6 +1,5 @@
 ﻿using GodotGadgets.Tasks;
 using SnekSweeper.Autoloads;
-using SnekSweeper.GridSystem;
 using SnekSweeper.UI.GameResult;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GameMode;
@@ -12,8 +11,6 @@ namespace SnekSweeper.Levels;
 [SceneTree]
 public partial class Level1 : Node2D, ISceneScript
 {
-    HumbleGrid HumbleGrid => _.GridStartPosition.Grid;
-
     public override void _ExitTree()
     {
         HouseKeeper.SaveCurrentPlayerData();
@@ -21,17 +18,17 @@ public partial class Level1 : Node2D, ISceneScript
 
     public async Task LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
     {
-        var grid = loadLevelSource.CreateGrid(HumbleGrid, EventBusOwner.GridEventBus);
+        var grid = loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus);
         var runRecorder = new GameRunRecorder(HouseKeeper.History);
 
         var gridStateContext = new GridStateContext(
-            grid, HumbleGrid, runRecorder,
+            grid, TheGrid, runRecorder,
             OnWin, OnLose
         );
         var gridStateMachine = new GridStateMachine(loadLevelSource, gridStateContext);
         await gridStateMachine.InitAsync(ct);
 
-        HumbleGrid.Init(grid, gridStateMachine);
+        TheGrid.Init(grid, gridStateMachine);
     }
 
     static void OnWin()
