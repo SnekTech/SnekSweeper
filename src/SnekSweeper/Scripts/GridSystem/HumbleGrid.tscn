@@ -1,18 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://cc658fhlcf7w4"]
+[gd_scene format=3 uid="uid://cc658fhlcf7w4"]
 
 [ext_resource type="Script" uid="uid://b1bo35c52ndj3" path="res://Scripts/GridSystem/HumbleGrid.cs" id="1_tadkw"]
 [ext_resource type="Script" uid="uid://gvukltmgysvd" path="res://Scripts/GridSystem/GridInputListener.cs" id="4_mr00i"]
 [ext_resource type="PackedScene" uid="uid://c2tgj2ojhfe84" path="res://Scripts/GridSystem/GridCursor.tscn" id="5_kbjng"]
 
-[node name="HumbleGrid" type="Node2D"]
+[node name="HumbleGrid" type="Node2D" unique_id=779021426]
 script = ExtResource("1_tadkw")
 metadata/_edit_lock_ = true
 
-[node name="GridInputListener" type="Node2D" parent="."]
+[node name="GridInputListener" type="Node2D" parent="." unique_id=1649621520]
 unique_name_in_owner = true
 script = ExtResource("4_mr00i")
 metadata/_edit_lock_ = true
 
-[node name="Cursor" parent="." instance=ExtResource("5_kbjng")]
+[node name="Cursor" parent="." unique_id=33599206 instance=ExtResource("5_kbjng")]
 unique_name_in_owner = true
 z_index = 1
+
+[node name="CellsContainer" type="Node2D" parent="." unique_id=1519960185]
+unique_name_in_owner = true

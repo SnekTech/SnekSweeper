@@ -11,6 +11,7 @@ public interface IHumbleGrid
     void TriggerInitEffects();
     IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin);
     IGridCursor GridCursor { get; }
+    void PlayCongratulationEffects();
 }
 
 public interface IGridCursor

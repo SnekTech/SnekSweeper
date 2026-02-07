@@ -4,9 +4,9 @@ public sealed class Win(GridStateMachine stateMachine) : GridState(stateMachine)
 {
     public override Task OnEnterAsync(CancellationToken ct = default)
     {
-        // todo: show congratulation effects before leaving
+        HumbleGrid.PlayCongratulationEffects();
 
-        StateMachine.Context.OnWin();
+        // todo: task-based popup?
         return Task.CompletedTask;
     }
 }

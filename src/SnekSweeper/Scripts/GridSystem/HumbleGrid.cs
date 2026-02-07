@@ -1,4 +1,9 @@
 ﻿using GodotGadgets.Tasks;
+using GTweens.Builders;
+using GTweens.Easings;
+using GTweens.Enums;
+using GTweens.Tweens;
+using GTweensGodot.Extensions;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CellSystem;
 using SnekSweeper.CheatCodeSystem;
@@ -19,6 +24,9 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     Grid _grid = null!;
     GridStateMachine _gridStateMachine = null!;
+    readonly List<HumbleCell> _humbleCells = [];
+
+    readonly HashSet<GTween> _tweens = [];
 
     public CommandInvoker GridCommandInvoker { get; } = new();
 
@@ -34,6 +42,11 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         _hudEventBus.UndoPressed -= OnUndoPressed;
         GridInputListener.GridInputEmitted -= OnGridInputEmitted;
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
+
+        foreach (var tween in _tweens)
+        {
+            tween.Kill();
+        }
     }
 
     public void Init(Grid grid, GridStateMachine gridStateMachine) =>
@@ -41,14 +54,41 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin)
     {
-        var humbleCell = HumbleCell.InstantiateOnParent(this);
+        var humbleCell = HumbleCell.InstantiateOnParent(CellsContainer);
         humbleCell.OnInstantiate(gridIndex, gridSkin);
+        _humbleCells.Add(humbleCell);
         return humbleCell;
     }
 
-    public IEnumerable<IHumbleCell> HumbleCells => _grid.Cells.Select(cell => cell.HumbleCell);
+    public IEnumerable<IHumbleCell> HumbleCells => _humbleCells.ToList();
 
     public IGridCursor GridCursor => Cursor;
+
+    public void PlayCongratulationEffects()
+    {
+        const float duration = 0.1f;
+
+        var shuffleTween = CreateShuffleTween();
+        _tweens.Add(shuffleTween);
+        shuffleTween.Play();
+
+        return;
+
+        GTween CreateShuffleTween()
+        {
+            var shuffleTweenBuilder = GTweenSequenceBuilder.New();
+            foreach (var humbleCell in _humbleCells)
+            {
+                var singleCellShuffle = humbleCell.TweenPosition(Vector2.Zero, duration)
+                    .SetEasing(Easing.OutQuint);
+                shuffleTweenBuilder
+                    .Append(singleCellShuffle);
+            }
+            var tween = shuffleTweenBuilder.Build()
+                .SetMaxLoops(ResetMode.PingPong);
+            return tween;
+        }
+    }
 
     public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(HouseKeeper.ActivatedCheatCodeSet);
 

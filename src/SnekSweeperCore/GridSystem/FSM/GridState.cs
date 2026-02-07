@@ -9,6 +9,7 @@ public abstract class GridState(GridStateMachine stateMachine) : IState
     protected Grid Grid => StateMachine.Context.Grid;
     protected IHumbleGrid HumbleGrid => StateMachine.Context.HumbleGrid;
     protected GameRunRecorder RunRecorder => StateMachine.Context.RunRecorder;
+    protected GridStateContext Context => StateMachine.Context;
 
     protected Task ChangeStateAsync<T>(CancellationToken ct = default) where T : GridState =>
         StateMachine.ChangeStateAsync<T>(ct);
