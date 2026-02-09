@@ -28,6 +28,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     readonly HashSet<GTween> _tweens = [];
 
+    // todo: put this to a proper location
     public CommandInvoker GridCommandInvoker { get; } = new();
 
     public override void _EnterTree()

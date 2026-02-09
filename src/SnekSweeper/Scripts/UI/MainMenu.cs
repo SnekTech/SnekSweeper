@@ -10,6 +10,8 @@ namespace SnekSweeper.UI;
 [SceneTree]
 public partial class MainMenu : CanvasLayer
 {
+    // todo: press to start interface
+    
     public override void _EnterTree() => RegisterEvents();
     public override void _ExitTree() => UnregisterEvents();
 
