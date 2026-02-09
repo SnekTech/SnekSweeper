@@ -1,12 +1,22 @@
-﻿namespace SnekSweeperCore.GridSystem.FSM.States;
+﻿using SnekSweeperCore.LevelManagement;
+
+namespace SnekSweeperCore.GridSystem.FSM.States;
 
 public sealed class Win(GridStateMachine stateMachine) : GridState(stateMachine)
 {
-    public override Task OnEnterAsync(CancellationToken ct = default)
+    public override async Task OnEnterAsync(CancellationToken ct = default)
     {
         HumbleGrid.PlayCongratulationEffects();
 
-        // todo: task-based popup?
-        return Task.CompletedTask;
+        // todo: figure out cancellation execution order
+        var choice = await Context.LevelOrchestrator.GetPopupChoiceOnWinAsync(ct);
+        Action handleChoiceAction = choice switch
+        {
+            NewGame => Context.LevelOrchestrator.NewGame,
+            Leave => Context.LevelOrchestrator.BackToMainMenu,
+            _ => delegate { },
+        };
+
+        handleChoiceAction();
     }
 }

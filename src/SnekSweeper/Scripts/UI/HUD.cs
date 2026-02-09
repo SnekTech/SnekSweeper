@@ -1,14 +1,15 @@
 ﻿using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI;
 
 [SceneTree]
 public partial class HUD : CanvasLayer, ISceneScript
 {
-    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
-    private readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
+    readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
+    readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
 
     public override void _EnterTree()
     {
@@ -24,8 +25,11 @@ public partial class HUD : CanvasLayer, ISceneScript
         UndoButton.Pressed -= OnUndoPressed;
     }
 
-    private void OnBombCountChanged(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
-    private void OnFlagCountChanged(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
+    public Task<PopupChoiceOnWin> ShowAndGetChoiceAsync(CancellationToken ct = default) =>
+        WinPopup.ShowAndGetChoiceAsync(PopupTargetMarker.GlobalPosition, ct);
 
-    private void OnUndoPressed() => _hudEventBus.EmitUndoPressed();
+    void OnBombCountChanged(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
+    void OnFlagCountChanged(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
+
+    void OnUndoPressed() => _hudEventBus.EmitUndoPressed();
 }

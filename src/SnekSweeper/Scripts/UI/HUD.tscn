@@ -1,13 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://cv3fler02wdew"]
+[gd_scene format=3 uid="uid://cv3fler02wdew"]
 
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_exko8"]
 [ext_resource type="Script" uid="uid://y4bxhdwv6tsd" path="res://Scripts/UI/HUD.cs" id="1_udr3g"]
 [ext_resource type="PackedScene" uid="uid://ofhobc7irrc4" path="res://Scripts/Combo/ComboRankCard.tscn" id="3_vtae1"]
+[ext_resource type="PackedScene" uid="uid://kpurf0bffdiv" path="res://Scripts/UI/Level/WinPopup.tscn" id="4_ti1le"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" unique_id=1050904476]
 script = ExtResource("1_udr3g")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=776818080]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -18,50 +19,65 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1532596369]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=240792128]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 10
 
-[node name="BackToMainButton" parent="MarginContainer/HBoxContainer/VBoxContainer" instance=ExtResource("1_exko8")]
+[node name="BackToMainButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=57920552 instance=ExtResource("1_exko8")]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="UndoButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="UndoButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1085483455]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Undo"
 
-[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1681491906]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer" unique_id=773258261]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer" unique_id=155280755]
 layout_mode = 2
 
-[node name="BombCountLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="BombCountLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1258526467]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 bombs"
 
-[node name="FlagCountLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="FlagCountLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1180184325]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 flags"
 
-[node name="ComboRankCard" parent="MarginContainer/HBoxContainer" instance=ExtResource("3_vtae1")]
+[node name="ComboRankCard" parent="MarginContainer/HBoxContainer" unique_id=1688790515 instance=ExtResource("3_vtae1")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
 size_flags_vertical = 0
+
+[node name="WinPopup" parent="." unique_id=2136805872 instance=ExtResource("4_ti1le")]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = -96.0
+offset_right = 93.0
+offset_bottom = -8.0
+grow_horizontal = 2
+
+[node name="PopupTargetMarker" type="Marker2D" parent="." unique_id=720344821]
+unique_name_in_owner = true
+position = Vector2(240, 112)

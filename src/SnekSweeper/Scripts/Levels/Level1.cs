@@ -9,7 +9,7 @@ using SnekSweeperCore.LevelManagement;
 namespace SnekSweeper.Levels;
 
 [SceneTree]
-public partial class Level1 : Node2D, ISceneScript
+public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 {
     public override void _ExitTree()
     {
@@ -23,7 +23,7 @@ public partial class Level1 : Node2D, ISceneScript
 
         var gridStateContext = new GridStateContext(
             grid, TheGrid, runRecorder,
-            OnWin, OnLose
+            this, OnLose
         );
         var gridStateMachine = new GridStateMachine(loadLevelSource, gridStateContext);
         await gridStateMachine.InitAsync(ct);
@@ -31,15 +31,24 @@ public partial class Level1 : Node2D, ISceneScript
         TheGrid.Init(grid, gridStateMachine);
     }
 
-    static void OnWin()
-    {
-        MessageBox.Print("You win!");
-        Autoload.SceneSwitcher.GotoSceneAsync<WinningPage>().Fire();
-    }
-
     static void OnLose()
     {
         MessageBox.Print("Game over! Bomb revealed!");
         Autoload.SceneSwitcher.GotoSceneAsync<LosingPage>().Fire();
+    }
+
+    public Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default)
+    {
+        return HUD.ShowAndGetChoiceAsync(ct.LinkWithNodeDestroy(this).Token);
+    }
+
+    public void NewGame()
+    {
+        Autoload.SceneSwitcher.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting)).Fire();
+    }
+
+    public void BackToMainMenu()
+    {
+        Autoload.SceneSwitcher.GotoSceneAsync<Main>().Fire();
     }
 }

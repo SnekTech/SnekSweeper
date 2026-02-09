@@ -10,7 +10,7 @@ public record GridStateContext(
     Grid Grid,
     IHumbleGrid HumbleGrid,
     GameRunRecorder RunRecorder,
-    Action OnWin,
+    ILevelOrchestrator LevelOrchestrator,
     Action OnLose
 );
 
