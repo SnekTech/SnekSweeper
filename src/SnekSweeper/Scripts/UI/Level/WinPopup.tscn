@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://kpurf0bffdiv"]
+
+[node name="WinPopup" type="PanelContainer" unique_id=2136805872]
+offset_right = 173.0
+offset_bottom = 88.0
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=707681164]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1068346665]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ContinueLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1551279087]
+layout_mode = 2
+text = "Continue?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1589485408]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NewGameButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=694143035]
+unique_name_in_owner = true
+layout_mode = 2
+text = "New Game"
+
+[node name="LeaveButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=455341434]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Leave"
