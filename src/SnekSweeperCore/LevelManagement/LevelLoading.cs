@@ -48,6 +48,7 @@ public static class LevelLoading
 
         public Grid CreateGrid(IHumbleGrid humbleGrid, GridEventBus gridEventBus)
         {
+            humbleGrid.ClearHumbleCells();
             var cells = loadLevelSource switch
             {
                 RegularStart regularStart => MatrixExtensions.Create(regularStart.DifficultyData.Size, gridIndex =>

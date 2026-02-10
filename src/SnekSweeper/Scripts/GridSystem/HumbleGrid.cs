@@ -1,4 +1,5 @@
-﻿using GodotGadgets.Tasks;
+﻿using GodotGadgets.Extensions;
+using GodotGadgets.Tasks;
 using GTweens.Builders;
 using GTweens.Easings;
 using GTweens.Enums;
@@ -52,6 +53,12 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void Init(Grid grid, GridStateMachine gridStateMachine) =>
         (_grid, _gridStateMachine) = (grid, gridStateMachine);
+
+    public void ClearHumbleCells()
+    {
+        _humbleCells.Clear();
+        CellsContainer.ClearChildren();
+    }
 
     public IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin)
     {

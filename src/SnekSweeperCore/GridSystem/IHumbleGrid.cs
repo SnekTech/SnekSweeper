@@ -9,6 +9,7 @@ public interface IHumbleGrid
     CommandInvoker GridCommandInvoker { get; }
     IEnumerable<IHumbleCell> HumbleCells { get; }
     void TriggerInitEffects();
+    void ClearHumbleCells();
     IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin);
     IGridCursor GridCursor { get; }
     void PlayCongratulationEffects();
