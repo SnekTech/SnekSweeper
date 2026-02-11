@@ -8,7 +8,6 @@ public sealed class Win(GridStateMachine stateMachine) : GridState(stateMachine)
     {
         HumbleGrid.PlayCongratulationEffects();
 
-        // todo: figure out cancellation execution order
         var choice = await Context.LevelOrchestrator.GetPopupChoiceOnWinAsync(ct);
         Action handleChoiceAction = choice switch
         {

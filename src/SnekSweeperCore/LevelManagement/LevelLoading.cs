@@ -48,17 +48,17 @@ public static class LevelLoading
 
         public Grid CreateGrid(IHumbleGrid humbleGrid, GridEventBus gridEventBus)
         {
-            humbleGrid.ClearHumbleCells();
+            humbleGrid.HumbleCellsContainer.Clear();
             var cells = loadLevelSource switch
             {
                 RegularStart regularStart => MatrixExtensions.Create(regularStart.DifficultyData.Size, gridIndex =>
                 {
-                    var humbleCell = humbleGrid.InstantiateHumbleCell(gridIndex, regularStart.Skin);
+                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, regularStart.Skin);
                     return new Cell(humbleCell, gridIndex);
                 }),
                 FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.MapTo((_, gridIndex) =>
                 {
-                    var humbleCell = humbleGrid.InstantiateHumbleCell(gridIndex, fromRunRecord.Skin);
+                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, fromRunRecord.Skin);
                     return new Cell(humbleCell, gridIndex);
                 }),
                 _ => throw new SwitchExpressionException(),

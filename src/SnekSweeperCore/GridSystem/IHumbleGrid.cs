@@ -6,13 +6,18 @@ namespace SnekSweeperCore.GridSystem;
 
 public interface IHumbleGrid
 {
+    IHumbleCellsContainer HumbleCellsContainer { get; }
     CommandInvoker GridCommandInvoker { get; }
-    IEnumerable<IHumbleCell> HumbleCells { get; }
     void TriggerInitEffects();
-    void ClearHumbleCells();
-    IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin);
     IGridCursor GridCursor { get; }
     void PlayCongratulationEffects();
+}
+
+public interface IHumbleCellsContainer
+{
+    IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin);
+    IEnumerable<IHumbleCell> HumbleCells { get; }
+    void Clear();
 }
 
 public interface IGridCursor

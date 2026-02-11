@@ -8,7 +8,7 @@ sealed class SetGridCoverAlpha(float normalizedAlpha) : ICheatCodeGridEffect
 {
     public void Trigger(IHumbleGrid humbleGrid)
     {
-        foreach (var humbleCell in humbleGrid.HumbleCells)
+        foreach (var humbleCell in humbleGrid.HumbleCellsContainer.HumbleCells)
         {
             humbleCell.Cover.SetAlpha(normalizedAlpha);
         }
