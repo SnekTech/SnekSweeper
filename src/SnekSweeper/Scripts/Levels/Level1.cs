@@ -5,6 +5,7 @@ using SnekSweeper.Widgets;
 using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
+using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.Levels;
 
@@ -18,7 +19,8 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 
     public async Task LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
     {
-        var grid = loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus);
+        var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
+        var grid = loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
         var runRecorder = new GameRunRecorder(HouseKeeper.History);
 
         var gridStateContext = new GridStateContext(

@@ -11,18 +11,16 @@ namespace SnekSweeperCore.LevelManagement;
 
 public delegate bool[,] LayMineFn(GridIndex startIndex);
 
-public abstract record LoadLevelSource(GridSkin Skin);
+public abstract record LoadLevelSource;
 
 public sealed record RegularStart(
     GridDifficultyData DifficultyData,
-    bool Solvable,
-    GridSkin Skin
-) : LoadLevelSource(Skin);
+    bool Solvable
+) : LoadLevelSource;
 
 public sealed record FromRunRecord(
-    GameRunRecord RunRecord,
-    GridSkin Skin
-) : LoadLevelSource(Skin);
+    GameRunRecord RunRecord
+) : LoadLevelSource;
 
 public static class LevelLoading
 {
@@ -32,8 +30,7 @@ public static class LevelLoading
         {
             var difficulty = mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
             var solvable = mainSetting.GenerateSolvableGrid;
-            var skin = mainSetting.CurrentSkinKey.ToSkin();
-            return new RegularStart(difficulty, solvable, skin);
+            return new RegularStart(difficulty, solvable);
         }
 
         public LayMineFn LayMineFn => loadLevelSource switch
@@ -46,19 +43,21 @@ public static class LevelLoading
             _ => throw new SwitchExpressionException(),
         };
 
-        public Grid CreateGrid(IHumbleGrid humbleGrid, GridEventBus gridEventBus)
+        public Grid CreateGrid(IHumbleGrid humbleGrid, GridEventBus gridEventBus, GridSkin gridSkin)
         {
             humbleGrid.HumbleCellsContainer.Clear();
             var cells = loadLevelSource switch
             {
                 RegularStart regularStart => MatrixExtensions.Create(regularStart.DifficultyData.Size, gridIndex =>
                 {
-                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, regularStart.Skin);
+                    var humbleCell =
+                        humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
                     return new Cell(humbleCell, gridIndex);
                 }),
                 FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.MapTo((_, gridIndex) =>
                 {
-                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, fromRunRecord.Skin);
+                    var humbleCell =
+                        humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
                     return new Cell(humbleCell, gridIndex);
                 }),
                 _ => throw new SwitchExpressionException(),
