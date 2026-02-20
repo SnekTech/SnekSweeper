@@ -2,10 +2,7 @@ namespace SnekSweeper.CellSystem.Components;
 
 public partial class Content : Sprite2D
 {
-    public void ShowBomb()
-    {
-        Frame = FrameIndex.Bomb;
-    }
+    public void ShowBomb() => Frame = FrameIndex.Bomb;
 
     public void ShowNeighbourBombCount(int count)
     {
@@ -15,14 +12,17 @@ public partial class Content : Sprite2D
         Frame = FrameIndex.Zero + count;
     }
 
+    public void MarkAsWrongFlagged() => Frame = FrameIndex.WrongFlagged;
+
     public void ChangeTexture(Texture2D newTexture)
     {
         Texture = newTexture;
     }
 
-    private static class FrameIndex
+    static class FrameIndex
     {
         public const int Bomb = 2;
         public const int Zero = 7;
+        public const int WrongFlagged = 4;
     }
 }
