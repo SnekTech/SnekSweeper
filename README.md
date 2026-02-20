@@ -9,8 +9,9 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] multiple save slots
 - [ ] balatro-like background shader
 - [ ] mark bomb cell when bomb revealed
-  - [ ] mark the revealed one red
+  - [x] mark the revealed one red
   - [ ] mark the wrong-flagged ones with cross
+- [ ] prevent player input when popup shows
 
 ## Done
 
@@ -20,7 +21,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] pack rust ms-toollib to a tiny library
 - [x] add the GodotGadgets project to this solution, remove the dll reference
 - [x] load level from game run records
-  - extinguish different load level sources
+  - [x] extinguish different load level sources
   - [x] lay mine use the bomb matrix from the run record
   - [x] lock input to the start index before run start
 
