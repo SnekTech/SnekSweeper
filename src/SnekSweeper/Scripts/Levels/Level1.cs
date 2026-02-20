@@ -2,6 +2,7 @@
 using SnekSweeper.Autoloads;
 using SnekSweeper.UI.GameResult;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
@@ -39,10 +40,11 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         Autoload.SceneSwitcher.GotoSceneAsync<LosingPage>().Fire();
     }
 
-    public Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default)
-    {
-        return HUD.ShowAndGetChoiceAsync(ct.LinkWithNodeDestroy(this).Token);
-    }
+    public Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default) =>
+        HUD.ShowAndGetChoiceOnWinAsync(ct.LinkWithNodeDestroy(this).Token);
+
+    public Task<PopupChoiceOnLose> GetPopupChoiceOnLoseAsync(CancellationToken ct = default) =>
+        HUD.ShowAndGetChoiceOnLoseAsync(ct.LinkWithNodeDestroy(this).Token);
 
     public void NewGame()
     {
@@ -52,5 +54,11 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
     public void BackToMainMenu()
     {
         Autoload.SceneSwitcher.GotoSceneAsync<Main>().Fire();
+    }
+
+    public void Retry(GameRunRecord runRecord)
+    {
+        var loadLevelSource = new FromRunRecord(runRecord);
+        Autoload.SceneSwitcher.LoadLevel(loadLevelSource).Fire();
     }
 }

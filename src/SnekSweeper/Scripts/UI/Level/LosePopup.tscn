@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://bsotjk5uwpx18"]
+
+[ext_resource type="Script" uid="uid://c3nqeub7i5dad" path="res://Scripts/UI/Level/LosePopup.cs" id="1_g7m8q"]
+
+[node name="LosePopup" type="PanelContainer" unique_id=1144337558]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_g7m8q")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=309843940]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1721706820]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LoseLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=694794489]
+layout_mode = 2
+text = "You lose. Continue?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1062891469]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NewGameButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=172207682]
+unique_name_in_owner = true
+layout_mode = 2
+text = "New Game"
+
+[node name="RetryButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=815587702]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Retry"
+
+[node name="LeaveButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=670374985]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Leave"

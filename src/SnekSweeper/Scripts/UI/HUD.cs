@@ -25,8 +25,11 @@ public partial class HUD : CanvasLayer, ISceneScript
         UndoButton.Pressed -= OnUndoPressed;
     }
 
-    public Task<PopupChoiceOnWin> ShowAndGetChoiceAsync(CancellationToken ct = default) =>
+    public Task<PopupChoiceOnWin> ShowAndGetChoiceOnWinAsync(CancellationToken ct = default) =>
         WinPopup.ShowAndGetChoiceAsync(PopupTargetMarker.GlobalPosition, ct);
+
+    public Task<PopupChoiceOnLose> ShowAndGetChoiceOnLoseAsync(CancellationToken ct = default) =>
+        LosePopup.ShowAndGetChoiceAsync(PopupTargetMarker.GlobalPosition, ct);
 
     void OnBombCountChanged(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
     void OnFlagCountChanged(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
