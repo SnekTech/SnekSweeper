@@ -27,6 +27,9 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
         SetContent(initData);
     }
 
+    public void MarkAsWrongFlagged() => Content.MarkAsWrongFlagged();
+    public void MarkAsRevealedBomb() => _.Ground.SelfModulate = Colors.Red;
+
     void SetContent(CellInitData initData)
     {
         if (initData.HasBomb)

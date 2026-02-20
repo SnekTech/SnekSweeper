@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://iiukaws5xo8m"]
+[gd_scene format=3 uid="uid://iiukaws5xo8m"]
 
 [ext_resource type="Script" uid="uid://cay4rblna2j0r" path="res://Scripts/CellSystem/HumbleCell.cs" id="1_2hv0h"]
 [ext_resource type="Texture2D" uid="uid://v6wn46cquogl" path="res://Art/SnekSweeperSpriteSheet.png" id="2_3ch70"]
@@ -6,17 +6,17 @@
 [ext_resource type="PackedScene" uid="uid://dutrqx1ej8t61" path="res://Scripts/CellSystem/Components/Cover.tscn" id="4_le88v"]
 [ext_resource type="PackedScene" uid="uid://bm7i2bgrkt8g1" path="res://Scripts/CellSystem/Components/Flag.tscn" id="5_twx1n"]
 
-[node name="HumbleCell" type="Node2D"]
+[node name="HumbleCell" type="Node2D" unique_id=1656105251]
 script = ExtResource("1_2hv0h")
 
-[node name="Ground" type="Sprite2D" parent="."]
+[node name="Ground" type="Sprite2D" parent="." unique_id=774862091]
 texture = ExtResource("2_3ch70")
 centered = false
 hframes = 4
 vframes = 4
 region_rect = Rect2(0, 0, 16, 16)
 
-[node name="Content" type="Sprite2D" parent="."]
+[node name="Content" type="Sprite2D" parent="." unique_id=1520869516]
 unique_name_in_owner = true
 texture = ExtResource("2_3ch70")
 centered = false
@@ -26,8 +26,8 @@ frame = 8
 region_rect = Rect2(0, 16, 16, 16)
 script = ExtResource("3_30dvq")
 
-[node name="CellCover" parent="." instance=ExtResource("4_le88v")]
+[node name="CellCover" parent="." unique_id=572597929 instance=ExtResource("4_le88v")]
 unique_name_in_owner = true
 
-[node name="CellFlag" parent="." instance=ExtResource("5_twx1n")]
+[node name="CellFlag" parent="." unique_id=525614806 instance=ExtResource("5_twx1n")]
 unique_name_in_owner = true

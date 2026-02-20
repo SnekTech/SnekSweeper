@@ -10,6 +10,8 @@ public interface IHumbleCell
     IFlag Flag { get; }
     void OnInstantiate(GridIndex gridIndex, GridSkin skin);
     void OnInit(CellInitData initData);
+    void MarkAsWrongFlagged();
+    void MarkAsRevealedBomb();
 }
 
 public readonly record struct CellInitData(bool HasBomb, int NeighborBombCount);
