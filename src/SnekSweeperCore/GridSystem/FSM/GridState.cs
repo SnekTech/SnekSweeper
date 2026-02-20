@@ -11,8 +11,8 @@ public abstract class GridState(GridStateMachine stateMachine) : IState
     protected GameRunRecorder RunRecorder => StateMachine.Context.RunRecorder;
     protected GridStateContext Context => StateMachine.Context;
 
-    protected Task ChangeStateAsync<T>(CancellationToken ct = default) where T : GridState =>
-        StateMachine.ChangeStateAsync<T>(ct);
+    protected Task ChangeStateAsync(GridState newState, CancellationToken ct = default) =>
+        StateMachine.ChangeStateAsync(newState, ct);
 
     public virtual Task OnEnterAsync(CancellationToken ct = default) => Task.CompletedTask;
 

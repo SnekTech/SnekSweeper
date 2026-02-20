@@ -23,16 +23,8 @@ public sealed class GameStart(GridStateMachine stateMachine) : GridState(stateMa
         });
         return;
 
-        Task HandleWinAsync(GameWin gameWin)
-        {
-            RunRecorder.CreateAndSaveRecord(true, gameWin.Bombs);
-            return ChangeStateAsync<Win>(ct);
-        }
+        Task HandleWinAsync(GameWin gameWin) => ChangeStateAsync(new Win(StateMachine, gameWin), ct);
 
-        Task HandleLoseAsync(GameLose gameLose)
-        {
-            RunRecorder.CreateAndSaveRecord(false, gameLose.Bombs);
-            return ChangeStateAsync<Lose>(ct);
-        }
+        Task HandleLoseAsync(GameLose gameLose) => ChangeStateAsync(new Lose(StateMachine, gameLose), ct);
     }
 }

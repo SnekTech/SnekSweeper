@@ -1,6 +1,5 @@
 ﻿using GodotGadgets.Tasks;
 using SnekSweeper.Autoloads;
-using SnekSweeper.UI.GameResult;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameMode;
@@ -26,18 +25,12 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 
         var gridStateContext = new GridStateContext(
             grid, TheGrid, runRecorder,
-            this, OnLose
+            this
         );
-        var gridStateMachine = new GridStateMachine(loadLevelSource, gridStateContext);
-        await gridStateMachine.InitAsync(ct);
+        var gridStateMachine = new GridStateMachine(gridStateContext);
+        await gridStateMachine.InitAsync(loadLevelSource, ct);
 
         TheGrid.Init(grid, gridStateMachine);
-    }
-
-    static void OnLose()
-    {
-        MessageBox.Print("Game over! Bomb revealed!");
-        Autoload.SceneSwitcher.GotoSceneAsync<LosingPage>().Fire();
     }
 
     public Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default) =>

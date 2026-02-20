@@ -12,7 +12,7 @@ public sealed record SecondaryReleased(GridIndex Index) : GridInput(Index);
 
 public abstract record GridInputProcessResult;
 
-public sealed record BatchRevealed(Grid Grid, List<Cell> BombCellsRevealed) : GridInputProcessResult;
+public sealed record BatchRevealed(Grid Grid, List<Cell> CellsInThisBatch) : GridInputProcessResult;
 
 public sealed record FlagSwitched : GridInputProcessResult
 {

@@ -10,15 +10,14 @@ public record GridStateContext(
     Grid Grid,
     IHumbleGrid HumbleGrid,
     GameRunRecorder RunRecorder,
-    ILevelOrchestrator LevelOrchestrator,
-    Action OnLose
+    ILevelOrchestrator LevelOrchestrator
 );
 
-public class GridStateMachine(LoadLevelSource loadLevelSource, GridStateContext context) : StateMachine<GridState>
+public class GridStateMachine(GridStateContext context) : StateMachineV2<GridState>
 {
     public GridStateContext Context => context;
 
-    protected override void SetupStateInstances()
+    public Task InitAsync(LoadLevelSource loadLevelSource,CancellationToken ct = default)
     {
         Instantiated instantiated = loadLevelSource switch
         {
@@ -26,18 +25,8 @@ public class GridStateMachine(LoadLevelSource loadLevelSource, GridStateContext 
             FromRunRecord fromRunRecord => new InstantiatedFromRecord(fromRunRecord.RunRecord, this),
             _ => throw new SwitchExpressionException(),
         };
-
-        var gameStart = new GameStart(this);
-        var win = new Win(this);
-        var lose = new Lose(this);
-
-        StateInstances[typeof(Instantiated)] = instantiated;
-        StateInstances[typeof(GameStart)] = gameStart;
-        StateInstances[typeof(Win)] = win;
-        StateInstances[typeof(Lose)] = lose;
+        return SetInitStateAsync(instantiated, ct);
     }
-
-    public Task InitAsync(CancellationToken ct = default) => SetInitStateAsync<Instantiated>(ct);
 
     public Task HandleInputAsync(GridInput gridInput, CancellationToken ct = default) =>
         CurrentState?.HandleInputAsync(gridInput, ct) ?? Task.CompletedTask;

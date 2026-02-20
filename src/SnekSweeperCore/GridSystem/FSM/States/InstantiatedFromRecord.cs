@@ -23,7 +23,7 @@ public sealed class InstantiatedFromRecord(GameRunRecord runRecord, GridStateMac
         if (gridInput.Index != runRecord.StartIndex) return;
 
         RunRecorder.MarkRunStartInfo(DateTime.Now, gridInput.Index);
-        await ChangeStateAsync<GameStart>(ct);
+        await ChangeStateAsync(new GameStart(StateMachine), ct);
         await StateMachine.HandleInputAsync(gridInput, ct);
     }
 }

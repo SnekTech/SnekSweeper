@@ -103,8 +103,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
         gridEventBus.EmitBatchRevealed();
 
-        var bombCellsRevealed = cellsToReveal.Where(cell => cell.HasBomb).ToList();
-        return new BatchRevealed(this, bombCellsRevealed);
+        return new BatchRevealed(this, cellsToReveal.ToList());
 
         Task ExecuteRevealBatchCommandAsync()
         {

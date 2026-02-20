@@ -11,14 +11,13 @@ public class GameRunRecorder(History history)
     internal void MarkRunStartInfo(DateTime startAt, GridIndex startIndex) =>
         (CurrentRunStartAt, StartIndex) = (startAt, startIndex);
 
-    public void CreateAndSaveRecord(bool winning, bool[,] bombs)
-    {
-        var record = GameRunRecord.Create(
-            RunDuration.Create(CurrentRunStartAt, DateTime.Now),
-            winning,
-            bombs,
-            StartIndex
-        );
-        history.AddRecord(record);
-    }
+
+    public GameRunRecord GenerateRecentRecord(bool winning, bool[,] bombs) => GameRunRecord.Create(
+        RunDuration.Create(CurrentRunStartAt, DateTime.Now),
+        winning,
+        bombs,
+        StartIndex
+    );
+
+    public void SaveRecord(GameRunRecord runRecord) => history.AddRecord(runRecord);
 }
