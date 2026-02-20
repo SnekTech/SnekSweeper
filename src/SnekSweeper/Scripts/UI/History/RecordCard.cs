@@ -1,10 +1,8 @@
 ﻿using GodotGadgets.Tasks;
-using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
-using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.UI.History;
 
@@ -49,8 +47,7 @@ public partial class RecordCard : PanelContainer, ISceneScript
 
     void OnRetryButtonPressed()
     {
-        var skin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
-        var loadLevelSource = new FromRunRecord(RunRecord, skin);
+        var loadLevelSource = new FromRunRecord(RunRecord);
         Autoload.SceneSwitcher.LoadLevel(loadLevelSource).Fire();
     }
 }
