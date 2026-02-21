@@ -66,12 +66,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
     async Task<GridInputProcessResult> RevealAroundAsync(GridIndex gridIndex, CancellationToken ct = default)
     {
         var cell = cells.At(gridIndex);
-        var canRevealAround = cell is { IsRevealed: true, HasBomb: false };
-        if (!canRevealAround)
-            return NothingHappens.Instance;
-
-        var flagCountMatchesBomb = GetNeighborFlagCount(cell) != GetNeighborBombCount(cell);
-        if (flagCountMatchesBomb)
+        if (!CanRevealAround())
             return NothingHappens.Instance;
 
         var cellsToReveal = new HashSet<Cell>();
@@ -82,6 +77,13 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         }
 
         return await RevealCells(cellsToReveal, ct);
+
+        bool CanRevealAround()
+        {
+            var cellIsRevealed = cell is { IsRevealed: true, HasBomb: false };
+            var flagCountMatchesBomb = GetNeighborFlagCount(cell) == GetNeighborBombCount(cell);
+            return cellIsRevealed && flagCountMatchesBomb;
+        }
     }
 
     IEnumerable<Cell> GetNeighbors(Cell cell) => cell.GridIndex.GetNeighborIndicesWithin(Size).Select(cells.At);
