@@ -25,7 +25,7 @@ class MockHumbleCell : IHumbleCell
         "this humble cell is marked as wrong-flagged".Dump();
     }
 
-    public void MarkAsRevealedBomb()
+    public void MarkAsBombRevealed()
     {
         "this humble cell is marked as bomb-revealed".Dump();
     }

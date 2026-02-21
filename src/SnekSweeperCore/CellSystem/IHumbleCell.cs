@@ -11,7 +11,7 @@ public interface IHumbleCell
     void OnInstantiate(GridIndex gridIndex, GridSkin skin);
     void OnInit(CellInitData initData);
     void MarkAsWrongFlagged();
-    void MarkAsRevealedBomb();
+    void MarkAsBombRevealed();
 }
 
 public readonly record struct CellInitData(bool HasBomb, int NeighborBombCount);

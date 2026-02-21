@@ -78,6 +78,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
         foreach (var neighbor in GetNeighbors(cell))
         {
             FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
+            cellsToReveal.Add(neighbor);
         }
 
         return await RevealCells(cellsToReveal, ct);

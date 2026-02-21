@@ -10,7 +10,7 @@ public class Lose(GridStateMachine stateMachine, GameLose gameLose) : GridState(
         var recentRecord = RunRecorder.GenerateRecentRecord(false, gameLose.Bombs);
         RunRecorder.SaveRecord(recentRecord);
 
-        MarkPlayerErrors();
+        await MarkPlayerErrorsAsync();
 
         var choice = await Context.LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct);
         Action handleChoiceAction = choice switch
@@ -30,18 +30,5 @@ public class Lose(GridStateMachine stateMachine, GameLose gameLose) : GridState(
         }
     }
 
-    void MarkPlayerErrors()
-    {
-        var wrongFlaggedCells = gameLose.CellsInThisBatch.Where(cell => cell is { IsFlagged: true, HasBomb: false });
-        foreach (var bombCell in wrongFlaggedCells)
-        {
-            bombCell.HumbleCell.MarkAsWrongFlagged();
-        }
-
-        var revealedBombCells = gameLose.CellsInThisBatch.Where(cell => cell.HasBomb);
-        foreach (var revealedBombCell in revealedBombCells)
-        {
-            revealedBombCell.HumbleCell.MarkAsRevealedBomb();
-        }
-    }
+    Task MarkPlayerErrorsAsync() => Task.WhenAll(gameLose.CellsInThisBatch.Select(cell => cell.MarkErrorAsync()));
 }

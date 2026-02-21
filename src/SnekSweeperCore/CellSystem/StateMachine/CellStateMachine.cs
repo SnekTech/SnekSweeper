@@ -3,19 +3,23 @@ using SnekSweeperCore.FSM;
 
 namespace SnekSweeperCore.CellSystem.StateMachine;
 
-public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
+public class CellStateMachine(Cell cell) : StateMachine<CellState>
 {
-    public readonly IHumbleCell HumbleCell = humbleCell;
+    public readonly IHumbleCell HumbleCell = cell.HumbleCell;
 
     protected override void SetupStateInstances()
     {
         var coveredState = new CoveredState(this);
         var revealedState = new RevealedState(this);
         var flaggedState = new FlaggedState(this);
+        var bombRevealedState = new BombRevealedState(this);
+        var wrongFlaggedState = new WrongFlaggedState(this);
 
         StateInstances[typeof(CoveredState)] = coveredState;
         StateInstances[typeof(RevealedState)] = revealedState;
         StateInstances[typeof(FlaggedState)] = flaggedState;
+        StateInstances[typeof(BombRevealedState)] = bombRevealedState;
+        StateInstances[typeof(WrongFlaggedState)] = wrongFlaggedState;
 
         SetupTransitions();
         return;
@@ -29,10 +33,12 @@ public class CellStateMachine(IHumbleCell humbleCell) : StateMachine<CellState>
 
             revealedState.SetTransitions([
                 new Transition(coveredState, CellRequest.PutOnCover),
+                new Transition(bombRevealedState, CellRequest.MarkError, () => cell.HasBomb),
             ]);
 
             flaggedState.SetTransitions([
                 new Transition(coveredState, CellRequest.PutDownFlag),
+                new Transition(wrongFlaggedState, CellRequest.MarkError, () => cell.IsWrongFlagged),
             ]);
         }
     }

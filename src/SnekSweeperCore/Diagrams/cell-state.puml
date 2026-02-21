@@ -5,15 +5,21 @@ hide empty description
 state covered
 state flagged
 state revealed
+state "wrong flagged" as wrongFlagged
+state "bomb revealed" as bombRevealed
 
-[*] -> covered
+[*] --> covered
 
-covered ---> flagged : raise flag
-flagged ---> covered : put down flag
+covered --> flagged : raise flag
+flagged --> covered : put down flag
 
-covered ---> revealed : reveal cover
-revealed ---> covered : put on cover
+covered --> revealed : reveal cover
+revealed --> covered : put on cover
 
-revealed -> [*] : level ends
+flagged --> wrongFlagged : mark wrong-flagged
+revealed --> bombRevealed : mark revealed bomb
+
+wrongFlagged --> [*]
+bombRevealed --> [*]
 
 @enduml

@@ -6,4 +6,5 @@ public enum CellRequest
     PutOnCover,
     RaiseFlag,
     PutDownFlag,
+    MarkError,
 }

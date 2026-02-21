@@ -16,7 +16,7 @@ public static class Referee
     {
         var (grid, cellsInThisBatch) = batchRevealed;
 
-        if (cellsInThisBatch.Any(cell => cell.HasBomb))
+        if (cellsInThisBatch.Any(cell => cell.IsRevealedBomb))
         {
             return new GameLose(grid.BombMatrix, cellsInThisBatch);
         }
