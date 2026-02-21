@@ -17,4 +17,4 @@ public abstract class CellState(CellStateMachine stateMachine) : IState
     public virtual Task OnExitAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 }
 
-public readonly record struct Transition(CellState To, CellRequest Request);
+public readonly record struct Transition(CellState To, CellRequest Request, Func<bool>? Condition =null);
