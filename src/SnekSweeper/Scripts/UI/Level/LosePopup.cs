@@ -21,26 +21,20 @@ public partial class LosePopup : PanelContainer
         _popupChoiceListener.UnregisterButtonListeners();
     }
 
-    PopupChoiceListener<PopupChoiceOnLose> CreatePopupChoiceListener()
-    {
-        var buttons = new List<ButtonAndValue<PopupChoiceOnLose>>();
-        buttons.AddRange([
-            NewGameButton.CreateChoiceButton(PopupChoiceOnLose.NewGame),
-            LeaveButton.CreateChoiceButton(PopupChoiceOnLose.Leave),
-            RetryButton.CreateChoiceButton(PopupChoiceOnLose.Retry),
-        ]);
-        return new PopupChoiceListener<PopupChoiceOnLose>(buttons);
-    }
-
     public async Task<PopupChoiceOnLose> ShowAndGetChoiceAsync(Vector2 targetGlobalPosition,
         CancellationToken ct = default)
     {
         await _animator.ShowAsync(targetGlobalPosition, ct);
-
         var choice = await _popupChoiceListener.GetChoiceAsync();
-
         await _animator.HideAsync(ct);
 
         return choice;
     }
+
+    PopupChoiceListener<PopupChoiceOnLose> CreatePopupChoiceListener() =>
+        new([
+            NewGameButton.CreateChoiceButton(PopupChoiceOnLose.NewGame),
+            LeaveButton.CreateChoiceButton(PopupChoiceOnLose.Leave),
+            RetryButton.CreateChoiceButton(PopupChoiceOnLose.Retry),
+        ]);
 }

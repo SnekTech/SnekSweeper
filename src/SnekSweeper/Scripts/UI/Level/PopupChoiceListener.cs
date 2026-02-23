@@ -1,6 +1,6 @@
 ﻿namespace SnekSweeper.UI.Level;
 
-public class PopupChoiceListener<T> where T : Enum
+public class PopupChoiceListener<T>
 {
     readonly TaskCompletionSource<T> _tcs = new();
     readonly Dictionary<Button, Action> _handlerCache = [];
@@ -32,13 +32,13 @@ public class PopupChoiceListener<T> where T : Enum
     }
 }
 
-public readonly record struct ButtonAndValue<T>(Button ChoiceButton, T Value) where T : Enum;
+public readonly record struct ButtonAndValue<T>(Button ChoiceButton, T Value);
 
 public static class ButtonAndValueExtensions
 {
     extension(Button button)
     {
-        public ButtonAndValue<T> CreateChoiceButton<T>(T value) where T:Enum
+        public ButtonAndValue<T> CreateChoiceButton<T>(T value)
             => new(button, value);
     }
 }
