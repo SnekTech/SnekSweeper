@@ -7,9 +7,30 @@ namespace SnekSweeper.UI.Level;
 [SceneTree]
 public partial class LosePopup : PanelContainer
 {
-    public override void _Ready()
+    PopupChoiceListener<PopupChoiceOnLose> _popupChoiceListener = null!;
+
+    public override void _EnterTree()
     {
         Hide();
+        _popupChoiceListener = CreatePopupChoiceListener();
+
+        _popupChoiceListener.RegisterButtonListeners();
+    }
+
+    public override void _ExitTree()
+    {
+        _popupChoiceListener.UnregisterButtonListeners();
+    }
+
+    PopupChoiceListener<PopupChoiceOnLose> CreatePopupChoiceListener()
+    {
+        var buttons = new List<ButtonAndValue<PopupChoiceOnLose>>();
+        buttons.AddRange([
+            NewGameButton.CreateChoiceButton(PopupChoiceOnLose.NewGame),
+            LeaveButton.CreateChoiceButton(PopupChoiceOnLose.Leave),
+            RetryButton.CreateChoiceButton(PopupChoiceOnLose.Retry),
+        ]);
+        return new PopupChoiceListener<PopupChoiceOnLose>(buttons);
     }
 
     public async Task<PopupChoiceOnLose> ShowAndGetChoiceAsync(Vector2 targetGlobalPosition,
@@ -22,7 +43,7 @@ public partial class LosePopup : PanelContainer
             .SetEasing(Easing.OutBack)
             .PlayAsync(ct);
 
-        var choice = await _.ChoiceListener.GetChoiceAsync();
+        var choice = await _popupChoiceListener.GetChoiceAsync();
 
         await this.TweenGlobalPosition(originalGlobalPosition, tweenDuration)
             .SetEasing(Easing.InBack)

@@ -1,18 +1,11 @@
 [gd_scene format=3 uid="uid://bsotjk5uwpx18"]
 
 [ext_resource type="Script" uid="uid://c3nqeub7i5dad" path="res://Scripts/UI/Level/LosePopup.cs" id="1_g7m8q"]
-[ext_resource type="Script" uid="uid://c4ckdriyv7uv0" path="res://Scripts/UI/Level/LosePopupChoiceListener.cs" id="2_8sg2e"]
 
 [node name="LosePopup" type="PanelContainer" unique_id=1144337558]
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_g7m8q")
-
-[node name="ChoiceListener" type="Node" parent="." unique_id=1802723527 node_paths=PackedStringArray("_newGame", "_retry", "_leave")]
-script = ExtResource("2_8sg2e")
-_newGame = NodePath("../MarginContainer/VBoxContainer/HBoxContainer/NewGameButton")
-_retry = NodePath("../MarginContainer/VBoxContainer/HBoxContainer/RetryButton")
-_leave = NodePath("../MarginContainer/VBoxContainer/HBoxContainer/LeaveButton")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=309843940]
 layout_mode = 2
