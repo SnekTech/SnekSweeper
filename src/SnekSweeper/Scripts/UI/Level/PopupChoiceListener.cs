@@ -17,17 +17,17 @@ public class PopupChoiceListener<T>
 
     public void RegisterButtonListeners()
     {
-        foreach (var button in _handlerCache.Keys)
+        foreach (var (button, handler) in _handlerCache)
         {
-            button.Pressed += _handlerCache[button];
+            button.Pressed += handler;
         }
     }
 
     public void UnregisterButtonListeners()
     {
-        foreach (var button in _handlerCache.Keys)
+        foreach (var (button, handler) in _handlerCache)
         {
-            button.Pressed -= _handlerCache[button];
+            button.Pressed -= handler;
         }
     }
 }
