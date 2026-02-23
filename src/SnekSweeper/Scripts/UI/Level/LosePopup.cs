@@ -1,6 +1,4 @@
-﻿using GTweens.Easings;
-using GTweensGodot.Extensions;
-using SnekSweeperCore.LevelManagement;
+﻿using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI.Level;
 
@@ -8,12 +6,13 @@ namespace SnekSweeper.UI.Level;
 public partial class LosePopup : PanelContainer
 {
     PopupChoiceListener<PopupChoiceOnLose> _popupChoiceListener = null!;
+    PopupAnimator _animator = null!;
 
     public override void _EnterTree()
     {
         Hide();
+        _animator = new PopupAnimator(this);
         _popupChoiceListener = CreatePopupChoiceListener();
-
         _popupChoiceListener.RegisterButtonListeners();
     }
 
@@ -36,19 +35,11 @@ public partial class LosePopup : PanelContainer
     public async Task<PopupChoiceOnLose> ShowAndGetChoiceAsync(Vector2 targetGlobalPosition,
         CancellationToken ct = default)
     {
-        Show();
-        var originalGlobalPosition = GlobalPosition;
-        const float tweenDuration = 0.6f;
-        await this.TweenGlobalPosition(targetGlobalPosition, tweenDuration)
-            .SetEasing(Easing.OutBack)
-            .PlayAsync(ct);
+        await _animator.ShowAsync(targetGlobalPosition, ct);
 
         var choice = await _popupChoiceListener.GetChoiceAsync();
 
-        await this.TweenGlobalPosition(originalGlobalPosition, tweenDuration)
-            .SetEasing(Easing.InBack)
-            .PlayAsync(ct);
-        Hide();
+        await _animator.HideAsync(ct);
 
         return choice;
     }
