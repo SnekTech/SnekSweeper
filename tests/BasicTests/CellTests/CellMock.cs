@@ -33,13 +33,13 @@ class MockHumbleCell : IHumbleCell
 
 class MockCover :ICover
 {
-    public Task RevealAsync(CancellationToken cancellationToken)
+    public Task RevealAsync(CancellationToken ct = default)
     {
         "revealing the cover".Dump();
         return Task.CompletedTask;
     }
 
-    public Task PutOnAsync(CancellationToken cancellationToken)
+    public Task PutOnAsync(CancellationToken ct = default)
     {
         "putting on the cover".Dump();
         return Task.CompletedTask;
@@ -53,13 +53,13 @@ class MockCover :ICover
 
 class MockFlag : IFlag
 {
-    public Task RaiseAsync(CancellationToken cancellationToken)
+    public Task RaiseAsync(CancellationToken ct = default)
     {
         "raising flag".Dump();
         return Task.CompletedTask;
     }
 
-    public Task PutDownAsync(CancellationToken cancellationToken)
+    public Task PutDownAsync(CancellationToken ct = default)
     {
         "putting down flag".Dump();
         return Task.CompletedTask;

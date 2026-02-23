@@ -26,9 +26,9 @@ public partial class Cover : Node2D, ICover, ISceneScript
         SetDissolveProgress(0);
     }
 
-    public async Task RevealAsync(CancellationToken cancellationToken = default)
+    public async Task RevealAsync(CancellationToken ct = default)
     {
-        var tokenLinkedWithTreeExit = cancellationToken.LinkWithNodeDestroy(this);
+        var tokenLinkedWithTreeExit = ct.LinkWithNodeDestroy(this);
 
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
@@ -36,9 +36,9 @@ public partial class Cover : Node2D, ICover, ISceneScript
         Hide();
     }
 
-    public async Task PutOnAsync(CancellationToken cancellationToken = default)
+    public async Task PutOnAsync(CancellationToken ct = default)
     {
-        var tokenLinkedWithTreeExit = cancellationToken.LinkWithNodeDestroy(this);
+        var tokenLinkedWithTreeExit = ct.LinkWithNodeDestroy(this);
 
         RandomizeNoise();
         Show();
