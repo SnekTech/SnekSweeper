@@ -27,13 +27,13 @@ public class CellStateMachine(Cell cell) : StateMachine<CellState>
         void SetupTransitions()
         {
             coveredState.SetTransitions([
-                new Transition(revealedState, CellRequest.RevealCover, () => HumbleCell.Cover.RevealAsync()),
-                new Transition(flaggedState, CellRequest.RaiseFlag, () => HumbleCell.Flag.RaiseAsync()),
+                new Transition(revealedState, CellRequest.RevealCover, ct => HumbleCell.Cover.RevealAsync(ct)),
+                new Transition(flaggedState, CellRequest.RaiseFlag, ct => HumbleCell.Flag.RaiseAsync(ct)),
             ]);
 
             revealedState.SetTransitions([
-                new Transition(coveredState, CellRequest.PutOnCover, () => HumbleCell.Cover.PutOnAsync()),
-                new Transition(bombRevealedState, CellRequest.MarkError, () =>
+                new Transition(coveredState, CellRequest.PutOnCover, ct => HumbleCell.Cover.PutOnAsync(ct)),
+                new Transition(bombRevealedState, CellRequest.MarkError, _ =>
                 {
                     HumbleCell.MarkAsBombRevealed();
                     return Task.CompletedTask;
@@ -41,8 +41,8 @@ public class CellStateMachine(Cell cell) : StateMachine<CellState>
             ]);
 
             flaggedState.SetTransitions([
-                new Transition(coveredState, CellRequest.PutDownFlag, () => HumbleCell.Flag.PutDownAsync()),
-                new Transition(wrongFlaggedState, CellRequest.MarkError, () =>
+                new Transition(coveredState, CellRequest.PutDownFlag, ct => HumbleCell.Flag.PutDownAsync(ct)),
+                new Transition(wrongFlaggedState, CellRequest.MarkError, _ =>
                 {
                     HumbleCell.MarkAsWrongFlagged();
                     return Task.CompletedTask;
@@ -63,7 +63,7 @@ public class CellStateMachine(Cell cell) : StateMachine<CellState>
             if (conditionNotMet) continue;
 
             if (onTransitionAsync != null)
-                await onTransitionAsync();
+                await onTransitionAsync(ct);
 
             await ChangeStateAsync(to, ct);
             return;
