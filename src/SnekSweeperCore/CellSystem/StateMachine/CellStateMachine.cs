@@ -27,18 +27,26 @@ public class CellStateMachine(Cell cell) : StateMachine<CellState>
         void SetupTransitions()
         {
             coveredState.SetTransitions([
-                new Transition(revealedState, CellRequest.RevealCover),
-                new Transition(flaggedState, CellRequest.RaiseFlag),
+                new Transition(revealedState, CellRequest.RevealCover, () => HumbleCell.Cover.RevealAsync()),
+                new Transition(flaggedState, CellRequest.RaiseFlag, () => HumbleCell.Flag.RaiseAsync()),
             ]);
 
             revealedState.SetTransitions([
-                new Transition(coveredState, CellRequest.PutOnCover),
-                new Transition(bombRevealedState, CellRequest.MarkError, () => cell.HasBomb),
+                new Transition(coveredState, CellRequest.PutOnCover, () => HumbleCell.Cover.PutOnAsync()),
+                new Transition(bombRevealedState, CellRequest.MarkError, () =>
+                {
+                    HumbleCell.MarkAsBombRevealed();
+                    return Task.CompletedTask;
+                }, () => cell.HasBomb),
             ]);
 
             flaggedState.SetTransitions([
-                new Transition(coveredState, CellRequest.PutDownFlag),
-                new Transition(wrongFlaggedState, CellRequest.MarkError, () => cell.IsWrongFlagged),
+                new Transition(coveredState, CellRequest.PutDownFlag, () => HumbleCell.Flag.PutDownAsync()),
+                new Transition(wrongFlaggedState, CellRequest.MarkError, () =>
+                {
+                    HumbleCell.MarkAsWrongFlagged();
+                    return Task.CompletedTask;
+                }, () => cell.IsWrongFlagged),
             ]);
         }
     }
@@ -48,13 +56,14 @@ public class CellStateMachine(Cell cell) : StateMachine<CellState>
         if (CurrentState == null)
             return;
 
-        foreach (var (to, onRequest, condition) in CurrentState.Transitions)
+        foreach (var (to, onRequest, onTransitionAsync, condition) in CurrentState.Transitions)
         {
             if (onRequest != request) continue;
-            if (condition is not null)
-            {
-                if (!condition()) continue;
-            }
+            var conditionNotMet = condition is not null && !condition();
+            if (conditionNotMet) continue;
+
+            if (onTransitionAsync != null)
+                await onTransitionAsync();
 
             await ChangeStateAsync(to, ct);
             return;
