@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://chttesjjcccd0"]
+
+[ext_resource type="Script" uid="uid://c6v7bs54vdldw" path="res://Scripts/UI/Level/PopupLayer.cs" id="1_p2wp0"]
+[ext_resource type="PackedScene" uid="uid://kpurf0bffdiv" path="res://Scripts/UI/Level/WinPopup.tscn" id="1_reqw0"]
+[ext_resource type="PackedScene" uid="uid://bsotjk5uwpx18" path="res://Scripts/UI/Level/LosePopup.tscn" id="2_p2wp0"]
+
+[node name="PopupLayer" type="CanvasLayer" unique_id=695196234]
+layer = 2
+script = ExtResource("1_p2wp0")
+
+[node name="InputMask" type="ColorRect" parent="." unique_id=515033789]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+metadata/_edit_lock_ = true
+
+[node name="PopupOriginMarker" type="Marker2D" parent="." unique_id=1637716238]
+position = Vector2(240, -96)
+metadata/_edit_lock_ = true
+metadata/_edit_group_ = true
+
+[node name="WinPopup" parent="PopupOriginMarker" unique_id=2136805872 instance=ExtResource("1_reqw0")]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+
+[node name="LosePopup" parent="PopupOriginMarker" unique_id=1144337558 instance=ExtResource("2_p2wp0")]
+unique_name_in_owner = true
+offset_right = 231.0
+offset_bottom = 88.0
+
+[node name="PopupTargetMarker" type="Marker2D" parent="." unique_id=619049538]
+unique_name_in_owner = true
+position = Vector2(240, 112)
+metadata/_edit_lock_ = true

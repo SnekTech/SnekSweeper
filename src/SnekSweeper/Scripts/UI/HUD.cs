@@ -26,10 +26,10 @@ public partial class HUD : CanvasLayer, ISceneScript
     }
 
     public Task<PopupChoiceOnWin> ShowAndGetChoiceOnWinAsync(CancellationToken ct = default) =>
-        WinPopup.ShowAndGetChoiceAsync(PopupTargetMarker.GlobalPosition, ct);
+        _.PopupLayer.ShowAndGetChoiceOnWinAsync(ct);
 
     public Task<PopupChoiceOnLose> ShowAndGetChoiceOnLoseAsync(CancellationToken ct = default) =>
-        LosePopup.ShowAndGetChoiceAsync(PopupTargetMarker.GlobalPosition, ct);
+        _.PopupLayer.ShowAndGetChoiceOnLoseAsync(ct);
 
     void OnBombCountChanged(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
     void OnFlagCountChanged(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";

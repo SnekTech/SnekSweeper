@@ -3,8 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_exko8"]
 [ext_resource type="Script" uid="uid://y4bxhdwv6tsd" path="res://Scripts/UI/HUD.cs" id="1_udr3g"]
 [ext_resource type="PackedScene" uid="uid://ofhobc7irrc4" path="res://Scripts/Combo/ComboRankCard.tscn" id="3_vtae1"]
-[ext_resource type="PackedScene" uid="uid://kpurf0bffdiv" path="res://Scripts/UI/Level/WinPopup.tscn" id="4_ti1le"]
-[ext_resource type="PackedScene" uid="uid://bsotjk5uwpx18" path="res://Scripts/UI/Level/LosePopup.tscn" id="5_jvst1"]
+[ext_resource type="PackedScene" uid="uid://chttesjjcccd0" path="res://Scripts/UI/Level/PopupLayer.tscn" id="4_ti1le"]
 
 [node name="HUD" type="CanvasLayer" unique_id=1050904476]
 script = ExtResource("1_udr3g")
@@ -68,24 +67,4 @@ layout_mode = 2
 size_flags_horizontal = 10
 size_flags_vertical = 0
 
-[node name="PopupOriginMarker" type="Marker2D" parent="." unique_id=2023693769]
-position = Vector2(240, -96)
-metadata/_edit_lock_ = true
-metadata/_edit_group_ = true
-
-[node name="WinPopup" parent="PopupOriginMarker" unique_id=2136805872 instance=ExtResource("4_ti1le")]
-unique_name_in_owner = true
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-grow_horizontal = 2
-
-[node name="LosePopup" parent="PopupOriginMarker" unique_id=1144337558 instance=ExtResource("5_jvst1")]
-unique_name_in_owner = true
-offset_right = 231.0
-offset_bottom = 88.0
-
-[node name="PopupTargetMarker" type="Marker2D" parent="." unique_id=720344821]
-unique_name_in_owner = true
-position = Vector2(240, 112)
-metadata/_edit_lock_ = true
+[node name="PopupLayer" parent="." unique_id=695196234 instance=ExtResource("4_ti1le")]

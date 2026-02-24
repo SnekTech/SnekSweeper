@@ -5,13 +5,9 @@ A minesweeper game with modern game features & nice pixel art assets.
 ## Todo
 
 - [ ] controller support
-  - [ ] 怪物猎人式转盘
+  - [ ] like Monster Hunter item selector
 - [ ] multiple save slots
 - [ ] balatro-like background shader
-- [ ] mark bomb cell when bomb revealed
-  - [x] mark the revealed one red
-  - [ ] mark the wrong-flagged ones with cross
-- [ ] prevent player input when popup shows
 
 ## Done
 
@@ -24,6 +20,10 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [x] extinguish different load level sources
   - [x] lay mine use the bomb matrix from the run record
   - [x] lock input to the start index before run start
+- [x] mark bomb cell when bomb revealed
+  - [x] mark the revealed one red
+  - [x] mark the wrong-flagged ones with cross
+- [x] block player input when popup shows
 
 ## GamePlay
 
