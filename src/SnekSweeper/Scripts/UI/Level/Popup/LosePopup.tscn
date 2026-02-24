@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bsotjk5uwpx18"]
 
-[ext_resource type="Script" uid="uid://c3nqeub7i5dad" path="res://Scripts/UI/Level/LosePopup.cs" id="1_g7m8q"]
+[ext_resource type="Script" uid="uid://c3nqeub7i5dad" path="res://Scripts/UI/Level/Popup/LosePopup.cs" id="1_g7m8q"]
 
 [node name="LosePopup" type="PanelContainer" unique_id=1144337558]
 offset_right = 40.0

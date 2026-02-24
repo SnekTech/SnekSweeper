@@ -1,11 +1,11 @@
 ﻿using SnekSweeperCore.LevelManagement;
 
-namespace SnekSweeper.UI.Level;
+namespace SnekSweeper.UI.Level.Popup;
 
 [SceneTree]
-public partial class WinPopup : PanelContainer
+public partial class LosePopup : PanelContainer
 {
-    PopupChoiceListener<PopupChoiceOnWin> _popupChoiceListener = null!;
+    PopupChoiceListener<PopupChoiceOnLose> _popupChoiceListener = null!;
     PopupAnimator _animator = null!;
 
     public override void _EnterTree()
@@ -21,7 +21,7 @@ public partial class WinPopup : PanelContainer
         _popupChoiceListener.UnregisterButtonListeners();
     }
 
-    public async Task<PopupChoiceOnWin> ShowAndGetChoiceAsync(Vector2 targetGlobalPosition,
+    public async Task<PopupChoiceOnLose> ShowAndGetChoiceAsync(Vector2 targetGlobalPosition,
         CancellationToken ct = default)
     {
         await _animator.ShowAsync(targetGlobalPosition, ct);
@@ -31,9 +31,10 @@ public partial class WinPopup : PanelContainer
         return choice;
     }
 
-    PopupChoiceListener<PopupChoiceOnWin> CreatePopupChoiceListener() =>
+    PopupChoiceListener<PopupChoiceOnLose> CreatePopupChoiceListener() =>
         new([
-            NewGameButton.CreateChoiceButton<PopupChoiceOnWin>(new NewGame()),
-            LeaveButton.CreateChoiceButton<PopupChoiceOnWin>(new Leave()),
+            NewGameButton.CreateChoiceButton(PopupChoiceOnLose.NewGame),
+            LeaveButton.CreateChoiceButton(PopupChoiceOnLose.Leave),
+            RetryButton.CreateChoiceButton(PopupChoiceOnLose.Retry),
         ]);
 }

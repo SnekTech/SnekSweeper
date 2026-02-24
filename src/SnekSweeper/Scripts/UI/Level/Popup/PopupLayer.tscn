@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://chttesjjcccd0"]
 
-[ext_resource type="Script" uid="uid://c6v7bs54vdldw" path="res://Scripts/UI/Level/PopupLayer.cs" id="1_p2wp0"]
-[ext_resource type="PackedScene" uid="uid://kpurf0bffdiv" path="res://Scripts/UI/Level/WinPopup.tscn" id="1_reqw0"]
-[ext_resource type="PackedScene" uid="uid://bsotjk5uwpx18" path="res://Scripts/UI/Level/LosePopup.tscn" id="2_p2wp0"]
+[ext_resource type="Script" uid="uid://c6v7bs54vdldw" path="res://Scripts/UI/Level/Popup/PopupLayer.cs" id="1_p2wp0"]
+[ext_resource type="PackedScene" uid="uid://kpurf0bffdiv" path="res://Scripts/UI/Level/Popup/WinPopup.tscn" id="1_reqw0"]
+[ext_resource type="PackedScene" uid="uid://bsotjk5uwpx18" path="res://Scripts/UI/Level/Popup/LosePopup.tscn" id="2_p2wp0"]
 
 [node name="PopupLayer" type="CanvasLayer" unique_id=695196234]
 layer = 2

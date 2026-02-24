@@ -8,6 +8,8 @@ A minesweeper game with modern game features & nice pixel art assets.
   - [ ] like Monster Hunter item selector
 - [ ] multiple save slots
 - [ ] balatro-like background shader
+- [ ] utilize more of ms-toollib
+- [ ] input re-mapping
 
 ## Done
 
@@ -109,7 +111,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] zen mode, immersive minesweeper experience
 - [ ] timing
 - [ ] endless
-- [ ] no guess
+- [x] no guess
 
 ## History Records
 

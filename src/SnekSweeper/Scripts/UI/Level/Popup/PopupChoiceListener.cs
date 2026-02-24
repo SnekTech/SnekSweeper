@@ -1,4 +1,4 @@
-﻿namespace SnekSweeper.UI.Level;
+﻿namespace SnekSweeper.UI.Level.Popup;
 
 public class PopupChoiceListener<T>
 {

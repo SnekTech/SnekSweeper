@@ -1,4 +1,4 @@
-﻿using SnekSweeper.UI;
+﻿using SnekSweeper.UI.Level;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.Autoloads;

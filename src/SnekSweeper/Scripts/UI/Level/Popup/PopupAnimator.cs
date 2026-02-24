@@ -2,7 +2,7 @@
 using GTweens.Easings;
 using GTweensGodot.Extensions;
 
-namespace SnekSweeper.UI.Level;
+namespace SnekSweeper.UI.Level.Popup;
 
 public class PopupAnimator(Control parent)
 {

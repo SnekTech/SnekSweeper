@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://kpurf0bffdiv"]
 
-[ext_resource type="Script" uid="uid://cisle3cm0p4yk" path="res://Scripts/UI/Level/WinPopup.cs" id="1_2j82u"]
+[ext_resource type="Script" uid="uid://cisle3cm0p4yk" path="res://Scripts/UI/Level/Popup/WinPopup.cs" id="1_2j82u"]
 
 [node name="WinPopup" type="PanelContainer" unique_id=2136805872]
 offset_right = 173.0

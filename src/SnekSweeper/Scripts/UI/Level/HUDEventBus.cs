@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SnekSweeper.UI;
+﻿namespace SnekSweeper.UI.Level;
 
 public class HUDEventBus
 {

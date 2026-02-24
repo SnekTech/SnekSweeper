@@ -1,6 +1,6 @@
 ﻿using SnekSweeperCore.LevelManagement;
 
-namespace SnekSweeper.UI.Level;
+namespace SnekSweeper.UI.Level.Popup;
 
 [SceneTree]
 public partial class PopupLayer : CanvasLayer

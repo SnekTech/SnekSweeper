@@ -1,7 +1,7 @@
 ﻿using GodotGadgets.Tasks;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCodeSystem;
-using SnekSweeper.UI;
+using SnekSweeper.UI.Level;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GridSystem;

@@ -3,7 +3,7 @@ using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
 
-namespace SnekSweeper.UI;
+namespace SnekSweeper.UI.Level;
 
 [SceneTree]
 public partial class HUD : CanvasLayer, ISceneScript
