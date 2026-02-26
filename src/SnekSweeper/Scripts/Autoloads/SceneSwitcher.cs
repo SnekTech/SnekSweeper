@@ -1,4 +1,5 @@
-﻿using SnekSweeper.Levels;
+﻿using GodotGadgets.Tasks;
+using SnekSweeper.Levels;
 using SnekSweeper.UI.Common;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
@@ -15,7 +16,12 @@ public partial class SceneSwitcher : Node
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    public Task LoadLevel(LoadLevelSource loadLevelSource) => GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource));
+    public Task LoadLevel(LoadLevelSource loadLevelSource, CancellationToken ct = default)
+    {
+        var linkedToken = Autoload.QuitHandler.QuitGameToken.LinkTo(ct).Token;
+        return GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource, linkedToken),
+            linkedToken);
+    }
 
     public async Task GotoSceneAsync<T>(Func<T, Task>? onSceneAddedToTree = null, CancellationToken ct = default)
         where T : Node, ISceneScript
