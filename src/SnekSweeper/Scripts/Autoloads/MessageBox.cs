@@ -49,6 +49,7 @@ public partial class MessageBox : Control, IMessageDisplay
             var cancelTokenOnTreeExit = this.GetCancellationTokenOnTreeExit();
             await SnekUtility.DelayGd(MessageLifetime, cancelTokenOnTreeExit);
             await messageLabel.FadeOutAsync(1, cancelTokenOnTreeExit);
+            messageLabel.QueueFree();
         }
     }
 
