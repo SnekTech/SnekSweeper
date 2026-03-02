@@ -1,4 +1,5 @@
-﻿using SnekSweeper.Widgets;
+﻿using GodotGadgets.Tasks;
+using SnekSweeper.Widgets;
 using Widgets.Roguelike;
 
 namespace SnekSweeper;
@@ -23,7 +24,13 @@ public partial class Main : Node, ISceneScript
 
     void OnAnyKeyPressed()
     {
-        PressToStartLabel.Hide();
-        MainMenu.Show();
+        ShowMainMenuAsync().Fire();
+        return;
+
+        async Task ShowMainMenuAsync()
+        {
+            PressToStartLabel.Hide();
+            await MenuContainer.SlideInAsync(MenuContainerTarget.GlobalPosition);
+        }
     }
 }

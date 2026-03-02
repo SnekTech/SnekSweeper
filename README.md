@@ -10,6 +10,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [ ] balatro-like background shader
 - [ ] utilize more of ms-toollib
 - [ ] input re-mapping
+- [ ] save during mid-game quit
 
 ## Done
 
