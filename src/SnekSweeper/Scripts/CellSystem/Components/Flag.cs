@@ -1,7 +1,5 @@
-﻿using GodotGadgets.Tasks;
-using GTweens.Easings;
+﻿using GTweens.Easings;
 using GTweensGodot.Extensions;
-using SnekSweeper.Constants;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem.Components;
 
@@ -21,19 +19,15 @@ public partial class Flag : Node2D, IFlag, ISceneScript
 
     public async Task RaiseAsync(CancellationToken ct = default)
     {
-        var tokenLinkedWithTreeExit = ct.LinkWithNodeDestroy(this);
-
         Show();
         var tween = FlagSprite.TweenPositionY(0, AnimationDuration).SetEasing(Easing.OutQuad);
-        await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
+        await tween.PlayAsyncUntilNodeDestroy(this, ct);
     }
 
     public async Task PutDownAsync(CancellationToken ct = default)
     {
-        var tokenLinkedWithTreeExit = ct.LinkWithNodeDestroy(this);
-
         var tween = FlagSprite.TweenPositionY(StartPositionY, AnimationDuration).SetEasing(Easing.InQuad);
-        await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
+        await tween.PlayAsyncUntilNodeDestroy(this, ct);
         Hide();
     }
 }

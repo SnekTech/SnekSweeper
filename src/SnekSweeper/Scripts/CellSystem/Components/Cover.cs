@@ -1,7 +1,5 @@
 ﻿using GodotGadgets.ShaderStuff;
-using GodotGadgets.Tasks;
 using GTweens.Extensions;
-using GTweensGodot.Extensions;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem.Components;
 
@@ -28,22 +26,18 @@ public partial class Cover : Node2D, ICover, ISceneScript
 
     public async Task RevealAsync(CancellationToken ct = default)
     {
-        var tokenLinkedWithTreeExit = ct.LinkWithNodeDestroy(this);
-
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
-        await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
+        await tween.PlayAsyncUntilNodeDestroy(this, ct);
         Hide();
     }
 
     public async Task PutOnAsync(CancellationToken ct = default)
     {
-        var tokenLinkedWithTreeExit = ct.LinkWithNodeDestroy(this);
-
         RandomizeNoise();
         Show();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 0, AnimationDuration);
-        await tween.PlayAsync(tokenLinkedWithTreeExit.Token);
+        await tween.PlayAsyncUntilNodeDestroy(this, ct);
     }
 
     public void SetAlpha(float normalizedAlpha) => coverAlpha.Value = normalizedAlpha;

@@ -46,7 +46,7 @@ public static class TweenExtensions
 
     extension(GTween tween)
     {
-        Task PlayAsyncUntilNodeDestroy(Node node, CancellationToken ct = default) =>
+        public Task PlayAsyncUntilNodeDestroy(Node node, CancellationToken ct = default) =>
             tween.PlayAsync(ct.LinkWithNodeDestroy(node).Token);
     }
 }
