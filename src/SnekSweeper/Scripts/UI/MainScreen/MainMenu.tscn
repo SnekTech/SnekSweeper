@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bkrd3ulkrdbkm"]
+
+[ext_resource type="Script" uid="uid://cmpmy3anmu7xn" path="res://Scripts/UI/MainScreen/MainMenu.cs" id="1_xdd4s"]
+
+[node name="MainMenu" type="VBoxContainer" unique_id=1398184146]
+script = ExtResource("1_xdd4s")
+metadata/_edit_group_ = true
+
+[node name="StartButton" type="Button" parent="." unique_id=1990618071]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Start"
+
+[node name="SettingsButton" type="Button" parent="." unique_id=1001302221]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Settings"
+
+[node name="CheatCodeButton" type="Button" parent="." unique_id=2130721402]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cheat Code"
+
+[node name="HistoryButton" type="Button" parent="." unique_id=272191569]
+unique_name_in_owner = true
+layout_mode = 2
+text = "History"
+
+[node name="QuitButton" type="Button" parent="." unique_id=75073599]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Quit"

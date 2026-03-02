@@ -5,10 +5,10 @@ using SnekSweeper.UI.History;
 using SnekSweeper.UI.Settings;
 using SnekSweeperCore.LevelManagement;
 
-namespace SnekSweeper.UI;
+namespace SnekSweeper.UI.MainScreen;
 
 [SceneTree]
-public partial class MainMenu : CanvasLayer
+public partial class MainMenu : VBoxContainer
 {
     // todo: press to start interface
     

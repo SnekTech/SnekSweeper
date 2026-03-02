@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dqf36uha7m26h" path="res://Scripts/Main.cs" id="1_gw17c"]
 [ext_resource type="Shader" uid="uid://c7ad28r2ojoja" path="res://Resources/shaders/ScrollingBackground.gdshader" id="2_yg5tw"]
 [ext_resource type="Texture2D" uid="uid://b5d2ow0cgb2m6" path="res://Art/UI/main_background.png" id="3_nv0mc"]
-[ext_resource type="PackedScene" uid="uid://dl8giqbva3jwf" path="res://Scripts/UI/MainMenu.tscn" id="4_k6q32"]
+[ext_resource type="PackedScene" uid="uid://bkrd3ulkrdbkm" path="res://Scripts/UI/MainScreen/MainMenu.tscn" id="5_nv0mc"]
 [ext_resource type="Script" uid="uid://dyuc5druxiedi" path="res://Scripts/UI/MainScreen/PressToStartLabel.cs" id="5_yg5tw"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blnvu"]
@@ -28,9 +28,6 @@ texture = ExtResource("3_nv0mc")
 stretch_mode = 4
 metadata/_edit_lock_ = true
 
-[node name="MainMenu" parent="." unique_id=2002043377 instance=ExtResource("4_k6q32")]
-visible = false
-
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=180288680]
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,3 +41,8 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Press Any Key ..."
 script = ExtResource("5_yg5tw")
+
+[node name="MainMenu" parent="CenterContainer" unique_id=1398184146 instance=ExtResource("5_nv0mc")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2

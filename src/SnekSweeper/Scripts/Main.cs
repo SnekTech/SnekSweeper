@@ -10,4 +10,20 @@ public partial class Main : Node, ISceneScript
     {
         Rand.RandomizeSeed();
     }
+
+    public override void _EnterTree()
+    {
+        PressToStartLabel.AnyKeyPressed += OnAnyKeyPressed;
+    }
+
+    public override void _ExitTree()
+    {
+        PressToStartLabel.AnyKeyPressed -= OnAnyKeyPressed;
+    }
+
+    void OnAnyKeyPressed()
+    {
+        PressToStartLabel.Hide();
+        MainMenu.Show();
+    }
 }
