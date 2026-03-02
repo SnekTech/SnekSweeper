@@ -1,6 +1,4 @@
-﻿using GodotGadgets.Tasks;
-using GTweens.Easings;
-using GTweensGodot.Extensions;
+﻿using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.Level.Popup;
 
@@ -10,19 +8,9 @@ public class PopupAnimator(Control parent)
 
     const float TweenDuration = 0.6f;
 
-    public async Task ShowAsync(Vector2 targetGlobalPosition, CancellationToken ct = default)
-    {
-        parent.Show();
-        await parent.TweenGlobalPosition(targetGlobalPosition, TweenDuration)
-            .SetEasing(Easing.OutBack)
-            .PlayAsync(ct.LinkWithNodeDestroy(parent).Token);
-    }
+    public Task ShowAsync(Vector2 targetGlobalPosition, CancellationToken ct = default) =>
+        parent.SlideInAsync(targetGlobalPosition, TweenDuration, ct);
 
-    public async Task HideAsync(CancellationToken ct = default)
-    {
-        await parent.TweenGlobalPosition(_originalGlobalPosition, TweenDuration)
-            .SetEasing(Easing.InBack)
-            .PlayAsync(ct.LinkWithNodeDestroy(parent).Token);
-        parent.Hide();
-    }
+    public Task HideAsync(CancellationToken ct = default) =>
+        parent.SlideOutAsync(_originalGlobalPosition, TweenDuration, ct);
 }
