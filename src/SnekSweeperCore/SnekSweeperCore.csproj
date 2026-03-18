@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets\GodotGadgets.csproj" PrivateAssets="All" />
       <ProjectReference Include="..\..\libs\MineSweeperTools\MineSweeperTools.csproj" />
       <ProjectReference Include="..\Widgets\Widgets.csproj" />
     </ItemGroup>

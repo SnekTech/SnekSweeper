@@ -10,8 +10,6 @@ namespace SnekSweeper.UI.MainScreen;
 [SceneTree]
 public partial class MainMenu : VBoxContainer
 {
-    // todo: press to start interface
-    
     public override void _EnterTree() => RegisterEvents();
     public override void _ExitTree() => UnregisterEvents();
 

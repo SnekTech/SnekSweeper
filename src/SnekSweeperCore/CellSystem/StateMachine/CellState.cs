@@ -1,4 +1,4 @@
-﻿using SnekSweeperCore.FSM;
+﻿using GodotGadgets.FSM;
 
 namespace SnekSweeperCore.CellSystem.StateMachine;
 

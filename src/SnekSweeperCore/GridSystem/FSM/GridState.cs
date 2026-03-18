@@ -1,4 +1,4 @@
-﻿using SnekSweeperCore.FSM;
+﻿using GodotGadgets.FSM;
 using SnekSweeperCore.GameMode;
 
 namespace SnekSweeperCore.GridSystem.FSM;

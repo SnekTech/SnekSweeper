@@ -4,13 +4,10 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Todo
 
-- [ ] controller support
-  - [ ] like Monster Hunter item selector
 - [ ] multiple save slots
 - [ ] balatro-like background shader
 - [ ] utilize more of ms-toollib
-- [ ] input re-mapping
-- [ ] save during mid-game quit
+- [ ] save on mid-game quit
 
 ## Done
 
@@ -49,7 +46,9 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## User Input
 
-- [ ] ?controller support
+- [ ] controller support
+  - [ ] like Monster Hunter item selector
+- [ ] input re-mapping
 
 ## Animation
 
