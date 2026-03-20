@@ -31,9 +31,9 @@ public readonly record struct MatrixListPair(bool[,] Matrix, List<string> Matrix
 
 public static class MatrixDataSources
 {
-    public static IEnumerable<Func<MatrixListPair>> TestData()
-    {
-        yield return () => new MatrixListPair(new[,]
+    public static IEnumerable<Func<MatrixListPair>> TestData() =>
+    [
+        () => new MatrixListPair(new[,]
             {
                 { false, false, false },
                 { false, true, false },
@@ -43,8 +43,8 @@ public static class MatrixDataSources
                 "000",
                 "010",
                 "000",
-            ]);
-        yield return () => new MatrixListPair(new[,]
+            ]),
+        () => new MatrixListPair(new[,]
             {
                 { false, false, false },
                 { false, true, false },
@@ -52,8 +52,8 @@ public static class MatrixDataSources
             [
                 "000",
                 "010",
-            ]);
-        yield return () => new MatrixListPair(new[,]
+            ]),
+        () => new MatrixListPair(new[,]
             {
                 { false, false, false },
                 { false, true, true },
@@ -63,9 +63,9 @@ public static class MatrixDataSources
                 "000",
                 "011",
                 "001",
-            ]);
-        yield return () => new MatrixListPair(new bool[,] { }, []);
-        yield return () => new MatrixListPair(new bool[,] { { } }, [""]);
-        yield return () => new MatrixListPair(new bool[,] { { }, { } }, ["", ""]);
-    }
+            ]),
+        () => new MatrixListPair(new bool[,] { }, []),
+        () => new MatrixListPair(new bool[,] { { } }, [""]),
+        () => new MatrixListPair(new bool[,] { { }, { } }, ["", ""]),
+    ];
 }
