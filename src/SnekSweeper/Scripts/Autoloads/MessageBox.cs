@@ -12,10 +12,7 @@ public partial class MessageBox : Control, IMessageDisplay
 
     static MessageBox Instance { get; set; } = null!;
 
-    public static void Print(string message)
-    {
-        Instance.Enqueue(message);
-    }
+    public static void Print(string message) => Instance._messageQueue.Enqueue(message);
 
     public override void _Ready()
     {
@@ -32,7 +29,7 @@ public partial class MessageBox : Control, IMessageDisplay
     {
         if (@event is InputEventKey eventKey && eventKey.IsReleased() && eventKey.Keycode == Key.M)
         {
-            Enqueue("Rider!");
+            Print("Rider!");
         }
     }
 
@@ -52,6 +49,4 @@ public partial class MessageBox : Control, IMessageDisplay
             messageLabel.QueueFree();
         }
     }
-
-    void Enqueue(string message) => _messageQueue.Enqueue(message);
 }

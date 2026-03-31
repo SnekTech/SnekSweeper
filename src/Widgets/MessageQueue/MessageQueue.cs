@@ -1,13 +1,16 @@
-﻿namespace Widgets.MessageQueue;
+﻿using System.Threading.Channels;
+
+namespace Widgets.MessageQueue;
 
 public class MessageQueue(IMessageDisplay messageDisplay)
 {
-    readonly Queue<string> _queue = [];
+    readonly Channel<string> _channel =
+        Channel.CreateUnbounded<string>(new UnboundedChannelOptions { SingleReader = true });
     bool _isRunning;
 
     public float OutputIntervalSeconds { get; init; } = 1;
 
-    public async Task StartRunning(CancellationToken token)
+    public async Task StartRunning(CancellationToken ct)
     {
         if (_isRunning)
         {
@@ -16,31 +19,15 @@ public class MessageQueue(IMessageDisplay messageDisplay)
         }
 
         _isRunning = true;
-        
+
         while (_isRunning)
         {
-            token.ThrowIfCancellationRequested();
-            FireOneMessage();
-            await Task.Delay(TimeSpan.FromSeconds(OutputIntervalSeconds), token);
+            ct.ThrowIfCancellationRequested();
+
+            messageDisplay.FireOneMessage(await _channel.Reader.ReadAsync(ct));
+            await Task.Delay(TimeSpan.FromSeconds(OutputIntervalSeconds), ct);
         }
     }
 
-    public void StopRunning()
-    {
-        _isRunning = false;
-    }
-
-    public void Enqueue(string message)
-    {
-        _queue.Enqueue(message);
-    }
-
-    void FireOneMessage()
-    {
-        if (_queue.Count == 0)
-            return;
-
-        var message = _queue.Dequeue();
-        messageDisplay.FireOneMessage(message);
-    }
+    public void Enqueue(string message) => _channel.Writer.TryWrite(message);
 }
