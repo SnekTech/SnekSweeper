@@ -20,10 +20,8 @@ public class MessageQueue(IMessageDisplay messageDisplay)
 
         _isRunning = true;
 
-        while (_isRunning)
+        while (!ct.IsCancellationRequested)
         {
-            ct.ThrowIfCancellationRequested();
-
             messageDisplay.FireOneMessage(await _channel.Reader.ReadAsync(ct));
             await Task.Delay(TimeSpan.FromSeconds(OutputIntervalSeconds), ct);
         }
