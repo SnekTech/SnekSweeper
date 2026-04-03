@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using GodotGadgets;
 
 namespace SnekSweeperCore.SaveLoad.SerializationService;
 
@@ -7,7 +8,8 @@ static class JsonSerializationService
 {
     extension(SerializationStrategy)
     {
-        internal static SerializationStrategy Json => new(SaveByJson, LoadByJson, SaveJsonFileName);
+        internal static SerializationStrategy Json =>
+            new(SaveByJson, SaveByJsonAsync, LoadByJson, SaveJsonFileName);
     }
 
     const string SaveJsonFileName = "playerSaveData.json";
@@ -26,27 +28,40 @@ static class JsonSerializationService
 
     static readonly PlayerSaveDataDtoSerializerContext SerializerContext = new(SerializerOptions);
 
-    public static SaveDataFn SaveByJson => (playerSaveData, saveDir, fileName) =>
+    static readonly SaveDataFn SaveByJson = (playerSaveData, saveDir, fileName) =>
     {
-        var json = JsonSerializer.Serialize(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
-        File.WriteAllText(saveDir.Combine(fileName).Value, json);
+        File.WriteAllText(saveDir.Combine(fileName).Value, playerSaveData.ToJson());
     };
+
+    static Task SaveByJsonAsync(PlayerSaveData playerSaveData, SaveDir saveDir, string fileName,
+        CancellationToken ct = default) =>
+        FileOperations.SafeWriteAllTextAsync(saveDir.Combine(fileName).Value, playerSaveData.ToJson(), ct);
 
     public static readonly LoadDataFn LoadByJson = (saveDir, fileName) =>
     {
-        PlayerSaveDataDto? loadedDto = null;
+        PlayerSaveData? playerSaveData = null;
         try
         {
             var json = File.ReadAllText(saveDir.Combine(fileName).Value);
-            loadedDto = JsonSerializer.Deserialize(json, SerializerContext.PlayerSaveDataDto);
+            playerSaveData = PlayerSaveData.FromJson(json);
         }
         catch (Exception)
         {
             // ignored, will create an empty save later
         }
 
-        return loadedDto?.ToPlayerSaveData();
+        return playerSaveData;
     };
+
+    extension(PlayerSaveData playerSaveData)
+    {
+        string ToJson() => JsonSerializer.Serialize(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
+
+        static PlayerSaveData? FromJson(string json)
+        {
+            return JsonSerializer.Deserialize(json, SerializerContext.PlayerSaveDataDto)?.ToPlayerSaveData();
+        }
+    }
 }
 
 [JsonSerializable(typeof(PlayerSaveDataDto))]

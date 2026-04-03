@@ -6,7 +6,8 @@ static class MemoryPackSerializationService
 {
     extension(SerializationStrategy)
     {
-        internal static SerializationStrategy MemoryPack => new(SaveByMemoryPack, LoadByMemoryPack, SaveBinaryFileName);
+        internal static SerializationStrategy MemoryPack => new(SaveByMemoryPack, SaveByMemoryPackAsync,
+            LoadByMemoryPack, SaveBinaryFileName);
     }
 
     const string SaveBinaryFileName = "playerSaveData.bin";
@@ -15,6 +16,12 @@ static class MemoryPackSerializationService
     {
         var bin = MemoryPackSerializer.Serialize(playerSaveData.ToDto());
         File.WriteAllBytes(saveDir.Combine(fileName).Value, bin);
+    };
+
+    static readonly SaveDataAsyncFn SaveByMemoryPackAsync = (playerSaveData, saveDir, fileName, ct) =>
+    {
+        var bin = MemoryPackSerializer.Serialize(playerSaveData.ToDto());
+        return File.WriteAllBytesAsync(saveDir.Combine(fileName).Value, bin, ct);
     };
 
     public static readonly LoadDataFn LoadByMemoryPack = (saveDir, fileName) =>

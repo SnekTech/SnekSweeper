@@ -6,25 +6,26 @@ public readonly record struct SaveDir(string Value);
 
 public delegate void SaveDataFn(PlayerSaveData playerSaveData, SaveDir saveDir, string fileName);
 
+public delegate Task SaveDataAsyncFn(PlayerSaveData playerSaveData, SaveDir saveDir, string fileName,
+    CancellationToken ct = default);
+
 public delegate PlayerSaveData? LoadDataFn(SaveDir saveDir, string fileName);
 
-record SerializationStrategy(SaveDataFn SaveDataFn, LoadDataFn LoadDataFn, string SaveFileName);
+record SerializationStrategy(
+    SaveDataFn SaveDataFn,
+    SaveDataAsyncFn SaveDataAsyncFn,
+    LoadDataFn LoadDataFn,
+    string SaveFileName);
 
 static class SerializationStrategyExtensions
 {
     extension(SerializationStrategy strategy)
     {
-        internal static SerializationStrategy MemoryPackWithJsonWriting =>
-            new((playerSaveData, saveDir, _) =>
-                {
-                    SerializationStrategy.Json.Save(playerSaveData, saveDir);
-                    SerializationStrategy.MemoryPack.Save(playerSaveData, saveDir);
-                },
-                (saveDir, _) => SerializationStrategy.MemoryPack.Load(saveDir)
-                , "playerSave.debug");
-
         internal void Save(PlayerSaveData playerSaveData, SaveDir saveDir) =>
             strategy.SaveDataFn(playerSaveData, saveDir, strategy.SaveFileName);
+
+        internal Task SaveAsync(PlayerSaveData playerSaveData, SaveDir saveDir, CancellationToken ct = default) =>
+            strategy.SaveDataAsyncFn(playerSaveData, saveDir, strategy.SaveFileName, ct);
 
         internal PlayerSaveData? Load(SaveDir saveDir) => strategy.LoadDataFn(saveDir, strategy.SaveFileName);
     }

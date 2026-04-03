@@ -12,7 +12,7 @@ public record PlayerSaveData(
 
 public static class PlayerSaveDataExtensions
 {
-    static readonly SerializationStrategy DefaultStrategy = SerializationStrategy.MemoryPack;
+    static readonly SerializationStrategy DefaultStrategy = SerializationStrategy.Json;
 
     extension(PlayerSaveData playerSaveData)
     {
@@ -21,6 +21,9 @@ public static class PlayerSaveDataExtensions
 
         public void Save(string userDataDir) =>
             DefaultStrategy.Save(playerSaveData,userDataDir.ToDir());
+
+        public Task SaveAsync(string userDataDir, CancellationToken ct = default) =>
+            DefaultStrategy.SaveAsync(playerSaveData, userDataDir.ToDir(), ct);
 
         public static PlayerSaveData? Load(string userDataDir) =>
             DefaultStrategy.Load(userDataDir.ToDir());
