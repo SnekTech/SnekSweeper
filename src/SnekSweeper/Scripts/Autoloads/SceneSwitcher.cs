@@ -18,7 +18,7 @@ public partial class SceneSwitcher : Node
 
     public Task LoadLevel(LoadLevelSource loadLevelSource, CancellationToken ct = default)
     {
-        var linkedToken = Autoload.QuitHandler.QuitGameToken.LinkTo(ct).Token;
+        var linkedToken = QuitHandler.QuitGameToken.LinkTo(ct).Token;
         return GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource, linkedToken),
             linkedToken);
     }

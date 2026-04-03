@@ -2,8 +2,8 @@
 
 public partial class QuitHandler : Node
 {
-    readonly CancellationTokenSource cancelOnQuit = new();
-    public CancellationToken QuitGameToken => cancelOnQuit.Token;
+    static readonly CancellationTokenSource CancelOnQuit = new();
+    public static CancellationToken QuitGameToken => CancelOnQuit.Token;
     
     public override void _Notification(int what)
     {
@@ -12,7 +12,7 @@ public partial class QuitHandler : Node
         GD.Print("Saving player data...");
         HouseKeeper.SaveCurrentPlayerData();
 
-        cancelOnQuit.Cancel();
+        CancelOnQuit.Cancel();
         GD.Print("Bye");
         GetTree().Quit();
     }
