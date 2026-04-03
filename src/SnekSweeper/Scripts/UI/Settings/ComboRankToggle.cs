@@ -28,6 +28,5 @@ public partial class ComboRankToggle : HBoxContainer
     static void OnComboRankDisplayToggled(bool toggledOn)
     {
         HouseKeeper.MainSetting.ComboRankDisplay = toggledOn;
-        HouseKeeper.TriggerPlayerDataSave();
     }
 }
