@@ -18,10 +18,7 @@ public partial class MessageBox : Control, IMessageDisplay
     {
         Instance = this;
 
-        _messageQueue = new MessageQueue(this)
-        {
-            OutputIntervalSeconds = 0.5f,
-        };
+        _messageQueue = new MessageQueue(this);
         _messageQueue.StartRunning(this.GetCancellationTokenOnTreeExit()).Fire();
     }
 
