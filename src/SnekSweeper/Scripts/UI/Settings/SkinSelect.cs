@@ -25,7 +25,7 @@ public partial class SkinSelect : HBoxContainer
     static void OnSkinSelected(long index)
     {
         HouseKeeper.MainSetting.CurrentSkinKey = SkinKey.FromLong(index);
-        HouseKeeper.SaveCurrentPlayerData();
+        HouseKeeper.TriggerPlayerDataSave();
     }
     
     void InitSkinOptions()

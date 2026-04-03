@@ -14,7 +14,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 {
     public override void _ExitTree()
     {
-        HouseKeeper.SaveCurrentPlayerData();
+        HouseKeeper.TriggerPlayerDataSave();
     }
 
     public async Task LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)

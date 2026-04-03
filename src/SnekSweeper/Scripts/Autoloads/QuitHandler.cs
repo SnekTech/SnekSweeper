@@ -10,6 +10,9 @@ public partial class QuitHandler : Node
         if (what != NotificationWMCloseRequest) return;
 
         GD.Print("Saving player data...");
+        // cannot use async save here,
+        // because I cannot find the proper cancellation token,
+        // the whole game is quiting
         HouseKeeper.SaveCurrentPlayerData();
 
         CancelOnQuit.Cancel();

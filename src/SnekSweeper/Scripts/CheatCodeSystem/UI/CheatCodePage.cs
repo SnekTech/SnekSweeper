@@ -13,7 +13,7 @@ public partial class CheatCodePage : Control, ISceneScript
 
     public override void _ExitTree()
     {
-        HouseKeeper.SaveCurrentPlayerData();
+        HouseKeeper.TriggerPlayerDataSave();
     }
 
     void PopulateCheatCodeCards()

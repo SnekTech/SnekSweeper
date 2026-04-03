@@ -38,6 +38,6 @@ public partial class DifficultySelect : HBoxContainer
     static void OnDifficultySelected(long index)
     {
         HouseKeeper.MainSetting.CurrentDifficultyKey = GridDifficultyKey.FromLong(index);
-        HouseKeeper.SaveCurrentPlayerData();
+        HouseKeeper.TriggerPlayerDataSave();
     }
 }
