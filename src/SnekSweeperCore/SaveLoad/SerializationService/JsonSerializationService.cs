@@ -33,9 +33,12 @@ static class JsonSerializationService
         File.WriteAllText(saveDir.Combine(fileName).Value, playerSaveData.ToJson());
     };
 
-    static Task SaveByJsonAsync(PlayerSaveData playerSaveData, SaveDir saveDir, string fileName,
-        CancellationToken ct = default) =>
-        FileOperations.SafeWriteAllTextAsync(saveDir.Combine(fileName).Value, playerSaveData.ToJson(), ct);
+    static async Task SaveByJsonAsync(PlayerSaveData playerSaveData, SaveDir saveDir, string fileName,
+        CancellationToken ct = default)
+    {
+        var json = await playerSaveData.ToJsonAsync(ct);
+        await FileOperations.SafeWriteAllTextAsync(saveDir.Combine(fileName).Value, json, ct);
+    }
 
     public static readonly LoadDataFn LoadByJson = (saveDir, fileName) =>
     {
@@ -56,6 +59,16 @@ static class JsonSerializationService
     extension(PlayerSaveData playerSaveData)
     {
         string ToJson() => JsonSerializer.Serialize(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
+
+        async Task<string> ToJsonAsync(CancellationToken ct = default)
+        {
+            await using var memoryStream = new MemoryStream();
+            await JsonSerializer.SerializeAsync(memoryStream, playerSaveData.ToDto(),
+                SerializerContext.PlayerSaveDataDto, ct);
+            memoryStream.Position = 0;
+            using var reader = new StreamReader(memoryStream);
+            return await reader.ReadToEndAsync(ct);
+        }
 
         static PlayerSaveData? FromJson(string json)
         {
