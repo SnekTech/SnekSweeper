@@ -1,5 +1,5 @@
 ﻿using GodotGadgets.Extensions;
-using GodotGadgets.Tasks;
+using GodotTask;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
@@ -32,10 +32,10 @@ public partial class HouseKeeper : Node
 
     internal static void TriggerPlayerDataSave()
     {
-        SaveTask().Fire();
+        SaveTask().Forget();
         return;
 
-        async Task SaveTask()
+        async GDTaskVoid SaveTask()
         {
             MessageBox.Print("start saving");
             await _currentPlayerSaveData.SaveAsync(OS.GetUserDataDir(), QuitHandler.QuitGameToken);

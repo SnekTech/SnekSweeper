@@ -1,4 +1,6 @@
-﻿using GodotGadgets.Tasks;
+﻿using System.Threading.Tasks;
+using GodotGadgets.Tasks;
+using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
@@ -17,7 +19,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         HouseKeeper.TriggerPlayerDataSave();
     }
 
-    public async Task LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
+    public async GDTask LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
     {
         var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
         var grid = loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
@@ -33,25 +35,29 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         TheGrid.Init(grid, gridStateMachine);
     }
 
-    public Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default) =>
-        HUD.ShowAndGetChoiceOnWinAsync(ct.LinkWithNodeDestroy(this).Token);
+    public async Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default)
+    {
+        return await HUD.ShowAndGetChoiceOnWinAsync(ct.LinkWithNodeDestroy(this).Token);
+    }
 
-    public Task<PopupChoiceOnLose> GetPopupChoiceOnLoseAsync(CancellationToken ct = default) =>
-        HUD.ShowAndGetChoiceOnLoseAsync(ct.LinkWithNodeDestroy(this).Token);
+    public async Task<PopupChoiceOnLose> GetPopupChoiceOnLoseAsync(CancellationToken ct = default)
+    {
+        return await HUD.ShowAndGetChoiceOnLoseAsync(ct.LinkWithNodeDestroy(this).Token);
+    }
 
     public void NewGame()
     {
-        Autoload.SceneSwitcher.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting)).Fire();
+        Autoload.SceneSwitcher.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting)).Forget();
     }
 
     public void BackToMainMenu()
     {
-        Autoload.SceneSwitcher.GotoSceneAsync<Main>().Fire();
+        Autoload.SceneSwitcher.GotoSceneAsync<Main>().Forget();
     }
 
     public void Retry(GameRunRecord runRecord)
     {
         var loadLevelSource = new FromRunRecord(runRecord);
-        Autoload.SceneSwitcher.LoadLevel(loadLevelSource).Fire();
+        Autoload.SceneSwitcher.LoadLevel(loadLevelSource).Forget();
     }
 }

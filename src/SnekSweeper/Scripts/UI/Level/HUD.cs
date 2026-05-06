@@ -1,4 +1,5 @@
-﻿using SnekSweeper.Autoloads;
+﻿using GodotTask;
+using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
@@ -25,10 +26,10 @@ public partial class HUD : CanvasLayer, ISceneScript
         UndoButton.Pressed -= OnUndoPressed;
     }
 
-    public Task<PopupChoiceOnWin> ShowAndGetChoiceOnWinAsync(CancellationToken ct = default) =>
+    public GDTask<PopupChoiceOnWin> ShowAndGetChoiceOnWinAsync(CancellationToken ct = default) =>
         _.PopupLayer.ShowAndGetChoiceOnWinAsync(ct);
 
-    public Task<PopupChoiceOnLose> ShowAndGetChoiceOnLoseAsync(CancellationToken ct = default) =>
+    public GDTask<PopupChoiceOnLose> ShowAndGetChoiceOnLoseAsync(CancellationToken ct = default) =>
         _.PopupLayer.ShowAndGetChoiceOnLoseAsync(ct);
 
     void OnBombCountChanged(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";

@@ -1,5 +1,7 @@
 ﻿using GodotGadgets.TooltipSystem;
+using GodotTask;
 using GTweensGodot.Extensions;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.TooltipSystem;
 
@@ -8,7 +10,7 @@ public partial class Tooltip : Control
 {
     const float FadeDuration = 0.3f;
 
-    internal Task ShowAsync(TooltipContent content, Rect2 targetGlobalRect, CancellationToken token)
+    internal async GDTask ShowAsync(TooltipContent content, Rect2 targetGlobalRect, CancellationToken token)
     {
         HeaderLabel.Text = content.Title;
         ContentLabel.Text = content.Content;
@@ -16,7 +18,8 @@ public partial class Tooltip : Control
         
         Callable.From(UpdateTooltipPosition).CallDeferred();
 
-        return this.TweenModulateAlpha(1, FadeDuration).PlayAsync(token);
+        await this.TweenModulateAlpha(1, FadeDuration).PlayAsyncGD(token);
+        return;
 
         void UpdateTooltipPosition()
         {
@@ -27,9 +30,9 @@ public partial class Tooltip : Control
         }
     }
 
-    internal async Task HideAsync(CancellationToken token)
+    internal async GDTask HideAsync(CancellationToken token)
     {
-        await this.TweenModulateAlpha(0, FadeDuration).PlayAsync(token);
+        await this.TweenModulateAlpha(0, FadeDuration).PlayAsyncGD(token);
         Hide();
     }
 

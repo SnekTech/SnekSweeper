@@ -1,5 +1,4 @@
-﻿using GodotGadgets.Tasks;
-using SnekSweeper.Widgets;
+﻿using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
@@ -48,6 +47,6 @@ public partial class RecordCard : PanelContainer, ISceneScript
     void OnRetryButtonPressed()
     {
         var loadLevelSource = new FromRunRecord(RunRecord);
-        Autoload.SceneSwitcher.LoadLevel(loadLevelSource).Fire();
+        Autoload.SceneSwitcher.LoadLevel(loadLevelSource).Forget();
     }
 }

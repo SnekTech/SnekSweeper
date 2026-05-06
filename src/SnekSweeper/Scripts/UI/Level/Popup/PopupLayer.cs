@@ -1,4 +1,5 @@
-﻿using SnekSweeperCore.LevelManagement;
+﻿using GodotTask;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI.Level.Popup;
 
@@ -15,7 +16,7 @@ public partial class PopupLayer : CanvasLayer
         IsInputBlocked = false;
     }
 
-    public async Task<PopupChoiceOnWin> ShowAndGetChoiceOnWinAsync(CancellationToken ct = default)
+    public async GDTask<PopupChoiceOnWin> ShowAndGetChoiceOnWinAsync(CancellationToken ct = default)
     {
         IsInputBlocked = true;
         var choice = await WinPopup.ShowAndGetChoiceAsync(PopupTargetMarker.GlobalPosition, ct);
@@ -23,7 +24,7 @@ public partial class PopupLayer : CanvasLayer
         return choice;
     }
 
-    public async Task<PopupChoiceOnLose> ShowAndGetChoiceOnLoseAsync(CancellationToken ct = default)
+    public async GDTask<PopupChoiceOnLose> ShowAndGetChoiceOnLoseAsync(CancellationToken ct = default)
     {
         IsInputBlocked = true;
         var choice = await LosePopup.ShowAndGetChoiceAsync(PopupTargetMarker.GlobalPosition, ct);

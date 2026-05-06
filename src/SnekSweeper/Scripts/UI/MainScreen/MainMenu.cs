@@ -1,4 +1,4 @@
-﻿using GodotGadgets.Tasks;
+﻿using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCodeSystem.UI;
 using SnekSweeper.UI.History;
@@ -33,22 +33,22 @@ public partial class MainMenu : VBoxContainer
 
     void OnHistoryButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoSceneAsync<HistoryPage>().Fire();
+        Autoload.SceneSwitcher.GotoSceneAsync<HistoryPage>().Forget();
     }
 
     void OnCheatCodeButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoSceneAsync<CheatCodePage>().Fire();
+        Autoload.SceneSwitcher.GotoSceneAsync<CheatCodePage>().Forget();
     }
 
     void OnSettingsButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoSceneAsync<SettingsPage>().Fire();
+        Autoload.SceneSwitcher.GotoSceneAsync<SettingsPage>().Forget();
     }
 
     void OnStartButtonPressed()
     {
-        Autoload.SceneSwitcher.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting)).Fire();
+        Autoload.SceneSwitcher.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting)).Forget();
     }
 
     void OnQuitPressed()

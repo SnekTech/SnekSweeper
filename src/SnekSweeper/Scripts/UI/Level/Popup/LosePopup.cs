@@ -1,4 +1,5 @@
-﻿using SnekSweeperCore.LevelManagement;
+﻿using GodotTask;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI.Level.Popup;
 
@@ -21,7 +22,7 @@ public partial class LosePopup : PanelContainer
         _popupChoiceListener.UnregisterButtonListeners();
     }
 
-    public async Task<PopupChoiceOnLose> ShowAndGetChoiceAsync(Vector2 targetGlobalPosition,
+    public async GDTask<PopupChoiceOnLose> ShowAndGetChoiceAsync(Vector2 targetGlobalPosition,
         CancellationToken ct = default)
     {
         await _animator.ShowAsync(targetGlobalPosition, ct);

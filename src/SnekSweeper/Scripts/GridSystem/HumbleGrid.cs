@@ -1,4 +1,5 @@
 ﻿using GodotGadgets.Tasks;
+using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.UI.Level;
@@ -49,10 +50,10 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         Cursor.ShowAt(hoveringGridIndex, _grid.Size);
     }
 
-    void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().Fire();
+    void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().AsGDTask().Forget();
 
     void OnGridInputEmitted(GridInput input)
     {
-        _gridStateMachine.HandleInputAsync(input, this.GetCancellationTokenOnTreeExit()).Fire();
+        _gridStateMachine.HandleInputAsync(input, this.GetCancellationTokenOnTreeExit()).AsGDTask().Forget();
     }
 }

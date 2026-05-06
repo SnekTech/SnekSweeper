@@ -1,4 +1,5 @@
 ﻿using GodotGadgets.Tasks;
+using GodotTask;
 using SnekSweeper.Widgets;
 using Widgets.MessageQueue;
 
@@ -19,7 +20,7 @@ public partial class MessageBox : Control, IMessageDisplay
         Instance = this;
 
         _messageQueue = new MessageQueue(this);
-        _messageQueue.StartRunning(this.GetCancellationTokenOnTreeExit()).Fire();
+        _messageQueue.StartRunning(this.GetCancellationTokenOnTreeExit()).AsGDTask().Forget();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -32,16 +33,18 @@ public partial class MessageBox : Control, IMessageDisplay
 
     public void FireOneMessage(string message)
     {
-        DisplayAsync().Fire();
+        // todo: try GDTask.Void
+
+        DisplayAsync().Forget();
         return;
 
-        async Task DisplayAsync()
+        async GDTaskVoid DisplayAsync()
         {
             var messageLabel = new Label { Text = message };
             MessageContainer.AddChild(messageLabel);
 
             var cancelTokenOnTreeExit = this.GetCancellationTokenOnTreeExit();
-            await SnekUtility.DelayGd(MessageLifetime, cancelTokenOnTreeExit);
+            await GDTask.Delay(TimeSpan.FromSeconds(MessageLifetime), cancelTokenOnTreeExit);
             await messageLabel.FadeOutAsync(1, cancelTokenOnTreeExit);
             messageLabel.QueueFree();
         }

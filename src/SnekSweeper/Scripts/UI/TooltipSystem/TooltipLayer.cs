@@ -1,5 +1,6 @@
 ﻿using GodotGadgets.Tasks;
 using GodotGadgets.TooltipSystem;
+using GodotTask;
 
 namespace SnekSweeper.UI.TooltipSystem;
 
@@ -18,7 +19,7 @@ public partial class TooltipLayer : CanvasLayer, ITooltipDisplay
         _currentActionCancellationSource.CancelAndDispose();
         _currentActionCancellationSource = new CancellationTokenSource();
 
-        Tooltip.ShowAsync(content, targetGlobalRect, _currentActionCancellationSource.Token).Fire();
+        Tooltip.ShowAsync(content, targetGlobalRect, _currentActionCancellationSource.Token).Forget();
     }
 
     public void HideTooltip()
@@ -26,6 +27,6 @@ public partial class TooltipLayer : CanvasLayer, ITooltipDisplay
         _currentActionCancellationSource.CancelAndDispose();
         _currentActionCancellationSource = new CancellationTokenSource();
 
-        Tooltip.HideAsync(_currentActionCancellationSource.Token).Fire();
+        Tooltip.HideAsync(_currentActionCancellationSource.Token).Forget();
     }
 }

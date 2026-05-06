@@ -1,4 +1,5 @@
 ﻿using GodotGadgets.Tasks;
+using GodotTask;
 using GTweens.Easings;
 using GTweens.Tweens;
 using GTweensGodot.Extensions;
@@ -9,16 +10,16 @@ public static class TweenExtensions
 {
     extension(CanvasItem target)
     {
-        public Task FadeOutAsync(float duration, CancellationToken ct = default)
+        public GDTask FadeOutAsync(float duration, CancellationToken ct = default)
             => target.TweenAlphaAsync(0, duration, ct);
 
-        public Task FadeInAsync(float duration, CancellationToken ct = default)
+        public GDTask FadeInAsync(float duration, CancellationToken ct = default)
         {
             target.Modulate = target.Modulate with { A = 0 };
             return target.TweenAlphaAsync(1, duration, ct);
         }
 
-        Task TweenAlphaAsync(float to, float duration, CancellationToken ct = default) =>
+        GDTask TweenAlphaAsync(float to, float duration, CancellationToken ct = default) =>
             target.TweenModulateAlpha(to, duration)
                 .SetEasing(Easing.InOutCubic)
                 .PlayAsyncUntilNodeDestroy(target, ct);
@@ -26,7 +27,7 @@ public static class TweenExtensions
 
     extension(Control target)
     {
-        public async Task SlideInAsync(Vector2 destinationGlobal, float duration = 0.6f, CancellationToken ct = default)
+        public async GDTask SlideInAsync(Vector2 destinationGlobal, float duration = 0.6f, CancellationToken ct = default)
         {
             target.Show();
             await target.TweenGlobalPosition(destinationGlobal, duration)
@@ -34,7 +35,7 @@ public static class TweenExtensions
                 .PlayAsyncUntilNodeDestroy(target, ct);
         }
 
-        public async Task SlideOutAsync(Vector2 destinationGlobal, float duration = 0.6f,
+        public async GDTask SlideOutAsync(Vector2 destinationGlobal, float duration = 0.6f,
             CancellationToken ct = default)
         {
             await target.TweenGlobalPosition(destinationGlobal, duration)
@@ -46,7 +47,9 @@ public static class TweenExtensions
 
     extension(GTween tween)
     {
-        public Task PlayAsyncUntilNodeDestroy(Node node, CancellationToken ct = default) =>
-            tween.PlayAsync(ct.LinkWithNodeDestroy(node).Token);
+        public GDTask PlayAsyncUntilNodeDestroy(Node node, CancellationToken ct = default) =>
+            tween.PlayAsyncGD(ct.LinkWithNodeDestroy(node).Token);
+
+        public GDTask PlayAsyncGD(CancellationToken ct = default) => tween.PlayAsync(ct).AsGDTask();
     }
 }

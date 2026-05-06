@@ -1,19 +1,21 @@
-﻿namespace SnekSweeper.UI.Level.Popup;
+﻿using GodotTask;
+
+namespace SnekSweeper.UI.Level.Popup;
 
 public class PopupChoiceListener<T>
 {
-    readonly TaskCompletionSource<T> _tcs = new();
+    readonly GDTaskCompletionSource<T> _tcs = new();
     readonly Dictionary<Button, Action> _handlerCache = [];
 
     public PopupChoiceListener(List<ButtonAndValue<T>> buttonConfigs)
     {
         foreach (var (button, value) in buttonConfigs)
         {
-            _handlerCache.Add(button, () => _tcs.SetResult(value));
+            _handlerCache.Add(button, () => _tcs.TrySetResult(value));
         }
     }
 
-    public Task<T> GetChoiceAsync() => _tcs.Task;
+    public GDTask<T> GetChoiceAsync() => _tcs.Task;
 
     public void RegisterButtonListeners()
     {

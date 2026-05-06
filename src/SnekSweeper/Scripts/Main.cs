@@ -1,4 +1,4 @@
-﻿using GodotGadgets.Tasks;
+﻿using GodotTask;
 using SnekSweeper.Widgets;
 using Widgets.Roguelike;
 
@@ -24,10 +24,10 @@ public partial class Main : Node, ISceneScript
 
     void OnAnyKeyPressed()
     {
-        ShowMainMenuAsync().Fire();
+        ShowMainMenuAsync().Forget();
         return;
 
-        async Task ShowMainMenuAsync()
+        async GDTaskVoid ShowMainMenuAsync()
         {
             PressToStartLabel.Hide();
             await MenuContainer.SlideInAsync(MenuContainerTarget.GlobalPosition);

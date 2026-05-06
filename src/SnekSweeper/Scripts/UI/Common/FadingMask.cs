@@ -1,4 +1,5 @@
-﻿using SnekSweeper.Widgets;
+﻿using GodotTask;
+using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.Common;
 
@@ -7,7 +8,7 @@ public partial class FadingMask : CanvasLayer, ISceneScript
 {
     const float FadingDuration = 0.3f;
 
-    public Task FadeInAsync(CancellationToken ct = default) => Panel.FadeInAsync(FadingDuration, ct);
+    public GDTask FadeInAsync(CancellationToken ct = default) => Panel.FadeInAsync(FadingDuration, ct);
 
-    public Task FadeOutAsync(CancellationToken ct = default) => Panel.FadeOutAsync(FadingDuration, ct);
+    public GDTask FadeOutAsync(CancellationToken ct = default) => Panel.FadeOutAsync(FadingDuration, ct);
 }
