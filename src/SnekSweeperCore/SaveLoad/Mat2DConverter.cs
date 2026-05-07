@@ -6,18 +6,18 @@ namespace SnekSweeperCore.SaveLoad;
 
 public class Mat2DConverter : JsonConverter<bool[,]>
 {
-    static readonly JsonConverter<List<string>> DefaultStringListConverter
-        = (JsonConverter<List<string>>)JsonSerializerOptions.Default.GetConverter(typeof(List<string>));
+    static readonly JsonConverter<int[][]> JaggedArrayConverter =
+        (JsonConverter<int[][]>)JsonSerializerOptions.Default.GetConverter(typeof(int[][]));
 
-    public override bool[,]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override bool[,] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var mat = DefaultStringListConverter.Read(ref reader, typeof(List<string>), options);
-        return mat == null ? null : MatrixExtensions.ToMatrix(mat);
+        var jagged = JaggedArrayConverter.Read(ref reader, typeof(int[][]), options)!;
+        return MatrixExtensions.FromJagged(jagged).MapTo(x => x != 0);
     }
 
     public override void Write(Utf8JsonWriter writer, bool[,] value, JsonSerializerOptions options)
     {
-        var matrixInList = MatrixExtensions.ToMatrixInList(value);
-        DefaultStringListConverter.Write(writer, matrixInList, options);
+        var matrixInList = value.MapTo(x => x ? 1 : 0).ToJagged();
+        JaggedArrayConverter.Write(writer, matrixInList, options);
     }
 }

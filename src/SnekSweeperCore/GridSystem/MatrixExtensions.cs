@@ -41,14 +41,41 @@ public static class MatrixExtensions
 
             return mat;
         }
+
+        public T[][] ToJagged()
+        {
+            var (rows, columns) = matrix.Size;
+            var result = new T[rows][];
+
+            for (var i = 0; i < rows; i++)
+            {
+                var rowList = new List<T>();
+                for (var j = 0; j < columns; j++)
+                {
+                    rowList.Add(matrix[i, j]);
+                }
+
+                result[i] = rowList.ToArray();
+            }
+
+            return result;
+        }
+
+        public static T[,] FromJagged(T[][] jagged)
+        {
+            var rows = jagged.Length;
+            var columns = rows > 0 ? jagged[0].Length : 0;
+
+            return Create<T>(new GridSize(rows, columns), index => jagged[index.I][index.J]);
+        }
     }
-    
+
     public static bool[,] ToMatrix(List<string> matrixInList)
     {
         var rows = matrixInList.Count;
 
         var columns = rows > 0 ? matrixInList[0].Length : 0;
-    
+
         var result = new bool[rows, columns];
         for (var i = 0; i < rows; i++)
         {
@@ -57,7 +84,7 @@ public static class MatrixExtensions
                 result[i, j] = matrixInList[i][j] != '0';
             }
         }
-    
+
         return result;
     }
 
@@ -65,7 +92,7 @@ public static class MatrixExtensions
     {
         var rowList = new List<string>();
         var (rows, columns) = (matrix.GetLength(0), matrix.GetLength(1));
-        
+
         var sb = new StringBuilder();
         for (var i = 0; i < rows; i++)
         {
@@ -78,6 +105,7 @@ public static class MatrixExtensions
                     false => '0',
                 });
             }
+
             rowList.Add(sb.ToString());
         }
 

@@ -78,5 +78,5 @@ static class JsonSerializationService
 }
 
 [JsonSerializable(typeof(PlayerSaveDataDto))]
-[JsonSerializable(typeof(List<string>))]
+[JsonSerializable(typeof(int[][]))]
 partial class PlayerSaveDataDtoSerializerContext : JsonSerializerContext;

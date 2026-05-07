@@ -33,8 +33,6 @@ public partial class MessageBox : Control, IMessageDisplay
 
     public void FireOneMessage(string message)
     {
-        // todo: try GDTask.Void
-
         DisplayAsync().Forget();
         return;
 
