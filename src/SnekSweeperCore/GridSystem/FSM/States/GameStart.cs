@@ -30,7 +30,7 @@ public sealed class GameStart(GridStateMachine stateMachine) : GridState(stateMa
 
         Task HandleSurvivingAsync()
         {
-            Context.GridSnapShotRecorder.UpdateSnapshot(Grid);
+            Context.GridSnapShotRecorder.UpdateGridSnapshot(Grid);
             return Task.CompletedTask;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using MemoryPack;
+using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeperCore.LevelManagement;
@@ -9,10 +10,10 @@ public class CurrentRunInfo
 }
 
 [MemoryPackable]
-public partial class GridSnapshot
-{
-    public required CellSnapshotState[][] SnapshotStates { get; init; }
-}
+public partial record GridSnapshot(
+    CellSnapshotState[][] SnapshotStates,
+    bool[,] BombMatrix
+);
 
 public enum CellSnapshotState
 {
@@ -24,7 +25,7 @@ public enum CellSnapshotState
 
 public class GridSnapShotRecorder(CurrentRunInfo currentRunInfo)
 {
-    public void UpdateSnapshot(Grid grid)
+    public void UpdateGridSnapshot(Grid grid)
     {
         currentRunInfo.GridSnapshot = grid.GetSnapshot();
     }
@@ -52,7 +53,7 @@ static class GridSnapshotExtensions
                 snapshotStates.SetAt(cell.GridIndex, stateValue);
             }
 
-            return new GridSnapshot { SnapshotStates = snapshotStates.ToJagged() };
+            return new GridSnapshot(snapshotStates.ToJagged(), grid.BombMatrix);
         }
     }
 }
