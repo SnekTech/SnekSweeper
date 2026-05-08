@@ -19,6 +19,7 @@ public sealed class GameStart(GridStateMachine stateMachine) : GridState(stateMa
         {
             GameWin win => HandleWinAsync(win),
             GameLose lose => HandleLoseAsync(lose),
+            Surviving => HandleSurvivingAsync(),
             _ => Task.CompletedTask,
         });
         return;
@@ -26,5 +27,11 @@ public sealed class GameStart(GridStateMachine stateMachine) : GridState(stateMa
         Task HandleWinAsync(GameWin gameWin) => ChangeStateAsync(new Win(StateMachine, gameWin), ct);
 
         Task HandleLoseAsync(GameLose gameLose) => ChangeStateAsync(new Lose(StateMachine, gameLose), ct);
+
+        Task HandleSurvivingAsync()
+        {
+            Context.GridSnapShotRecorder.UpdateSnapshot(Grid);
+            return Task.CompletedTask;
+        }
     }
 }

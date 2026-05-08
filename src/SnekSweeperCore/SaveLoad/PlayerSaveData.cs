@@ -1,6 +1,7 @@
 ﻿using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
+using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SaveLoad.SerializationService;
 
 namespace SnekSweeperCore.SaveLoad;
@@ -8,6 +9,7 @@ namespace SnekSweeperCore.SaveLoad;
 public record PlayerSaveData(
     MainSetting MainSetting,
     ActivatedCheatCodeSet ActivatedCheatCodeSet,
+    CurrentRunInfo CurrentCurrentRunInfo,
     History History);
 
 public static class PlayerSaveDataExtensions
@@ -17,7 +19,7 @@ public static class PlayerSaveDataExtensions
     extension(PlayerSaveData playerSaveData)
     {
         public static PlayerSaveData CreateEmpty() =>
-            new(new MainSetting(), new ActivatedCheatCodeSet([]), new History([]));
+            new(new MainSetting(), new ActivatedCheatCodeSet([]), new CurrentRunInfo(), new History([]));
 
         public void Save(string userDataDir) =>
             DefaultStrategy.Save(playerSaveData,userDataDir.ToDir());

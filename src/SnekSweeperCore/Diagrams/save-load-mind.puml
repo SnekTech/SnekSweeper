@@ -1,0 +1,25 @@
+﻿@startmindmap
+'https://plantuml.com/mindmap-diagram
+!theme blueprint
+
+title
+save load grid
+end title
+
+* Save
+
+** each cell has a state
+*** covered - 0
+*** revealed - 1
+**** bomb revealed [ending]
+*** flagged - 2
+**** wrong flagged [ending]
+*** do not save ending states
+
+** bomb distribution is fixed
+*** called real grid in tool-lib 
+*** only save the cell states, not bomb matrix
+
+* Load
+
+@endmindmap

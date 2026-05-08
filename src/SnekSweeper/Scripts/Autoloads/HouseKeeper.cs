@@ -3,6 +3,7 @@ using GodotTask;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
+using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeper.Autoloads;
@@ -46,4 +47,5 @@ public partial class HouseKeeper : Node
     internal static MainSetting MainSetting => _currentPlayerSaveData.MainSetting;
     internal static History History => _currentPlayerSaveData.History;
     internal static ActivatedCheatCodeSet ActivatedCheatCodeSet => _currentPlayerSaveData.ActivatedCheatCodeSet;
+    internal static CurrentRunInfo CurrentRunInfo => _currentPlayerSaveData.CurrentCurrentRunInfo;
 }
