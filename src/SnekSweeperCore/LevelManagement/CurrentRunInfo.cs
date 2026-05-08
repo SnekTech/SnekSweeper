@@ -28,6 +28,8 @@ public class GridSnapShotRecorder(CurrentRunInfo currentRunInfo)
     {
         currentRunInfo.GridSnapshot = grid.GetSnapshot();
     }
+
+    public void ClearSnapshot() => currentRunInfo.GridSnapshot = null;
 }
 
 static class GridSnapshotExtensions

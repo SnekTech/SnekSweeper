@@ -7,6 +7,8 @@ public class Lose(GridStateMachine stateMachine, GameLose gameLose) : GridState(
 {
     public override async Task OnEnterAsync(CancellationToken ct = default)
     {
+        Context.GridSnapShotRecorder.ClearSnapshot();
+
         var recentRecord = RunRecorder.GenerateRecentRecord(false, gameLose.Bombs);
         RunRecorder.SaveRecord(recentRecord);
 

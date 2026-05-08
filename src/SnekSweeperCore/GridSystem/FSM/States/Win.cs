@@ -7,6 +7,8 @@ public sealed class Win(GridStateMachine stateMachine, GameWin gameWin) : GridSt
 {
     public override async Task OnEnterAsync(CancellationToken ct = default)
     {
+        Context.GridSnapShotRecorder.ClearSnapshot();
+        
         var record = RunRecorder.GenerateRecentRecord(true, gameWin.Bombs);
         RunRecorder.SaveRecord(record);
 
