@@ -1,4 +1,5 @@
-﻿using GodotTask;
+﻿using GodotGadgets.Extensions;
+using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCodeSystem.UI;
 using SnekSweeper.UI.History;
@@ -10,11 +11,20 @@ namespace SnekSweeper.UI.MainScreen;
 [SceneTree]
 public partial class MainMenu : VBoxContainer
 {
+    public override void _Ready()
+    {
+        ContinueButton.Visible = HasAnOngoingGame();
+        return;
+
+        bool HasAnOngoingGame() => HouseKeeper.CurrentRunInfo.GridSnapshot != null;
+    }
+
     public override void _EnterTree() => RegisterEvents();
     public override void _ExitTree() => UnregisterEvents();
 
     void RegisterEvents()
     {
+        ContinueButton.Pressed += OnContinueButtonPressed;
         StartButton.Pressed += OnStartButtonPressed;
         SettingsButton.Pressed += OnSettingsButtonPressed;
         CheatCodeButton.Pressed += OnCheatCodeButtonPressed;
@@ -24,6 +34,7 @@ public partial class MainMenu : VBoxContainer
 
     void UnregisterEvents()
     {
+        ContinueButton.Pressed -= OnContinueButtonPressed;
         StartButton.Pressed -= OnStartButtonPressed;
         SettingsButton.Pressed -= OnSettingsButtonPressed;
         CheatCodeButton.Pressed -= OnCheatCodeButtonPressed;
@@ -54,5 +65,11 @@ public partial class MainMenu : VBoxContainer
     void OnQuitPressed()
     {
         GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+    }
+
+    void OnContinueButtonPressed()
+    {
+        "continue pressed, ongoing grid snapshot:".DumpGd();
+        HouseKeeper.CurrentRunInfo.GridSnapshot!.SnapshotStates.DumpGd();
     }
 }
