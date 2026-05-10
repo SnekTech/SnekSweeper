@@ -45,6 +45,4 @@ static class LayMineStrategies
             gridSize.Rows, gridSize.Columns, bombCount, startIndex.I, startIndex.J);
         return mat;
     }
-
-    internal static bool[,] LayMineHardcoded(bool[,] bombs) => bombs;
 }

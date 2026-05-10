@@ -1,5 +1,4 @@
-﻿using GodotGadgets.Extensions;
-using GodotTask;
+﻿using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCodeSystem.UI;
 using SnekSweeper.UI.History;
@@ -69,7 +68,7 @@ public partial class MainMenu : VBoxContainer
 
     void OnContinueButtonPressed()
     {
-        "continue pressed, ongoing grid snapshot:".DumpGd();
-        HouseKeeper.CurrentRunInfo.GridSnapshot!.SnapshotStates.DumpGd();
+        var snapshot = HouseKeeper.CurrentRunInfo.GridSnapshot!;
+        Autoload.SceneSwitcher.LoadLevel(new FromGridSnapshot(snapshot)).Forget();
     }
 }

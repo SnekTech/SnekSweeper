@@ -23,7 +23,8 @@ public class GridStateMachine(GridStateContext context) : StateMachineV2<GridSta
         Instantiated instantiated = loadLevelSource switch
         {
             RegularStart regularStart => new RegularInstantiated(regularStart, this),
-            FromRunRecord fromRunRecord => new InstantiatedFromRecord(fromRunRecord.RunRecord, this),
+            FromRunRecord fromRunRecord => new InstantiatedFromRecord(fromRunRecord, this),
+            FromGridSnapshot fromGridSnapshot => new InstantiatedFromSnapshot(fromGridSnapshot, this),
             _ => throw new SwitchExpressionException(),
         };
         return SetInitStateAsync(instantiated, ct);

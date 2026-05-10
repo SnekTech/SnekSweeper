@@ -21,5 +21,4 @@ public abstract class GridState(GridStateMachine stateMachine) : IState
     public virtual Task HandleInputAsync(GridInput gridInput, CancellationToken ct = default) => Task.CompletedTask;
 }
 
-public abstract class Instantiated(GridStateMachine stateMachine)
-    : GridState(stateMachine);
+public abstract class Instantiated(GridStateMachine stateMachine) : GridState(stateMachine);

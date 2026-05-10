@@ -10,7 +10,6 @@ using SnekSweeperCore.SkinSystem;
 namespace SnekSweeperCore.LevelManagement;
 
 public delegate bool[,] LayMineFn(GridIndex startIndex);
-
 public abstract record LoadLevelSource;
 
 public sealed record RegularStart(
@@ -21,6 +20,8 @@ public sealed record RegularStart(
 public sealed record FromRunRecord(
     GameRunRecord RunRecord
 ) : LoadLevelSource;
+
+public sealed record FromGridSnapshot(GridSnapshot Snapshot) : LoadLevelSource;
 
 public static class LevelLoading
 {
@@ -38,8 +39,8 @@ public static class LevelLoading
             RegularStart regularStart => regularStart.Solvable
                 ? startIndex => LayMineStrategies.LayMineSolvable(regularStart.DifficultyData, startIndex)
                 : startIndex => LayMineStrategies.LayMineClassic(regularStart.DifficultyData, startIndex),
-            FromRunRecord fromRunRecord =>
-                _ => LayMineStrategies.LayMineHardcoded(fromRunRecord.RunRecord.BombMatrix),
+            FromRunRecord fromRunRecord => _ => fromRunRecord.RunRecord.BombMatrix,
+            FromGridSnapshot fromGridSnapshot => _ => fromGridSnapshot.Snapshot.BombMatrix,
             _ => throw new SwitchExpressionException(),
         };
 
@@ -56,8 +57,12 @@ public static class LevelLoading
                 }),
                 FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.MapTo((_, gridIndex) =>
                 {
-                    var humbleCell =
-                        humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
+                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
+                    return new Cell(humbleCell, gridIndex);
+                }),
+                FromGridSnapshot fromGridSnapshot => fromGridSnapshot.Snapshot.BombMatrix.MapTo((_, gridIndex) =>
+                {
+                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
                     return new Cell(humbleCell, gridIndex);
                 }),
                 _ => throw new SwitchExpressionException(),
