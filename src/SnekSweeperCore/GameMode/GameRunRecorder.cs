@@ -1,23 +1,34 @@
 ﻿using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GameMode;
 
-public class GameRunRecorder(History history)
+public class GameRunRecorder(CurrentRunInfo currentRunInfo, History history)
 {
-    DateTime CurrentRunStartAt { get; set; } = DateTime.MinValue;
-    GridIndex StartIndex { get; set; }
+    RunStartInfo StartInfo
+    {
+        get => currentRunInfo.StartInfo; 
+        set => currentRunInfo.StartInfo = value;
+    }
 
-    internal void MarkRunStartInfo(DateTime startAt, GridIndex startIndex) =>
-        (CurrentRunStartAt, StartIndex) = (startAt, startIndex);
-
+    internal void MarkRunStartInfo(RunStartInfo startInfo) => StartInfo = startInfo;
 
     public GameRunRecord GenerateRecentRecord(bool winning, bool[,] bombs) => GameRunRecord.Create(
-        RunDuration.Create(CurrentRunStartAt, DateTime.Now),
+        RunDuration.Create(StartInfo.StartAt, DateTime.Now),
         winning,
         bombs,
-        StartIndex
+        StartInfo.StartIndex
     );
 
     public void SaveRecord(GameRunRecord runRecord) => history.AddRecord(runRecord);
+    
+    public void UpdateGridSnapshot(Grid grid)
+    {
+        currentRunInfo.GridSnapshot = grid.GetSnapshot();
+    }
+
+    public void ClearSnapshot() => currentRunInfo.GridSnapshot = null;
 }
+
+public readonly record struct RunStartInfo(DateTime StartAt, GridIndex StartIndex);

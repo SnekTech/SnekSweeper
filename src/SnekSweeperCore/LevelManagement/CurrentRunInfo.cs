@@ -7,6 +7,8 @@ namespace SnekSweeperCore.LevelManagement;
 public class CurrentRunInfo
 {
     public GridSnapshot? GridSnapshot { get; set; }
+    
+    public RunStartInfo StartInfo { get; set; }
 }
 
 [MemoryPackable]
@@ -21,16 +23,6 @@ public enum CellSnapshotState
     Revealed,
     Flagged,
     Irrelevant,
-}
-
-public class GridSnapShotRecorder(CurrentRunInfo currentRunInfo)
-{
-    public void UpdateGridSnapshot(Grid grid)
-    {
-        currentRunInfo.GridSnapshot = grid.GetSnapshot();
-    }
-
-    public void ClearSnapshot() => currentRunInfo.GridSnapshot = null;
 }
 
 static class GridSnapshotExtensions

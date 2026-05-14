@@ -10,7 +10,6 @@ public record GridStateContext(
     Grid Grid,
     IHumbleGrid HumbleGrid,
     GameRunRecorder RunRecorder,
-    GridSnapShotRecorder GridSnapShotRecorder,
     ILevelOrchestrator LevelOrchestrator
 );
 

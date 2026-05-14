@@ -9,7 +9,7 @@ namespace SnekSweeperCore.SaveLoad;
 public record PlayerSaveData(
     MainSetting MainSetting,
     ActivatedCheatCodeSet ActivatedCheatCodeSet,
-    CurrentRunInfo CurrentCurrentRunInfo,
+    CurrentRunInfo CurrentRunInfo,
     History History);
 
 public static class PlayerSaveDataExtensions

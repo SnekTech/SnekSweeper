@@ -1,4 +1,5 @@
 ﻿using SnekSweeperCore.GameHistory;
+using SnekSweeperCore.GameMode;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem.FSM.States;
@@ -25,7 +26,7 @@ public sealed class InstantiatedFromRecord(FromRunRecord fromRunRecord, GridStat
     {
         if (gridInput.Index != _runRecord.StartIndex) return;
 
-        RunRecorder.MarkRunStartInfo(DateTime.Now, gridInput.Index);
+        RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, gridInput.Index));
         await ChangeStateAsync(new GameStart(StateMachine), ct);
         await StateMachine.HandleInputAsync(gridInput, ct);
     }

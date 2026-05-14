@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GameHistory;
+using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
@@ -21,7 +22,7 @@ public sealed record FromRunRecord(
     GameRunRecord RunRecord
 ) : LoadLevelSource;
 
-public sealed record FromGridSnapshot(GridSnapshot Snapshot) : LoadLevelSource;
+public sealed record FromGridSnapshot(GridSnapshot Snapshot, RunStartInfo StartInfo) : LoadLevelSource;
 
 public static class LevelLoading
 {

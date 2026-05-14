@@ -69,6 +69,7 @@ public partial class MainMenu : VBoxContainer
     void OnContinueButtonPressed()
     {
         var snapshot = HouseKeeper.CurrentRunInfo.GridSnapshot!;
-        Autoload.SceneSwitcher.LoadLevel(new FromGridSnapshot(snapshot)).Forget();
+        var startInfo = HouseKeeper.CurrentRunInfo.StartInfo;
+        Autoload.SceneSwitcher.LoadLevel(new FromGridSnapshot(snapshot, startInfo)).Forget();
     }
 }

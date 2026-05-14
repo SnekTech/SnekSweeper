@@ -12,6 +12,7 @@ public sealed class InstantiatedFromSnapshot(FromGridSnapshot fromGridSnapshot, 
 
         await Grid.InitCellsAsync(bombs, ct);
         await RestoreCellStatesAsync();
+        RunRecorder.MarkRunStartInfo(fromGridSnapshot.StartInfo);
         return;
 
         async Task RestoreCellStatesAsync()

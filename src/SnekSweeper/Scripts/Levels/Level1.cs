@@ -23,11 +23,10 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
     {
         var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
         var grid = loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
-        var runRecorder = new GameRunRecorder(HouseKeeper.History);
-        var gridSnapshotRecorder = new GridSnapShotRecorder(HouseKeeper.CurrentRunInfo);
+        var runRecorder = new GameRunRecorder(HouseKeeper.CurrentRunInfo, HouseKeeper.History);
 
         var gridStateContext = new GridStateContext(
-            grid, TheGrid, runRecorder, gridSnapshotRecorder,
+            grid, TheGrid, runRecorder,
             this
         );
         var gridStateMachine = new GridStateMachine(gridStateContext);

@@ -2,6 +2,7 @@
 using Riok.Mapperly.Abstractions;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
+using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem.Difficulty;
 using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SkinSystem;
@@ -20,7 +21,7 @@ partial record MainSettingDto(
 partial record ActivatedCheatCodeSetDto(HashSet<CheatCodeKey> ActivatedSet);
 
 [MemoryPackable]
-partial record CurrentRunInfoDto(GridSnapshot? GridSnapshot);
+partial record CurrentRunInfoDto(GridSnapshot? GridSnapshot, RunStartInfo StartInfo);
 
 [MemoryPackable]
 partial record HistoryDto(List<GameRunRecord> Records);
@@ -29,7 +30,7 @@ partial record HistoryDto(List<GameRunRecord> Records);
 partial record PlayerSaveDataDto(
     MainSettingDto MainSetting,
     ActivatedCheatCodeSetDto ActivatedCheatCodeSet,
-    CurrentRunInfoDto CurrentCurrentRunInfo,
+    CurrentRunInfoDto CurrentRunInfo,
     HistoryDto History);
 
 [Mapper]

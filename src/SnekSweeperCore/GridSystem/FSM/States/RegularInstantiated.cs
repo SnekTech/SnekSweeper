@@ -1,4 +1,5 @@
-﻿using SnekSweeperCore.LevelManagement;
+﻿using SnekSweeperCore.GameMode;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem.FSM.States;
 
@@ -10,7 +11,7 @@ public sealed class RegularInstantiated(RegularStart regularStart, GridStateMach
         if (gridInput is PrimaryReleased primaryReleased)
         {
             var firstClickIndex = primaryReleased.Index;
-            RunRecorder.MarkRunStartInfo(DateTime.Now, firstClickIndex);
+            RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, firstClickIndex));
             await Grid.InitCellsAsync(regularStart.LayMineFn(firstClickIndex), ct);
             await ChangeStateAsync(new GameStart(StateMachine), ct);
             await StateMachine.HandleInputAsync(gridInput, ct);
