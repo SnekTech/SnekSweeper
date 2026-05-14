@@ -1,8 +1,7 @@
 ﻿using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.LevelManagement;
 
-namespace SnekSweeperCore.GameMode;
+namespace SnekSweeperCore.LevelManagement;
 
 public class GameRunRecorder(CurrentRunInfo currentRunInfo, History history)
 {

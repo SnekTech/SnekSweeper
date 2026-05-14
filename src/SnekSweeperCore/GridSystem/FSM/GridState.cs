@@ -1,5 +1,5 @@
 ﻿using GodotGadgets.FSM;
-using SnekSweeperCore.GameMode;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem.FSM;
 

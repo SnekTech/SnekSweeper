@@ -1,5 +1,4 @@
-﻿using SnekSweeperCore.GameMode;
-using SnekSweeperCore.LevelManagement;
+﻿using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem.FSM.States;
 

@@ -4,7 +4,6 @@ using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
-using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SkinSystem;
