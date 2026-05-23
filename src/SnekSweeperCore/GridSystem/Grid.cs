@@ -16,6 +16,8 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
     public async Task InitCellsAsync(bool[,] bombs, CancellationToken ct = default)
     {
+        if (_isAnyCellProcessing) return;
+        
         foreach (var cell in cells)
         {
             cell.HasBomb = bombs.At(cell.GridIndex);
