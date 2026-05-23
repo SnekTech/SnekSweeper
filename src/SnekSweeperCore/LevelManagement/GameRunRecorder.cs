@@ -11,7 +11,7 @@ public class GameRunRecorder(CurrentRunInfo currentRunInfo, History history)
         set => currentRunInfo.StartInfo = value;
     }
 
-    internal void MarkRunStartInfo(RunStartInfo startInfo) => StartInfo = startInfo;
+    public void MarkRunStartInfo(RunStartInfo startInfo) => StartInfo = startInfo;
 
     public GameRunRecord GenerateRecentRecord(bool winning, bool[,] bombs) => GameRunRecord.Create(
         RunDuration.Create(StartInfo.StartAt, DateTime.Now),
