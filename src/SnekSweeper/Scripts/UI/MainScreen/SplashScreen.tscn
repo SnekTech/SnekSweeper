@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bfeldd5yvi488"]
+
+[ext_resource type="Script" uid="uid://dc6cvtqvw2xhv" path="res://Scripts/UI/MainScreen/SplashScreen.cs" id="1_6uh1j"]
+[ext_resource type="Script" uid="uid://dyuc5druxiedi" path="res://Scripts/UI/MainScreen/PressToStartLabel.cs" id="1_rnux2"]
+
+[node name="SplashScreen" type="CenterContainer" unique_id=878003772]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6uh1j")
+
+[node name="PressToStartLabel" type="Label" parent="." unique_id=670757866]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Press Any Key ..."
+script = ExtResource("1_rnux2")

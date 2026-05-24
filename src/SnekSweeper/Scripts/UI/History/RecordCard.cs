@@ -1,13 +1,22 @@
-﻿using SnekSweeper.Widgets;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
+using SnekSweeper.GameStateManagement;
+using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI.History;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class RecordCard : PanelContainer, ISceneScript
 {
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    AppLogic AppLogic => this.DependOn<AppLogic>();
+
     public GameRunRecord RunRecord
     {
         get;
@@ -46,7 +55,6 @@ public partial class RecordCard : PanelContainer, ISceneScript
 
     void OnRetryButtonPressed()
     {
-        var loadLevelSource = new FromRunRecord(RunRecord);
-        Autoload.SceneSwitcher.LoadLevel(loadLevelSource).Forget();
+        AppLogic.InputNewGame(new FromRunRecord(RunRecord));
     }
 }

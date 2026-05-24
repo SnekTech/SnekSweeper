@@ -1,11 +1,13 @@
 ﻿using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using SnekSweeper.GameStateManagement;
+using SnekSweeper.Widgets;
 
-namespace SnekSweeper.UI.Common;
+namespace SnekSweeper.UI.MainScreen;
 
 [Meta(typeof(IAutoNode))]
-public partial class BackToMainButton : Button
+[SceneTree]
+public partial class SplashScreen : CenterContainer, ISceneScript
 {
     public override void _Notification(int what) => this.Notify(what);
 
@@ -14,13 +16,13 @@ public partial class BackToMainButton : Button
 
     public void OnResolved()
     {
-        Pressed += SendBackToMainInput;
+        PressToStartLabel.AnyKeyPressed += OnAnyKeyPressed;
     }
 
     public void OnExitTree()
     {
-        Pressed -= SendBackToMainInput;
+        PressToStartLabel.AnyKeyPressed -= OnAnyKeyPressed;
     }
 
-    void SendBackToMainInput() => AppLogic.Input(new AppLogic.Input.BackToMainMenu());
+    void OnAnyKeyPressed() => AppLogic.Input(new AppLogic.Input.AnyKeyPressed());
 }

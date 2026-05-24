@@ -4,21 +4,34 @@
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <Nullable>enable</Nullable>
         <LangVersion>14</LangVersion>
+        <!-- Catch compiler-mismatch issues with the Introspection generator -->
+        <WarningsAsErrors>CS9057</WarningsAsErrors> 
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="**/*.gdshader" />
+        <Content Include="**/*.gdshader"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dumpify" Version="0.6.6" />
-        <PackageReference Include="GDTask" Version="3.0.0" />
-        <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0-250131-2115.Release" />
-        <PackageReference Include="GTweensGodot" Version="6.0.0" />
+        <PackageReference Include="Chickensoft.AutoInject" Version="2.13.2" PrivateAssets="all"/>
+        <PackageReference Include="Chickensoft.AutoInject.Analyzers" Version="2.13.2"
+                          PrivateAssets="all" OutputItemType="analyzer"/>
+        <PackageReference Include="Chickensoft.GodotNodeInterfaces" Version="3.0.8"/>
+        <PackageReference Include="Chickensoft.Introspection" Version="3.0.2"/>
+        <PackageReference Include="Chickensoft.LogicBlocks" Version="5.20.0"/>
+        <PackageReference Include="Chickensoft.LogicBlocks.DiagramGenerator" Version="5.20.0"
+                          PrivateAssets="all" OutputItemType="analyzer"/>
+        <PackageReference Include="Chickensoft.Introspection.Generator" Version="3.0.2"
+                          PrivateAssets="all" OutputItemType="analyzer"/>
+
+        <PackageReference Include="Dumpify" Version="0.6.6"/>
+        <PackageReference Include="GDTask" Version="3.0.0"/>
+        <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0-250131-2115.Release"/>
+        <PackageReference Include="GTweensGodot" Version="6.0.0"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets\GodotGadgets.csproj" />
-        <ProjectReference Include="..\SnekSweeperCore\SnekSweeperCore.csproj" />
-        <ProjectReference Include="..\Widgets\Widgets.csproj" />
+        <ProjectReference Include="..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets\GodotGadgets.csproj"/>
+        <ProjectReference Include="..\SnekSweeperCore\SnekSweeperCore.csproj"/>
+        <ProjectReference Include="..\Widgets\Widgets.csproj"/>
     </ItemGroup>
 </Project>

@@ -1,15 +1,21 @@
-﻿using GodotTask;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using SnekSweeper.Autoloads;
-using SnekSweeper.CheatCodeSystem.UI;
-using SnekSweeper.UI.History;
-using SnekSweeper.UI.Settings;
+using SnekSweeper.GameStateManagement;
+using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI.MainScreen;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
-public partial class MainMenu : VBoxContainer
+public partial class MainMenu : VBoxContainer, ISceneScript
 {
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    AppLogic AppLogic => this.DependOn<AppLogic>();
+    
     public override void _Ready()
     {
         ContinueButton.Visible = HasAnOngoingGame();
@@ -43,22 +49,22 @@ public partial class MainMenu : VBoxContainer
 
     void OnHistoryButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoSceneAsync<HistoryPage>().Forget();
+        AppLogic.Input(new AppLogic.Input.HistoryPressed());
     }
 
     void OnCheatCodeButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoSceneAsync<CheatCodePage>().Forget();
+        AppLogic.Input(new AppLogic.Input.CheatCodePressed());
     }
 
     void OnSettingsButtonPressed()
     {
-        Autoload.SceneSwitcher.GotoSceneAsync<SettingsPage>().Forget();
+        AppLogic.Input(new AppLogic.Input.SettingsPressed());
     }
 
     void OnStartButtonPressed()
     {
-        Autoload.SceneSwitcher.LoadLevel(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting)).Forget();
+        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting));
     }
 
     void OnQuitPressed()
@@ -68,8 +74,6 @@ public partial class MainMenu : VBoxContainer
 
     void OnContinueButtonPressed()
     {
-        var snapshot = HouseKeeper.CurrentRunInfo.GridSnapshot!;
-        var startInfo = HouseKeeper.CurrentRunInfo.StartInfo;
-        Autoload.SceneSwitcher.LoadLevel(new FromGridSnapshot(snapshot, startInfo)).Forget();
+        // todo: implement continue
     }
 }

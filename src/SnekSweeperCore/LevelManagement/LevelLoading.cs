@@ -28,6 +28,9 @@ public static class LevelLoading
 {
     extension(LoadLevelSource loadLevelSource)
     {
+        public static LoadLevelSource CreateDefaultRegularStart() =>
+            new RegularStart(GridDifficultyKey.Intermediate.ToDifficulty().DifficultyData, true);
+        
         public static LoadLevelSource CreateRegularStart(MainSetting mainSetting)
         {
             var difficulty = mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
