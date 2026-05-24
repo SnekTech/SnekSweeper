@@ -9,43 +9,48 @@ public partial class GridLogic
 {
     public partial record State
     {
-        public record RegularInstantiated : State, IGet<Input.PlayerInput>, IGet<Input.InitComplete>
+        public record RegularInstantiated : State, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
         {
-            event Action? InitCompleted;
+            event Action? FirstInputHandled;
+            bool _isProcessingInput;
             
             public RegularInstantiated()
             {
-                OnAttach(() => InitCompleted += OnInitCompleted);
-                OnDetach(() => InitCompleted -= OnInitCompleted);
+                OnAttach(() => FirstInputHandled += OnFirstInputHandled);
+                OnDetach(() => FirstInputHandled -= OnFirstInputHandled);
             }
 
-            void OnInitCompleted()
-            {
-                Input(new Input.InitComplete());
-            }
+            void OnFirstInputHandled() => Input(new Input.StartLevel());
 
             public Transition On(in Input.PlayerInput input)
             {
-                if (input.GridInput is not PrimaryReleased primaryReleased) return ToSelf();
+                if (_isProcessingInput)
+                    return ToSelf();
+                if (input.GridInput is not PrimaryReleased primaryReleased) 
+                    return ToSelf();
 
+                // todo: handle the cancellation token
                 TriggerGridInitAsync().Forget();
 
                 return ToSelf();
                 
                 async GDTaskVoid TriggerGridInitAsync(CancellationToken ct = default)
                 {
+                    _isProcessingInput = true;
+                    
                     var context = Get<GridStateContext>();
                     var firstClickIndex = primaryReleased.Index;
-                
+                    
                     context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, firstClickIndex));
-                    // todo: handle the cancellation token
                     await context.Grid.InitCellsAsync(Get<Data>().LoadLevelSource.LayMineFn(firstClickIndex), ct);
                     await context.Grid.HandleInputAsync(primaryReleased, ct);
-                    InitCompleted?.Invoke();
+                    FirstInputHandled?.Invoke();
+                    
+                    _isProcessingInput = false;
                 }
             }
 
-            public Transition On(in Input.InitComplete input) => To<GameRunning>();
+            public Transition On(in Input.StartLevel input) => To<GameRunning>();
         }
     }
 }
