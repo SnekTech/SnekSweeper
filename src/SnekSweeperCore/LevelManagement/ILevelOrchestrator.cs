@@ -11,11 +11,11 @@ public interface ILevelOrchestrator
     void Retry(GameRunRecord runRecord);
 }
 
-public abstract record PopupChoiceOnWin;
-
-public sealed record NewGame : PopupChoiceOnWin;
-
-public sealed record Leave : PopupChoiceOnWin;
+public enum PopupChoiceOnWin
+{
+    NewGame,
+    Leave,
+}
 
 public enum PopupChoiceOnLose
 {

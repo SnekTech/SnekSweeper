@@ -1,5 +1,6 @@
 ﻿using Chickensoft.Introspection;
 using Chickensoft.LogicBlocks;
+using GodotTask;
 using SnekSweeper.Levels;
 using SnekSweeperCore.LevelManagement;
 
@@ -60,15 +61,15 @@ public partial class AppLogic : LogicBlock<AppLogic.State>
         {
             public InGame()
             {
-                OnAttach(() =>
-                {
-                    Get<IAppRepo>().GameEnded += OnGameEnded;
+                OnAttach(() => Get<IAppRepo>().GameEnded += OnGameEnded);
+                OnDetach(() => Get<IAppRepo>().GameEnded -= OnGameEnded);
 
+                this.OnEnter(delegate
+                {
                     var loadLevelSource = Get<Data>().LoadLevelSource;
                     Get<ISceneSwitcher>().GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource),
-                        CancellationToken.None);
+                        CancellationToken.None).Forget();
                 });
-                OnDetach(() => Get<IAppRepo>().GameEnded -= OnGameEnded);
             }
 
             void OnGameEnded() => Input(new Input.GameEnd());

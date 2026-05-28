@@ -12,28 +12,24 @@ public partial class GridLogic
     {
         public record InstantiatedFromSnapshot : State, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
         {
-            event Action? FirstInputHandled;
             bool _hasInitializedGrid;
-            bool _isProcessingInput;
-            readonly GridStateContext _context;
+            FromGridSnapshot _fromGridSnapshot = null!;
 
             public InstantiatedFromSnapshot()
             {
-                OnAttach(() => FirstInputHandled += OnFirstInputHandled);
-                OnDetach(() => FirstInputHandled -= OnFirstInputHandled);
-
-                _context = Get<GridStateContext>();
-                var fromGridSnapshot = (FromGridSnapshot)Get<Data>().LoadLevelSource;
-                var (cellSnapshotStates, bombs) = fromGridSnapshot.Snapshot;
-                var cellStatesMatrix = MatrixExtensions.FromJagged(cellSnapshotStates);
-
-                this.OnEnter(delegate { TriggerInitGridAsync().Forget(); });
+                this.OnEnter(delegate
+                {
+                    _fromGridSnapshot = (FromGridSnapshot)Get<Data>().LoadLevelSource;
+                    TriggerInitGridAsync().Forget();
+                });
 
                 return;
-                
+
                 async GDTask RestoreCellStatesAsync(CancellationToken ct = default)
                 {
-                    var tasks = _context.Grid.Cells
+                    var cellStatesMatrix = MatrixExtensions.FromJagged(_fromGridSnapshot.Snapshot.SnapshotStates);
+
+                    var tasks = Context.Grid.Cells
                         .Select(cell => (cell, state: cellStatesMatrix.At(cell.GridIndex)))
                         .Select(tuple => tuple.state switch
                         {
@@ -47,32 +43,27 @@ public partial class GridLogic
 
                 async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
                 {
-                    await _context.Grid.InitCellsAsync(bombs, ct);
+                    await Context.Grid.InitCellsAsync(_fromGridSnapshot.Snapshot.BombMatrix, ct);
                     await RestoreCellStatesAsync(ct);
-                    _context.RunRecorder.MarkRunStartInfo(fromGridSnapshot.StartInfo);
+                    Context.RunRecorder.MarkRunStartInfo(_fromGridSnapshot.StartInfo);
                     _hasInitializedGrid = true;
                 }
             }
 
-            void OnFirstInputHandled() => Input(new Input.StartLevel());
+            void OnReadyToHandleFirstInput(GridInput firstInput)
+            {
+                Input(new Input.StartLevel());
+                Input(new Input.PlayerInput(firstInput));
+            }
 
             public Transition On(in Input.PlayerInput input)
             {
-                if (!_hasInitializedGrid || _isProcessingInput)
+                if (!_hasInitializedGrid)
                     return ToSelf();
-                
-                var gridInput = input.GridInput;
 
-                TriggerHandleInputAsync().Forget();
+                OnReadyToHandleFirstInput(input.GridInput);
+
                 return ToSelf();
-
-                async GDTaskVoid TriggerHandleInputAsync(CancellationToken ct = default)
-                {
-                    _isProcessingInput = true;
-                    await _context.Grid.HandleInputAsync(gridInput, ct);
-                    FirstInputHandled?.Invoke();
-                    _isProcessingInput = false;
-                }
             }
 
             public Transition On(in Input.StartLevel input) => To<GameRunning>();

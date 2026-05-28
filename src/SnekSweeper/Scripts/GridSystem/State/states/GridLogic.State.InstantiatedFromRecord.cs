@@ -1,7 +1,7 @@
 using Chickensoft.LogicBlocks;
 using GodotTask;
 using SnekSweeperCore.GameHistory;
-using SnekSweeperCore.GridSystem.FSM;
+using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;
@@ -12,59 +12,51 @@ public partial class GridLogic
     {
         public record InstantiatedFromRecord : State, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
         {
-            event Action? FirstInputHandled;
             bool _hasInitializedGrid;
-            bool _isProcessingInput;
-            readonly GameRunRecord _runRecord;
-            readonly GridStateContext _context;
+            GameRunRecord _runRecord = null!;
 
             public InstantiatedFromRecord()
             {
-                OnAttach(() => FirstInputHandled += OnFirstInputHandled);
-                OnDetach(() => FirstInputHandled -= OnFirstInputHandled);
+                this.OnEnter(delegate
+                {
+                    var fromRunRecord = (FromRunRecord)Get<Data>().LoadLevelSource;
+                    _runRecord = fromRunRecord.RunRecord;
+                    Context.HumbleGrid.GridCursor.LockTo(_runRecord.StartIndex, Context.Grid.Size);
+                    
+                    TriggerInitGridAsync().Forget();
+                });
 
-                _context = Get<GridStateContext>();
-                var fromRunRecord = (FromRunRecord)Get<Data>().LoadLevelSource;
-                _runRecord = fromRunRecord.RunRecord;
-
-                this.OnEnter(delegate { TriggerInitGridAsync().Forget(); });
-
-                this.OnExit(delegate { _context.HumbleGrid.GridCursor.Unlock(); });
+                this.OnExit(delegate { Context.HumbleGrid.GridCursor.Unlock(); });
 
                 return;
 
                 async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
                 {
-                    await _context.Grid.InitCellsAsync(_runRecord.BombMatrix, ct);
-                    _context.HumbleGrid.GridCursor.LockTo(_runRecord.StartIndex, _context.Grid.Size);
+                    await Context.Grid.InitCellsAsync(_runRecord.BombMatrix, ct);
                     _hasInitializedGrid = true;
                 }
             }
 
-            void OnFirstInputHandled() => Input(new Input.StartLevel());
+            void OnReadyToHandleFirstInput(GridInput firstInput)
+            {
+                Input(new Input.StartLevel());
+                Input(new Input.PlayerInput(firstInput));
+            }
 
             public Transition On(in Input.PlayerInput input)
             {
-                if (!_hasInitializedGrid || _isProcessingInput)
+                if (!_hasInitializedGrid)
                     return ToSelf();
                 var gridInput = input.GridInput;
 
                 if (gridInput.Index != _runRecord.StartIndex)
                     return ToSelf();
 
-                TriggerHandleInputAsync().Forget();
+                Context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, gridInput.Index));
+                OnReadyToHandleFirstInput(gridInput);
                 return ToSelf();
-
-                async GDTaskVoid TriggerHandleInputAsync(CancellationToken ct = default)
-                {
-                    _context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, gridInput.Index));
-                    _isProcessingInput = true;
-                    await _context.Grid.HandleInputAsync(gridInput, ct);
-                    FirstInputHandled?.Invoke();
-                    _isProcessingInput = false;
-                }
             }
-            
+
             public Transition On(in Input.StartLevel input) => To<GameRunning>();
         }
     }

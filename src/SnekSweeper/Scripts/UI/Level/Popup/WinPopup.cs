@@ -34,7 +34,7 @@ public partial class WinPopup : PanelContainer
 
     PopupChoiceListener<PopupChoiceOnWin> CreatePopupChoiceListener() =>
         new([
-            NewGameButton.CreateChoiceButton<PopupChoiceOnWin>(new NewGame()),
-            LeaveButton.CreateChoiceButton<PopupChoiceOnWin>(new Leave()),
+            NewGameButton.CreateChoiceButton(PopupChoiceOnWin.NewGame),
+            LeaveButton.CreateChoiceButton(PopupChoiceOnWin.Leave),
         ]);
 }

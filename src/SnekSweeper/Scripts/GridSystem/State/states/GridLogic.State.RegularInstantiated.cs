@@ -1,6 +1,5 @@
 ﻿using GodotTask;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;
@@ -11,23 +10,21 @@ public partial class GridLogic
     {
         public record RegularInstantiated : State, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
         {
-            event Action? FirstInputHandled;
-            bool _isProcessingInput;
-            
-            public RegularInstantiated()
-            {
-                OnAttach(() => FirstInputHandled += OnFirstInputHandled);
-                OnDetach(() => FirstInputHandled -= OnFirstInputHandled);
-            }
+            bool _hasFirstInputBeenHandled;
 
-            void OnFirstInputHandled() => Input(new Input.StartLevel());
+            void OnReadyToHandleFirstInput(GridInput firstInput)
+            {
+                Input(new Input.StartLevel());
+                Input(new Input.PlayerInput(firstInput));
+            }
 
             public Transition On(in Input.PlayerInput input)
             {
-                if (_isProcessingInput)
+                if (_hasFirstInputBeenHandled)
                     return ToSelf();
                 if (input.GridInput is not PrimaryReleased primaryReleased) 
                     return ToSelf();
+                _hasFirstInputBeenHandled = true;
 
                 // todo: handle the cancellation token
                 TriggerGridInitAsync().Forget();
@@ -36,17 +33,12 @@ public partial class GridLogic
                 
                 async GDTaskVoid TriggerGridInitAsync(CancellationToken ct = default)
                 {
-                    _isProcessingInput = true;
-                    
-                    var context = Get<GridStateContext>();
                     var firstClickIndex = primaryReleased.Index;
                     
-                    context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, firstClickIndex));
-                    await context.Grid.InitCellsAsync(Get<Data>().LoadLevelSource.LayMineFn(firstClickIndex), ct);
-                    await context.Grid.HandleInputAsync(primaryReleased, ct);
-                    FirstInputHandled?.Invoke();
+                    Context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, firstClickIndex));
+                    await Context.Grid.InitCellsAsync(Get<Data>().LoadLevelSource.LayMineFn(firstClickIndex), ct);
                     
-                    _isProcessingInput = false;
+                    OnReadyToHandleFirstInput(primaryReleased);
                 }
             }
 

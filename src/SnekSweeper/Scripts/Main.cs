@@ -5,7 +5,7 @@ using SnekSweeper.GameStateManagement;
 namespace SnekSweeper;
 
 [Meta(typeof(IAutoNode))]
-public partial class Main : Node, IProvide<AppLogic>
+public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>
 {
     [Node]
     public ISceneSwitcher SceneSwitcher { get; set; } = null!;
@@ -13,6 +13,7 @@ public partial class Main : Node, IProvide<AppLogic>
     IAppRepo AppRepo { get; set; } = null!;
     AppLogic _appLogic = null!;
     AppLogic IProvide<AppLogic>.Value() => _appLogic;
+    IAppRepo IProvide<IAppRepo>.Value() => AppRepo;
 
     public void OnReady()
     {

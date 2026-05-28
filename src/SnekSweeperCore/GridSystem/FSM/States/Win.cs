@@ -17,8 +17,8 @@ public sealed class Win(GridStateMachine stateMachine, GameWin gameWin) : GridSt
         var choice = await Context.LevelOrchestrator.GetPopupChoiceOnWinAsync(ct);
         Action handleChoiceAction = choice switch
         {
-            NewGame => Context.LevelOrchestrator.NewGame,
-            Leave => Context.LevelOrchestrator.BackToMainMenu,
+            PopupChoiceOnWin.NewGame => Context.LevelOrchestrator.NewGame,
+            PopupChoiceOnWin.Leave => Context.LevelOrchestrator.BackToMainMenu,
             _ => delegate { },
         };
 

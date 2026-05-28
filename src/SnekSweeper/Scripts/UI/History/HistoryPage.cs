@@ -27,6 +27,7 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
         var records = HouseKeeper.History.Records;
         RecordsCountLabel.Text = $"{records.Count} records in total";
 
+        // todo: sort records in EndAt descending order
         foreach (var record in records)
         {
             var recordCard = RecordCard.InstantiateOnParent(RecordsContainer);
