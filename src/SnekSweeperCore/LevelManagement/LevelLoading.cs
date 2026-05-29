@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GameHistory;
-using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;

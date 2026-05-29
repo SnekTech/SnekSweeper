@@ -15,9 +15,11 @@ public partial class MainMenu : VBoxContainer, ISceneScript
 
     [Dependency]
     AppLogic AppLogic => this.DependOn<AppLogic>();
-    
+
     public override void _Ready()
     {
+        // todo: fix main menu UI
+
         ContinueButton.Visible = HasAnOngoingGame();
         return;
 
@@ -74,6 +76,8 @@ public partial class MainMenu : VBoxContainer, ISceneScript
 
     void OnContinueButtonPressed()
     {
-        // todo: implement continue
+        var fromSnapshot =
+            new FromGridSnapshot(HouseKeeper.CurrentRunInfo.GridSnapshot!, HouseKeeper.CurrentRunInfo.StartInfo);
+        AppLogic.InputNewGame(fromSnapshot);
     }
 }

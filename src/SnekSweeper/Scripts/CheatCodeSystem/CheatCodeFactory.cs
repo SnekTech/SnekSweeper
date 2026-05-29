@@ -11,6 +11,7 @@ public static class CheatCodeFactory
             "Make cells transparent Make cells transparent Make cells transparent Make cells transparent  ",
             "res://Art/relic_icon_alpha.png"))
         {
+            // todo: trigger init effects on grid init completed?
             InitEffect = new SetGridCoverAlpha(0.5f),
         },
         new(CheatCodeKey.Messenger, new CheatCodeData(
