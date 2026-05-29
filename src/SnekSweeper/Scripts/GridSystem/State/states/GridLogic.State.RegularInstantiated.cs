@@ -26,8 +26,7 @@ public partial class GridLogic
                     return ToSelf();
                 _hasFirstInputBeenHandled = true;
 
-                // todo: handle the cancellation token
-                TriggerGridInitAsync().Forget();
+                TriggerGridInitAsync(LevelExitToken).Forget();
 
                 return ToSelf();
                 

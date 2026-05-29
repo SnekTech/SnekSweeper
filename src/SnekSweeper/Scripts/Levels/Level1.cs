@@ -58,7 +58,11 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         );
 
         GridLogic = new GridLogic();
-        var gridLogicData = new GridLogic.Data { AppRepo = AppRepo };
+        var gridLogicData = new GridLogic.Data
+        {
+            AppRepo = AppRepo,
+            CancellationTokenOnLevelExit = ct.LinkWithNodeDestroy(this).Token,
+        };
         GridLogic.Set(gridLogicData);
         GridLogic.Set(gridStateContext);
 
@@ -106,7 +110,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 
     void OnGridInputEmitted(GridInput input)
     {
-        GridLogic.Input(new GridLogic.Input.PlayerInput(input, this.GetCancellationTokenOnTreeExit()));
+        GridLogic.Input(new GridLogic.Input.PlayerInput(input));
     }
 
     public void NewGame()

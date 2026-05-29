@@ -40,7 +40,7 @@ public partial class GridLogic
 
                     Context.HumbleGrid.PlayCongratulationEffects();
 
-                    TriggerWinPopupAsync(recentRecord).Forget();
+                    TriggerWinPopupAsync(recentRecord, LevelExitToken).Forget();
                 });
                 return;
 

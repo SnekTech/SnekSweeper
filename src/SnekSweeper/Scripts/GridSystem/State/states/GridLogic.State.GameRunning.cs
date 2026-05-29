@@ -28,7 +28,7 @@ public partial class GridLogic
 
                 var gridInput = input.GridInput;
 
-                TriggerHandleInputAsync(input.Token).Forget();
+                TriggerHandleInputAsync(LevelExitToken).Forget();
                 return ToSelf();
 
                 async GDTaskVoid TriggerHandleInputAsync(CancellationToken ct = default)
@@ -51,15 +51,13 @@ public partial class GridLogic
                     Context.RunRecorder.UpdateGridSnapshot(Context.Grid);
                     return ToSelf();
                 }
-                
-                var transition = judgedResult switch
+
+                return judgedResult switch
                 {
                     GameWin gameWin => To<Win>().With(win => ((Win)win).GameWin = gameWin),
                     GameLose gameLose => To<Lose>().With(lose => ((Lose)lose).GameLose = gameLose),
                     _ => throw new SwitchExpressionException(),
                 };
-
-                return transition;
             }
         }
     }

@@ -14,8 +14,7 @@ public partial class GridLogic:LogicBlock<GridLogic.State>
         public LoadLevelSource LoadLevelSource { get; set; } = LoadLevelSource.CreateDefaultRegularStart();
         public required IAppRepo AppRepo { get; init; }
         
-        // todo: figure out the cancellation
-        public CancellationToken CancellationTokenOnLevelExit { get; set; }
+        public CancellationToken CancellationTokenOnLevelExit { get; init; }
     }
     
     public override Transition GetInitialState() => To<State.PreInstantiated>();

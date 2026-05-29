@@ -18,7 +18,7 @@ public partial class GridLogic
                 this.OnEnter(() =>
                 {
                     var recentRecord = SaveRunRecord(false, GameLose.Bombs);
-                    TriggerLoseTasksAsync(recentRecord).Forget();
+                    TriggerLoseTasksAsync(recentRecord, LevelExitToken).Forget();
                 });
                 return;
 

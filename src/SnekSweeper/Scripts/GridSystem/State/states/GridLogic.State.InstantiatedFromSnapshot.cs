@@ -20,7 +20,7 @@ public partial class GridLogic
                 this.OnEnter(delegate
                 {
                     _fromGridSnapshot = (FromGridSnapshot)Get<Data>().LoadLevelSource;
-                    TriggerInitGridAsync().Forget();
+                    TriggerInitGridAsync(LevelExitToken).Forget();
                 });
 
                 return;

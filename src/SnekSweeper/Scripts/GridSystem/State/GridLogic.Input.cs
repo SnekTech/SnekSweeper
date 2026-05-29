@@ -11,7 +11,7 @@ public partial class GridLogic
     {
         public readonly record struct Init(LoadLevelSource LoadLevelSource);
         public readonly record struct StartLevel;
-        public readonly record struct PlayerInput(GridInput GridInput, CancellationToken Token = default);
+        public readonly record struct PlayerInput(GridInput GridInput);
         public readonly record struct EndGame(JudgedResult JudgedResult);
     }
 

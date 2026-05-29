@@ -7,6 +7,7 @@ public partial class GridLogic
 {
     public abstract partial record State : StateLogic<State>
     {
-        protected GridStateContext Context => Get<GridStateContext>();
+        GridStateContext Context => Get<GridStateContext>();
+        CancellationToken LevelExitToken => Get<Data>().CancellationTokenOnLevelExit;
     }
 }

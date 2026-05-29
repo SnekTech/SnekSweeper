@@ -23,7 +23,7 @@ public partial class GridLogic
                     _runRecord = fromRunRecord.RunRecord;
                     Context.HumbleGrid.GridCursor.LockTo(_runRecord.StartIndex, Context.Grid.Size);
                     
-                    TriggerInitGridAsync().Forget();
+                    TriggerInitGridAsync(LevelExitToken).Forget();
                 });
 
                 this.OnExit(delegate { Context.HumbleGrid.GridCursor.Unlock(); });
