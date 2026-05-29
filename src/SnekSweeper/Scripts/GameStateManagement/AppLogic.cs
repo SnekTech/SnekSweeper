@@ -67,7 +67,7 @@ public partial class AppLogic : LogicBlock<AppLogic.State>
                 this.OnEnter(delegate
                 {
                     var loadLevelSource = Get<Data>().LoadLevelSource;
-                    Get<ISceneSwitcher>().GotoSceneAsync<Level1>(level => level.LoadLevelAsync(loadLevelSource),
+                    Get<ISceneSwitcher>().GotoSceneAsync<Level1>(level => level.LoadLevel(loadLevelSource),
                         CancellationToken.None).Forget();
                 });
             }

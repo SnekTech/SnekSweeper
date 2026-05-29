@@ -45,57 +45,69 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         GridBinding.Dispose();
     }
 
-    public GDTask LoadLevelAsync(LoadLevelSource loadLevelSource, CancellationToken ct = default)
+    public GDTask LoadLevel(LoadLevelSource loadLevelSource)
     {
-        var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
-        var grid = loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
+        var grid = CreateGrid();
         TheGrid.Init(grid);
-        var runRecorder = new GameRunRecorder(HouseKeeper.CurrentRunInfo, HouseKeeper.History);
 
-        var gridStateContext = new GridStateContext(
-            grid, TheGrid, runRecorder,
-            this
-        );
-
-        GridLogic = new GridLogic();
-        var gridLogicData = new GridLogic.Data
-        {
-            AppRepo = AppRepo,
-            CancellationTokenOnLevelExit = ct.LinkWithNodeDestroy(this).Token,
-        };
-        GridLogic.Set(gridLogicData);
-        GridLogic.Set(gridStateContext);
-
-        GridBinding = GridLogic.Bind()
-            .Handle((in GridLogic.Output.EndGameChoiceOnWin output) =>
-            {
-                Action handleChoiceAction = output.Choice switch
-                {
-                    PopupChoiceOnWin.NewGame => NewGame,
-                    PopupChoiceOnWin.Leave => BackToMainMenu,
-                    _ => delegate { },
-                };
-                handleChoiceAction();
-            })
-            .Handle((in GridLogic.Output.EndGameChoiceOnLose output) =>
-            {
-                var recentRecord = output.RecentRecord;
-                Action handleChoiceAction = output.Choice switch
-                {
-                    PopupChoiceOnLose.Retry => () => Retry(recentRecord),
-                    PopupChoiceOnLose.NewGame => NewGame,
-                    PopupChoiceOnLose.Leave => BackToMainMenu,
-                    _ => delegate { },
-                };
-                handleChoiceAction();
-            });
-
+        SetupGridLogic();
+        SetupGridBinding();
 
         GridLogic.Start();
         GridLogic.Input(new GridLogic.Input.Init(loadLevelSource));
 
-        // todo : no need to use task here
         return GDTask.CompletedTask;
+
+        Grid CreateGrid()
+        {
+            var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
+            return loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
+        }
+
+        void SetupGridLogic()
+        {
+            GridLogic = new GridLogic();
+
+            GridLogic.Set(new GridLogic.Data
+            {
+                AppRepo = AppRepo,
+                CancellationTokenOnLevelExit = this.GetCancellationTokenOnTreeExit(),
+            });
+
+            GridLogic.Set(new GridStateContext(
+                grid,
+                TheGrid,
+                new GameRunRecorder(HouseKeeper.CurrentRunInfo, HouseKeeper.History),
+                this
+            ));
+        }
+
+        void SetupGridBinding()
+        {
+            GridBinding = GridLogic.Bind()
+                .Handle((in GridLogic.Output.EndGameChoiceOnWin output) =>
+                {
+                    Action handleChoiceAction = output.Choice switch
+                    {
+                        PopupChoiceOnWin.NewGame => NewGame,
+                        PopupChoiceOnWin.Leave => BackToMainMenu,
+                        _ => delegate { },
+                    };
+                    handleChoiceAction();
+                })
+                .Handle((in GridLogic.Output.EndGameChoiceOnLose output) =>
+                {
+                    var recentRecord = output.RecentRecord;
+                    Action handleChoiceAction = output.Choice switch
+                    {
+                        PopupChoiceOnLose.Retry => () => Retry(recentRecord),
+                        PopupChoiceOnLose.NewGame => NewGame,
+                        PopupChoiceOnLose.Leave => BackToMainMenu,
+                        _ => delegate { },
+                    };
+                    handleChoiceAction();
+                });
+        }
     }
 
     public async Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default)
