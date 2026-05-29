@@ -24,10 +24,10 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
 
     void PopulateRecords()
     {
-        var records = HouseKeeper.History.Records;
+        var records = HouseKeeper.History.Records
+            .OrderByDescending(r => r.Duration.EndAt).ToList();
         RecordsCountLabel.Text = $"{records.Count} records in total";
 
-        // todo: sort records in EndAt descending order
         foreach (var record in records)
         {
             var recordCard = RecordCard.InstantiateOnParent(RecordsContainer);
