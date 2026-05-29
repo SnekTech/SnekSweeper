@@ -15,7 +15,21 @@ public class PopupChoiceListener<T>
         }
     }
 
-    public GDTask<T> GetChoiceAsync() => _tcs.Task;
+    public GDTask<T> GetChoiceAsync(CancellationToken cancellationToken = default)
+    {
+        CancellationTokenRegistration ctr = default;
+        if (cancellationToken.CanBeCanceled)
+        {
+            ctr = cancellationToken.Register(() =>
+            {
+                _tcs.TrySetCanceled(cancellationToken);
+            });
+        }
+
+        _tcs.Task.ContinueWith(() => ctr.Dispose());
+        
+        return _tcs.Task;
+    }
 
     public void RegisterButtonListeners()
     {

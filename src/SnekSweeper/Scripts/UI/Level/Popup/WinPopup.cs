@@ -26,7 +26,7 @@ public partial class WinPopup : PanelContainer
         CancellationToken ct = default)
     {
         await _animator.ShowAsync(targetGlobalPosition, ct);
-        var choice = await _popupChoiceListener.GetChoiceAsync();
+        var choice = await _popupChoiceListener.GetChoiceAsync(ct);
         await _animator.HideAsync(ct);
 
         return choice;
