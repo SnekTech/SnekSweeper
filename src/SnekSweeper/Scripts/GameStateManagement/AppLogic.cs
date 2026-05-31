@@ -41,7 +41,7 @@ public partial class AppLogic : LogicBlock<AppLogic.State>
         {
             public MainMenu()
             {
-                OnAttach(() => Get<ISceneSwitcher>().GotoScene<UI.MainScreen.MainMenu>());
+                OnAttach(() => Get<ISceneSwitcher>().GotoScene<UI.MainScreen.MainMenuContainer>());
             }
 
             public Transition On(in Input.NewGame input)

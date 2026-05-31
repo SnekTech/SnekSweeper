@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://slp4no6p1waf"]
+
+[ext_resource type="PackedScene" uid="uid://bkrd3ulkrdbkm" path="res://Scripts/UI/MainScreen/MainMenu.tscn" id="1_26pg5"]
+[ext_resource type="Script" uid="uid://d46splw67l38" path="res://Scripts/UI/MainScreen/MainMenuContainer.cs" id="1_fbe8m"]
+
+[node name="MainMenuContainer" type="Control" unique_id=239504265]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fbe8m")
+
+[node name="MainMenu" parent="." unique_id=1398184146 instance=ExtResource("1_26pg5")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = -0.5
+anchor_right = 0.5
+anchor_bottom = -0.5
+grow_horizontal = 2
+grow_vertical = 2

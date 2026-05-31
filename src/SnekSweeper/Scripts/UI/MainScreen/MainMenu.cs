@@ -2,14 +2,13 @@
 using Chickensoft.Introspection;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GameStateManagement;
-using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.UI.MainScreen;
 
 [Meta(typeof(IAutoNode))]
 [SceneTree]
-public partial class MainMenu : VBoxContainer, ISceneScript
+public partial class MainMenu : VBoxContainer
 {
     public override void _Notification(int what) => this.Notify(what);
 
@@ -18,8 +17,6 @@ public partial class MainMenu : VBoxContainer, ISceneScript
 
     public override void _Ready()
     {
-        // todo: fix main menu UI
-
         ContinueButton.Visible = HasAnOngoingGame();
         return;
 
