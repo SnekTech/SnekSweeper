@@ -17,9 +17,6 @@ public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>
 
     public void OnReady()
     {
-        // todo: randomize seed?
-        // namespace conflict: Widgets vs SnekSweeper.Widgets
-
         AppRepo = new AppRepo();
         _appLogic = new AppLogic();
         _appLogic.Set(SceneSwitcher);

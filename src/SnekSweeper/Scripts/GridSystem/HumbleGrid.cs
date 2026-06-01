@@ -15,7 +15,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     Grid _grid = null!;
 
-    // todo: put this to a proper location
     public CommandInvoker GridCommandInvoker { get; } = new();
 
     public override void _EnterTree()
