@@ -1,7 +1,6 @@
 using Chickensoft.LogicBlocks;
 using GodotTask;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;
@@ -25,26 +24,10 @@ public partial class GridLogic
 
                 return;
 
-                async GDTask RestoreCellStatesAsync(CancellationToken ct = default)
-                {
-                    var cellStatesMatrix = MatrixExtensions.FromJagged(_fromGridSnapshot.Snapshot.SnapshotStates);
-
-                    var tasks = Context.Grid.Cells
-                        .Select(cell => (cell, state: cellStatesMatrix.At(cell.GridIndex)))
-                        .Select(tuple => tuple.state switch
-                        {
-                            CellSnapshotState.Revealed => tuple.cell.RevealAsync(ct).AsGDTask(),
-                            CellSnapshotState.Flagged => tuple.cell.SwitchFlagAsync(ct).AsGDTask(),
-                            _ => GDTask.CompletedTask,
-                        });
-
-                    await GDTask.WhenAll(tasks);
-                }
-
                 async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
                 {
                     await Context.Grid.InitCellsAsync(_fromGridSnapshot.Snapshot.BombMatrix, ct);
-                    await RestoreCellStatesAsync(ct);
+                    await Context.Grid.RestoreCellStatesAsync(_fromGridSnapshot.Snapshot.SnapshotStates, ct);
                     Context.RunRecorder.MarkRunStartInfo(_fromGridSnapshot.StartInfo);
                     _hasInitializedGrid = true;
                 }
