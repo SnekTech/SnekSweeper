@@ -60,6 +60,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 
         Grid CreateGrid()
         {
+            // todo: put this in AppRepo?
             var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
             return loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
         }
