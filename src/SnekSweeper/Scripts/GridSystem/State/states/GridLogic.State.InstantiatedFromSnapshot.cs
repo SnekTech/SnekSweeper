@@ -26,8 +26,7 @@ public partial class GridLogic
 
                 async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
                 {
-                    await Context.Grid.InitCellsAsync(_fromGridSnapshot.Snapshot.BombMatrix, ct);
-                    await Context.Grid.RestoreCellStatesAsync(_fromGridSnapshot.Snapshot.SnapshotStates, ct);
+                    await Context.Grid.InitCellsAsync(_fromGridSnapshot.Snapshot, ct);
                     Context.RunRecorder.MarkRunStartInfo(_fromGridSnapshot.StartInfo);
                     _hasInitializedGrid = true;
                 }

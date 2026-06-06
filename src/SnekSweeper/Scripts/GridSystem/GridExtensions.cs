@@ -15,13 +15,28 @@ static class GridIndexExtensions
             return new Vector2(j * cellSizePixels, i * cellSizePixels);
         }
     }
+
+    extension(GridSize gridSize)
+    {
+        public Vector2 ToPixels(int cellSizePixels = HumbleCell.CellSizeInPixels)
+        {
+            var (rows, columns) = gridSize;
+            return new Vector2(columns * cellSizePixels, rows * cellSizePixels);
+        }
+    }
 }
 
 static class GridSnapshotExtensions
 {
     extension(Grid grid)
     {
-        public async GDTask RestoreCellStatesAsync(CellSnapshotState[][] snapshotStates, CancellationToken ct = default)
+        public async GDTask InitCellsAsync(GridSnapshot snapshot, CancellationToken ct)
+        {
+            await grid.InitCellsAsync(snapshot.BombMatrix, ct);
+            await grid.RestoreCellStatesAsync(snapshot.SnapshotStates, ct);
+        }
+        
+        async GDTask RestoreCellStatesAsync(CellSnapshotState[][] snapshotStates, CancellationToken ct = default)
         {
             var cellStatesMatrix = MatrixExtensions.FromJagged(snapshotStates);
 

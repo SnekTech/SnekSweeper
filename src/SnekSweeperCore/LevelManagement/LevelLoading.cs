@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
@@ -50,28 +49,15 @@ public static class LevelLoading
         public Grid CreateGrid(IHumbleGrid humbleGrid, GridEventBus gridEventBus, GridSkin gridSkin)
         {
             humbleGrid.HumbleCellsContainer.Clear();
-            var cells = loadLevelSource switch
-            {
-                RegularStart regularStart => MatrixExtensions.Create(regularStart.DifficultyData.Size, gridIndex =>
-                {
-                    var humbleCell =
-                        humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
-                    return new Cell(humbleCell, gridIndex);
-                }),
-                FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.MapTo((_, gridIndex) =>
-                {
-                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
-                    return new Cell(humbleCell, gridIndex);
-                }),
-                FromGridSnapshot fromGridSnapshot => fromGridSnapshot.Snapshot.BombMatrix.MapTo((_, gridIndex) =>
-                {
-                    var humbleCell = humbleGrid.HumbleCellsContainer.InstantiateHumbleCell(gridIndex, gridSkin);
-                    return new Cell(humbleCell, gridIndex);
-                }),
-                _ => throw new SwitchExpressionException(),
-            };
-
-            return new Grid(humbleGrid, cells, gridEventBus);
+            return Grid.Create(humbleGrid, loadLevelSource.GetGridSize(), gridSkin, gridEventBus);
         }
+
+        GridSize GetGridSize() => loadLevelSource switch
+        {
+            RegularStart regularStart => regularStart.DifficultyData.Size,
+            FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.Size,
+            FromGridSnapshot fromGridSnapshot => fromGridSnapshot.Snapshot.BombMatrix.Size,
+            _ => throw new SwitchExpressionException(),
+        };
     }
 }
