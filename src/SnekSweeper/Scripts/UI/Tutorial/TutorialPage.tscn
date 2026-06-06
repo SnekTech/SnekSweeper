@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://4yxgntylxkhe"]
 
-[ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scripts/GridSystem/HumbleGrid.tscn" id="1_nkad8"]
 [ext_resource type="Script" uid="uid://b60mgdet6tr4w" path="res://Scripts/UI/Tutorial/TutorialPage.cs" id="1_plcnn"]
 
 [node name="TutorialPage" type="Control" unique_id=719478652]
@@ -12,31 +11,12 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_plcnn")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=796102187]
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1334100432]
+custom_minimum_size = Vector2(600, 200)
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="HBoxContainer" unique_id=1805794622]
-layout_mode = 2
-
-[node name="SubViewport" type="SubViewport" parent="HBoxContainer/SubViewportContainer" unique_id=1681763132]
-handle_input_locally = false
-size = Vector2i(160, 160)
-render_target_update_mode = 4
-
-[node name="TheGrid" parent="HBoxContainer/SubViewportContainer/SubViewport" unique_id=779021426 instance=ExtResource("1_nkad8")]
+[node name="ExampleCardContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=1382523769]
 unique_name_in_owner = true
-
-[node name="Explain" type="VBoxContainer" parent="HBoxContainer" unique_id=2100410823]
 layout_mode = 2
-
-[node name="Title" type="Label" parent="HBoxContainer/Explain" unique_id=1263158101]
-layout_mode = 2
-text = "数数（1）"
-
-[node name="Description" type="Label" parent="HBoxContainer/Explain" unique_id=689914211]
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-text = "如果一个数字周围只剩下对应的格子，那么这些各自必须全是雷"
-autowrap_mode = 2

@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://dbny8oxikwjxh"]
+
+[ext_resource type="Script" uid="uid://b6tog4tjejkbd" path="res://Scripts/UI/Tutorial/ExampleCard.cs" id="1_jplt2"]
+[ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scripts/GridSystem/HumbleGrid.tscn" id="1_kk8qx"]
+
+[node name="ExampleCard" type="HBoxContainer" unique_id=947401836]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_jplt2")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1772979886]
+layout_mode = 2
+
+[node name="GridSubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=322354238]
+unique_name_in_owner = true
+handle_input_locally = false
+size = Vector2i(160, 160)
+render_target_update_mode = 4
+
+[node name="GridParentMarker" type="Marker2D" parent="SubViewportContainer/GridSubViewport" unique_id=1763927521]
+unique_name_in_owner = true
+
+[node name="TheGrid" parent="SubViewportContainer/GridSubViewport/GridParentMarker" unique_id=779021426 instance=ExtResource("1_kk8qx")]
+unique_name_in_owner = true
+
+[node name="Explain" type="VBoxContainer" parent="." unique_id=143559709]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Explain" unique_id=167299278]
+layout_mode = 2
+text = "数数（1）"
+
+[node name="Description" type="Label" parent="Explain" unique_id=194132911]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "如果一个数字周围只剩下对应的格子，那么这些各自必须全是雷"
+autowrap_mode = 2

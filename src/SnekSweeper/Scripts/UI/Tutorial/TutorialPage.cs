@@ -1,8 +1,7 @@
 using GodotGadgets.Tasks;
 using GodotTask;
 using SnekSweeper.Autoloads;
-using SnekSweeper.GridSystem;
-using SnekSweeperCore.GridSystem;
+using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SkinSystem;
 
@@ -27,28 +26,18 @@ public partial class TutorialPage : Control
             {false,false,false,true,false},
             {true,false,false,false,false},
         }
-        );
-    
+    );
+
     public override void _Ready()
     {
-        var fromSnapshot = new FromGridSnapshot(_snapshot1, new RunStartInfo());
-        var grid = CreateGrid(fromSnapshot);
-        TheGrid.Init(grid);
-        TriggerGridInitAsync(this.GetCancellationTokenOnTreeExit()).Forget();
-        
+        var skin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
+        TriggerPopulateExamples().Forget();
         return;
 
-        async GDTaskVoid TriggerGridInitAsync(CancellationToken ct = default)
+        async GDTaskVoid TriggerPopulateExamples()
         {
-            await grid.InitCellsAsync(fromSnapshot.Snapshot.BombMatrix, ct);
-            await grid.RestoreCellStatesAsync(fromSnapshot.Snapshot.SnapshotStates, ct);
+            var example1 = ExampleCard.InstantiateOnParent(ExampleCardContainer);
+            await example1.InitAsync(_snapshot1, skin, this.GetCancellationTokenOnTreeExit());
         }
-
-        Grid CreateGrid(LoadLevelSource loadLevelSource)
-        {
-            var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
-            return loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
-        }
-
     }
 }
