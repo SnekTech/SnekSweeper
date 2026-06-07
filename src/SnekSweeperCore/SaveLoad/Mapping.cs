@@ -2,6 +2,7 @@
 using Riok.Mapperly.Abstractions;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
+using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
 using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SkinSystem;

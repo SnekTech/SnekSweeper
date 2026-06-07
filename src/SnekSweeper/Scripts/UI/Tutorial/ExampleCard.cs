@@ -3,7 +3,6 @@ using SnekSweeper.Autoloads;
 using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.UI.Tutorial;
@@ -11,6 +10,8 @@ namespace SnekSweeper.UI.Tutorial;
 [SceneTree]
 public partial class ExampleCard : HBoxContainer, ISceneScript
 {
+    // todo: add a border or background to grid sub-viewport
+    
     public async GDTask InitAsync(GridSnapshot snapshot, GridSkin skin, CancellationToken ct = default)
     {
         var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, skin, EventBusOwner.GridEventBus);

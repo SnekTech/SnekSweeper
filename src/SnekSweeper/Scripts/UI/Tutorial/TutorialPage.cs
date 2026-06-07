@@ -2,7 +2,7 @@ using GodotGadgets.Tasks;
 using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
-using SnekSweeperCore.LevelManagement;
+using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.UI.Tutorial;
