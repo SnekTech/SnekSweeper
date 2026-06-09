@@ -4,6 +4,7 @@ using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SkinSystem;
+using SnekSweeperCore.Tutorial;
 
 namespace SnekSweeper.UI.Tutorial;
 
@@ -12,8 +13,9 @@ public partial class ExampleCard : HBoxContainer, ISceneScript
 {
     // todo: add a border or background to grid sub-viewport
     
-    public async GDTask InitAsync(GridSnapshot snapshot, GridSkin skin, CancellationToken ct = default)
+    public async GDTask InitAsync(ExampleData exampleData, GridSkin skin, CancellationToken ct = default)
     {
+        var snapshot = exampleData.Snapshot;
         var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, skin, EventBusOwner.GridEventBus);
         TheGrid.Init(grid);
         

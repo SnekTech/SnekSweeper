@@ -2,42 +2,32 @@ using GodotGadgets.Tasks;
 using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
-using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SkinSystem;
+using SnekSweeperCore.Tutorial;
 
 namespace SnekSweeper.UI.Tutorial;
 
 [SceneTree]
 public partial class TutorialPage : Control
 {
-    readonly GridSnapshot _snapshot1 = new(
-        [
-            [CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Covered, CellSnapshotState.Covered],
-            [CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Flagged, CellSnapshotState.Covered],
-            [CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Flagged, CellSnapshotState.Covered],
-            [CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Flagged, CellSnapshotState.Covered],
-            [CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered],
-        ],
-        new[,]
-        {
-            {false,false,false,false,false},
-            {false,false,false,true,false},
-            {false,false,false,true,false},
-            {false,false,false,true,false},
-            {true,false,false,false,false},
-        }
-    );
-
     public override void _Ready()
     {
         var skin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
-        TriggerPopulateExamples().Forget();
-        return;
-
-        async GDTaskVoid TriggerPopulateExamples()
+        TriggerPopulateExamples(skin).Forget();
+    }
+    
+    async GDTaskVoid TriggerPopulateExamples(GridSkin skin)
+    {
+        var examples = TutorialExampleCollection.BuiltinExamples;
+        
+        var initTasks = new List<GDTask>();
+        
+        foreach (var example in examples)
         {
-            var example1 = ExampleCard.InstantiateOnParent(ExampleCardContainer);
-            await example1.InitAsync(_snapshot1, skin, this.GetCancellationTokenOnTreeExit());
+            var card = ExampleCard.InstantiateOnParent(ExampleCardContainer);
+            initTasks.Add(card.InitAsync(example, skin, this.GetCancellationTokenOnTreeExit()));
         }
+
+        await GDTask.WhenAll(initTasks);
     }
 }
