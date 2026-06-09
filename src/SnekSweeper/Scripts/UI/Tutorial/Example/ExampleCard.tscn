@@ -1,7 +1,8 @@
 [gd_scene format=3 uid="uid://dbny8oxikwjxh"]
 
-[ext_resource type="Script" uid="uid://b6tog4tjejkbd" path="res://Scripts/UI/Tutorial/ExampleCard.cs" id="1_jplt2"]
+[ext_resource type="Script" uid="uid://b6tog4tjejkbd" path="res://Scripts/UI/Tutorial/Example/ExampleCard.cs" id="1_jplt2"]
 [ext_resource type="PackedScene" uid="uid://cc658fhlcf7w4" path="res://Scripts/GridSystem/HumbleGrid.tscn" id="1_kk8qx"]
+[ext_resource type="PackedScene" uid="uid://b2qrevm3q4gel" path="res://Scripts/UI/Tutorial/Example/ExampleDescriptionView.tscn" id="3_vuvdf"]
 
 [node name="ExampleCard" type="HBoxContainer" unique_id=947401836]
 offset_right = 40.0
@@ -22,3 +23,7 @@ unique_name_in_owner = true
 
 [node name="TheGrid" parent="SubViewportContainer/GridSubViewport/GridParentMarker" unique_id=779021426 instance=ExtResource("1_kk8qx")]
 unique_name_in_owner = true
+
+[node name="ExampleDescriptionView" parent="." unique_id=1460125172 instance=ExtResource("3_vuvdf")]
+unique_name_in_owner = true
+layout_mode = 2

@@ -6,7 +6,7 @@ using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SkinSystem;
 using SnekSweeperCore.Tutorial;
 
-namespace SnekSweeper.UI.Tutorial;
+namespace SnekSweeper.UI.Tutorial.Example;
 
 [SceneTree]
 public partial class ExampleCard : HBoxContainer, ISceneScript
@@ -16,6 +16,9 @@ public partial class ExampleCard : HBoxContainer, ISceneScript
     public async GDTask InitAsync(ExampleData exampleData, GridSkin skin, CancellationToken ct = default)
     {
         var snapshot = exampleData.Snapshot;
+
+        ExampleDescriptionView.Description = exampleData.Description;
+        
         var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, skin, EventBusOwner.GridEventBus);
         TheGrid.Init(grid);
         

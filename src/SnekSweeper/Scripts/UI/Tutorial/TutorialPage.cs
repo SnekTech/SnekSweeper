@@ -1,6 +1,7 @@
 using GodotGadgets.Tasks;
 using GodotTask;
 using SnekSweeper.Autoloads;
+using SnekSweeper.UI.Tutorial.Example;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.SkinSystem;
 using SnekSweeperCore.Tutorial;

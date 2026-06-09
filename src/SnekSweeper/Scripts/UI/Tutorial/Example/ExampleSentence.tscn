@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://ckivwqmcx3c00"]
+
+[ext_resource type="Script" uid="uid://dutdt0f1hpu8h" path="res://Scripts/UI/Tutorial/Example/ExampleSentence.cs" id="1_dwfdk"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_dwfdk"]
+font_color = Color(1, 0.945098, 0.909804, 1)
+
+[node name="ExampleSentence" type="HBoxContainer" unique_id=26646982]
+script = ExtResource("1_dwfdk")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=478146341]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="Icon" type="ColorRect" parent="MarginContainer" unique_id=1777699026]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.760784, 0.764706, 0.780392, 1)
+
+[node name="Sentence" type="Label" parent="." unique_id=311109630]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "如果一个数字周围只剩下对应数量的格子"
+label_settings = SubResource("LabelSettings_dwfdk")
+autowrap_mode = 2
