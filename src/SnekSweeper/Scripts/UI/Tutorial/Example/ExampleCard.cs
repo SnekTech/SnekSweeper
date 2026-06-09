@@ -11,8 +11,6 @@ namespace SnekSweeper.UI.Tutorial.Example;
 [SceneTree]
 public partial class ExampleCard : HBoxContainer, ISceneScript
 {
-    // todo: add a border or background to grid sub-viewport
-    
     public async GDTask InitAsync(ExampleData exampleData, GridSkin skin, CancellationToken ct = default)
     {
         var snapshot = exampleData.Snapshot;

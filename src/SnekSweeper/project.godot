@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="SnekSweeper"
-run/main_scene="res://Scripts/Main.tscn"
+run/main_scene="uid://bp0uau12h4nqd"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://mine_icon.png"
 
