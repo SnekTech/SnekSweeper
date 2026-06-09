@@ -12,10 +12,19 @@ grow_vertical = 2
 script = ExtResource("1_plcnn")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1334100432]
-custom_minimum_size = Vector2(600, 200)
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ExampleCardContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=1382523769]
 unique_name_in_owner = true

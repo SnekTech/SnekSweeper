@@ -3,18 +3,15 @@
 [ext_resource type="Script" uid="uid://dk025xc1gfvyg" path="res://Scripts/UI/Tutorial/Example/ExampleDescriptionView.cs" id="1_1rogl"]
 [ext_resource type="PackedScene" uid="uid://ckivwqmcx3c00" path="res://Scripts/UI/Tutorial/Example/ExampleSentence.tscn" id="2_u3wrv"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_gumpx"]
-font_size = 24
-font_color = Color(1, 0.945098, 0.909804, 1)
-
 [node name="ExampleDescriptionView" type="VBoxContainer" unique_id=1460125172]
 script = ExtResource("1_1rogl")
 
 [node name="Title" type="Label" parent="." unique_id=673211780]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.945098, 0.909804, 1)
+theme_override_font_sizes/font_size = 18
 text = "数数（1）"
-label_settings = SubResource("LabelSettings_gumpx")
 horizontal_alignment = 1
 
 [node name="DescriptionSentenceContainer" type="VBoxContainer" parent="." unique_id=162386782]

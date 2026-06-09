@@ -11,12 +11,13 @@ script = ExtResource("1_dwfdk")
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=478146341]
 layout_mode = 2
 theme_override_constants/margin_left = 10
-theme_override_constants/margin_right = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 4
 
-[node name="Icon" type="ColorRect" parent="MarginContainer" unique_id=1777699026]
-custom_minimum_size = Vector2(8, 8)
+[node name="BulletPoint" type="ColorRect" parent="MarginContainer" unique_id=1777699026]
+custom_minimum_size = Vector2(4, 4)
 layout_mode = 2
-size_flags_vertical = 4
+size_flags_vertical = 0
 color = Color(0.760784, 0.764706, 0.780392, 1)
 
 [node name="Sentence" type="Label" parent="." unique_id=311109630]
