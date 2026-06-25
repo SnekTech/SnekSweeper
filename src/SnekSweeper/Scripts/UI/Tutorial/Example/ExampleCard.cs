@@ -1,4 +1,5 @@
-﻿using GodotTask;
+﻿using System.Threading.Tasks;
+using GodotGadgets.UI.Pagination;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
@@ -9,15 +10,17 @@ using SnekSweeperCore.Tutorial;
 namespace SnekSweeper.UI.Tutorial.Example;
 
 [SceneTree]
-public partial class ExampleCard : HBoxContainer, ISceneScript
+public partial class ExampleCard : HBoxContainer, ISceneScript, IAsyncContent<ExampleData>
 {
-    public async GDTask InitAsync(ExampleData exampleData, GridSkin skin, CancellationToken ct = default)
+    public GridSkin Skin { get; set; } = SkinKey.Classic.ToSkin();
+    
+    public async Task InitAsync(ExampleData exampleData, CancellationToken ct = default)
     {
         var snapshot = exampleData.Snapshot;
 
         ExampleDescriptionView.Description = exampleData.Description;
         
-        var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, skin, EventBusOwner.GridEventBus);
+        var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, Skin, EventBusOwner.GridEventBus);
         TheGrid.Init(grid);
         
         GridParentMarker.Position = GetParentPosition(GridSubViewport.Size, grid.Size.ToPixels());

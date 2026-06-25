@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://4yxgntylxkhe"]
 
 [ext_resource type="Script" uid="uid://b60mgdet6tr4w" path="res://Scripts/UI/Tutorial/TutorialPage.cs" id="1_plcnn"]
+[ext_resource type="PackedScene" uid="uid://cujyid1oib5ab" path="res://Scripts/UI/Tutorial/ExamplePagination.tscn" id="2_plcnn"]
 
 [node name="TutorialPage" type="Control" unique_id=719478652]
 layout_mode = 3
@@ -11,21 +12,24 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_plcnn")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1334100432]
-custom_minimum_size = Vector2(400, 200)
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1327464986]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -100.0
-offset_right = 200.0
-offset_bottom = 100.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = -20.0
+offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ExampleCardContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=1382523769]
+[node name="ExampleCardContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=1382523769]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ExamplePagination" parent="VBoxContainer" unique_id=1610421562 instance=ExtResource("2_plcnn")]
 unique_name_in_owner = true
 layout_mode = 2
