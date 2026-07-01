@@ -16,7 +16,7 @@ public class Cell
     public IHumbleCell HumbleCell { get; }
 
     public GridIndex GridIndex { get; }
-    public bool HasBomb { get; set; }
+    public bool HasBomb { get; private set; }
 
     readonly CellStateMachine _stateMachine;
 

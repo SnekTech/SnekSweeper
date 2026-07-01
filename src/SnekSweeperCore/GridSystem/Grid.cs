@@ -17,11 +17,6 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
     public async Task InitCellsAsync(bool[,] bombs, CancellationToken ct = default)
     {
         if (_isAnyCellProcessing) return;
-        
-        foreach (var cell in cells)
-        {
-            cell.HasBomb = bombs.At(cell.GridIndex);
-        }
 
         // must init individual cells *after* bombs planted
         _isAnyCellProcessing = true;
@@ -33,9 +28,15 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
 
         Task InitAllCellsAsync()
         {
-            var initCellTasks = Cells
-                .Select(cell => cell.InitAsync(new CellInitData(cell.HasBomb, GetNeighborBombCount(cell)), ct));
+            var initCellTasks = Cells.Select(cell => cell.InitAsync(CreateInitData(cell), ct));
             return Task.WhenAll(initCellTasks);
+        }
+
+        CellInitData CreateInitData(Cell cell)
+        {
+            var hasBomb = bombs.At(cell.GridIndex);
+            var neighborBombCount = cell.GridIndex.GetNeighborIndicesWithin(Size).Count(bombs.At);
+            return new CellInitData(hasBomb, neighborBombCount);
         }
     }
 
