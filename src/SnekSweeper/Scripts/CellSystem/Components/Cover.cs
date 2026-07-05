@@ -43,6 +43,18 @@ public partial class Cover : Node2D, ICover, ISceneScript
 
     public void SetAlpha(float normalizedAlpha) => coverAlpha.Value = normalizedAlpha;
 
+    public void SetStatus(CoverStatus status)
+    {
+        const float indicatorAlpha = 0.7f;
+
+        StatusIndicator.Modulate = status switch
+        {
+            CoverStatus.Safe => Pico8Palette.Green with { A = indicatorAlpha },
+            CoverStatus.Uncertain => Pico8Palette.Yellow with { A = indicatorAlpha },
+            _ => Colors.Transparent,
+        };
+    }
+
     float GetDissolveProgress() => dissolveProgress.Value;
     void SetDissolveProgress(float progress) => dissolveProgress.Value = progress;
 

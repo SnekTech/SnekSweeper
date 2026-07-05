@@ -18,6 +18,15 @@ shader_parameter/coverAlpha = 1.0
 shader_parameter/noiseSeed = 0.0
 shader_parameter/mask = SubResource("NoiseTexture2D_bc5lr")
 
+[sub_resource type="Gradient" id="Gradient_iswq0"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_h8gut"]
+gradient = SubResource("Gradient_iswq0")
+width = 16
+height = 16
+
 [node name="Cover" type="Node2D" unique_id=1912018950]
 script = ExtResource("2_nuewc")
 metadata/_edit_lock_ = true
@@ -30,3 +39,9 @@ hframes = 4
 vframes = 4
 frame = 1
 metadata/_edit_lock_ = true
+
+[node name="StatusIndicator" type="Sprite2D" parent="." unique_id=1427174627]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+texture = SubResource("GradientTexture2D_h8gut")
+centered = false

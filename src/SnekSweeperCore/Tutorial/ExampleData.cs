@@ -3,7 +3,9 @@
 namespace SnekSweeperCore.Tutorial;
 
 public record ExampleDescription(string Title, IReadOnlyList<string> Sentences);
-public record ExampleData(GridSnapshot Snapshot, ExampleDescription Description);
+public record ExampleData(GridSnapshot Snapshot, ExampleDescription Description,
+    IReadOnlyList<GridIndex> SafeCoveredCells,
+    IReadOnlyList<GridIndex> UncertainCoveredCells);
 
 public static class TutorialExampleCollection
 {
@@ -47,7 +49,9 @@ public static class TutorialExampleCollection
             new ExampleDescription("数数-1", [
                 "如果一个数字周围只剩下对应数量的格子",
                 "那么这些格子必须全是雷",
-            ])
+            ]),
+            [],
+            []
         ),
         new(
             new GridSnapshot(
@@ -85,7 +89,13 @@ public static class TutorialExampleCollection
             new ExampleDescription("数数-2", [
                 "如果一个数字周围已经有了对应数量的雷",
                 "那么剩下的格子全部安全",
-            ])
+            ]),
+            [
+                new GridIndex(3,1),
+                new GridIndex(3,2),
+                new GridIndex(3,3),
+            ],
+            []
         ),
         new(
             new GridSnapshot(
@@ -125,7 +135,14 @@ public static class TutorialExampleCollection
                 "它周围有两个黄格，所以这两个黄格有 1 个雷",
                 "再看到左边第二个 1",
                 "它周围的两个黄格已经有了 1 个雷，所以剩下一格必定安全",
-            ])
+            ]),
+            [
+                new GridIndex(1,2),
+            ],
+            [
+                new GridIndex(1,0),
+                new GridIndex(1,1),
+            ]
         ),
     ];
 }

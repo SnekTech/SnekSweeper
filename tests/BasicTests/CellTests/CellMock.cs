@@ -49,6 +49,11 @@ class MockCover :ICover
     {
         $"setting cover alpha to {normalizedAlpha}".Dump();
     }
+
+    public void SetStatus(CoverStatus status)
+    {
+        $"setting cover color according to status: {status}".Dump();
+    }
 }
 
 class MockFlag : IFlag

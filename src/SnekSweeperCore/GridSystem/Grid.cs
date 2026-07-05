@@ -10,6 +10,7 @@ public class Grid(IHumbleGrid humbleGrid, Cell[,] cells, GridEventBus gridEventB
     public GridSize Size { get; } = cells.Size;
 
     public IEnumerable<Cell> Cells => cells.Elements;
+    public Cell GetCellAt(GridIndex index) => cells.At(index);
 
     int BombCount => Cells.Count(cell => cell.HasBomb);
     int FlagCount => Cells.Count(cell => cell.IsFlagged);
