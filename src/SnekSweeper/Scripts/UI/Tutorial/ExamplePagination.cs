@@ -11,8 +11,6 @@ namespace SnekSweeper.UI.Tutorial;
 [SceneTree(root: "ROOT")]
 public partial class ExamplePagination : Control, IPaginationUI
 {
-    const int ExamplePageSize = 1;
-
     public event Action? FirstPageRequested;
     public event Action? PreviousPageRequested;
     public event Action? NextPageRequested;
@@ -31,10 +29,10 @@ public partial class ExamplePagination : Control, IPaginationUI
         LastButton.Disabled = !canGoLast;
     }
 
-    public void ClearContent() => _examplesContainer.ClearChildren();
-    public void AddContentItem(Control item) => _examplesContainer.AddChild(item);
+    public void ClearContent() => _examplesContainer?.ClearChildren();
+    public void AddContentItem(Control item) => _examplesContainer?.AddChild(item);
 
-    Container _examplesContainer = null!;
+    Container? _examplesContainer;
 
     ButtonBindings _buttonBindings = null!;
     PaginationBinder<ExampleData> _paginationBinder = null!;
@@ -49,11 +47,10 @@ public partial class ExamplePagination : Control, IPaginationUI
         );
     }
 
-    public void Init(GridSkin skin, Container examplesContainer)
+    public void Init(GridSkin skin, Container examplesContainer, Pagination<ExampleData> pagination)
     {
         _examplesContainer = examplesContainer;
 
-        var pagination = new Pagination<ExampleData>(new BuiltinExampleQuery(), ExamplePageSize);
         _paginationBinder = new PaginationBinder<ExampleData>(
             this,
             pagination,

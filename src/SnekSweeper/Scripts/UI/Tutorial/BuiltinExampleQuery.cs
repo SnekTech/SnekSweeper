@@ -16,7 +16,7 @@ public class BuiltinExampleQuery : IPageQuery<ExampleData>
         var items = _examples
             .Skip(pageIndex * pageSize)
             .Take(pageSize)
-            .ToList().AsReadOnly();
+            .ToArray();
         return Task.FromResult(new PageResult<ExampleData>(items, _examples.Count));
     }
 }

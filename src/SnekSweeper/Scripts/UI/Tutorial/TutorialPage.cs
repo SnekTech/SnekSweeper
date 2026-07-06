@@ -1,14 +1,19 @@
+using GodotGadgets.UI.Pagination;
 using SnekSweeper.Autoloads;
 using SnekSweeperCore.SkinSystem;
+using SnekSweeperCore.Tutorial;
 
 namespace SnekSweeper.UI.Tutorial;
 
 [SceneTree]
 public partial class TutorialPage : Control
 {
+    const int ExamplePageSize = 1;
+    
     public override void _Ready()
     {
         var skin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
-        ExamplePagination.Init(skin, ExampleCardContainer);
+        var pagination = new Pagination<ExampleData>(new BuiltinExampleQuery(), ExamplePageSize);
+        ExamplePagination.Init(skin, ExampleCardContainer, pagination);
     }
 }
