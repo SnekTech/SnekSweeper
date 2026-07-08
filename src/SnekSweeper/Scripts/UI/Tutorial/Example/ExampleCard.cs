@@ -23,6 +23,8 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IAsyncContent<Ex
 
         var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, Skin, EventBusOwner.GridEventBus);
         TheGrid.Init(grid);
+        
+        ct.ThrowIfCancellationRequested();
 
         GridParentMarker.Position = GetParentPosition(GridSubViewport.Size, grid.Size.ToPixels());
 
