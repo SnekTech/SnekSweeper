@@ -35,7 +35,7 @@ public partial class ExamplePagination : Control, IPaginationUI
     Container? _examplesContainer;
 
     ButtonBindings _buttonBindings = null!;
-    PaginationBinder<ExampleData> _paginationBinder = null!;
+    PaginationBinder<ExampleData>? _paginationBinder;
 
     public override void _Ready()
     {
@@ -59,13 +59,13 @@ public partial class ExamplePagination : Control, IPaginationUI
                 var card = ExampleCard.Instantiate();
                 card.Skin = skin;
                 return card;
-            },
-            error => GD.PrintErr($"[Pagination Error] {error}"));
+            }
+        );
     }
 
     public override void _ExitTree()
     {
         _buttonBindings.Dispose();
-        _paginationBinder.Dispose();
+        _paginationBinder?.Dispose();
     }
 }
