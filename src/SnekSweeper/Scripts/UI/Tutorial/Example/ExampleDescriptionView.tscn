@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://ckivwqmcx3c00" path="res://Scripts/UI/Tutorial/Example/ExampleSentence.tscn" id="2_u3wrv"]
 
 [node name="ExampleDescriptionView" type="VBoxContainer" unique_id=1460125172]
+offset_right = 222.0
+offset_bottom = 357.0
 script = ExtResource("1_1rogl")
 
 [node name="Title" type="Label" parent="." unique_id=673211780]
@@ -14,9 +16,29 @@ theme_override_font_sizes/font_size = 18
 text = "数数（1）"
 horizontal_alignment = 1
 
-[node name="DescriptionSentenceContainer" type="VBoxContainer" parent="." unique_id=162386782]
-unique_name_in_owner = true
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=375336094]
+custom_minimum_size = Vector2(300, 200)
 layout_mode = 2
 
-[node name="ExampleSentence" parent="DescriptionSentenceContainer" unique_id=26646982 instance=ExtResource("2_u3wrv")]
+[node name="DescriptionSentenceContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=162386782]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ExampleSentence" parent="ScrollContainer/DescriptionSentenceContainer" unique_id=26646982 instance=ExtResource("2_u3wrv")]
+layout_mode = 2
+
+[node name="ExampleSentence2" parent="ScrollContainer/DescriptionSentenceContainer" unique_id=249139157 instance=ExtResource("2_u3wrv")]
+layout_mode = 2
+
+[node name="ExampleSentence3" parent="ScrollContainer/DescriptionSentenceContainer" unique_id=950939721 instance=ExtResource("2_u3wrv")]
+layout_mode = 2
+
+[node name="ExampleSentence4" parent="ScrollContainer/DescriptionSentenceContainer" unique_id=2079496239 instance=ExtResource("2_u3wrv")]
+layout_mode = 2
+
+[node name="ExampleSentence5" parent="ScrollContainer/DescriptionSentenceContainer" unique_id=276019385 instance=ExtResource("2_u3wrv")]
+layout_mode = 2
+
+[node name="ExampleSentence6" parent="ScrollContainer/DescriptionSentenceContainer" unique_id=1960226782 instance=ExtResource("2_u3wrv")]
 layout_mode = 2

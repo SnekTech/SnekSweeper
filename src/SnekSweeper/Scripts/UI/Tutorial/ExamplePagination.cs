@@ -9,7 +9,7 @@ using SnekSweeperCore.Tutorial;
 namespace SnekSweeper.UI.Tutorial;
 
 [SceneTree(root: "ROOT")]
-public partial class ExamplePagination : Control, IPaginationUI
+public partial class ExamplePagination : HBoxContainer, IPaginationUI
 {
     public event Action? FirstPageRequested;
     public event Action? PreviousPageRequested;
