@@ -1,15 +1,11 @@
 ﻿using GodotGadgets.Extensions;
 using GodotGadgets.UI;
 using GodotGadgets.UI.Pagination;
-using SnekSweeper.UI.Tutorial.Example;
-using SnekSweeper.Widgets;
-using SnekSweeperCore.SkinSystem;
-using SnekSweeperCore.Tutorial;
 
 namespace SnekSweeper.UI.Tutorial;
 
-[SceneTree(root: "ROOT")]
-public partial class ExamplePagination : HBoxContainer, IPaginationUI
+[SceneTree]
+public partial class PaginationBar : HBoxContainer, IPaginationUI
 {
     public event Action? FirstPageRequested;
     public event Action? PreviousPageRequested;
@@ -29,13 +25,13 @@ public partial class ExamplePagination : HBoxContainer, IPaginationUI
         LastButton.Disabled = !canGoLast;
     }
 
-    public void ClearContent() => _examplesContainer?.ClearChildren();
-    public void AddContentItem(Control item) => _examplesContainer?.AddChild(item);
+    public void ClearContent() => _contentContainer?.ClearChildren();
+    public void AddContentItem(Control item) => _contentContainer?.AddChild(item);
 
-    Container? _examplesContainer;
+    Container? _contentContainer;
 
     ButtonBindings _buttonBindings = null!;
-    PaginationBinder<ExampleData>? _paginationBinder;
+    IDisposable? _paginationBinder;
 
     public override void _Ready()
     {
@@ -47,20 +43,13 @@ public partial class ExamplePagination : HBoxContainer, IPaginationUI
         );
     }
 
-    public void Init(GridSkin skin, Container examplesContainer, Pagination<ExampleData> pagination)
+    public void Bind<TItem>(Container contentContainer,
+        Func<TItem, Control> entryFactory,
+        Pagination<TItem> pagination)
     {
-        _examplesContainer = examplesContainer;
-
-        _paginationBinder = new PaginationBinder<ExampleData>(
-            this,
-            pagination,
-            _ =>
-            {
-                var card = ExampleCard.Instantiate();
-                card.Skin = skin;
-                return card;
-            }
-        );
+        _paginationBinder?.Dispose();
+        _contentContainer = contentContainer;
+        _paginationBinder = new PaginationBinder<TItem>(this, pagination, entryFactory);
     }
 
     public override void _ExitTree()

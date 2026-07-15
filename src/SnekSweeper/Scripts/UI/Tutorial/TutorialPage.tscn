@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://4yxgntylxkhe"]
 
 [ext_resource type="Script" uid="uid://b60mgdet6tr4w" path="res://Scripts/UI/Tutorial/TutorialPage.cs" id="1_plcnn"]
-[ext_resource type="PackedScene" uid="uid://cujyid1oib5ab" path="res://Scripts/UI/Tutorial/ExamplePagination.tscn" id="2_plcnn"]
+[ext_resource type="PackedScene" uid="uid://cujyid1oib5ab" path="res://Scripts/UI/Tutorial/PaginationBar.tscn" id="2_plcnn"]
 
 [node name="TutorialPage" type="Control" unique_id=719478652]
 layout_mode = 3
@@ -31,7 +31,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 200)
 layout_mode = 2
 
-[node name="ExamplePagination" parent="VBoxContainer" unique_id=1230442886 instance=ExtResource("2_plcnn")]
+[node name="ExamplePaginationBar" parent="VBoxContainer" unique_id=1230442886 instance=ExtResource("2_plcnn")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 4
+alignment = 1

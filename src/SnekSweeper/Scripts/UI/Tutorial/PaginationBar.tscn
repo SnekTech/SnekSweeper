@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://cujyid1oib5ab"]
 
-[ext_resource type="Script" uid="uid://v7hrnegqbia1" path="res://Scripts/UI/Tutorial/ExamplePagination.cs" id="1_bo4nn"]
+[ext_resource type="Script" uid="uid://b1g02w1tktc0d" path="res://Scripts/UI/Tutorial/PaginationBar.cs" id="1_vk08x"]
 
-[node name="ExamplePagination" type="HBoxContainer" unique_id=1230442886]
+[node name="PaginationBar" type="HBoxContainer" unique_id=1230442886]
 offset_right = 197.0
 offset_bottom = 34.0
-script = ExtResource("1_bo4nn")
+script = ExtResource("1_vk08x")
 
 [node name="FirstButton" type="Button" parent="." unique_id=901251681]
 unique_name_in_owner = true
