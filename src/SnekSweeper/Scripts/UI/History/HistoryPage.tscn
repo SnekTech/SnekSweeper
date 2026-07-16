@@ -1,50 +1,48 @@
-[gd_scene load_steps=3 format=3 uid="uid://hk57xckul7ox"]
+[gd_scene format=3 uid="uid://hk57xckul7ox"]
 
 [ext_resource type="Script" uid="uid://cewnqg33qno37" path="res://Scripts/UI/History/HistoryPage.cs" id="1_4aauc"]
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="3_0nfvo"]
+[ext_resource type="PackedScene" uid="uid://cujyid1oib5ab" path="res://Scripts/UI/Tutorial/PaginationBar.tscn" id="3_68rb1"]
 
-[node name="HistoryPage" type="CanvasLayer"]
+[node name="HistoryPage" type="CanvasLayer" unique_id=1406036860]
 script = ExtResource("1_4aauc")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="BackToMainButton" parent="." unique_id=350195402 instance=ExtResource("3_0nfvo")]
+anchors_preset = -1
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 140.0
+offset_bottom = 66.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=78540489]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -67.0
+offset_right = 200.0
+offset_bottom = 119.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 30
-
-[node name="BackToMainButton" parent="MarginContainer" instance=ExtResource("3_0nfvo")]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="RecordsContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=1107021837]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 200)
 layout_mode = 2
 
-[node name="RecordsCountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=54134763]
+layout_mode = 2
+
+[node name="RunRecordPaginationBar" parent="VBoxContainer/HBoxContainer" unique_id=1230442886 instance=ExtResource("3_68rb1")]
 unique_name_in_owner = true
 layout_mode = 2
-text = "7 records in total"
+size_flags_horizontal = 6
 
-[node name="ClearButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ClearButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=396158009]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Clear"
-
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(100, 200)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-horizontal_scroll_mode = 0
-
-[node name="RecordsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
-unique_name_in_owner = true
-layout_mode = 2

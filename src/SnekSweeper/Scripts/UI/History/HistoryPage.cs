@@ -1,15 +1,19 @@
 ﻿using GodotGadgets.Extensions;
+using GodotGadgets.UI.Pagination;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.GameHistory;
 
 namespace SnekSweeper.UI.History;
 
 [SceneTree]
 public partial class HistoryPage : CanvasLayer, ISceneScript
 {
+    const int RunRecordPageSize = 2;
+    
     public override void _Ready()
     {
-        PopulateRecords();
+        ResetRunRecords();
     }
 
     public override void _EnterTree()
@@ -22,23 +26,33 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
         ClearButton.Pressed -= OnClearButtonPressed;
     }
 
-    void PopulateRecords()
+    void ResetRunRecords()
+    {
+        RecordsContainer.ClearChildren();
+        InitPagination();
+    }
+
+    void InitPagination()
     {
         var records = HouseKeeper.History.Records
             .OrderByDescending(r => r.Duration.EndAt).ToList();
-        RecordsCountLabel.Text = $"{records.Count} records in total";
-
-        foreach (var record in records)
-        {
-            var recordCard = RecordCard.InstantiateOnParent(RecordsContainer);
-            recordCard.RunRecord = record;
-        }
+        var historyQuery = new HistoryQuery(records);
+        var pagination = new Pagination<GameRunRecord>(historyQuery, RunRecordPageSize);
+        RunRecordPaginationBar.Bind(
+            RecordsContainer,
+            runRecord =>
+            {
+                var card = RecordCard.Instantiate();
+                card.RunRecord = runRecord;
+                return card;
+            },
+            pagination);
     }
 
     void OnClearButtonPressed()
     {
         HouseKeeper.History.ClearRecords();
-        RecordsContainer.ClearChildren();
         HouseKeeper.TriggerPlayerDataSave();
+        ResetRunRecords();
     }
 }

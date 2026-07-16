@@ -10,8 +10,7 @@ public class BuiltinExampleQuery : IPageQuery<ExampleData>
 
     public Task<PageResult<ExampleData>> FetchPageAsync(PageRequest request, CancellationToken ct = default)
     {
-        var pageIndex = Math.Clamp(request.PageIndex, 0, int.MaxValue);
-        var pageSize = Math.Clamp(request.PageSize, 1, int.MaxValue);
+        var (pageIndex, pageSize) = request;
 
         var items = _examples
             .Skip(pageIndex * pageSize)
