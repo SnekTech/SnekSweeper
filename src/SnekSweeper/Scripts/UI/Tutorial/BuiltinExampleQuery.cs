@@ -8,14 +8,6 @@ public class BuiltinExampleQuery : IPageQuery<ExampleData>
 {
     readonly IReadOnlyList<ExampleData> _examples = TutorialExampleCollection.BuiltinExamples;
 
-    public Task<PageResult<ExampleData>> FetchPageAsync(PageRequest request, CancellationToken ct = default)
-    {
-        var (pageIndex, pageSize) = request;
-
-        var items = _examples
-            .Skip(pageIndex * pageSize)
-            .Take(pageSize)
-            .ToArray();
-        return Task.FromResult(new PageResult<ExampleData>(items, _examples.Count));
-    }
+    public Task<PageResult<ExampleData>> FetchPageAsync(PageRequest request, CancellationToken ct = default) =>
+        Task.FromResult(_examples.SlicePage(request));
 }
