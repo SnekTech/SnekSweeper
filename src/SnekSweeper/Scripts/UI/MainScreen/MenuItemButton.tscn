@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bj2tc24n6dmss"]
+
+[ext_resource type="Script" uid="uid://tvrfnjgk5rqt" path="res://Scripts/UI/MainScreen/MenuItemButton.cs" id="1_8w1um"]
+
+[node name="MenuItemButton" type="Button" unique_id=866551034]
+offset_right = 10.0
+offset_bottom = 10.0
+script = ExtResource("1_8w1um")

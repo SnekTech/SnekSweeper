@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://dvhsqoaixwm6m"]
+
+[ext_resource type="PackedScene" uid="uid://bj2tc24n6dmss" path="res://Scripts/UI/MainScreen/MenuItemButton.tscn" id="1_13h4u"]
+[ext_resource type="Script" uid="uid://b2147m1eg54yv" path="res://Scripts/UI/MainScreen/ScrollMenuView.cs" id="1_daj4v"]
+
+[node name="ScrollMenuView" type="Control" unique_id=1649118037]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_daj4v")
+
+[node name="ItemsContainer" type="Control" parent="." unique_id=1967942235]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuItemButton" parent="ItemsContainer" unique_id=866551034 instance=ExtResource("1_13h4u")]
+layout_mode = 0
+text = "option 1"
+
+[node name="MenuItemButton2" parent="ItemsContainer" unique_id=1324749917 instance=ExtResource("1_13h4u")]
+layout_mode = 0
+text = "option 2 - long"
+
+[node name="MenuItemButton3" parent="ItemsContainer" unique_id=1425235504 instance=ExtResource("1_13h4u")]
+layout_mode = 0
+text = "option 3"
+
+[node name="MenuItemButton4" parent="ItemsContainer" unique_id=641303860 instance=ExtResource("1_13h4u")]
+layout_mode = 0
+text = "option 4"

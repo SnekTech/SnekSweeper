@@ -28,6 +28,7 @@ public partial class MainMenu : VBoxContainer
 
     void RegisterEvents()
     {
+        // todo: move these subscriptions to the scroll menu
         ContinueButton.Pressed += OnContinueButtonPressed;
         StartButton.Pressed += OnStartButtonPressed;
         SettingsButton.Pressed += OnSettingsButtonPressed;
