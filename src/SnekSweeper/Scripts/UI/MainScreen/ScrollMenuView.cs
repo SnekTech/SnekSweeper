@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using GodotGadgets.Extensions;
+﻿using GodotGadgets.Extensions;
 using GodotGadgets.Tasks;
 using GodotGadgets.UI.ScrollMenuCore;
 using GodotTask;
@@ -16,6 +15,7 @@ public partial class ScrollMenuView : Control
 
     ScrollMenu _menu = null!;
     CancellationTokenSource? _tweenCts;
+    IReadOnlyList<VisibleSlot>? _previousWindow;
 
     public override void _Ready()
     {
@@ -68,6 +68,8 @@ public partial class ScrollMenuView : Control
         var itemsWithInitialPosition = items.Select((item, i) =>
         {
             var itemControl = (Control)item;
+
+            // center the item horizontally
             var x = (ItemsContainer.Size.X - itemControl.Size.X) / 2;
             var y = i * SlotHeight;
             return (controlNode: itemControl, new Vector2(x, y));
@@ -92,37 +94,71 @@ public partial class ScrollMenuView : Control
         _tweenCts = new CancellationTokenSource();
         var ct = _tweenCts.Token;
 
-        var itemsWithIndex = window.Select((s, i) => (s.Item, i))
-            .ToDictionary(tuple => tuple.Item, tuple => tuple.i);
+        var slotted = window.Index().ToDictionary(x => x.Item.Item, x => new SlottedItem(x.Index, x.Item.Prominence));
+        var previousItemSet = _previousWindow?.Select(s => s.Item).ToHashSet() ?? [];
 
-        foreach (var item in ItemsContainer.GetChildrenOfType<IScrollMenuItem>())
+        var actions = ItemsContainer.GetChildrenOfType<IScrollMenuItem>()
+            .Select(item => Classify((Control)item, slotted, previousItemSet, window.Count, direction))
+            .ToList();
+
+        foreach (var a in actions.Where(a => a.SnapToY is not null))
         {
-            var node = (Control)item;
-
-            var itemInWindow = itemsWithIndex.ContainsKey(item);
-            if (itemInWindow)
-            {
-                var slotIndex = itemsWithIndex[item];
-                var targetY = slotIndex * SlotHeight;
-                TweenY(node, targetY, ct);
-
-                node.Modulate = window[slotIndex].Prominence switch
-                {
-                    ItemProminence.Focused => Colors.White,
-                    ItemProminence.Adjacent => Colors.White with { A = 0.5f },
-                    _ => throw new SwitchExpressionException(),
-                };
-            }
-            else
-            {
-                // todo: start y of the off screen item coming alive should depend on navigate direction
-                var offScreenY = direction == NavigateDirection.Down
-                    ? -SlotHeight
-                    : window.Count * SlotHeight;
-                TweenY(node, offScreenY, ct);
-                node.Modulate = Colors.Transparent;
-            }
+            a.Node.Position = a.Node.Position with { Y = a.SnapToY!.Value };
         }
+
+        foreach (var a in actions)
+        {
+            TweenY(a.Node, a.TargetY, ct);
+            a.Node.Modulate = a.Node.Modulate with { A = a.Alpha };
+        }
+
+        _previousWindow = window;
+    }
+
+    readonly record struct ItemAction(Control Node, float TargetY, float Alpha, float? SnapToY);
+
+    /// <summary>
+    /// The position and visual role of an item within the current visible window.
+    /// Pure data — computed in ApplyWindow, consumed by Classify.
+    /// </summary>
+    readonly record struct SlottedItem(int Index, ItemProminence Prominence);
+
+    static ItemAction Classify(
+        Control node,
+        Dictionary<IScrollMenuItem, SlottedItem> slotted,
+        HashSet<IScrollMenuItem> previousSet,
+        int visibleCount,
+        NavigateDirection direction
+    )
+    {
+        var item = (IScrollMenuItem)node;
+
+        // in window
+        if (slotted.TryGetValue(item, out var slot))
+        {
+            var targetY = slot.Index * SlotHeight;
+            var alpha = slot.Prominence == ItemProminence.Focused ? 1f : 0.5f;
+
+            // Newly entering from outside: snap to the opposite edge
+            // so the tween crosses the screen, carrying the scroll illusion.
+            // No snap on first render: previousSet is empty for all items.
+            var snap = ShouldSnap() ? EntryEdge() : (float?)null;
+
+            return new ItemAction(node, targetY, alpha, snap);
+        }
+
+        // just left the window
+        if (previousSet.Contains(item))
+        {
+            return new ItemAction(node, ExitEdge(), 0f, null);
+        }
+
+        // never entered, or already outside
+        return new ItemAction(node, node.Position.Y, 0f, null);
+
+        bool ShouldSnap() => previousSet.Count > 0 && !previousSet.Contains(item);
+        float EntryEdge() => direction == NavigateDirection.Down ? visibleCount * SlotHeight : -SlotHeight;
+        float ExitEdge() => direction == NavigateDirection.Down ? -SlotHeight : visibleCount * SlotHeight;
     }
 
     void TweenY(Control node, float targetY, CancellationToken ct)
