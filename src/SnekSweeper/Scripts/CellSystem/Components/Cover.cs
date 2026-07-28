@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using GodotGadgets.ShaderStuff;
+using GodotGadgets.TweenStuff;
 using GTweens.Extensions;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem.Components;

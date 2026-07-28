@@ -1,6 +1,6 @@
 ﻿using GodotGadgets.Tasks;
+using GodotGadgets.TweenStuff;
 using GodotTask;
-using SnekSweeper.Widgets;
 using Widgets.MessageQueue;
 
 namespace SnekSweeper.Autoloads;

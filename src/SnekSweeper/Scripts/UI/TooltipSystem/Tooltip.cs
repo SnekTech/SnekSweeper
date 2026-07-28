@@ -1,7 +1,7 @@
 ﻿using GodotGadgets.TooltipSystem;
+using GodotGadgets.TweenStuff;
 using GodotTask;
 using GTweensGodot.Extensions;
-using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.TooltipSystem;
 

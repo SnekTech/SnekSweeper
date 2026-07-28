@@ -1,4 +1,5 @@
-﻿using GodotTask;
+﻿using GodotGadgets.TweenStuff;
+using GodotTask;
 using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.Common;

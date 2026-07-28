@@ -1,9 +1,9 @@
 ﻿using GodotGadgets.Extensions;
 using GodotGadgets.Tasks;
+using GodotGadgets.TweenStuff;
 using GodotGadgets.UI.ScrollMenuCore;
 using GodotTask;
 using GTweensGodot.Extensions;
-using SnekSweeper.Widgets;
 
 namespace SnekSweeper.UI.MainScreen;
 

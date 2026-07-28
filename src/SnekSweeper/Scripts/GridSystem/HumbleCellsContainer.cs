@@ -1,6 +1,5 @@
 ﻿using GodotGadgets.Extensions;
-using GodotGadgets.Tasks;
-using GodotTask;
+using GodotGadgets.TweenStuff;
 using GTweens.Builders;
 using GTweens.Easings;
 using GTweens.Enums;
@@ -41,6 +40,6 @@ public partial class HumbleCellsContainer : Node2D, IHumbleCellsContainer
 
         var tween = shuffleTweenBuilder.Build()
             .SetMaxLoops(ResetMode.PingPong);
-        tween.PlayAsyncGD(this.GetCancellationTokenOnTreeExit()).Forget();
+        tween.PlayAsyncUntilNodeDestroy(this);
     }
 }

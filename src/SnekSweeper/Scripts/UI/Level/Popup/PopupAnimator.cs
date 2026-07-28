@@ -1,5 +1,5 @@
-﻿using GodotTask;
-using SnekSweeper.Widgets;
+﻿using GodotGadgets.TweenStuff;
+using GodotTask;
 
 namespace SnekSweeper.UI.Level.Popup;
 
