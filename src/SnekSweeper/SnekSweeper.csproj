@@ -22,7 +22,7 @@
         <PackageReference Include="Chickensoft.Introspection.Generator" Version="3.0.2" PrivateAssets="all" OutputItemType="analyzer" />
 
         <PackageReference Include="Dumpify" Version="0.6.6" />
-        <PackageReference Include="GDTask" Version="3.0.0" />
+        <PackageReference Include="GDTask" Version="3.2.0" />
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.7.0" />
         <PackageReference Include="GTweensGodot" Version="6.0.0" />
     </ItemGroup>
