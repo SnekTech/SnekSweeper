@@ -109,6 +109,6 @@ public partial class ScrollMenuView : Control
     {
         _tweenCts?.CancelAndDispose();
         _tweenCts = new CancellationTokenSource();
-        _animator.Apply(window, direction, _itemNodes, this, _tweenCts.Token);
+        _animator.Apply(window, direction, _itemNodes, _tweenCts.Token);
     }
 }
