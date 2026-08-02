@@ -40,17 +40,17 @@ public partial class MainMenuContainer : Control, ISceneScript
 
     void OnHistoryButtonPressed()
     {
-        AppLogic.Input(new AppLogic.Input.HistoryPressed());
+        AppLogic.Input(new AppState.Input.HistoryPressed());
     }
 
     void OnCheatCodeButtonPressed()
     {
-        AppLogic.Input(new AppLogic.Input.CheatCodePressed());
+        AppLogic.Input(new AppState.Input.CheatCodePressed());
     }
 
     void OnSettingsButtonPressed()
     {
-        AppLogic.Input(new AppLogic.Input.SettingsPressed());
+        AppLogic.Input(new AppState.Input.SettingsPressed());
     }
 
     void OnStartButtonPressed()

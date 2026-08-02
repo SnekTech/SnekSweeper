@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.LogicBlocks;
 using GodotGadgets.Tasks;
 using GodotTask;
 using SnekSweeper.Autoloads;
@@ -12,6 +13,7 @@ using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SkinSystem;
+using GridState = SnekSweeper.GridSystem.State.GridState;
 
 namespace SnekSweeper.Levels;
 
@@ -28,7 +30,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
     IAppRepo AppRepo => this.DependOn<IAppRepo>();
 
     GridLogic GridLogic { get; set; } = null!;
-    GridLogic.IBinding GridBinding { get; set; } = null!;
+    LogicBlock.Binding GridBinding { get; set; } = null!;
 
     public override void _EnterTree()
     {
@@ -53,8 +55,8 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         SetupGridLogic();
         SetupGridBinding();
 
-        GridLogic.Start();
-        GridLogic.Input(new GridLogic.Input.Init(loadLevelSource));
+        GridLogic.Start<GridState.PreInstantiated>();
+        GridLogic.Input(new GridState.Input.Init(loadLevelSource));
 
         return GDTask.CompletedTask;
 
@@ -86,7 +88,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         void SetupGridBinding()
         {
             GridBinding = GridLogic.Bind()
-                .Handle((in GridLogic.Output.EndGameChoiceOnWin output) =>
+                .OnOutput((in GridState.Output.EndGameChoiceOnWin output) =>
                 {
                     Action handleChoiceAction = output.Choice switch
                     {
@@ -96,7 +98,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
                     };
                     handleChoiceAction();
                 })
-                .Handle((in GridLogic.Output.EndGameChoiceOnLose output) =>
+                .OnOutput((in GridState.Output.EndGameChoiceOnLose output) =>
                 {
                     var recentRecord = output.RecentRecord;
                     Action handleChoiceAction = output.Choice switch
@@ -123,7 +125,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 
     void OnGridInputEmitted(GridInput input)
     {
-        GridLogic.Input(new GridLogic.Input.PlayerInput(input));
+        GridLogic.Input(new GridState.Input.PlayerInput(input));
     }
 
     public void NewGame()
@@ -133,7 +135,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 
     public void BackToMainMenu()
     {
-        AppLogic.Input(new AppLogic.Input.BackToMainMenu());
+        AppLogic.Input(new AppState.Input.BackToMainMenu());
     }
 
     public void Retry(GameRunRecord runRecord)

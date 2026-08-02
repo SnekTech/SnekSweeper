@@ -5,50 +5,49 @@ using SnekSweeperCore.GameMode;
 
 namespace SnekSweeper.GridSystem.State;
 
-public partial class GridLogic
+public abstract partial record GridState
 {
-    public partial record State
+    public abstract record End : GridState
     {
-        public abstract record End : State
+        protected JudgedResult EndLevelResult { get; private set; } = null!;
+        
+        protected End()
         {
-            protected End()
+            this.OnEnter(() =>
             {
-                this.OnEnter(() =>
-                {
-                    Context.RunRecorder.ClearSnapshot();
-                    Get<Data>().AppRepo.InvokeGameEnded();
-                });
-            }
-
-            protected GameRunRecord SaveRunRecord(bool winning, bool[,] bombs)
-            {
-                var runRecord = Context.RunRecorder.GenerateRecentRecord(winning, bombs);
-                Context.RunRecorder.SaveRecord(runRecord);
-                return runRecord;
-            }
+                Context.RunRecorder.ClearSnapshot();
+                Get<GridLogic.Data>().AppRepo.InvokeGameEnded();
+                EndLevelResult = Get<GridLogic.Data>().EndLevelResult;
+            });
         }
 
-        public record Win : End
+        protected GameRunRecord SaveRunRecord(bool winning, bool[,] bombs)
         {
-            public GameWin GameWin { get; set; } = null!;
+            var runRecord = Context.RunRecorder.GenerateRecentRecord(winning, bombs);
+            Context.RunRecorder.SaveRecord(runRecord);
+            return runRecord;
+        }
+    }
 
-            public Win()
+    public record Win : End
+    {
+        public Win()
+        {
+            this.OnEnter(() =>
             {
-                this.OnEnter(() =>
-                {
-                    var recentRecord = SaveRunRecord(true, GameWin.Bombs);
+                var gameWin = (GameWin)EndLevelResult;
+                var recentRecord = SaveRunRecord(true, gameWin.Bombs);
 
-                    Context.HumbleGrid.PlayCongratulationEffects();
+                Context.HumbleGrid.PlayCongratulationEffects();
 
-                    TriggerWinPopupAsync(recentRecord, LevelExitToken).Forget();
-                });
-                return;
+                TriggerWinPopupAsync(recentRecord, LevelExitToken).Forget();
+            });
+            return;
 
-                async GDTaskVoid TriggerWinPopupAsync(GameRunRecord recentRecord, CancellationToken ct = default)
-                {
-                    var choice = await Context.LevelOrchestrator.GetPopupChoiceOnWinAsync(ct);
-                    Output(new Output.EndGameChoiceOnWin(choice, recentRecord));
-                }
+            async GDTaskVoid TriggerWinPopupAsync(GameRunRecord recentRecord, CancellationToken ct = default)
+            {
+                var choice = await Context.LevelOrchestrator.GetPopupChoiceOnWinAsync(ct);
+                Output(new Output.EndGameChoiceOnWin(choice, recentRecord));
             }
         }
     }

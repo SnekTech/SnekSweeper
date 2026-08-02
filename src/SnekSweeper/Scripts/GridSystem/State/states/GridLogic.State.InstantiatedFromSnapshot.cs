@@ -5,50 +5,47 @@ using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;
 
-public partial class GridLogic
+public abstract partial record GridState
 {
-    public partial record State
+    public record InstantiatedFromSnapshot : GridState, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
     {
-        public record InstantiatedFromSnapshot : State, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
+        bool _hasInitializedGrid;
+        FromGridSnapshot _fromGridSnapshot = null!;
+
+        public InstantiatedFromSnapshot()
         {
-            bool _hasInitializedGrid;
-            FromGridSnapshot _fromGridSnapshot = null!;
-
-            public InstantiatedFromSnapshot()
+            this.OnEnter(delegate
             {
-                this.OnEnter(delegate
-                {
-                    _fromGridSnapshot = (FromGridSnapshot)Get<Data>().LoadLevelSource;
-                    TriggerInitGridAsync(LevelExitToken).Forget();
-                });
+                _fromGridSnapshot = (FromGridSnapshot)Get<GridLogic.Data>().LoadLevelSource;
+                TriggerInitGridAsync(LevelExitToken).Forget();
+            });
 
-                return;
+            return;
 
-                async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
-                {
-                    await Context.Grid.InitCellsAsync(_fromGridSnapshot.Snapshot, ct);
-                    Context.RunRecorder.MarkRunStartInfo(_fromGridSnapshot.StartInfo);
-                    _hasInitializedGrid = true;
-                }
-            }
-
-            void OnReadyToHandleFirstInput(GridInput firstInput)
+            async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
             {
-                Input(new Input.StartLevel());
-                Input(new Input.PlayerInput(firstInput));
+                await Context.Grid.InitCellsAsync(_fromGridSnapshot.Snapshot, ct);
+                Context.RunRecorder.MarkRunStartInfo(_fromGridSnapshot.StartInfo);
+                _hasInitializedGrid = true;
             }
-
-            public Transition On(in Input.PlayerInput input)
-            {
-                if (!_hasInitializedGrid)
-                    return ToSelf();
-
-                OnReadyToHandleFirstInput(input.GridInput);
-
-                return ToSelf();
-            }
-
-            public Transition On(in Input.StartLevel input) => To<GameRunning>();
         }
+
+        void OnReadyToHandleFirstInput(GridInput firstInput)
+        {
+            Input(new Input.StartLevel());
+            Input(new Input.PlayerInput(firstInput));
+        }
+
+        public Type On(in Input.PlayerInput input)
+        {
+            if (!_hasInitializedGrid)
+                return ToSelf();
+
+            OnReadyToHandleFirstInput(input.GridInput);
+
+            return ToSelf();
+        }
+
+        public Type On(in Input.StartLevel input) => To<GameRunning>();
     }
 }

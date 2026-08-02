@@ -1,14 +1,36 @@
-﻿using Chickensoft.Introspection;
-using Chickensoft.LogicBlocks;
+﻿using Chickensoft.LogicBlocks;
 using GodotTask;
 using SnekSweeper.Levels;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GameStateManagement;
 
-[Meta]
-[LogicBlock(typeof(State), Diagram = true)]
-public partial class AppLogic : LogicBlock<AppLogic.State>
+public partial class AppLogic : LogicBlock
+{
+    public record Data
+    {
+        public LoadLevelSource LoadLevelSource { get; set; } = LoadLevelSource.CreateDefaultRegularStart();
+    }
+    
+    public AppLogic()
+    {
+        Set(new Data());
+        
+        Set(new AppState.SplashScreen());
+        Set(new AppState.MainMenu());
+        Set(new AppState.InGame());
+        Set(new AppState.AfterGame());
+        Set(new AppState.HistoryPage());
+        Set(new AppState.SettingsPage());
+        Set(new AppState.CheatCodePage());
+    }
+
+    public void InputNewGame(LoadLevelSource loadLevelSource) => Input(new AppState.Input.NewGame(loadLevelSource));
+    public void InputGameEnd() => Input(new AppState.Input.GameEnd());
+}
+
+[StateDiagram]
+public abstract record AppState : LogicBlockState
 {
     public static class Input
     {
@@ -20,115 +42,102 @@ public partial class AppLogic : LogicBlock<AppLogic.State>
         public readonly record struct BackToMainMenu;
         public readonly record struct GameEnd;
     }
-
-    public record Data
+    
+    public record SplashScreen : AppState, IGet<Input.AnyKeyPressed>
     {
-        public LoadLevelSource LoadLevelSource { get; set; } = LoadLevelSource.CreateDefaultRegularStart();
+        public Type On(in Input.AnyKeyPressed input) => To<MainMenu>();
     }
 
-    public abstract record State : StateLogic<State>
+    public record MainMenu : AppState,
+        IGet<Input.NewGame>,
+        IGet<Input.HistoryPressed>,
+        IGet<Input.SettingsPressed>,
+        IGet<Input.CheatCodePressed>
     {
-        public record SplashScreen : State, IGet<Input.AnyKeyPressed>
+        public MainMenu()
         {
-            public Transition On(in Input.AnyKeyPressed input) => To<MainMenu>();
+            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.MainScreen.MainMenuContainer>());
         }
 
-        public record MainMenu : State,
-            IGet<Input.NewGame>,
-            IGet<Input.HistoryPressed>,
-            IGet<Input.SettingsPressed>,
-            IGet<Input.CheatCodePressed>
+        public Type On(in Input.NewGame input)
         {
-            public MainMenu()
-            {
-                OnAttach(() => Get<ISceneSwitcher>().GotoScene<UI.MainScreen.MainMenuContainer>());
-            }
-
-            public Transition On(in Input.NewGame input)
-            {
-                Get<Data>().LoadLevelSource = input.LoadLevelSource;
-                return To<InGame>();
-            }
-
-            public Transition On(in Input.HistoryPressed input) => To<HistoryPage>();
-
-            public Transition On(in Input.SettingsPressed input) => To<SettingsPage>();
-
-            public Transition On(in Input.CheatCodePressed input) => To<CheatCodePage>();
+            Get<AppLogic.Data>().LoadLevelSource = input.LoadLevelSource;
+            return To<InGame>();
         }
 
-        public record InGame : State, IGet<Input.BackToMainMenu>, IGet<Input.GameEnd>
-        {
-            public InGame()
-            {
-                OnAttach(() => Get<IAppRepo>().GameEnded += OnGameEnded);
-                OnDetach(() => Get<IAppRepo>().GameEnded -= OnGameEnded);
+        public Type On(in Input.HistoryPressed input) => To<HistoryPage>();
 
-                this.OnEnter(delegate
-                {
-                    var loadLevelSource = Get<Data>().LoadLevelSource;
-                    Get<ISceneSwitcher>().GotoSceneAsync<Level1>(level => level.LoadLevel(loadLevelSource),
-                        CancellationToken.None).Forget();
-                });
-            }
+        public Type On(in Input.SettingsPressed input) => To<SettingsPage>();
 
-            void OnGameEnded() => Input(new Input.GameEnd());
-
-
-            public Transition On(in Input.BackToMainMenu input) => To<MainMenu>();
-            public Transition On(in Input.GameEnd input) => To<AfterGame>();
-        }
-
-        public record AfterGame : State, IGet<Input.NewGame>, IGet<Input.BackToMainMenu>
-        {
-            public Transition On(in Input.NewGame input)
-            {
-                Get<Data>().LoadLevelSource = input.LoadLevelSource;
-                return To<InGame>();
-            }
-
-            public Transition On(in Input.BackToMainMenu input) => To<MainMenu>();
-        }
-
-        public record SettingsPage : State, IGet<Input.BackToMainMenu>
-        {
-            public SettingsPage()
-            {
-                OnAttach(() => Get<ISceneSwitcher>().GotoScene<UI.Settings.SettingsPage>());
-            }
-
-            public Transition On(in Input.BackToMainMenu input) => To<MainMenu>();
-        }
-
-        public record CheatCodePage : State, IGet<Input.BackToMainMenu>
-        {
-            public CheatCodePage()
-            {
-                OnAttach(() => Get<ISceneSwitcher>().GotoScene<CheatCodeSystem.UI.CheatCodePage>());
-            }
-
-            public Transition On(in Input.BackToMainMenu input) => To<MainMenu>();
-        }
-
-        public record HistoryPage : State, IGet<Input.BackToMainMenu>, IGet<Input.NewGame>
-        {
-            public HistoryPage()
-            {
-                OnAttach(() => Get<ISceneSwitcher>().GotoScene<UI.History.HistoryPage>());
-            }
-
-            public Transition On(in Input.BackToMainMenu input) => To<MainMenu>();
-
-            public Transition On(in Input.NewGame input)
-            {
-                Get<Data>().LoadLevelSource = input.LoadLevelSource;
-                return To<InGame>();
-            }
-        }
+        public Type On(in Input.CheatCodePressed input) => To<CheatCodePage>();
     }
 
-    public override Transition GetInitialState() => To<State.SplashScreen>();
+    public record InGame : AppState, IGet<Input.BackToMainMenu>, IGet<Input.GameEnd>
+    {
+        public InGame()
+        {
+            this.OnEnter(() => Get<IAppRepo>().GameEnded += OnGameEnded);
+            this.OnExit(() => Get<IAppRepo>().GameEnded -= OnGameEnded);
 
-    public void InputNewGame(LoadLevelSource loadLevelSource) => Input(new Input.NewGame(loadLevelSource));
-    public void InputGameEnd() => Input(new Input.GameEnd());
+            this.OnEnter(delegate
+            {
+                var loadLevelSource = Get<AppLogic.Data>().LoadLevelSource;
+                Get<ISceneSwitcher>().GotoSceneAsync<Level1>(level => level.LoadLevel(loadLevelSource),
+                    CancellationToken.None).Forget();
+            });
+        }
+
+        void OnGameEnded() => Input(new Input.GameEnd());
+
+
+        public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
+        public Type On(in Input.GameEnd input) => To<AfterGame>();
+    }
+
+    public record AfterGame : AppState, IGet<Input.NewGame>, IGet<Input.BackToMainMenu>
+    {
+        public Type On(in Input.NewGame input)
+        {
+            Get<AppLogic.Data>().LoadLevelSource = input.LoadLevelSource;
+            return To<InGame>();
+        }
+
+        public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
+    }
+
+    public record SettingsPage : AppState, IGet<Input.BackToMainMenu>
+    {
+        public SettingsPage()
+        {
+            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.Settings.SettingsPage>());
+        }
+
+        public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
+    }
+
+    public record CheatCodePage : AppState, IGet<Input.BackToMainMenu>
+    {
+        public CheatCodePage()
+        {
+            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<CheatCodeSystem.UI.CheatCodePage>());
+        }
+
+        public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
+    }
+
+    public record HistoryPage : AppState, IGet<Input.BackToMainMenu>, IGet<Input.NewGame>
+    {
+        public HistoryPage()
+        {
+            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.History.HistoryPage>());
+        }
+
+        public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
+
+        public Type On(in Input.NewGame input)
+        {
+            Get<AppLogic.Data>().LoadLevelSource = input.LoadLevelSource;
+            return To<InGame>();
+        }
+    }
 }

@@ -5,60 +5,56 @@ using SnekSweeperCore.GameMode;
 
 namespace SnekSweeper.GridSystem.State;
 
-public partial class GridLogic
+public abstract partial record GridState
 {
-    public partial record State
+    public record GameRunning : GridState, IGet<Input.PlayerInput>, IGet<Input.EndGame>
     {
-        public record GameRunning : State, IGet<Input.PlayerInput>, IGet<Input.EndGame>
+        bool _isProcessingInput;
+
+        public GameRunning()
         {
-            bool _isProcessingInput;
+            this.OnEnter(delegate { Context.HumbleGrid.TriggerInitEffects(); });
+        }
 
-            public GameRunning()
-            {
-                this.OnEnter(delegate
-                {
-                    Context.HumbleGrid.TriggerInitEffects();
-                });
-            }
-
-            public Transition On(in Input.PlayerInput input)
-            {
-                if (_isProcessingInput)
-                    return ToSelf();
-
-                var gridInput = input.GridInput;
-
-                TriggerHandleInputAsync(LevelExitToken).Forget();
+        public Type On(in Input.PlayerInput input)
+        {
+            if (_isProcessingInput)
                 return ToSelf();
 
-                async GDTaskVoid TriggerHandleInputAsync(CancellationToken ct = default)
-                {
-                    _isProcessingInput = true;
+            var gridInput = input.GridInput;
 
-                    var processResult = await Context.Grid.HandleInputAsync(gridInput, ct);
-                    var judgedResult = Referee.Judge(processResult);
-                    Input(new Input.EndGame(judgedResult));
+            TriggerHandleInputAsync(LevelExitToken).Forget();
+            return ToSelf();
 
-                    _isProcessingInput = false;
-                }
-            }
-
-            public Transition On(in Input.EndGame input)
+            async GDTaskVoid TriggerHandleInputAsync(CancellationToken ct = default)
             {
-                var judgedResult = input.JudgedResult;
-                if (judgedResult is Surviving)
-                {
-                    Context.RunRecorder.UpdateGridSnapshot(Context.Grid);
-                    return ToSelf();
-                }
+                _isProcessingInput = true;
 
-                return judgedResult switch
-                {
-                    GameWin gameWin => To<Win>().With(win => ((Win)win).GameWin = gameWin),
-                    GameLose gameLose => To<Lose>().With(lose => ((Lose)lose).GameLose = gameLose),
-                    _ => throw new SwitchExpressionException(),
-                };
+                var processResult = await Context.Grid.HandleInputAsync(gridInput, ct);
+                var judgedResult = Referee.Judge(processResult);
+                Input(new Input.EndGame(judgedResult));
+
+                _isProcessingInput = false;
             }
+        }
+
+        public Type On(in Input.EndGame input)
+        {
+            var judgedResult = input.JudgedResult;
+            if (judgedResult is Surviving)
+            {
+                Context.RunRecorder.UpdateGridSnapshot(Context.Grid);
+                return ToSelf();
+            }
+
+            Get<GridLogic.Data>().EndLevelResult = judgedResult;
+
+            return judgedResult switch
+            {
+                GameWin => To<Win>(),
+                GameLose => To<Lose>(),
+                _ => throw new SwitchExpressionException(),
+            };
         }
     }
 }

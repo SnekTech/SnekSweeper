@@ -24,5 +24,5 @@ public partial class SplashScreen : CenterContainer, ISceneScript
         PressToStartLabel.AnyKeyPressed -= OnAnyKeyPressed;
     }
 
-    void OnAnyKeyPressed() => AppLogic.Input(new AppLogic.Input.AnyKeyPressed());
+    void OnAnyKeyPressed() => AppLogic.Input(new AppState.Input.AnyKeyPressed());
 }

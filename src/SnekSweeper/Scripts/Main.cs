@@ -20,11 +20,10 @@ public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>
         AppRepo = new AppRepo();
         _appLogic = new AppLogic();
         _appLogic.Set(SceneSwitcher);
-        _appLogic.Set(new AppLogic.Data());
         _appLogic.Set(AppRepo);
         this.Provide();
 
-        _appLogic.Start();
+        _appLogic.Start<AppState.SplashScreen>();
     }
 
     public override void _Notification(int what) => this.Notify(what);

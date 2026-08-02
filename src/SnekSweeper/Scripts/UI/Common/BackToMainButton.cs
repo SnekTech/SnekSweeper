@@ -22,5 +22,5 @@ public partial class BackToMainButton : Button
         Pressed -= SendBackToMainInput;
     }
 
-    void SendBackToMainInput() => AppLogic.Input(new AppLogic.Input.BackToMainMenu());
+    void SendBackToMainInput() => AppLogic.Input(new AppState.Input.BackToMainMenu());
 }

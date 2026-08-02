@@ -6,58 +6,55 @@ using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;
 
-public partial class GridLogic
+public abstract partial record GridState
 {
-    public partial record State
+    public record InstantiatedFromRecord : GridState, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
     {
-        public record InstantiatedFromRecord : State, IGet<Input.PlayerInput>, IGet<Input.StartLevel>
+        bool _hasInitializedGrid;
+        GameRunRecord _runRecord = null!;
+
+        public InstantiatedFromRecord()
         {
-            bool _hasInitializedGrid;
-            GameRunRecord _runRecord = null!;
-
-            public InstantiatedFromRecord()
+            this.OnEnter(delegate
             {
-                this.OnEnter(delegate
-                {
-                    var fromRunRecord = (FromRunRecord)Get<Data>().LoadLevelSource;
-                    _runRecord = fromRunRecord.RunRecord;
-                    Context.HumbleGrid.GridCursor.LockTo(_runRecord.StartIndex, Context.Grid.Size);
-                    
-                    TriggerInitGridAsync(LevelExitToken).Forget();
-                });
+                var fromRunRecord = (FromRunRecord)Get<GridLogic.Data>().LoadLevelSource;
+                _runRecord = fromRunRecord.RunRecord;
+                Context.HumbleGrid.GridCursor.LockTo(_runRecord.StartIndex, Context.Grid.Size);
 
-                this.OnExit(delegate { Context.HumbleGrid.GridCursor.Unlock(); });
+                TriggerInitGridAsync(LevelExitToken).Forget();
+            });
 
-                return;
+            this.OnExit(delegate { Context.HumbleGrid.GridCursor.Unlock(); });
 
-                async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
-                {
-                    await Context.Grid.InitCellsAsync(_runRecord.BombMatrix, ct);
-                    _hasInitializedGrid = true;
-                }
-            }
+            return;
 
-            void OnReadyToHandleFirstInput(GridInput firstInput)
+            async GDTaskVoid TriggerInitGridAsync(CancellationToken ct = default)
             {
-                Input(new Input.StartLevel());
-                Input(new Input.PlayerInput(firstInput));
+                await Context.Grid.InitCellsAsync(_runRecord.BombMatrix, ct);
+                _hasInitializedGrid = true;
             }
-
-            public Transition On(in Input.PlayerInput input)
-            {
-                if (!_hasInitializedGrid)
-                    return ToSelf();
-                var gridInput = input.GridInput;
-
-                if (gridInput.Index != _runRecord.StartIndex)
-                    return ToSelf();
-
-                Context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, gridInput.Index));
-                OnReadyToHandleFirstInput(gridInput);
-                return ToSelf();
-            }
-
-            public Transition On(in Input.StartLevel input) => To<GameRunning>();
         }
+
+        void OnReadyToHandleFirstInput(GridInput firstInput)
+        {
+            Input(new Input.StartLevel());
+            Input(new Input.PlayerInput(firstInput));
+        }
+
+        public Type On(in Input.PlayerInput input)
+        {
+            if (!_hasInitializedGrid)
+                return ToSelf();
+            var gridInput = input.GridInput;
+
+            if (gridInput.Index != _runRecord.StartIndex)
+                return ToSelf();
+
+            Context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, gridInput.Index));
+            OnReadyToHandleFirstInput(gridInput);
+            return ToSelf();
+        }
+
+        public Type On(in Input.StartLevel input) => To<GameRunning>();
     }
 }

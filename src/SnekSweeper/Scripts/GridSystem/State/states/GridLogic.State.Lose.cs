@@ -5,33 +5,30 @@ using SnekSweeperCore.GameMode;
 
 namespace SnekSweeper.GridSystem.State;
 
-public partial class GridLogic
+public abstract partial record GridState
 {
-    public partial record State
+    public record Lose : End
     {
-        public record Lose : End
+
+        public Lose()
         {
-            public GameLose GameLose { get; set; } = null!;
-
-            public Lose()
+            this.OnEnter(() =>
             {
-                this.OnEnter(() =>
-                {
-                    var recentRecord = SaveRunRecord(false, GameLose.Bombs);
-                    TriggerLoseTasksAsync(recentRecord, LevelExitToken).Forget();
-                });
-                return;
+                var gameLose = (GameLose)EndLevelResult;
+                var recentRecord = SaveRunRecord(false, gameLose.Bombs);
+                TriggerLoseTasksAsync(gameLose, recentRecord, LevelExitToken).Forget();
+            });
+            return;
 
-                async GDTaskVoid TriggerLoseTasksAsync(GameRunRecord recentRecord, CancellationToken ct = default)
-                {
-                    await MarkPlayerErrorsAsync(ct);
-                    var choice = await Context.LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct);
-                    Output(new Output.EndGameChoiceOnLose(choice, recentRecord));
-                }
+            async GDTaskVoid TriggerLoseTasksAsync(GameLose gameLose,GameRunRecord recentRecord, CancellationToken ct = default)
+            {
+                await MarkPlayerErrorsAsync(gameLose, ct);
+                var choice = await Context.LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct);
+                Output(new Output.EndGameChoiceOnLose(choice, recentRecord));
             }
-
-            GDTask MarkPlayerErrorsAsync(CancellationToken ct = default) =>
-                GDTask.WhenAll(GameLose.CellsInThisBatch.Select(cell => cell.MarkErrorAsync(ct).AsGDTask()));
         }
+
+        static GDTask MarkPlayerErrorsAsync(GameLose gameLose,CancellationToken ct = default) =>
+            GDTask.WhenAll(gameLose.CellsInThisBatch.Select(cell => cell.MarkErrorAsync(ct).AsGDTask()));
     }
 }
