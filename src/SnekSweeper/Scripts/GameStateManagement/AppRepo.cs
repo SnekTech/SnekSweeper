@@ -1,9 +1,13 @@
-﻿namespace SnekSweeper.GameStateManagement;
+﻿using SnekSweeper.Autoloads;
+using SnekSweeperCore.SkinSystem;
+
+namespace SnekSweeper.GameStateManagement;
 
 public interface IAppRepo : IDisposable
 {
     event Action? GameEnded;
     void InvokeGameEnded();
+    GridSkin CurrentSkin { get; }
 }
 
 public sealed class AppRepo : IAppRepo
@@ -11,6 +15,8 @@ public sealed class AppRepo : IAppRepo
     public event Action? GameEnded;
 
     public void InvokeGameEnded() => GameEnded?.Invoke();
+
+    public GridSkin CurrentSkin => HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
 
     #region Disposable
 

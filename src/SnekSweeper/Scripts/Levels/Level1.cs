@@ -12,7 +12,6 @@ using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
-using SnekSweeperCore.SkinSystem;
 using GridState = SnekSweeper.GridSystem.State.GridState;
 
 namespace SnekSweeper.Levels;
@@ -62,8 +61,7 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
 
         Grid CreateGrid()
         {
-            // todo: put this in AppRepo?
-            var gridSkin = HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
+            var gridSkin = AppRepo.CurrentSkin;
             return loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
         }
 
