@@ -11,7 +11,7 @@ namespace SnekSweeper.UI.Tutorial;
 
 [Meta(typeof(IAutoNode))]
 [SceneTree(root: "ROOT")]
-public partial class TutorialPage : Control
+public partial class TutorialPage : Control, ISceneScript
 {
     const int ExamplePageSize = 1;
     

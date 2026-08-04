@@ -11,11 +11,11 @@ public partial class AppLogic : LogicBlock
     {
         public LoadLevelSource LoadLevelSource { get; set; } = LoadLevelSource.CreateDefaultRegularStart();
     }
-    
+
     public AppLogic()
     {
         Set(new Data());
-        
+
         Set(new AppState.SplashScreen());
         Set(new AppState.MainMenu());
         Set(new AppState.InGame());
@@ -37,12 +37,13 @@ public abstract record AppState : LogicBlockState
         public readonly record struct AnyKeyPressed;
         public readonly record struct SettingsPressed;
         public readonly record struct HistoryPressed;
+        public readonly record struct TutorialPressed;
         public readonly record struct CheatCodePressed;
         public readonly record struct NewGame(LoadLevelSource LoadLevelSource);
         public readonly record struct BackToMainMenu;
         public readonly record struct GameEnd;
     }
-    
+
     public record SplashScreen : AppState, IGet<Input.AnyKeyPressed>
     {
         public Type On(in Input.AnyKeyPressed input) => To<MainMenu>();
@@ -52,7 +53,8 @@ public abstract record AppState : LogicBlockState
         IGet<Input.NewGame>,
         IGet<Input.HistoryPressed>,
         IGet<Input.SettingsPressed>,
-        IGet<Input.CheatCodePressed>
+        IGet<Input.CheatCodePressed>,
+        IGet<Input.TutorialPressed>
     {
         public MainMenu()
         {
@@ -66,10 +68,9 @@ public abstract record AppState : LogicBlockState
         }
 
         public Type On(in Input.HistoryPressed input) => To<HistoryPage>();
-
         public Type On(in Input.SettingsPressed input) => To<SettingsPage>();
-
         public Type On(in Input.CheatCodePressed input) => To<CheatCodePage>();
+        public Type On(in Input.TutorialPressed input) => To<TutorialPage>();
     }
 
     public record InGame : AppState, IGet<Input.BackToMainMenu>, IGet<Input.GameEnd>
@@ -139,5 +140,15 @@ public abstract record AppState : LogicBlockState
             Get<AppLogic.Data>().LoadLevelSource = input.LoadLevelSource;
             return To<InGame>();
         }
+    }
+
+    public record TutorialPage : AppState, IGet<Input.BackToMainMenu>
+    {
+        public TutorialPage()
+        {
+            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.Tutorial.TutorialPage>());
+        }
+
+        public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
     }
 }

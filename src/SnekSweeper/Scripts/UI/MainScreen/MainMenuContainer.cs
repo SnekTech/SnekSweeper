@@ -25,6 +25,7 @@ public partial class MainMenuContainer : Control, ISceneScript
             CreateButtonWithBinding("Settings", OnSettingsButtonPressed),
             CreateButtonWithBinding("CheatCode", OnCheatCodeButtonPressed),
             CreateButtonWithBinding("History", OnHistoryButtonPressed),
+            CreateButtonWithBinding("Tutorial", OnTutorialButonPressed),
             CreateButtonWithBinding("Quit", OnQuitPressed),
         };
         if (HasAnOngoingGame())
@@ -36,6 +37,11 @@ public partial class MainMenuContainer : Control, ISceneScript
         return;
 
         bool HasAnOngoingGame() => HouseKeeper.CurrentRunInfo.GridSnapshot != null;
+    }
+
+    void OnTutorialButonPressed()
+    {
+        AppLogic.Input(new AppState.Input.TutorialPressed());
     }
 
     void OnHistoryButtonPressed()
