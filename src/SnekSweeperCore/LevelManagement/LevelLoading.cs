@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
@@ -28,7 +29,7 @@ public static class LevelLoading
     {
         public static LoadLevelSource CreateDefaultRegularStart() =>
             new RegularStart(GridDifficultyKey.Intermediate.ToDifficulty().DifficultyData, true);
-        
+
         public static LoadLevelSource CreateRegularStart(MainSetting mainSetting)
         {
             var difficulty = mainSetting.CurrentDifficultyKey.ToDifficulty().DifficultyData;
@@ -46,10 +47,11 @@ public static class LevelLoading
             _ => throw new SwitchExpressionException(),
         };
 
-        public Grid CreateGrid(IHumbleGrid humbleGrid, GridEventBus gridEventBus, GridSkin gridSkin)
+        public Grid CreateGrid(IHumbleGrid humbleGrid,  GridSkin gridSkin,GridEventBus gridEventBus,
+            CommandInvoker commandInvoker)
         {
             humbleGrid.HumbleCellsContainer.Clear();
-            return Grid.Create(humbleGrid, loadLevelSource.GetGridSize(), gridSkin, gridEventBus);
+            return Grid.Create(humbleGrid, loadLevelSource.GetGridSize(), gridSkin, gridEventBus, commandInvoker);
         }
 
         GridSize GetGridSize() => loadLevelSource switch

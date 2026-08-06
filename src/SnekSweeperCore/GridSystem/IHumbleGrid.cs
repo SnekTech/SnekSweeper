@@ -1,5 +1,4 @@
 ﻿using SnekSweeperCore.CellSystem;
-using SnekSweeperCore.Commands;
 using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.GridSystem;
@@ -7,7 +6,6 @@ namespace SnekSweeperCore.GridSystem;
 public interface IHumbleGrid
 {
     IHumbleCellsContainer HumbleCellsContainer { get; }
-    CommandInvoker GridCommandInvoker { get; }
     void TriggerInitEffects();
     IGridCursor GridCursor { get; }
     void PlayCongratulationEffects();

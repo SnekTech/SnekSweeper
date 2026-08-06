@@ -22,6 +22,10 @@ public partial class TutorialPage : Control, ISceneScript
     {
         ExampleCardContainer.ClearChildren();
 
+    }
+
+    public void OnResolved()
+    {
         var pagination = new Pagination<ExampleData>(new BuiltinExampleQuery(), ExamplePageSize);
         ExamplePaginationBar.Bind(
             ExampleCardContainer,

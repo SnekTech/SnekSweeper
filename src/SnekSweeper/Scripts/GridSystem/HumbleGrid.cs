@@ -1,9 +1,6 @@
-﻿using GodotTask;
-using SnekSweeper.Autoloads;
+﻿using SnekSweeper.Autoloads;
 using SnekSweeper.CheatCodeSystem;
-using SnekSweeper.UI.Level;
 using SnekSweeper.Widgets;
-using SnekSweeperCore.Commands;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;
@@ -11,21 +8,16 @@ namespace SnekSweeper.GridSystem;
 [SceneTree]
 public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
-    readonly HUDEventBus _hudEventBus = EventBusOwner.HUDEventBus;
-
+    // todo: remove this 2-way-reference between GridLogic
     Grid _grid = null!;
-
-    public CommandInvoker GridCommandInvoker { get; } = new();
 
     public override void _EnterTree()
     {
-        _hudEventBus.UndoPressed += OnUndoPressed;
         GridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
     }
 
     public override void _ExitTree()
     {
-        _hudEventBus.UndoPressed -= OnUndoPressed;
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
@@ -42,6 +34,4 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     {
         Cursor.ShowAt(hoveringGridIndex, _grid.Size);
     }
-
-    void OnUndoPressed() => GridCommandInvoker.UndoCommandAsync().AsGDTask().Forget();
 }

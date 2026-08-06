@@ -8,6 +8,7 @@ using SnekSweeper.Autoloads;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.GridSystem.State;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.FSM;
@@ -18,7 +19,9 @@ namespace SnekSweeper.Levels;
 
 [Meta(typeof(IAutoNode))]
 [SceneTree]
-public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
+public partial class Level1 : Node2D,
+    IProvide<LevelData>,
+    ISceneScript, ILevelOrchestrator
 {
     public override void _Notification(int what) => this.Notify(what);
 
@@ -31,8 +34,14 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
     GridLogic GridLogic { get; set; } = null!;
     LogicBlock.Binding GridBinding { get; set; } = null!;
 
+    LevelData _levelData = null!;
+    LevelData IProvide<LevelData>.Value() => _levelData;
+
     public override void _EnterTree()
     {
+        _levelData = new LevelData(new GridEventBus(), new CommandInvoker());
+        this.Provide();
+
         TheGrid.GridInputListener.GridInputEmitted += OnGridInputEmitted;
     }
 
@@ -62,7 +71,8 @@ public partial class Level1 : Node2D, ISceneScript, ILevelOrchestrator
         Grid CreateGrid()
         {
             var gridSkin = AppRepo.CurrentSkin;
-            return loadLevelSource.CreateGrid(TheGrid, EventBusOwner.GridEventBus, gridSkin);
+            return loadLevelSource.CreateGrid(TheGrid, gridSkin, _levelData.GridEventBus,
+                _levelData.GridCommandInvoker);
         }
 
         void SetupGridLogic()

@@ -1,21 +1,28 @@
-﻿using SnekSweeper.Autoloads;
-using SnekSweeperCore.GridSystem;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
+using SnekSweeper.Autoloads;
+using SnekSweeper.Levels;
 
 namespace SnekSweeper.Combo;
 
+
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class ComboRankCard : VBoxContainer
 {
-    private readonly GridEventBus _gridEventBus = EventBusOwner.GridEventBus;
+    public override void _Notification(int what) => this.Notify(what);
+    
+    [Dependency]
+    LevelData LevelData => this.DependOn<LevelData>();
 
-    public override void _EnterTree()
+    public void OnResolved()
     {
-        _gridEventBus.BatchRevealed += OnBatchRevealed;
+        LevelData.GridEventBus.BatchRevealed += OnBatchRevealed;
     }
 
-    public override void _ExitTree()
+    public void OnExitTree()
     {
-        _gridEventBus.BatchRevealed -= OnBatchRevealed;
+        LevelData.GridEventBus.BatchRevealed -= OnBatchRevealed;
     }
 
     public override void _Ready()
@@ -23,9 +30,9 @@ public partial class ComboRankCard : VBoxContainer
         InitComboDisplay();
     }
 
-    private void OnBatchRevealed() => GridComboComponent.IncreaseComboLevel();
+    void OnBatchRevealed() => GridComboComponent.IncreaseComboLevel();
 
-    private void InitComboDisplay()
+    void InitComboDisplay()
     {
         if (HouseKeeper.MainSetting.ComboRankDisplay)
         {

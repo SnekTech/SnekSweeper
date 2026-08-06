@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using GodotGadgets.UI.Pagination;
-using SnekSweeper.Autoloads;
 using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem.Components;
+using SnekSweeperCore.Commands;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SkinSystem;
 using SnekSweeperCore.Tutorial;
@@ -21,7 +21,7 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IAsyncContent<Ex
 
         ExampleDescriptionView.Description = exampleData.Description;
 
-        var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, Skin, EventBusOwner.GridEventBus);
+        var grid = Grid.Create(TheGrid, snapshot.BombMatrix.Size, Skin, new GridEventBus(), new CommandInvoker());
         TheGrid.Init(grid);
         
         ct.ThrowIfCancellationRequested();
