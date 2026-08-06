@@ -71,7 +71,7 @@ public partial class Level1 : Node2D,
         Grid CreateGrid()
         {
             var gridSkin = AppRepo.CurrentSkin;
-            return loadLevelSource.CreateGrid(TheGrid, gridSkin, _levelData.GridEventBus,
+            return loadLevelSource.CreateGrid(TheGrid.HumbleCellsContainer, gridSkin, _levelData.GridEventBus,
                 _levelData.GridCommandInvoker);
         }
 
