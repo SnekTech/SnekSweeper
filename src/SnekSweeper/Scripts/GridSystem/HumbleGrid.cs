@@ -8,8 +8,7 @@ namespace SnekSweeper.GridSystem;
 [SceneTree]
 public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
-    // todo: remove this 2-way-reference between GridLogic
-    Grid _grid = null!;
+    GridSize _gridSize;
 
     public override void _EnterTree()
     {
@@ -21,7 +20,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
-    public void Init(Grid grid) => _grid = grid;
+    public void Init(GridSize gridSize) => _gridSize = gridSize;
 
     public IHumbleCellsContainer HumbleCellsContainer => CellsContainer;
     public IGridCursor GridCursor => Cursor;
@@ -32,6 +31,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {
-        Cursor.ShowAt(hoveringGridIndex, _grid.Size);
+        Cursor.ShowAt(hoveringGridIndex, _gridSize);
     }
 }

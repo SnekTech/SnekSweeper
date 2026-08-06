@@ -22,7 +22,7 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IAsyncContent<Ex
         ExampleDescriptionView.Description = exampleData.Description;
 
         var grid = Grid.Create(TheGrid.HumbleCellsContainer, snapshot.BombMatrix.Size, Skin, new GridEventBus(), new CommandInvoker());
-        TheGrid.Init(grid);
+        TheGrid.Init(grid.Size);
         
         ct.ThrowIfCancellationRequested();
 

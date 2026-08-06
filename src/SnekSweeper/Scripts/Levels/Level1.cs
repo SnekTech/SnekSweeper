@@ -58,7 +58,7 @@ public partial class Level1 : Node2D,
     public GDTask LoadLevel(LoadLevelSource loadLevelSource)
     {
         var grid = CreateGrid();
-        TheGrid.Init(grid);
+        TheGrid.Init(grid.Size);
 
         SetupGridLogic();
         SetupGridBinding();
