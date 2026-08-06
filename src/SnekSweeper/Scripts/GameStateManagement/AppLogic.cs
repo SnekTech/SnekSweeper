@@ -23,6 +23,7 @@ public partial class AppLogic : LogicBlock
         Set(new AppState.HistoryPage());
         Set(new AppState.SettingsPage());
         Set(new AppState.CheatCodePage());
+        Set(new AppState.TutorialPage());
     }
 
     public void InputNewGame(LoadLevelSource loadLevelSource) => Input(new AppState.Input.NewGame(loadLevelSource));
