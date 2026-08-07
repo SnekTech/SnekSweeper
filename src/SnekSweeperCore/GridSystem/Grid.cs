@@ -4,7 +4,7 @@ using SnekSweeperCore.Commands;
 
 namespace SnekSweeperCore.GridSystem;
 
-public class Grid(Cell[,] cells, GridEventBus gridEventBus, CommandInvoker commandInvoker)
+public class Grid(Cell[,] cells, GridEventBus gridEventBus, ICommandRecorder commandRecorder)
 {
     bool _isAnyCellProcessing;
     public GridSize Size { get; } = cells.Size;
@@ -115,7 +115,7 @@ public class Grid(Cell[,] cells, GridEventBus gridEventBus, CommandInvoker comma
         Task ExecuteRevealBatchCommandAsync()
         {
             var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-            return commandInvoker.ExecuteCommandAsync(new CompoundCommand(commands), ct);
+            return commandRecorder.ExecuteAndRecordAsync(new CompoundCommand(commands), ct);
         }
     }
 

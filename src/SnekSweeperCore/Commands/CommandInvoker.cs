@@ -1,6 +1,6 @@
 ﻿namespace SnekSweeperCore.Commands;
 
-public class CommandInvoker
+public class CommandInvoker: ICommandRecorder
 {
     readonly Stack<ICommand> _undoStack = new();
 
@@ -18,4 +18,6 @@ public class CommandInvoker
         var activeCommand = _undoStack.Pop();
         await activeCommand.UndoAsync(cancellationToken);
     }
+
+    public Task ExecuteAndRecordAsync(ICommand command, CancellationToken ct = default) => ExecuteCommandAsync(command, ct);
 }

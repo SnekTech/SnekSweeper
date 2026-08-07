@@ -6,3 +6,8 @@ public interface ICommand
     Task ExecuteAsync(CancellationToken cancellationToken);
     Task UndoAsync(CancellationToken cancellationToken);
 }
+
+public interface ICommandRecorder
+{
+    Task ExecuteAndRecordAsync(ICommand command, CancellationToken ct = default);
+}
