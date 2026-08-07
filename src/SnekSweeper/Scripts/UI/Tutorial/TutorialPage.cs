@@ -21,7 +21,6 @@ public partial class TutorialPage : Control, ISceneScript
     public override void _Ready()
     {
         ExampleCardContainer.ClearChildren();
-
     }
 
     public void OnResolved()
