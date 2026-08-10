@@ -23,8 +23,3 @@ public sealed record ComboConfig
 
     public static ComboConfig Default => new();
 }
-
-public readonly record struct ComboLevelInfo(int Level, string DisplayText)
-{
-    public bool ShouldDisplay => Level >= 2;
-}

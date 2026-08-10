@@ -244,3 +244,26 @@ Scripts/
   input adapters.
 - ❌ Using `[SceneTree]` without implementing `ISceneScript` — they go together.
 
+## Scene File (`.tscn`) Editing Discipline
+
+Scene content is authored in the Godot editor (WYSIWYG), not by agents.
+
+- ❌ Never add, move, reparent, or restyle scene nodes, or change layout/theme
+  values in `.tscn` — the user owns scene content in the editor.
+- ✅ Only edit `.tscn` reference lines when a script/scene file is created,
+  renamed, or deleted:
+  - `ext_resource` entries (Script / PackedScene)
+  - the node lines binding them (`script = ExtResource(...)`,
+    `instance=ExtResource(...)`)
+  - the `load_steps` count when resources are added/removed
+- When deleting a script/scene, remove its `ext_resource` and its
+  instance/script binding from all referencing `.tscn`/`.tres`, and delete
+  companion `.uid` files.
+- When renaming a `.cs`, rename its `.cs.uid` companion together so the
+  `uid://` stays stable; update `path="res://..."` in references and keep
+  `uid=` unchanged.
+- If a refactor genuinely requires scene-structure changes, flag it as a manual
+  editor step for the user instead of editing the scene.
+- Verify reference edits with `dotnet build` and by grepping for dangling
+  references (deleted uids / old paths).
+

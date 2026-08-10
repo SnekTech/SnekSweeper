@@ -1,6 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://ofhobc7irrc4"]
+[gd_scene load_steps=2 format=3 uid="uid://ofhobc7irrc4"]
 
-[ext_resource type="PackedScene" uid="uid://bgulr4c5sa6v" path="res://Scripts/Combo/ComboComponent.tscn" id="1_jg7dg"]
 [ext_resource type="Script" uid="uid://cypb3vhhtx0y1" path="res://Scripts/Combo/ComboRankCard.cs" id="1_xce2d"]
 
 [node name="ComboRankCard" type="VBoxContainer"]
@@ -19,6 +18,3 @@ custom_minimum_size = Vector2(100, 8)
 layout_mode = 2
 value = 77.0
 show_percentage = false
-
-[node name="GridComboComponent" parent="." instance=ExtResource("1_jg7dg")]
-unique_name_in_owner = true
