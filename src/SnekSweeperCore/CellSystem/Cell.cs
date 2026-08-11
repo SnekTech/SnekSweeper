@@ -1,16 +1,15 @@
 ﻿using SnekSweeperCore.CellSystem.StateMachine;
-using SnekSweeperCore.CellSystem.StateMachine.States;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeperCore.CellSystem;
 
 public class Cell
 {
-    public Cell(IHumbleCell humbleCell, GridIndex gridIndex)
+    public Cell(IHumbleCell humbleCell, GridIndex gridIndex, CellLogic logic)
     {
         HumbleCell = humbleCell;
         GridIndex = gridIndex;
-        _stateMachine = new CellStateMachine(this);
+        _logic = logic;
     }
 
     public IHumbleCell HumbleCell { get; }
@@ -18,31 +17,43 @@ public class Cell
     public GridIndex GridIndex { get; }
     public bool HasBomb { get; private set; }
 
-    readonly CellStateMachine _stateMachine;
+    readonly CellLogic _logic;
 
-
-    public bool IsCovered => _stateMachine.IsAtState<CoveredState>();
-    public bool IsRevealed => _stateMachine.IsAtState<RevealedState>();
-    public bool IsFlagged => _stateMachine.IsAtState<FlaggedState>();
+    public bool IsCovered => _logic.IsCovered;
+    public bool IsRevealed => _logic.IsRevealed;
+    public bool IsFlagged => _logic.IsFlagged;
     public bool IsWrongFlagged => IsFlagged && !HasBomb;
     public bool IsRevealedBomb => IsRevealed && HasBomb;
 
-    public async Task InitAsync(CellInitData cellInitData, CancellationToken ct = default)
+    public Task InitAsync(CellInitData cellInitData, CancellationToken ct = default)
     {
         HumbleCell.OnInit(cellInitData);
         HasBomb = cellInitData.HasBomb;
-        await _stateMachine.SetInitStateAsync<CoveredState>(ct);
+        _logic.Init(this);
+        return Task.CompletedTask;
     }
 
-    public Task RevealAsync(CancellationToken ct = default) =>
-        _stateMachine.HandleCellRequestAsync(CellRequest.RevealCover, ct);
+    public Task RevealAsync(CancellationToken ct = default)
+    {
+        _logic.Reveal();
+        return Task.CompletedTask;
+    }
 
-    public Task PutOnCoverAsync(CancellationToken ct = default) =>
-        _stateMachine.HandleCellRequestAsync(CellRequest.PutOnCover, ct);
+    public Task PutOnCoverAsync(CancellationToken ct = default)
+    {
+        _logic.PutOnCover();
+        return Task.CompletedTask;
+    }
 
-    public Task SwitchFlagAsync(CancellationToken ct = default) =>
-        _stateMachine.HandleCellRequestAsync(IsFlagged ? CellRequest.PutDownFlag : CellRequest.RaiseFlag, ct);
+    public Task SwitchFlagAsync(CancellationToken ct = default)
+    {
+        _logic.SwitchFlag();
+        return Task.CompletedTask;
+    }
 
-    public Task MarkErrorAsync(CancellationToken ct = default) =>
-        _stateMachine.HandleCellRequestAsync(CellRequest.MarkError, ct);
+    public Task MarkErrorAsync(CancellationToken ct = default)
+    {
+        _logic.MarkError();
+        return Task.CompletedTask;
+    }
 }

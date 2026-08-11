@@ -2,7 +2,6 @@ using Chickensoft.LogicBlocks;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;

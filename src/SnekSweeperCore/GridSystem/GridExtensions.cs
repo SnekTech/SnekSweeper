@@ -13,8 +13,8 @@ public static class GridExtensions
         {
             var cells = MatrixExtensions.Create(gridSize, gridIndex =>
             {
-                var humbleCell =cellsContainer.InstantiateHumbleCell(gridIndex, skin);
-                return new Cell(humbleCell, gridIndex);
+                var (humbleCell, logic) = cellsContainer.InstantiateCell(gridIndex, skin);
+                return new Cell(humbleCell, gridIndex, logic);
             });
             return new Grid(cells, eventBus, commandInvoker);
         }

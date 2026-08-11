@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using GodotGadgets.ShaderStuff;
+using GodotGadgets.Tasks;
 using GodotGadgets.TweenStuff;
 using GTweens.Extensions;
 using SnekSweeper.Widgets;
@@ -16,6 +17,9 @@ public partial class Cover : Node2D, ICover, ISceneScript
     Uniform<float> coverAlpha = null!;
     Uniform<float> noiseSeed = null!;
 
+    // 动画取消走 CancellationToken：新动画开始前取消旧的，避免快速 Reveal/PutOn 交替互相打架
+    CancellationTokenSource? _tweenCts;
+
     public override void _Ready()
     {
         var shaderMaterial = (ShaderMaterial)_.Sprite.Material;
@@ -26,20 +30,32 @@ public partial class Cover : Node2D, ICover, ISceneScript
         SetDissolveProgress(0);
     }
 
+    public override void _ExitTree() => _tweenCts?.CancelAndDispose();
+
     public async Task RevealAsync(CancellationToken ct = default)
     {
+        _tweenCts?.CancelAndDispose();
+        _tweenCts = new CancellationTokenSource();
+
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
-        await tween.PlayAsyncUntilNodeDestroy(this, ct);
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _tweenCts.Token);
+
+        // 取消（被新动画取代/节点销毁）时 await 抛 OCE，自然跳过 Hide；OCE 交给调用方的 fire-and-forget 处理
+        await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
         Hide();
     }
 
     public async Task PutOnAsync(CancellationToken ct = default)
     {
+        _tweenCts?.CancelAndDispose();
+        _tweenCts = new CancellationTokenSource();
+
         RandomizeNoise();
         Show();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 0, AnimationDuration);
-        await tween.PlayAsyncUntilNodeDestroy(this, ct);
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _tweenCts.Token);
+        await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
     }
 
     public void SetAlpha(float normalizedAlpha) => coverAlpha.Value = normalizedAlpha;

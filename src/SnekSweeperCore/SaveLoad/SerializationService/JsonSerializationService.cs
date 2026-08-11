@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using GodotGadgets;
+using Widgets;
 
 namespace SnekSweeperCore.SaveLoad.SerializationService;
 

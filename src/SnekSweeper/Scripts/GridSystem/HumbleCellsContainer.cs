@@ -14,11 +14,11 @@ namespace SnekSweeper.GridSystem;
 
 public partial class HumbleCellsContainer : Node2D, IHumbleCellsContainer
 {
-    public IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin)
+    public CellInstance InstantiateCell(GridIndex gridIndex, GridSkin gridSkin)
     {
         var humbleCell = HumbleCell.InstantiateOnParent(this);
         humbleCell.OnInstantiate(gridIndex, gridSkin);
-        return humbleCell;
+        return new CellInstance(humbleCell, humbleCell.Logic);
     }
 
     public IEnumerable<IHumbleCell> HumbleCells => this.GetChildrenOfType<HumbleCell>();

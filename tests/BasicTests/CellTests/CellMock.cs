@@ -19,16 +19,6 @@ class MockHumbleCell : IHumbleCell
     {
         $"{nameof(OnInit)}, init data: {initData}".Dump();
     }
-
-    public void MarkAsWrongFlagged()
-    {
-        "this humble cell is marked as wrong-flagged".Dump();
-    }
-
-    public void MarkAsBombRevealed()
-    {
-        "this humble cell is marked as bomb-revealed".Dump();
-    }
 }
 
 class MockCover :ICover

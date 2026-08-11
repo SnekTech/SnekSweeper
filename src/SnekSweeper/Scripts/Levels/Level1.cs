@@ -11,7 +11,6 @@ using SnekSweeper.Widgets;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.GridSystem.FSM;
 using SnekSweeperCore.LevelManagement;
 using GridState = SnekSweeper.GridSystem.State.GridState;
 

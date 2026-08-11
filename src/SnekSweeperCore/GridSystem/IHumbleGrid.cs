@@ -13,7 +13,8 @@ public interface IHumbleGrid
 
 public interface IHumbleCellsContainer
 {
-    IHumbleCell InstantiateHumbleCell(GridIndex gridIndex, GridSkin gridSkin);
+    // todo: may have a better design
+    CellInstance InstantiateCell(GridIndex gridIndex, GridSkin gridSkin);
     IEnumerable<IHumbleCell> HumbleCells { get; }
     void Clear();
 }
