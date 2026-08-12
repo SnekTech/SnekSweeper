@@ -20,7 +20,7 @@ public partial class MessageBox : Control, IMessageDisplay
         Instance = this;
 
         _messageQueue = new MessageQueue(this);
-        _messageQueue.StartRunning(this.GetCancellationTokenOnTreeExit()).AsGDTask().Forget();
+        _messageQueue.RunAsync(this.GetCancellationTokenOnTreeExit()).AsGDTask().Forget();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -31,8 +31,9 @@ public partial class MessageBox : Control, IMessageDisplay
         }
     }
 
-    public void FireOneMessage(string message)
+    public void Fire(string message)
     {
+        // fire-and-forget 在 Godot 层用 GDTask 的正确 Forget：异常当场进错误面板，OCE 默认吞掉
         DisplayAsync().Forget();
         return;
 

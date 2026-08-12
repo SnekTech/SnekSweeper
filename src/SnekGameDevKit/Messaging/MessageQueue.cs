@@ -4,25 +4,17 @@ namespace SnekGameDevKit.Messaging;
 
 public class MessageQueue(IMessageDisplay messageDisplay)
 {
-    readonly Channel<string> _channel =
-        Channel.CreateUnbounded<string>(new UnboundedChannelOptions { SingleReader = true });
-    bool _isRunning;
+    readonly Channel<string> _channel = Channel.CreateUnbounded<string>();
 
-    public async Task StartRunning(CancellationToken ct)
+    /// <summary>任意线程调用都安全；入队后尽快触发显示。</summary>
+    public void Enqueue(string message) => _channel.Writer.TryWrite(message);
+
+    /// <summary>在 UI/主线程启动；每条消息到达立即转发给显示层（fire-and-forget 由实现层处理）。</summary>
+    public async Task RunAsync(CancellationToken ct = default)
     {
-        if (_isRunning)
+        await foreach (var message in _channel.Reader.ReadAllAsync(ct))
         {
-            Console.WriteLine("the queue is already running");
-            return;
-        }
-
-        _isRunning = true;
-
-        while (!ct.IsCancellationRequested)
-        {
-            messageDisplay.FireOneMessage(await _channel.Reader.ReadAsync(ct));
+            messageDisplay.Fire(message); // 同步转发，无 discard；显示层自行 fire-and-forget
         }
     }
-
-    public void Enqueue(string message) => _channel.Writer.TryWrite(message);
 }
