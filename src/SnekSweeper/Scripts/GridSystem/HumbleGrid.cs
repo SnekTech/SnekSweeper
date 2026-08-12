@@ -22,7 +22,8 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void Init(GridSize gridSize) => _gridSize = gridSize;
 
-    public IHumbleCellsContainer HumbleCellsContainer => CellsContainer;
+    public IHumbleCellCollection HumbleCellsContainer => CellsContainer;
+    public ICellFactory CellFactory => CellsContainer;
     public IGridCursor GridCursor => Cursor;
 
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();

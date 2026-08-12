@@ -5,18 +5,25 @@ namespace SnekSweeperCore.GridSystem;
 
 public interface IHumbleGrid
 {
-    IHumbleCellsContainer HumbleCellsContainer { get; }
+    IHumbleCellCollection HumbleCellsContainer { get; }
     void TriggerInitEffects();
     IGridCursor GridCursor { get; }
     void PlayCongratulationEffects();
 }
 
-public interface IHumbleCellsContainer
+/// <summary>
+/// 工厂角色：为 Core 的 Grid.Create 创建领域 <see cref="Cell"/>（Godot 层实现）。
+/// </summary>
+public interface ICellFactory
 {
-    /// <summary>
-    /// Godot 层实例化一个格子：创建 humble cell、持有其 CellLogic，并装配出领域 <see cref="Cell"/>。
-    /// </summary>
     Cell InstantiateCell(GridIndex gridIndex, GridSkin gridSkin);
+}
+
+/// <summary>
+/// 集合角色：暴露 / 清空 humble cell 集合（Godot 层实现）。
+/// </summary>
+public interface IHumbleCellCollection
+{
     IEnumerable<IHumbleCell> HumbleCells { get; }
     void Clear();
 }

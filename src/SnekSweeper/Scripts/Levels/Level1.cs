@@ -70,7 +70,8 @@ public partial class Level1 : Node2D,
         Grid CreateGrid()
         {
             var gridSkin = AppRepo.CurrentSkin;
-            return loadLevelSource.CreateGrid(TheGrid.HumbleCellsContainer, gridSkin, _levelData.GridEventBus,
+            TheGrid.HumbleCellsContainer.Clear(); // 建图前清空演示容器（集合角色，Godot 层驱动）
+            return loadLevelSource.CreateGrid(TheGrid.CellFactory, gridSkin, _levelData.GridEventBus,
                 _levelData.GridCommandInvoker);
         }
 

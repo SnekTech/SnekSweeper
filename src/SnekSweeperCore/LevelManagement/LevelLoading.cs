@@ -47,11 +47,10 @@ public static class LevelLoading
             _ => throw new SwitchExpressionException(),
         };
 
-        public Grid CreateGrid(IHumbleCellsContainer cellsContainer,  GridSkin gridSkin,GridEventBus gridEventBus,
+        public Grid CreateGrid(ICellFactory cellFactory, GridSkin gridSkin, GridEventBus gridEventBus,
             CommandInvoker commandInvoker)
         {
-            cellsContainer.Clear();
-            return Grid.Create(cellsContainer, loadLevelSource.GetGridSize(), gridSkin, gridEventBus, commandInvoker);
+            return Grid.Create(cellFactory, loadLevelSource.GetGridSize(), gridSkin, gridEventBus, commandInvoker);
         }
 
         GridSize GetGridSize() => loadLevelSource switch

@@ -12,7 +12,7 @@ using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.GridSystem;
 
-public partial class HumbleCellsContainer : Node2D, IHumbleCellsContainer
+public partial class HumbleCellsContainer : Node2D, ICellFactory, IHumbleCellCollection
 {
     public Cell InstantiateCell(GridIndex gridIndex, GridSkin gridSkin)
     {
