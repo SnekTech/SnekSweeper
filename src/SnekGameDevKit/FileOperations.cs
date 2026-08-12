@@ -1,6 +1,6 @@
 using FileAccess = System.IO.FileAccess;
 
-namespace Widgets;
+namespace SnekGameDevKit;
 
 /// <summary>
 /// 通用文件 I/O 工具（从 GodotGadgets 迁移而来，纯 .NET，无 Godot 依赖）。

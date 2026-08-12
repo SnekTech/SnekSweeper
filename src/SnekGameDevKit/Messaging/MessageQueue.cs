@@ -1,6 +1,6 @@
 ﻿using System.Threading.Channels;
 
-namespace Widgets.MessageQueue;
+namespace SnekGameDevKit.Messaging;
 
 public class MessageQueue(IMessageDisplay messageDisplay)
 {

@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Widgets;
+using SnekGameDevKit;
 
 namespace SnekSweeperCore.SaveLoad.SerializationService;
 

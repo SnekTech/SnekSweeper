@@ -12,7 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\SnekSweeperCore\SnekSweeperCore.csproj" />
-      <ProjectReference Include="..\..\src\Widgets\Widgets.csproj" />
+      <ProjectReference Include="..\..\src\SnekGameDevKit\SnekGameDevKit.csproj" />
     </ItemGroup>
 
     <ItemGroup>

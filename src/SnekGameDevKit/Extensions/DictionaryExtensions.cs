@@ -1,4 +1,4 @@
-﻿namespace Widgets.CustomExtensions;
+﻿namespace SnekGameDevKit.Extensions;
 
 public static class DictionaryExtensions
 {

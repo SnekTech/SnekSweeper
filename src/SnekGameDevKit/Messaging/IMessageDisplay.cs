@@ -1,4 +1,4 @@
-﻿namespace Widgets.MessageQueue;
+﻿namespace SnekGameDevKit.Messaging;
 
 public interface IMessageDisplay
 {
