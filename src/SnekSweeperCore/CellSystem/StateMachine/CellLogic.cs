@@ -52,7 +52,7 @@ public class CellLogic : LogicBlock
 }
 
 [StateDiagram]
-public abstract partial record CellState : LogicBlockState
+public abstract record CellState : LogicBlockState
 {
     public static class Input
     {

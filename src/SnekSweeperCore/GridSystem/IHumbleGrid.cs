@@ -13,8 +13,10 @@ public interface IHumbleGrid
 
 public interface IHumbleCellsContainer
 {
-    // todo: may have a better design
-    CellInstance InstantiateCell(GridIndex gridIndex, GridSkin gridSkin);
+    /// <summary>
+    /// Godot 层实例化一个格子：创建 humble cell、持有其 CellLogic，并装配出领域 <see cref="Cell"/>。
+    /// </summary>
+    Cell InstantiateCell(GridIndex gridIndex, GridSkin gridSkin);
     IEnumerable<IHumbleCell> HumbleCells { get; }
     void Clear();
 }
