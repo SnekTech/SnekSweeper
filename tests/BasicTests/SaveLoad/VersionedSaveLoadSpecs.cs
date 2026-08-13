@@ -12,21 +12,21 @@ namespace BasicTests.SaveLoad;
 
 public sealed class VersionedSaveLoadSpecs
 {
-    string SaveDir = null!;
+    string _saveDir = null!;
 
     [Before(Test)]
     public void CreateTempDir()
     {
-        SaveDir = Path.Combine(Path.GetTempPath(), $"SnekSweeper_VersionedSaveLoadTests_{Guid.NewGuid():N}");
-        Directory.CreateDirectory(SaveDir);
+        _saveDir = Path.Combine(Path.GetTempPath(), $"SnekSweeper_VersionedSaveLoadTests_{Guid.NewGuid():N}");
+        Directory.CreateDirectory(_saveDir);
     }
 
     [After(Test)]
     public void CleanupTempDir()
     {
-        if (Directory.Exists(SaveDir))
+        if (Directory.Exists(_saveDir))
         {
-            Directory.Delete(SaveDir, recursive: true);
+            Directory.Delete(_saveDir, recursive: true);
         }
     }
 
@@ -35,9 +35,9 @@ public sealed class VersionedSaveLoadSpecs
     {
         var original = SamplePlayerSaveData();
 
-        original.Save(SaveDir);
+        original.Save(_saveDir);
 
-        var loaded = PlayerSaveData.Load(SaveDir);
+        var loaded = PlayerSaveData.Load(_saveDir);
         loaded.Should().NotBeNull();
         loaded.Should().BeEquivalentTo(original);
     }
@@ -47,9 +47,9 @@ public sealed class VersionedSaveLoadSpecs
     {
         var original = SamplePlayerSaveData();
 
-        original.Save(SaveDir, SaveFormat.MemoryPack);
+        original.Save(_saveDir, SaveFormat.MemoryPack);
 
-        var loaded = PlayerSaveData.Load(SaveDir, SaveFormat.MemoryPack);
+        var loaded = PlayerSaveData.Load(_saveDir, SaveFormat.MemoryPack);
         loaded.Should().NotBeNull();
         loaded.Should().BeEquivalentTo(original);
     }
@@ -106,10 +106,10 @@ public sealed class VersionedSaveLoadSpecs
     [Test]
     public void load_json_with_unsupported_version_returns_null()
     {
-        File.WriteAllText(Path.Combine(SaveDir, SaveFileNames.Json),
+        File.WriteAllText(Path.Combine(_saveDir, SaveFileNames.Json),
             """{ "version": 99, "data": {} }""");
 
-        PlayerSaveData.Load(SaveDir).Should().BeNull();
+        PlayerSaveData.Load(_saveDir).Should().BeNull();
     }
 
     static PlayerSaveData SamplePlayerSaveData() => new(
@@ -124,13 +124,10 @@ public sealed class VersionedSaveLoadSpecs
         new CurrentRunInfo
         {
             GridSnapshot = new GridSnapshot(
-                new[]
-                {
-                    new[] { CellSnapshotState.Revealed, CellSnapshotState.Flagged },
-                    new[] { CellSnapshotState.Covered, CellSnapshotState.Irrelevant },
-                },
+                [[CellSnapshotState.Revealed, CellSnapshotState.Flagged],
+                 [CellSnapshotState.Covered, CellSnapshotState.Irrelevant]],
                 new[,] { { false, true }, { true, false } }),
-            StartInfo = new RunStartInfo(DateTime.UnixEpoch, new GridIndex(1, 2)),
+            StartInfo = new RunStartInfo(DateTime.UnixEpoch, new(1, 2)),
         },
         new History([WinningRecord()]));
 
@@ -138,17 +135,17 @@ public sealed class VersionedSaveLoadSpecs
         new RunDuration(DateTime.UnixEpoch, DateTime.UnixEpoch.AddMinutes(5)),
         true,
         new[,] { { false, true }, { true, false } },
-        new GridIndex(0, 0));
+        new(0, 0));
 
     static PlayerSaveDataDtoV1 SampleDtoV1() => new(
         new MainSettingDtoV1(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),
         new ActivatedCheatCodeSetDtoV1([CheatCodeKey.Messenger]),
-        new CurrentRunInfoDtoV1(null, new RunStartInfo(DateTime.UnixEpoch, new GridIndex(1, 2))),
+        new CurrentRunInfoDtoV1(null, new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
         new HistoryDtoV1([]));
 
     static PlayerSaveDataDtoV2 SampleDtoV2() => new(
         new MainSettingDtoV2(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),
         new ActivatedCheatCodeSetDtoV2([CheatCodeKey.Messenger]),
-        new CurrentRunInfoDtoV2(null, new RunStartInfo(DateTime.UnixEpoch, new GridIndex(1, 2))),
+        new CurrentRunInfoDtoV2(null, new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
         new HistoryDtoV2([]));
 }

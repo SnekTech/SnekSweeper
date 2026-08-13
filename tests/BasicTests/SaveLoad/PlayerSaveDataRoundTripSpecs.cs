@@ -178,12 +178,9 @@ public sealed class PlayerSaveDataRoundTripSpecs
     };
 
     static GridSnapshot SampleGridSnapshot() => new(
-        new[]
-        {
-            new[] { CellSnapshotState.Revealed, CellSnapshotState.Flagged, CellSnapshotState.Covered },
-            new[] { CellSnapshotState.Irrelevant, CellSnapshotState.Revealed, CellSnapshotState.Flagged },
-            new[] { CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Revealed },
-        },
+        [[CellSnapshotState.Revealed, CellSnapshotState.Flagged, CellSnapshotState.Covered],
+         [CellSnapshotState.Irrelevant, CellSnapshotState.Revealed, CellSnapshotState.Flagged],
+         [CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Revealed]],
         new[,]
         {
             { false, false, true },
@@ -191,7 +188,7 @@ public sealed class PlayerSaveDataRoundTripSpecs
             { true, false, false },
         });
 
-    static RunStartInfo SampleStartInfo() => new(DateTime.Now.AddMinutes(-8), new GridIndex(1, 1));
+    static RunStartInfo SampleStartInfo() => new(DateTime.Now.AddMinutes(-8), new(1, 1));
 
     static GameRunRecord WinningRecord() => new(
         new RunDuration(DateTime.Now.AddMinutes(-12), DateTime.Now.AddMinutes(-11)),
@@ -202,7 +199,7 @@ public sealed class PlayerSaveDataRoundTripSpecs
             { false, true, false },
             { true, false, false },
         },
-        new GridIndex(0, 0));
+        new(0, 0));
 
     static GameRunRecord LosingRecord() => new(
         new RunDuration(DateTime.Now.AddMinutes(-30), DateTime.Now.AddMinutes(-29)),
@@ -212,5 +209,5 @@ public sealed class PlayerSaveDataRoundTripSpecs
             { true, false },
             { false, false },
         },
-        new GridIndex(0, 1));
+        new(0, 1));
 }

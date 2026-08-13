@@ -16,21 +16,21 @@ public sealed class GoldenEnvelopeSpecs
     const string V1SampleFileName = "playerSaveData.v1.json";
     const string RegenEnvVar = "SNEK_REGEN_GOLDEN";
 
-    string SaveDir = null!;
+    string _saveDir = null!;
 
     [Before(Test)]
     public void CreateTempDir()
     {
-        SaveDir = Path.Combine(Path.GetTempPath(), $"SnekSweeper_GoldenSpecs_{Guid.NewGuid():N}");
-        Directory.CreateDirectory(SaveDir);
+        _saveDir = Path.Combine(Path.GetTempPath(), $"SnekSweeper_GoldenSpecs_{Guid.NewGuid():N}");
+        Directory.CreateDirectory(_saveDir);
     }
 
     [After(Test)]
     public void CleanupTempDir()
     {
-        if (Directory.Exists(SaveDir))
+        if (Directory.Exists(_saveDir))
         {
-            Directory.Delete(SaveDir, recursive: true);
+            Directory.Delete(_saveDir, recursive: true);
         }
     }
 
@@ -42,9 +42,9 @@ public sealed class GoldenEnvelopeSpecs
     [Test]
     public void json_envelope_matches_golden()
     {
-        CanonicalSaveSample().Save(SaveDir);
+        CanonicalSaveSample().Save(_saveDir);
 
-        var actual = NormalizeNewlines(File.ReadAllText(Path.Combine(SaveDir, SaveFileNames.Json)));
+        var actual = NormalizeNewlines(File.ReadAllText(Path.Combine(_saveDir, SaveFileNames.Json)));
         var expected = NormalizeNewlines(File.ReadAllText(FixtureOutputPath));
 
         actual.Should().Be(expected);
@@ -54,9 +54,9 @@ public sealed class GoldenEnvelopeSpecs
     public void v1_save_migrates_to_current()
     {
         var v1SamplePath = Path.Combine(AppContext.BaseDirectory, "SaveLoad", "Fixtures", V1SampleFileName);
-        File.Copy(v1SamplePath, Path.Combine(SaveDir, SaveFileNames.Json));
+        File.Copy(v1SamplePath, Path.Combine(_saveDir, SaveFileNames.Json));
 
-        var loaded = PlayerSaveData.Load(SaveDir);
+        var loaded = PlayerSaveData.Load(_saveDir);
 
         loaded.Should().NotBeNull();
         loaded.Should().BeEquivalentTo(CanonicalSaveSample());
@@ -72,9 +72,9 @@ public sealed class GoldenEnvelopeSpecs
     {
         if (Environment.GetEnvironmentVariable(RegenEnvVar) != "1") return;
 
-        CanonicalSaveSample().Save(SaveDir);
+        CanonicalSaveSample().Save(_saveDir);
         File.WriteAllText(FixtureSourcePath,
-            File.ReadAllText(Path.Combine(SaveDir, SaveFileNames.Json)));
+            File.ReadAllText(Path.Combine(_saveDir, SaveFileNames.Json)));
     }
 
     static string NormalizeNewlines(string text) => text.Replace("\r\n", "\n").TrimEnd('\n');
@@ -118,13 +118,10 @@ public sealed class GoldenEnvelopeSpecs
         new CurrentRunInfo
         {
             GridSnapshot = new GridSnapshot(
-                new[]
-                {
-                    new[] { CellSnapshotState.Revealed, CellSnapshotState.Flagged },
-                    new[] { CellSnapshotState.Covered, CellSnapshotState.Irrelevant },
-                },
+                [[CellSnapshotState.Revealed, CellSnapshotState.Flagged],
+                 [CellSnapshotState.Covered, CellSnapshotState.Irrelevant]],
                 new[,] { { false, true }, { true, false } }),
-            StartInfo = new RunStartInfo(DateTime.UnixEpoch, new GridIndex(1, 2)),
+            StartInfo = new RunStartInfo(DateTime.UnixEpoch, new(1, 2)),
         },
         new History([WinningRecord()]));
 
@@ -132,5 +129,5 @@ public sealed class GoldenEnvelopeSpecs
         new RunDuration(DateTime.UnixEpoch, DateTime.UnixEpoch.AddMinutes(5)),
         true,
         new[,] { { false, true }, { true, false } },
-        new GridIndex(0, 0));
+        new(0, 0));
 }
