@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="BasicTests"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- PlantUML diagrams for  development only-->
         <None Include="**/*.puml"/>
     </ItemGroup>

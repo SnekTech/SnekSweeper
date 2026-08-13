@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using SnekGameDevKit;
 
@@ -13,6 +14,8 @@ static class JsonSerializationService
     }
 
     const string SaveJsonFileName = "playerSaveData.json";
+    const string VersionPropertyName = "version";
+    const string DataPropertyName = "data";
 
     static readonly JsonSerializerOptions SerializerOptions = CreateSerializerOptions();
 
@@ -36,8 +39,7 @@ static class JsonSerializationService
     static async Task SaveByJsonAsync(PlayerSaveData playerSaveData, SaveDir saveDir, string fileName,
         CancellationToken ct = default)
     {
-        var json = await playerSaveData.ToJsonAsync(ct);
-        await FileOperations.SafeWriteAllTextAsync(saveDir.Combine(fileName).Value, json, ct);
+        await FileOperations.SafeWriteAllTextAsync(saveDir.Combine(fileName).Value, playerSaveData.ToJson(), ct);
     }
 
     public static readonly LoadDataFn LoadByJson = (saveDir, fileName) =>
@@ -58,21 +60,26 @@ static class JsonSerializationService
 
     extension(PlayerSaveData playerSaveData)
     {
-        string ToJson() => JsonSerializer.Serialize(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
-
-        async Task<string> ToJsonAsync(CancellationToken ct = default)
+        string ToJson()
         {
-            await using var memoryStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync(memoryStream, playerSaveData.ToDto(),
-                SerializerContext.PlayerSaveDataDto, ct);
-            memoryStream.Position = 0;
-            using var reader = new StreamReader(memoryStream);
-            return await reader.ReadToEndAsync(ct);
+            var dataNode = JsonSerializer.SerializeToNode(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
+            var envelope = new JsonObject
+            {
+                [VersionPropertyName] = SaveVersion.Current,
+                [DataPropertyName] = dataNode,
+            };
+            return envelope.ToJsonString(SerializerOptions);
         }
 
         static PlayerSaveData? FromJson(string json)
         {
-            return JsonSerializer.Deserialize(json, SerializerContext.PlayerSaveDataDto)?.ToPlayerSaveData();
+            if (JsonNode.Parse(json) is not JsonObject root) return null;
+            if (root[VersionPropertyName] is not JsonValue versionValue) return null;
+            if (root[DataPropertyName] is not { } dataNode) return null;
+
+            var version = versionValue.GetValue<int>();
+            var dto = JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDto);
+            return dto is null ? null : SaveMigrations.MigrateToCurrent(dto, version).ToPlayerSaveData();
         }
     }
 }

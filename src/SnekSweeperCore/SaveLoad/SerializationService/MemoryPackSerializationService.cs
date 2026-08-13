@@ -14,15 +14,18 @@ static class MemoryPackSerializationService
 
     public static SaveDataFn SaveByMemoryPack => (playerSaveData, saveDir, fileName) =>
     {
-        var bin = MemoryPackSerializer.Serialize(playerSaveData.ToDto());
+        var bin = MemoryPackSerializer.Serialize(ToEnvelope(playerSaveData));
         File.WriteAllBytes(saveDir.Combine(fileName).Value, bin);
     };
 
     static readonly SaveDataAsyncFn SaveByMemoryPackAsync = (playerSaveData, saveDir, fileName, ct) =>
     {
-        var bin = MemoryPackSerializer.Serialize(playerSaveData.ToDto());
+        var bin = MemoryPackSerializer.Serialize(ToEnvelope(playerSaveData));
         return File.WriteAllBytesAsync(saveDir.Combine(fileName).Value, bin, ct);
     };
+
+    static BinarySaveEnvelope ToEnvelope(PlayerSaveData playerSaveData) =>
+        new(SaveVersion.Current, MemoryPackSerializer.Serialize(playerSaveData.ToDto()));
 
     public static readonly LoadDataFn LoadByMemoryPack = (saveDir, fileName) =>
     {
@@ -30,8 +33,7 @@ static class MemoryPackSerializationService
         try
         {
             var bin = File.ReadAllBytes(saveDir.Combine(fileName).Value);
-            var dto = MemoryPackSerializer.Deserialize<PlayerSaveDataDto>(bin);
-            loadedPlayerData = dto?.ToPlayerSaveData();
+            loadedPlayerData = PlayerSaveData.FromBinary(bin);
         }
         catch (Exception)
         {
@@ -40,4 +42,18 @@ static class MemoryPackSerializationService
 
         return loadedPlayerData;
     };
+
+    extension(PlayerSaveData playerSaveData)
+    {
+        static PlayerSaveData? FromBinary(byte[] bin)
+        {
+            var envelope = MemoryPackSerializer.Deserialize<BinarySaveEnvelope>(bin);
+            if (envelope is null) return null;
+
+            var dto = MemoryPackSerializer.Deserialize<PlayerSaveDataDto>(envelope.Payload);
+            return dto is null
+                ? null
+                : SaveMigrations.MigrateToCurrent(dto, envelope.Version).ToPlayerSaveData();
+        }
+    }
 }
