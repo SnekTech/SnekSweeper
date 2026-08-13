@@ -10,10 +10,9 @@ static class JsonSerializationService
     extension(SerializationStrategy)
     {
         internal static SerializationStrategy Json =>
-            new(SaveByJson, SaveByJsonAsync, LoadByJson, SaveJsonFileName);
+            new(SaveByJson, SaveByJsonAsync, LoadByJson, SaveFileNames.Json);
     }
 
-    const string SaveJsonFileName = "playerSaveData.json";
     const string VersionPropertyName = "version";
     const string DataPropertyName = "data";
 
@@ -62,7 +61,7 @@ static class JsonSerializationService
     {
         string ToJson()
         {
-            var dataNode = JsonSerializer.SerializeToNode(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDto);
+            var dataNode = JsonSerializer.SerializeToNode(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDtoV3);
             var envelope = new JsonObject
             {
                 [VersionPropertyName] = SaveVersion.Current,
@@ -77,13 +76,19 @@ static class JsonSerializationService
             if (root[VersionPropertyName] is not JsonValue versionValue) return null;
             if (root[DataPropertyName] is not { } dataNode) return null;
 
-            var version = versionValue.GetValue<int>();
-            var dto = JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDto);
-            return dto is null ? null : SaveMigrations.MigrateToCurrent(dto, version).ToPlayerSaveData();
+            return versionValue.GetValue<int>() switch
+            {
+                1 => SaveMigrations.MigrateAndMap(JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDtoV1)),
+                2 => SaveMigrations.MigrateAndMap(JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDtoV2)),
+                SaveVersion.Current => JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDtoV3)?.ToPlayerSaveData(),
+                _ => throw new SaveVersionNotSupportedException(versionValue.GetValue<int>()),
+            };
         }
     }
 }
 
-[JsonSerializable(typeof(PlayerSaveDataDto))]
+[JsonSerializable(typeof(PlayerSaveDataDtoV1))]
+[JsonSerializable(typeof(PlayerSaveDataDtoV2))]
+[JsonSerializable(typeof(PlayerSaveDataDtoV3))]
 [JsonSerializable(typeof(int[][]))]
 partial class PlayerSaveDataDtoSerializerContext : JsonSerializerContext;

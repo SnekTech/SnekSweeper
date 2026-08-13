@@ -16,6 +16,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="SaveLoad\Fixtures\**\*.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="AwesomeAssertions" Version="9.5.0" />
       <PackageReference Include="Dumpify" Version="0.6.6" />
       <PackageReference Include="TUnit" Version="1.63.25" />

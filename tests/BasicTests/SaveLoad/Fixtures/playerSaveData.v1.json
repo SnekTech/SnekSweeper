@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "data": {
+    "MainSetting": {
+      "CurrentDifficultyKey": 2,
+      "CurrentSkinKey": 1,
+      "ComboRankDisplay": false,
+      "GenerateSolvableGrid": false
+    },
+    "ActivatedCheatCodeSet": {
+      "ActivatedSet": [
+        1
+      ]
+    },
+    "CurrentRunInfo": {
+      "GridSnapshot": {
+        "SnapshotStates": [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "BombMatrix": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ]
+      },
+      "StartInfo": {
+        "StartAt": "1970-01-01T00:00:00Z",
+        "StartIndex": {
+          "I": 1,
+          "J": 2
+        }
+      }
+    },
+    "History": {
+      "Records": [
+        {
+          "Duration": {
+            "StartAt": "1970-01-01T00:00:00Z",
+            "EndAt": "1970-01-01T00:05:00Z"
+          },
+          "Winning": true,
+          "BombMatrix": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "StartIndex": {
+            "I": 0,
+            "J": 0
+          }
+        }
+      ]
+    }
+  }
+}

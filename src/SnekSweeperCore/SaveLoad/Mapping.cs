@@ -9,8 +9,9 @@ using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.SaveLoad;
 
+// --- Historical version 1 ---
 [MemoryPackable]
-partial record MainSettingDto(
+partial record MainSettingDtoV1(
     GridDifficultyKey CurrentDifficultyKey,
     SkinKey CurrentSkinKey,
     bool ComboRankDisplay,
@@ -18,24 +19,74 @@ partial record MainSettingDto(
 );
 
 [MemoryPackable]
-partial record ActivatedCheatCodeSetDto(HashSet<CheatCodeKey> ActivatedSet);
+partial record ActivatedCheatCodeSetDtoV1(HashSet<CheatCodeKey> ActivatedSet);
 
 [MemoryPackable]
-partial record CurrentRunInfoDto(GridSnapshot? GridSnapshot, RunStartInfo StartInfo);
+partial record CurrentRunInfoDtoV1(GridSnapshot? GridSnapshot, RunStartInfo StartInfo);
 
 [MemoryPackable]
-partial record HistoryDto(List<GameRunRecord> Records);
+partial record HistoryDtoV1(List<GameRunRecord> Records);
 
 [MemoryPackable]
-partial record PlayerSaveDataDto(
-    MainSettingDto MainSetting,
-    ActivatedCheatCodeSetDto ActivatedCheatCodeSet,
-    CurrentRunInfoDto CurrentRunInfo,
-    HistoryDto History);
+partial record PlayerSaveDataDtoV1(
+    MainSettingDtoV1 MainSetting,
+    ActivatedCheatCodeSetDtoV1 ActivatedCheatCodeSet,
+    CurrentRunInfoDtoV1 CurrentRunInfo,
+    HistoryDtoV1 History);
+
+// --- Historical version 2 (demo: structurally identical to V1) ---
+[MemoryPackable]
+partial record MainSettingDtoV2(
+    GridDifficultyKey CurrentDifficultyKey,
+    SkinKey CurrentSkinKey,
+    bool ComboRankDisplay,
+    bool GenerateSolvableGrid
+);
+
+[MemoryPackable]
+partial record ActivatedCheatCodeSetDtoV2(HashSet<CheatCodeKey> ActivatedSet);
+
+[MemoryPackable]
+partial record CurrentRunInfoDtoV2(GridSnapshot? GridSnapshot, RunStartInfo StartInfo);
+
+[MemoryPackable]
+partial record HistoryDtoV2(List<GameRunRecord> Records);
+
+[MemoryPackable]
+partial record PlayerSaveDataDtoV2(
+    MainSettingDtoV2 MainSetting,
+    ActivatedCheatCodeSetDtoV2 ActivatedCheatCodeSet,
+    CurrentRunInfoDtoV2 CurrentRunInfo,
+    HistoryDtoV2 History);
+
+// --- Current version 3 (demo: structurally identical to V1) ---
+[MemoryPackable]
+partial record MainSettingDtoV3(
+    GridDifficultyKey CurrentDifficultyKey,
+    SkinKey CurrentSkinKey,
+    bool ComboRankDisplay,
+    bool GenerateSolvableGrid
+);
+
+[MemoryPackable]
+partial record ActivatedCheatCodeSetDtoV3(HashSet<CheatCodeKey> ActivatedSet);
+
+[MemoryPackable]
+partial record CurrentRunInfoDtoV3(GridSnapshot? GridSnapshot, RunStartInfo StartInfo);
+
+[MemoryPackable]
+partial record HistoryDtoV3(List<GameRunRecord> Records);
+
+[MemoryPackable]
+partial record PlayerSaveDataDtoV3(
+    MainSettingDtoV3 MainSetting,
+    ActivatedCheatCodeSetDtoV3 ActivatedCheatCodeSet,
+    CurrentRunInfoDtoV3 CurrentRunInfo,
+    HistoryDtoV3 History);
 
 [Mapper]
 static partial class PlayerSaveDataMapper
 {
-    internal static partial PlayerSaveDataDto ToDto(this PlayerSaveData playerSaveData);
-    internal static partial PlayerSaveData ToPlayerSaveData(this PlayerSaveDataDto dto);
+    internal static partial PlayerSaveDataDtoV3 ToDto(this PlayerSaveData playerSaveData);
+    internal static partial PlayerSaveData ToPlayerSaveData(this PlayerSaveDataDtoV3 dto);
 }
