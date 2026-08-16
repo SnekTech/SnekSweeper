@@ -77,14 +77,14 @@ public sealed class VersionedSaveLoadSpecs
 
         var current = SaveMigrations.MigrateToCurrent(v1);
 
-        // 迁移结果必须是"当前版本 DTO 且携带正确的迁移后值"。
-        // 真实 schema 变化时这里断言的是：旧字段搬运过来、新字段取默认值、改名/改类型字段映射正确。
-        current.MainSetting.CurrentDifficultyKey.Should().Be(GridDifficultyKey.Expert);
-        current.MainSetting.CurrentSkinKey.Should().Be(SkinKey.Mahjong);
-        current.MainSetting.ComboRankDisplay.Should().BeFalse();
-        current.MainSetting.GenerateSolvableGrid.Should().BeFalse();
-        current.ActivatedCheatCodeSet.ActivatedSet.Should().BeEquivalentTo([CheatCodeKey.Messenger]);
-        current.History.Records.Should().BeEmpty();
+        // 从 v1 搬运过来的字段：逐字段与来源比较，避免在样本里 hardcode 期望值。
+        // （将来 v2 有新增/改名字段时，再补"新字段取默认值/映射值"的显式断言——那时没有 v1 对应项。）
+        current.MainSetting.CurrentDifficultyKey.Should().Be(v1.MainSetting.CurrentDifficultyKey);
+        current.MainSetting.CurrentSkinKey.Should().Be(v1.MainSetting.CurrentSkinKey);
+        current.MainSetting.ComboRankDisplay.Should().Be(v1.MainSetting.ComboRankDisplay);
+        current.MainSetting.GenerateSolvableGrid.Should().Be(v1.MainSetting.GenerateSolvableGrid);
+        current.ActivatedCheatCodeSet.ActivatedSet.Should().BeEquivalentTo(v1.ActivatedCheatCodeSet.ActivatedSet);
+        current.History.Records.Should().BeEquivalentTo(v1.History.Records);
     }
 
     [Test]
