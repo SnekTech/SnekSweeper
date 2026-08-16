@@ -13,7 +13,7 @@ public enum CellSnapshotState
 
 [MemoryPackable]
 public partial record GridSnapshot(
-    CellSnapshotState[][] SnapshotStates,
+    CellSnapshotState[,] SnapshotStates,
     bool[,] BombMatrix
 );
 
@@ -37,7 +37,7 @@ static class GridSnapshotExtensions
                 snapshotStates.SetAt(cell.GridIndex, stateValue);
             }
 
-            return new GridSnapshot(snapshotStates.ToJagged(), grid.BombMatrix);
+            return new GridSnapshot(snapshotStates, grid.BombMatrix);
         }
     }
 }

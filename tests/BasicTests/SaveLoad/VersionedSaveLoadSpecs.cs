@@ -88,6 +88,22 @@ public sealed class VersionedSaveLoadSpecs
     }
 
     [Test]
+    public void migrate_v1_snapshot_states_to_2d()
+    {
+        var v1 = SampleDtoV1WithSnapshot();
+
+        var v2 = SaveMigrations.MigrateV1ToV2(v1);
+
+        var snapshot = v2.CurrentRunInfo.GridSnapshot;
+        snapshot.Should().NotBeNull();
+        snapshot.SnapshotStates.GetLength(0).Should().Be(2);
+        snapshot.SnapshotStates.GetLength(1).Should().Be(2);
+        snapshot.SnapshotStates[0, 0].Should().Be(CellSnapshotState.Revealed);
+        snapshot.SnapshotStates[1, 1].Should().Be(CellSnapshotState.Irrelevant);
+        snapshot.BombMatrix[1, 0].Should().BeTrue();
+    }
+
+    [Test]
     public void load_json_with_unsupported_version_returns_null()
     {
         File.WriteAllText(Path.Combine(_saveDir, SaveFileNames.Json),
@@ -108,8 +124,11 @@ public sealed class VersionedSaveLoadSpecs
         new CurrentRunInfo
         {
             GridSnapshot = new GridSnapshot(
-                [[CellSnapshotState.Revealed, CellSnapshotState.Flagged],
-                 [CellSnapshotState.Covered, CellSnapshotState.Irrelevant]],
+                new[,]
+                {
+                    { CellSnapshotState.Revealed, CellSnapshotState.Flagged },
+                    { CellSnapshotState.Covered, CellSnapshotState.Irrelevant },
+                },
                 new[,] { { false, true }, { true, false } }),
             StartInfo = new RunStartInfo(DateTime.UnixEpoch, new(1, 2)),
         },
@@ -125,5 +144,16 @@ public sealed class VersionedSaveLoadSpecs
         new MainSettingDtoV1(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),
         new ActivatedCheatCodeSetDtoV1([CheatCodeKey.Messenger]),
         new CurrentRunInfoDtoV1(null, new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
+        new HistoryDtoV1([]));
+
+    static PlayerSaveDataDtoV1 SampleDtoV1WithSnapshot() => new(
+        new MainSettingDtoV1(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),
+        new ActivatedCheatCodeSetDtoV1([CheatCodeKey.Messenger]),
+        new CurrentRunInfoDtoV1(
+            new GridSnapshotV1(
+                [[CellSnapshotState.Revealed, CellSnapshotState.Flagged],
+                 [CellSnapshotState.Covered, CellSnapshotState.Irrelevant]],
+                new[,] { { false, true }, { true, false } }),
+            new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
         new HistoryDtoV1([]));
 }

@@ -1,7 +1,6 @@
 ﻿using GodotTask;
 using SnekSweeper.CellSystem;
 using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem;
 
@@ -36,12 +35,10 @@ static class GridSnapshotExtensions
             await grid.RestoreCellStatesAsync(snapshot.SnapshotStates, ct);
         }
         
-        async GDTask RestoreCellStatesAsync(CellSnapshotState[][] snapshotStates, CancellationToken ct = default)
+        async GDTask RestoreCellStatesAsync(CellSnapshotState[,] snapshotStates, CancellationToken ct = default)
         {
-            var cellStatesMatrix = MatrixExtensions.FromJagged(snapshotStates);
-
             var tasks = grid.Cells
-                .Select(cell => (cell, state: cellStatesMatrix.At(cell.GridIndex)))
+                .Select(cell => (cell, state: snapshotStates.At(cell.GridIndex)))
                 .Select(tuple => tuple.state switch
                 {
                     CellSnapshotState.Revealed => tuple.cell.RevealAsync(ct).AsGDTask(),

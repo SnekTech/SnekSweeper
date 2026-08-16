@@ -22,7 +22,10 @@ partial record MainSettingDtoV1(
 partial record ActivatedCheatCodeSetDtoV1(HashSet<CheatCodeKey> ActivatedSet);
 
 [MemoryPackable]
-partial record CurrentRunInfoDtoV1(GridSnapshot? GridSnapshot, RunStartInfo StartInfo);
+partial record GridSnapshotV1(CellSnapshotState[][] SnapshotStates, bool[,] BombMatrix);
+
+[MemoryPackable]
+partial record CurrentRunInfoDtoV1(GridSnapshotV1? GridSnapshot, RunStartInfo StartInfo);
 
 [MemoryPackable]
 partial record HistoryDtoV1(List<GameRunRecord> Records);

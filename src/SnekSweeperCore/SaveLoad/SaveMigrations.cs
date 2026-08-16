@@ -1,3 +1,5 @@
+using SnekSweeperCore.GridSystem;
+
 namespace SnekSweeperCore.SaveLoad;
 
 public sealed class SaveVersionNotSupportedException(int version)
@@ -25,6 +27,9 @@ static class SaveMigrations
                 v1.MainSetting.ComboRankDisplay,
                 v1.MainSetting.GenerateSolvableGrid),
             new ActivatedCheatCodeSetDtoV2(v1.ActivatedCheatCodeSet.ActivatedSet),
-            new CurrentRunInfoDtoV2(v1.CurrentRunInfo.GridSnapshot, v1.CurrentRunInfo.StartInfo),
+            new CurrentRunInfoDtoV2(MigrateGridSnapshot(v1.CurrentRunInfo.GridSnapshot), v1.CurrentRunInfo.StartInfo),
             new HistoryDtoV2(v1.History.Records));
+
+    static GridSnapshot? MigrateGridSnapshot(GridSnapshotV1? v1) =>
+        v1 is null ? null : new GridSnapshot(MatrixExtensions.FromJagged(v1.SnapshotStates), v1.BombMatrix);
 }

@@ -15,28 +15,19 @@ public static class TutorialExampleCollection
     [
         new(
             new GridSnapshot(
-                [
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Covered, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Flagged, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Flagged, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Flagged, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
-                        CellSnapshotState.Covered, CellSnapshotState.Covered
-                    ],
-                ],
+                new[,]
+                {
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Covered, CellSnapshotState.Covered },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Flagged, CellSnapshotState.Covered },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Flagged, CellSnapshotState.Covered },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Flagged, CellSnapshotState.Covered },
+                    { CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
+                        CellSnapshotState.Covered, CellSnapshotState.Covered },
+                },
                 new[,]
                 {
                     { false, false, false, false, false },
@@ -55,28 +46,19 @@ public static class TutorialExampleCollection
         ),
         new(
             new GridSnapshot(
-                [
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Flagged, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Flagged, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Flagged, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
-                        CellSnapshotState.Covered, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
-                        CellSnapshotState.Covered, CellSnapshotState.Covered
-                    ],
-                ],
+                new[,]
+                {
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Flagged, CellSnapshotState.Covered },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Flagged, CellSnapshotState.Covered },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Flagged, CellSnapshotState.Covered },
+                    { CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
+                        CellSnapshotState.Covered, CellSnapshotState.Covered },
+                    { CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
+                        CellSnapshotState.Covered, CellSnapshotState.Covered },
+                },
                 new[,]
                 {
                     { false, false, false, true, false },
@@ -99,28 +81,19 @@ public static class TutorialExampleCollection
         ),
         new(
             new GridSnapshot(
-                [
-                    [
-                        CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
-                        CellSnapshotState.Covered, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
-                        CellSnapshotState.Covered, CellSnapshotState.Covered
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed
-                    ],
-                    [
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
-                        CellSnapshotState.Revealed, CellSnapshotState.Revealed
-                    ],
-                ],
+                new[,]
+                {
+                    { CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
+                        CellSnapshotState.Covered, CellSnapshotState.Covered },
+                    { CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Covered,
+                        CellSnapshotState.Covered, CellSnapshotState.Covered },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Revealed, CellSnapshotState.Revealed },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Revealed, CellSnapshotState.Revealed },
+                    { CellSnapshotState.Revealed, CellSnapshotState.Revealed, CellSnapshotState.Revealed,
+                        CellSnapshotState.Revealed, CellSnapshotState.Revealed },
+                },
                 new[,]
                 {
                     { false, false, false, false, false },

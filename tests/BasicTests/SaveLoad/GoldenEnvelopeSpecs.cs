@@ -118,8 +118,11 @@ public sealed class GoldenEnvelopeSpecs
         new CurrentRunInfo
         {
             GridSnapshot = new GridSnapshot(
-                [[CellSnapshotState.Revealed, CellSnapshotState.Flagged],
-                 [CellSnapshotState.Covered, CellSnapshotState.Irrelevant]],
+                new[,]
+                {
+                    { CellSnapshotState.Revealed, CellSnapshotState.Flagged },
+                    { CellSnapshotState.Covered, CellSnapshotState.Irrelevant },
+                },
                 new[,] { { false, true }, { true, false } }),
             StartInfo = new RunStartInfo(DateTime.UnixEpoch, new(1, 2)),
         },

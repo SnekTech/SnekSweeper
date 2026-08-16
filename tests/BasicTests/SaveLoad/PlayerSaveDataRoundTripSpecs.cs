@@ -178,9 +178,12 @@ public sealed class PlayerSaveDataRoundTripSpecs
     };
 
     static GridSnapshot SampleGridSnapshot() => new(
-        [[CellSnapshotState.Revealed, CellSnapshotState.Flagged, CellSnapshotState.Covered],
-         [CellSnapshotState.Irrelevant, CellSnapshotState.Revealed, CellSnapshotState.Flagged],
-         [CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Revealed]],
+        new[,]
+        {
+            { CellSnapshotState.Revealed, CellSnapshotState.Flagged, CellSnapshotState.Covered },
+            { CellSnapshotState.Irrelevant, CellSnapshotState.Revealed, CellSnapshotState.Flagged },
+            { CellSnapshotState.Covered, CellSnapshotState.Covered, CellSnapshotState.Revealed },
+        },
         new[,]
         {
             { false, false, true },

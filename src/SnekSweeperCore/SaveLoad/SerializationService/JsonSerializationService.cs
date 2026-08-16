@@ -25,6 +25,7 @@ static class JsonSerializationService
             WriteIndented = true,
         };
         options.Converters.Add(new Mat2DConverter());
+        options.Converters.Add(new CellSnapshotState2DConverter());
         return options;
     }
 
