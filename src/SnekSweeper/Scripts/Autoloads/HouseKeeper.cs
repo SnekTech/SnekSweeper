@@ -39,7 +39,7 @@ public partial class HouseKeeper : Node
         async GDTaskVoid SaveTask()
         {
             MessageBox.Print("start saving");
-            await _currentPlayerSaveData.SaveAsync(OS.GetUserDataDir(), QuitHandler.QuitGameToken);
+            await _currentPlayerSaveData.SaveAsync(OS.GetUserDataDir(), SaveFormat.Json, QuitHandler.QuitGameToken);
             MessageBox.Print("save complete successfully");
         }
     }

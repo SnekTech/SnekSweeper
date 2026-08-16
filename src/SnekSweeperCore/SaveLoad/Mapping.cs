@@ -34,7 +34,7 @@ partial record PlayerSaveDataDtoV1(
     CurrentRunInfoDtoV1 CurrentRunInfo,
     HistoryDtoV1 History);
 
-// --- Historical version 2 (demo: structurally identical to V1) ---
+// --- Current version 2 ---
 [MemoryPackable]
 partial record MainSettingDtoV2(
     GridDifficultyKey CurrentDifficultyKey,
@@ -59,34 +59,9 @@ partial record PlayerSaveDataDtoV2(
     CurrentRunInfoDtoV2 CurrentRunInfo,
     HistoryDtoV2 History);
 
-// --- Current version 3 (demo: structurally identical to V1) ---
-[MemoryPackable]
-partial record MainSettingDtoV3(
-    GridDifficultyKey CurrentDifficultyKey,
-    SkinKey CurrentSkinKey,
-    bool ComboRankDisplay,
-    bool GenerateSolvableGrid
-);
-
-[MemoryPackable]
-partial record ActivatedCheatCodeSetDtoV3(HashSet<CheatCodeKey> ActivatedSet);
-
-[MemoryPackable]
-partial record CurrentRunInfoDtoV3(GridSnapshot? GridSnapshot, RunStartInfo StartInfo);
-
-[MemoryPackable]
-partial record HistoryDtoV3(List<GameRunRecord> Records);
-
-[MemoryPackable]
-partial record PlayerSaveDataDtoV3(
-    MainSettingDtoV3 MainSetting,
-    ActivatedCheatCodeSetDtoV3 ActivatedCheatCodeSet,
-    CurrentRunInfoDtoV3 CurrentRunInfo,
-    HistoryDtoV3 History);
-
 [Mapper]
 static partial class PlayerSaveDataMapper
 {
-    internal static partial PlayerSaveDataDtoV3 ToDto(this PlayerSaveData playerSaveData);
-    internal static partial PlayerSaveData ToPlayerSaveData(this PlayerSaveDataDtoV3 dto);
+    internal static partial PlayerSaveDataDtoV2 ToDto(this PlayerSaveData playerSaveData);
+    internal static partial PlayerSaveData ToPlayerSaveData(this PlayerSaveDataDtoV2 dto);
 }

@@ -61,7 +61,7 @@ static class JsonSerializationService
     {
         string ToJson()
         {
-            var dataNode = JsonSerializer.SerializeToNode(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDtoV3);
+            var dataNode = JsonSerializer.SerializeToNode(playerSaveData.ToDto(), SerializerContext.PlayerSaveDataDtoV2);
             var envelope = new JsonObject
             {
                 [VersionPropertyName] = SaveVersion.Current,
@@ -79,8 +79,7 @@ static class JsonSerializationService
             return versionValue.GetValue<int>() switch
             {
                 1 => SaveMigrations.MigrateAndMap(JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDtoV1)),
-                2 => SaveMigrations.MigrateAndMap(JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDtoV2)),
-                SaveVersion.Current => JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDtoV3)?.ToPlayerSaveData(),
+                SaveVersion.Current => JsonSerializer.Deserialize(dataNode.ToJsonString(), SerializerContext.PlayerSaveDataDtoV2)?.ToPlayerSaveData(),
                 _ => throw new SaveVersionNotSupportedException(versionValue.GetValue<int>()),
             };
         }
@@ -89,6 +88,5 @@ static class JsonSerializationService
 
 [JsonSerializable(typeof(PlayerSaveDataDtoV1))]
 [JsonSerializable(typeof(PlayerSaveDataDtoV2))]
-[JsonSerializable(typeof(PlayerSaveDataDtoV3))]
 [JsonSerializable(typeof(int[][]))]
 partial class PlayerSaveDataDtoSerializerContext : JsonSerializerContext;

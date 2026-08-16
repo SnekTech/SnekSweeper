@@ -51,8 +51,7 @@ static class MemoryPackSerializationService
             return envelope.Version switch
             {
                 1 => SaveMigrations.MigrateAndMap(MemoryPackSerializer.Deserialize<PlayerSaveDataDtoV1>(envelope.Payload)),
-                2 => SaveMigrations.MigrateAndMap(MemoryPackSerializer.Deserialize<PlayerSaveDataDtoV2>(envelope.Payload)),
-                SaveVersion.Current => MemoryPackSerializer.Deserialize<PlayerSaveDataDtoV3>(envelope.Payload)?.ToPlayerSaveData(),
+                SaveVersion.Current => MemoryPackSerializer.Deserialize<PlayerSaveDataDtoV2>(envelope.Payload)?.ToPlayerSaveData(),
                 _ => throw new SaveVersionNotSupportedException(envelope.Version),
             };
         }

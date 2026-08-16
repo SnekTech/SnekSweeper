@@ -71,22 +71,6 @@ public sealed class VersionedSaveLoadSpecs
     }
 
     [Test]
-    public void migrate_v2_to_v3_copies_each_field()
-    {
-        var v2 = SampleDtoV2();
-
-        var v3 = SaveMigrations.MigrateV2ToV3(v2);
-
-        v3.MainSetting.CurrentDifficultyKey.Should().Be(v2.MainSetting.CurrentDifficultyKey);
-        v3.MainSetting.CurrentSkinKey.Should().Be(v2.MainSetting.CurrentSkinKey);
-        v3.MainSetting.ComboRankDisplay.Should().Be(v2.MainSetting.ComboRankDisplay);
-        v3.MainSetting.GenerateSolvableGrid.Should().Be(v2.MainSetting.GenerateSolvableGrid);
-        v3.ActivatedCheatCodeSet.ActivatedSet.Should().BeEquivalentTo(v2.ActivatedCheatCodeSet.ActivatedSet);
-        v3.CurrentRunInfo.Should().BeEquivalentTo(v2.CurrentRunInfo);
-        v3.History.Records.Should().BeEmpty();
-    }
-
-    [Test]
     public void migrate_v1_to_current_yields_current_version_with_values()
     {
         var v1 = SampleDtoV1();
@@ -142,10 +126,4 @@ public sealed class VersionedSaveLoadSpecs
         new ActivatedCheatCodeSetDtoV1([CheatCodeKey.Messenger]),
         new CurrentRunInfoDtoV1(null, new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
         new HistoryDtoV1([]));
-
-    static PlayerSaveDataDtoV2 SampleDtoV2() => new(
-        new MainSettingDtoV2(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),
-        new ActivatedCheatCodeSetDtoV2([CheatCodeKey.Messenger]),
-        new CurrentRunInfoDtoV2(null, new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
-        new HistoryDtoV2([]));
 }
