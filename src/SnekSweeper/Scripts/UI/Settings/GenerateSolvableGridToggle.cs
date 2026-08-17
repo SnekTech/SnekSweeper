@@ -27,6 +27,6 @@ public partial class GenerateSolvableGridToggle : HBoxContainer
 
     static void OnSolvableToggled(bool toggledOn)
     {
-        HouseKeeper.MainSetting.GenerateSolvableGrid = toggledOn;
+        HouseKeeper.UpdateMainSetting(m => m with { GenerateSolvableGrid = toggledOn });
     }
 }

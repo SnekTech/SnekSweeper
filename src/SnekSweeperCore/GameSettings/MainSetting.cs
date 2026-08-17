@@ -3,10 +3,8 @@ using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.GameSettings;
 
-public class MainSetting
-{
-    public GridDifficultyKey CurrentDifficultyKey { get; set; } = GridDifficultyKey.Intermediate;
-    public SkinKey CurrentSkinKey { get; set; } = SkinKey.Classic;
-    public bool ComboRankDisplay { get; set; } = true;
-    public bool GenerateSolvableGrid { get; set; } = true;
-}
+public record MainSetting(
+    GridDifficultyKey CurrentDifficultyKey = GridDifficultyKey.Intermediate,
+    SkinKey CurrentSkinKey = SkinKey.Classic,
+    bool ComboRankDisplay = true,
+    bool GenerateSolvableGrid = true);
