@@ -12,17 +12,10 @@ public static class CheatCodeExtension
         public bool IsActivatedIn(ActivatedCheatCodeSet activatedCheatCodeSet)
             => activatedCheatCodeSet.Contains(cheatCode.Key);
 
-        public void SetActivatedIn(ActivatedCheatCodeSet activatedCheatCodeSet, bool activated)
-        {
-            if (activated)
-            {
-                activatedCheatCodeSet.Add(cheatCode.Key);
-            }
-            else
-            {
-                activatedCheatCodeSet.Remove(cheatCode.Key);
-            }
-        }
+        public ActivatedCheatCodeSet SetActivatedIn(ActivatedCheatCodeSet activatedCheatCodeSet, bool activated) =>
+            activated
+                ? activatedCheatCodeSet.Add(cheatCode.Key)
+                : activatedCheatCodeSet.Remove(cheatCode.Key);
     }
 }
 

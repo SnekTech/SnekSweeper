@@ -11,7 +11,6 @@ namespace SnekSweeper.CheatCodeSystem.UI;
 public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
     CheatCode _cheatCode = null!;
-    readonly ActivatedCheatCodeSet _activatedCheatCodeSet = HouseKeeper.ActivatedCheatCodeSet;
 
     public override void _EnterTree()
     {
@@ -29,7 +28,7 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
         NameLabel.Text = cheatCode.Data.Name;
         Icon.Texture = cheatCode.Icon;
-        CheckButton.SetPressed(cheatCode.IsActivatedIn(_activatedCheatCodeSet));
+        CheckButton.SetPressed(cheatCode.IsActivatedIn(HouseKeeper.ActivatedCheatCodeSet));
         
         InitTooltip();
         return;
@@ -44,6 +43,6 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
     void OnCheckButtonToggled(bool toggledOn)
     {
-        _cheatCode.SetActivatedIn(_activatedCheatCodeSet, toggledOn);
+        HouseKeeper.UpdateActivatedCheatCodeSet(set => _cheatCode.SetActivatedIn(set, toggledOn));
     }
 }

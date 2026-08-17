@@ -30,7 +30,7 @@ public static class PlayerSaveDataExtensions
     extension(PlayerSaveData playerSaveData)
     {
         public static PlayerSaveData CreateEmpty() =>
-            new(new MainSetting(), new ActivatedCheatCodeSet([]), new CurrentRunInfo(), new History([]));
+            new(new MainSetting(), ActivatedCheatCodeSet.Empty, new CurrentRunInfo(), new History([]));
 
         public void Save(string userDataDir, SaveFormat format = SaveFormat.Json) =>
             StrategyFor(format).Save(playerSaveData, userDataDir.ToDir());
