@@ -228,6 +228,12 @@ public void add_record_returns_new_state_and_keeps_original_untouched()
    - 建议顺序：先 `CurrentRunInfo` + `MainSetting`（纯属性、无集合），再 `ActivatedCheatCodeSet` + `History`（带集合，涉及 Immutable 取舍）。
    - 注意：record 化会触及 DTO/映射（`Mapping.cs` / `SaveMigrations.cs`），需同步。
 2. **D 阶段**：建 `SaveDataLenses`（4 个提升器）+ 各领域 reducer 块 + `SaveData` autoload，逐个消费端替换。
+   - **GameRunRecorder 重构（D 阶段一起做）**：
+     - 定位：一局游戏的 save-data 生命周期协调器，**保留不删**，网格状态经 `Context.RunRecorder` 调用。
+     - `GenerateRecentRecord` 纯函数化 → 静态 `GameRunRecord.FromRun(startInfo, winning, bombs)`，脱离 recorder 实例。
+     - 加复合方法 `FinishRun(winning, bombs)` = 清快照 + 生成记录 + 入库（把 Win 状态当前的 3 连调用收敛成 1 个原子动作）。
+     - 构造从 3 个委托（get/update/history）收敛为注入单个 `ISaveDataWriter`（或 `SaveData`），内部 `writer.UpdateCurrentRunInfo(...)` / `writer.UpdateHistory(...)`。
+     - 保持 Godot-free（若直接依赖 `SaveData` autoload 则挪到 Godot 层）；**不要**升级成小状态机/事件溯源（过度设计）。
 3. **E 阶段**：`SaveData` 注册进 DI 容器，`MainSetting` 注入。
 
 ## 7. 关联决策（已完成，本方案依赖）

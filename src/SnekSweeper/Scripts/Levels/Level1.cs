@@ -88,7 +88,10 @@ public partial class Level1 : Node2D,
             GridLogic.Set(new GridStateContext(
                 grid,
                 TheGrid,
-                new GameRunRecorder(HouseKeeper.CurrentRunInfo, HouseKeeper.History),
+                new GameRunRecorder(
+                    () => HouseKeeper.CurrentRunInfo,
+                    HouseKeeper.UpdateCurrentRunInfo,
+                    HouseKeeper.History),
                 this
             ));
         }

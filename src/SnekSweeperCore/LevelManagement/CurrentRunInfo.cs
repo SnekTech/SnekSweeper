@@ -1,8 +1,5 @@
-﻿namespace SnekSweeperCore.LevelManagement;
+﻿using SnekSweeperCore.GridSystem;
 
-public class CurrentRunInfo
-{
-    public GridSystem.GridSnapshot? GridSnapshot { get; set; }
-    
-    public RunStartInfo StartInfo { get; set; }
-}
+namespace SnekSweeperCore.LevelManagement;
+
+public record CurrentRunInfo(GridSnapshot? GridSnapshot = null, RunStartInfo StartInfo = default);

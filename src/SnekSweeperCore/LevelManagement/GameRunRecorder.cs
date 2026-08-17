@@ -3,15 +3,15 @@ using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeperCore.LevelManagement;
 
-public class GameRunRecorder(CurrentRunInfo currentRunInfo, History history)
+public class GameRunRecorder(
+    Func<CurrentRunInfo> getCurrentRunInfo,
+    Action<Func<CurrentRunInfo, CurrentRunInfo>> updateCurrentRunInfo,
+    History history)
 {
-    RunStartInfo StartInfo
-    {
-        get => currentRunInfo.StartInfo; 
-        set => currentRunInfo.StartInfo = value;
-    }
+    RunStartInfo StartInfo => getCurrentRunInfo().StartInfo;
 
-    public void MarkRunStartInfo(RunStartInfo startInfo) => StartInfo = startInfo;
+    public void MarkRunStartInfo(RunStartInfo startInfo) =>
+        updateCurrentRunInfo(r => r with { StartInfo = startInfo });
 
     public GameRunRecord GenerateRecentRecord(bool winning, bool[,] bombs) => GameRunRecord.Create(
         RunDuration.Create(StartInfo.StartAt, DateTime.Now),
@@ -21,13 +21,12 @@ public class GameRunRecorder(CurrentRunInfo currentRunInfo, History history)
     );
 
     public void SaveRecord(GameRunRecord runRecord) => history.AddRecord(runRecord);
-    
-    public void UpdateGridSnapshot(Grid grid)
-    {
-        currentRunInfo.GridSnapshot = grid.GetSnapshot();
-    }
 
-    public void ClearSnapshot() => currentRunInfo.GridSnapshot = null;
+    public void UpdateGridSnapshot(Grid grid) =>
+        updateCurrentRunInfo(r => r with { GridSnapshot = grid.GetSnapshot() });
+
+    public void ClearSnapshot() =>
+        updateCurrentRunInfo(r => r with { GridSnapshot = null });
 }
 
 public readonly record struct RunStartInfo(DateTime StartAt, GridIndex StartIndex);
