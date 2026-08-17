@@ -14,6 +14,7 @@ static class SaveMigrations
 
     // --- Chain entries: walk from a historical version up to current (V2) ---
 
+    // todo: use extension method to accomplish chaining call
     internal static PlayerSaveDataDtoV2 MigrateToCurrent(PlayerSaveDataDtoV1 v1) =>
         MigrateV1ToV2(v1);
 
