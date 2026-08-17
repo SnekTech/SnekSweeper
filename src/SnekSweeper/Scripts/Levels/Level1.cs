@@ -91,7 +91,7 @@ public partial class Level1 : Node2D,
                 new GameRunRecorder(
                     () => HouseKeeper.CurrentRunInfo,
                     HouseKeeper.UpdateCurrentRunInfo,
-                    HouseKeeper.History),
+                    HouseKeeper.UpdateHistory),
                 this
             ));
         }

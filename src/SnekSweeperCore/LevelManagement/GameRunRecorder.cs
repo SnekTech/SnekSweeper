@@ -6,7 +6,7 @@ namespace SnekSweeperCore.LevelManagement;
 public class GameRunRecorder(
     Func<CurrentRunInfo> getCurrentRunInfo,
     Action<Func<CurrentRunInfo, CurrentRunInfo>> updateCurrentRunInfo,
-    History history)
+    Action<Func<History, History>> updateHistory)
 {
     RunStartInfo StartInfo => getCurrentRunInfo().StartInfo;
 
@@ -20,7 +20,7 @@ public class GameRunRecorder(
         StartInfo.StartIndex
     );
 
-    public void SaveRecord(GameRunRecord runRecord) => history.AddRecord(runRecord);
+    public void SaveRecord(GameRunRecord runRecord) => updateHistory(h => h.Add(runRecord));
 
     public void UpdateGridSnapshot(Grid grid) =>
         updateCurrentRunInfo(r => r with { GridSnapshot = grid.GetSnapshot() });

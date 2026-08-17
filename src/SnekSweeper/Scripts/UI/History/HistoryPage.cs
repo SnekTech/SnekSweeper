@@ -51,7 +51,7 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
 
     void OnClearButtonPressed()
     {
-        HouseKeeper.History.ClearRecords();
+        HouseKeeper.UpdateHistory(h => h.Clear());
         HouseKeeper.TriggerPlayerDataSave();
         ResetRunRecords();
     }
