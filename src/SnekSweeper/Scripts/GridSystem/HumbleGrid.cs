@@ -28,7 +28,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();
 
-    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(HouseKeeper.ActivatedCheatCodeSet);
+    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(SaveData.ActivatedCheatCodeSet);
 
     void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {

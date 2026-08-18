@@ -31,12 +31,12 @@ public partial class DifficultySelect : HBoxContainer
         }
 
         var savedDifficultyIndex =
-            difficulties.FindIndex(difficulty => difficulty.Key == HouseKeeper.MainSetting.CurrentDifficultyKey);
+            difficulties.FindIndex(difficulty => difficulty.Key == SaveData.MainSetting.CurrentDifficultyKey);
         DifficultyOptionButton.Select(savedDifficultyIndex);
     }
 
     static void OnDifficultySelected(long index)
     {
-        HouseKeeper.UpdateMainSetting(m => m with { CurrentDifficultyKey = GridDifficultyKey.FromLong(index) });
+        SaveData.UpdateMainSetting(m => m with { CurrentDifficultyKey = GridDifficultyKey.FromLong(index) });
     }
 }

@@ -22,11 +22,11 @@ public partial class ComboRankToggle : HBoxContainer
 
     void InitComboRankDisplayToggle()
     {
-        ComboRankDisplayToggle.SetPressedNoSignal(HouseKeeper.MainSetting.ComboRankDisplay);
+        ComboRankDisplayToggle.SetPressedNoSignal(SaveData.MainSetting.ComboRankDisplay);
     }
 
     static void OnComboRankDisplayToggled(bool toggledOn)
     {
-        HouseKeeper.UpdateMainSetting(m => m with { ComboRankDisplay = toggledOn });
+        SaveData.UpdateMainSetting(m => m with { ComboRankDisplay = toggledOn });
     }
 }

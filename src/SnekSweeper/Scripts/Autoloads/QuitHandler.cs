@@ -13,7 +13,7 @@ public partial class QuitHandler : Node
         // cannot use async save here,
         // because I cannot find the proper cancellation token,
         // the whole game is quiting
-        HouseKeeper.SaveCurrentPlayerData();
+        SaveData.SaveNow();
 
         CancelOnQuit.Cancel();
         GD.Print("Bye");

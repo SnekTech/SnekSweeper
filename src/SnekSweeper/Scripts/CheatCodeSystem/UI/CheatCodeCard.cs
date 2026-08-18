@@ -28,7 +28,7 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
         NameLabel.Text = cheatCode.Data.Name;
         Icon.Texture = cheatCode.Icon;
-        CheckButton.SetPressed(cheatCode.IsActivatedIn(HouseKeeper.ActivatedCheatCodeSet));
+        CheckButton.SetPressed(cheatCode.IsActivatedIn(SaveData.ActivatedCheatCodeSet));
         
         InitTooltip();
         return;
@@ -43,6 +43,6 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
     void OnCheckButtonToggled(bool toggledOn)
     {
-        HouseKeeper.UpdateActivatedCheatCodeSet(set => _cheatCode.SetActivatedIn(set, toggledOn));
+        SaveData.UpdateActivatedCheatCodeSet(set => _cheatCode.SetActivatedIn(set, toggledOn));
     }
 }

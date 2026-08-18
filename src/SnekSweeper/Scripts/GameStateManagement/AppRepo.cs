@@ -16,7 +16,7 @@ public sealed class AppRepo : IAppRepo
 
     public void InvokeGameEnded() => GameEnded?.Invoke();
 
-    public GridSkin CurrentSkin => HouseKeeper.MainSetting.CurrentSkinKey.ToSkin();
+    public GridSkin CurrentSkin => SaveData.MainSetting.CurrentSkinKey.ToSkin();
 
     #region Disposable
 

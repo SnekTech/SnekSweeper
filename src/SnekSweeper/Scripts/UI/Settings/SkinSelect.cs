@@ -24,7 +24,7 @@ public partial class SkinSelect : HBoxContainer
     
     static void OnSkinSelected(long index)
     {
-        HouseKeeper.UpdateMainSetting(m => m with { CurrentSkinKey = SkinKey.FromLong(index) });
+        SaveData.UpdateMainSetting(m => m with { CurrentSkinKey = SkinKey.FromLong(index) });
     }
     
     void InitSkinOptions()
@@ -37,7 +37,7 @@ public partial class SkinSelect : HBoxContainer
             SkinOptionButton.AddItem(skin.Name, (int)skin.Key);
         }
 
-        var savedSkinIndex = skins.FindIndex(skin => skin.Key == HouseKeeper.MainSetting.CurrentSkinKey);
+        var savedSkinIndex = skins.FindIndex(skin => skin.Key == SaveData.MainSetting.CurrentSkinKey);
         if (savedSkinIndex != -1)
         {
             SkinOptionButton.Select(savedSkinIndex);

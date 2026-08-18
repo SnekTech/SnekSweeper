@@ -36,7 +36,7 @@ public partial class MainMenuContainer : Control, ISceneScript
         _.ScrollMenuView.Init(bindings);
         return;
 
-        bool HasAnOngoingGame() => HouseKeeper.CurrentRunInfo.GridSnapshot != null;
+        bool HasAnOngoingGame() => SaveData.CurrentRunInfo.GridSnapshot != null;
     }
 
     void OnTutorialButonPressed()
@@ -61,7 +61,7 @@ public partial class MainMenuContainer : Control, ISceneScript
 
     void OnStartButtonPressed()
     {
-        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting));
+        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.MainSetting));
     }
 
     void OnQuitPressed()
@@ -72,7 +72,7 @@ public partial class MainMenuContainer : Control, ISceneScript
     void OnContinueButtonPressed()
     {
         var fromSnapshot =
-            new FromGridSnapshot(HouseKeeper.CurrentRunInfo.GridSnapshot!, HouseKeeper.CurrentRunInfo.StartInfo);
+            new FromGridSnapshot(SaveData.CurrentRunInfo.GridSnapshot!, SaveData.CurrentRunInfo.StartInfo);
         AppLogic.InputNewGame(fromSnapshot);
     }
 

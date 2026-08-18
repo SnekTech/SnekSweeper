@@ -8,6 +8,6 @@ public partial class SettingsPage : CanvasLayer, ISceneScript
 {
     public override void _ExitTree()
     {
-        HouseKeeper.TriggerPlayerDataSave();
+        SaveData.NotifySaved();
     }
 }

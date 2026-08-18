@@ -22,7 +22,7 @@ config/icon="res://mine_icon.png"
 [autoload]
 
 GTweensGodotUpdater="*res://Scripts/Autoloads/GTweensGodotUpdater.cs"
-HouseKeeper="*res://Autoloads/HouseKeeper.tscn"
+SaveData="*res://Scripts/Autoloads/SaveData.cs"
 MessageBox="*res://Scripts/Autoloads/MessageBox.tscn"
 QuitHandler="*res://Autoloads/QuitHandler.tscn"
 

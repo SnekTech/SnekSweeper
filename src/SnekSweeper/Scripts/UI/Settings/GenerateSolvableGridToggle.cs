@@ -22,11 +22,11 @@ public partial class GenerateSolvableGridToggle : HBoxContainer
 
     void InitSolvableToggle()
     {
-        Toggle.SetPressedNoSignal(HouseKeeper.MainSetting.GenerateSolvableGrid);
+        Toggle.SetPressedNoSignal(SaveData.MainSetting.GenerateSolvableGrid);
     }
 
     static void OnSolvableToggled(bool toggledOn)
     {
-        HouseKeeper.UpdateMainSetting(m => m with { GenerateSolvableGrid = toggledOn });
+        SaveData.UpdateMainSetting(m => m with { GenerateSolvableGrid = toggledOn });
     }
 }

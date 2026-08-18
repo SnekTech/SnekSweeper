@@ -46,7 +46,7 @@ public partial class Level1 : Node2D,
 
     public override void _ExitTree()
     {
-        HouseKeeper.TriggerPlayerDataSave();
+        SaveData.NotifySaved();
 
         TheGrid.GridInputListener.GridInputEmitted -= OnGridInputEmitted;
 
@@ -89,9 +89,9 @@ public partial class Level1 : Node2D,
                 grid,
                 TheGrid,
                 new GameRunRecorder(
-                    () => HouseKeeper.CurrentRunInfo,
-                    HouseKeeper.UpdateCurrentRunInfo,
-                    HouseKeeper.UpdateHistory),
+                    () => SaveData.CurrentRunInfo,
+                    SaveData.UpdateCurrentRunInfo,
+                    SaveData.UpdateHistory),
                 this
             ));
         }
@@ -141,7 +141,7 @@ public partial class Level1 : Node2D,
 
     public void NewGame()
     {
-        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(HouseKeeper.MainSetting));
+        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.MainSetting));
     }
 
     public void BackToMainMenu()

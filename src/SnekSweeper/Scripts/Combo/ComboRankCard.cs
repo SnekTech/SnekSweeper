@@ -30,7 +30,7 @@ public partial class ComboRankCard : VBoxContainer, ISceneScript
 
     public override void _Ready()
     {
-        if (!HouseKeeper.MainSetting.ComboRankDisplay)
+        if (!SaveData.MainSetting.ComboRankDisplay)
         {
             Hide();
             return;

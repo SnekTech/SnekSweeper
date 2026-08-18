@@ -34,7 +34,7 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
 
     void InitPagination()
     {
-        var records = HouseKeeper.History.Records
+        var records = SaveData.History.Records
             .OrderByDescending(r => r.Duration.EndAt).ToList();
         var historyQuery = new HistoryQuery(records);
         var pagination = new Pagination<GameRunRecord>(historyQuery, RunRecordPageSize);
@@ -51,8 +51,8 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
 
     void OnClearButtonPressed()
     {
-        HouseKeeper.UpdateHistory(h => h.Clear());
-        HouseKeeper.TriggerPlayerDataSave();
+        SaveData.UpdateHistory(h => h.Clear());
+        SaveData.NotifySaved();
         ResetRunRecords();
     }
 }
