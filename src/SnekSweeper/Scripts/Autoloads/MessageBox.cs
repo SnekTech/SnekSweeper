@@ -21,8 +21,6 @@ public partial class MessageBox : Control, IMessageDisplay
 
         _messageQueue = new MessageQueue(this);
         _messageQueue.RunAsync(this.GetCancellationTokenOnTreeExit()).AsGDTask().Forget();
-
-        SaveData.Instance.SavedFeedback += () => Print("已保存");
     }
 
     public override void _UnhandledInput(InputEvent @event)

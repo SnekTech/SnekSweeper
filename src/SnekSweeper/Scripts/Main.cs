@@ -1,5 +1,6 @@
 ﻿using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using SnekSweeper.Autoloads;
 using SnekSweeper.GameStateManagement;
 
 namespace SnekSweeper;
@@ -22,6 +23,8 @@ public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>
         _appLogic.Set(SceneSwitcher);
         _appLogic.Set(AppRepo);
         this.Provide();
+
+        SaveData.Instance.SavedFeedback += () => MessageBox.Print("已保存");
 
         _appLogic.Start<AppState.SplashScreen>();
     }
