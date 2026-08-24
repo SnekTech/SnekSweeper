@@ -16,6 +16,7 @@ public partial class SplashScreen : CenterContainer, ISceneScript
 
     public void OnResolved()
     {
+        _.PressToStartLabel.Text = CoreFS.Say.hello("F# in GD");
         PressToStartLabel.AnyKeyPressed += OnAnyKeyPressed;
     }
 
