@@ -18,6 +18,7 @@ public static class FileOperations
             await File.WriteAllTextAsync(tempPath, contents, ct);
 
             // 3. 确保数据完全写入磁盘
+            // BUG: on level first click, the temp_xxx.json file not found
             await using (var fs = new FileStream(tempPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None, 4096,
                              true))
             {
