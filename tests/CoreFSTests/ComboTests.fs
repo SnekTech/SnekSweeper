@@ -11,11 +11,6 @@ let incrementedNTimes (times: int) (atTime: float) : ComboState =
 let stateAt (now: float) (level: int) : ComboState =
     { Level = level; LastIncrementAt = now }
 
-// todo: use Expect.floatClose
-/// 浮点容差比较
-let close (tolerance: float) (actual: float) (expected: float) : bool =
-    abs (actual - expected) <= tolerance
-
 [<Tests>]
 let comboCoreBehavior =
     testList "combo" [
@@ -31,7 +26,7 @@ let comboCoreBehavior =
         testCase "increment 重置进度条比例" <| fun () ->
             let s1 = ComboDefault.increment 0.0 Combo.initial
             let s2 = ComboDefault.increment 3.0 s1
-            Expect.isTrue (close 1e-6 (ComboDefault.progressRatio 3.0 s2) 1.0) "再次加分后比例应为 1"
+            Expect.floatClose Accuracy.medium (ComboDefault.progressRatio 3.0 s2) 1.0 "再次加分后比例应为 1"
 
         testCase "reset 等效于回到 initial" <| fun () ->
             Expect.equal Combo.initial.Level 0 "initial 等级为 0"
@@ -65,19 +60,19 @@ let comboCoreBehavior =
         // ---- progressRatio ----
         testCase "加分后进度从 1 开始" <| fun () ->
             let s = ComboDefault.increment 0.0 Combo.initial
-            Expect.isTrue (close 1e-6 (ComboDefault.progressRatio 0.0 s) 1.0) "刚加分比例 1"
+            Expect.floatClose Accuracy.medium (ComboDefault.progressRatio 0.0 s) 1.0 "刚加分比例 1"
 
         testCase "进度随时间线性下降" <| fun () ->
             let s = ComboDefault.increment 0.0 Combo.initial
-            Expect.isTrue (close 0.01 (ComboDefault.progressRatio 2.5 s) 0.5) "2.5s 比例 0.5"
+            Expect.floatClose Accuracy.medium (ComboDefault.progressRatio 2.5 s) 0.5 "2.5s 比例 0.5"
 
         testCase "进度趋近 0" <| fun () ->
             let s = ComboDefault.increment 0.0 Combo.initial
-            Expect.isTrue (close 0.01 (ComboDefault.progressRatio 4.99 s) 0.0) "4.99s 比例接近 0"
+            Expect.isLessThan (ComboDefault.progressRatio 4.99 s) 0.01 "4.99s 比例应小于 0.01"
 
         testCase "负时间差进度不超 1" <| fun () ->
             let s = ComboDefault.increment 1.0 Combo.initial   // 最后加分在 t=1
-            Expect.isTrue (close 1e-6 (ComboDefault.progressRatio 0.0 s) 1.0) "负 delta / 时钟回拨时钳制为 1"
+            Expect.floatClose Accuracy.medium (ComboDefault.progressRatio 0.0 s) 1.0 "负 delta / 时钟回拨时钳制为 1"
 
         // ---- config 校验 ----
         testCase "config 拒绝非正衰减间隔" <| fun () ->
