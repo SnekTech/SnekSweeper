@@ -3,7 +3,7 @@ using Chickensoft.Introspection;
 using SnekSweeper.Autoloads;
 using SnekSweeper.Levels;
 using SnekSweeper.Widgets;
-using SnekSweeperCore.ComboSystem;
+using CoreFS.ComboDomain;
 
 namespace SnekSweeper.Combo;
 
@@ -11,9 +11,10 @@ namespace SnekSweeper.Combo;
 [SceneTree]
 public partial class ComboRankCard : VBoxContainer, ISceneScript
 {
-    readonly ComboCounter _counter = new(ComboConfig.Default);
-
     public override void _Notification(int what) => this.Notify(what);
+
+    ComboState _state = ComboDefault.initial;
+    double _gameTime;
 
     [Dependency]
     LevelData LevelData => this.DependOn<LevelData>();
@@ -41,29 +42,30 @@ public partial class ComboRankCard : VBoxContainer, ISceneScript
 
     public override void _Process(double delta)
     {
-        _counter.Update((float)delta);
+        _gameTime += delta;
         RefreshDisplay();
     }
 
     void OnBatchRevealed()
     {
-        _counter.Increment();
+        _state = ComboDefault.increment(_gameTime, _state);
         RefreshDisplay();
     }
 
     void RefreshDisplay()
     {
-        var tier = ComboCounter.GetTier(_counter.Level);
+        var tier = ComboDefault.getTier(ComboDefault.levelAt(_gameTime, _state));
         _.ComboLevelTextLabel.Text = ToDisplayText(tier);
-        _.ComboProgressBar.Value = _counter.ProgressRatio * _.ComboProgressBar.MaxValue;
-        Visible = tier != ComboTier.None;
+        _.ComboProgressBar.Value = ComboDefault.progressRatio(_gameTime, _state) * _.ComboProgressBar.MaxValue;
+        Visible = !tier.Equals(ComboTier.None);
     }
 
-    static string ToDisplayText(ComboTier tier) => tier switch
+    static readonly IReadOnlyDictionary<ComboTier, string> TierText = new Dictionary<ComboTier, string>
     {
-        ComboTier.Good      => "Good",
-        ComboTier.Great     => "Great",
-        ComboTier.Excellent => "Excellent",
-        _                   => "",
+        [ComboTier.Good] = "Good",
+        [ComboTier.Great] = "Great",
+        [ComboTier.Excellent] = "Excellent",
     };
+
+    static string ToDisplayText(ComboTier tier) => TierText.GetValueOrDefault(tier) ?? "";
 }
