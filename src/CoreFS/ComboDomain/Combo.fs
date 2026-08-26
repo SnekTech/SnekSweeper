@@ -13,9 +13,9 @@ type ComboConfig =
 
     static member Create(maxLevel: int, decayInterval: float) =
         if maxLevel < 2 then
-            Error ""
+            Error "maxLevel must be at least 2 to reach the Good/Great/Excellent tiers"
         elif decayInterval <= 0.0 then
-            Error ""
+            Error "decayInterval must be positive"
         else
             Ok
                 { MaxLevel = maxLevel
