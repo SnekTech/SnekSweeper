@@ -99,6 +99,10 @@ public partial class Level1 : Node2D,
         void SetupGridBinding()
         {
             GridBinding = GridLogic.Bind()
+                .OnOutput((in GridState.Output.ProcessInput output) =>
+                {
+                    HandleInputAsync(output.GridInput).Forget();
+                })
                 .OnOutput((in GridState.Output.EndGameChoiceOnWin output) =>
                 {
                     Action handleChoiceAction = output.Choice switch
@@ -121,6 +125,15 @@ public partial class Level1 : Node2D,
                     };
                     handleChoiceAction();
                 });
+
+            return;
+
+            // 异步输入处理放在绑定层：FSM 只发效果、不 await，完成后以 InputProcessed 回调回 FSM
+            async GDTaskVoid HandleInputAsync(GridInput gridInput)
+            {
+                var processResult = await grid.HandleInputAsync(gridInput, this.GetCancellationTokenOnTreeExit());
+                GridLogic.Input(new GridState.Input.InputProcessed(processResult));
+            }
         }
     }
 

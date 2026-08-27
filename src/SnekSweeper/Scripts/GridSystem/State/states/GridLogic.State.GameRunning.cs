@@ -1,16 +1,14 @@
 using System.Runtime.CompilerServices;
 using Chickensoft.LogicBlocks;
-using GodotTask;
 using SnekSweeperCore.GameMode;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem.State;
 
 public abstract partial record GridState
 {
-    public record GameRunning : GridState, IGet<Input.PlayerInput>, IGet<Input.EndGame>
+    public record GameRunning : GridState, IGet<Input.PlayerInput>, IGet<Input.InputProcessed>
     {
-        bool _isProcessingInput;
-
         public GameRunning()
         {
             this.OnEnter(delegate { Context.HumbleGrid.TriggerInitEffects(); });
@@ -18,32 +16,19 @@ public abstract partial record GridState
 
         public Type On(in Input.PlayerInput input)
         {
-            if (_isProcessingInput)
-                return ToSelf();
-
-            var gridInput = input.GridInput;
-
-            TriggerHandleInputAsync(LevelExitToken).Forget();
+            // 只发效果：异步输入处理交给 Godot 绑定层，完成后以 InputProcessed 回调回来
+            Output(new Output.ProcessInput(input.GridInput));
             return ToSelf();
-
-            async GDTaskVoid TriggerHandleInputAsync(CancellationToken ct = default)
-            {
-                _isProcessingInput = true;
-
-                var processResult = await Context.Grid.HandleInputAsync(gridInput, ct);
-                var judgedResult = Referee.Judge(processResult);
-                Input(new Input.EndGame(judgedResult));
-
-                _isProcessingInput = false;
-            }
         }
 
-        public Type On(in Input.EndGame input)
+        public Type On(in Input.InputProcessed input)
         {
-            var judgedResult = input.JudgedResult;
+            var judgedResult = Referee.Judge(input.ProcessResult);
             if (judgedResult is Surviving)
             {
-                Context.RunRecorder.UpdateGridSnapshot(Context.Grid);
+                // 处理期间到达的冗余输入返回 NothingHappens，跳过无意义的快照更新
+                if (input.ProcessResult is not NothingHappens)
+                    Context.RunRecorder.UpdateGridSnapshot(Context.Grid);
                 return ToSelf();
             }
 
