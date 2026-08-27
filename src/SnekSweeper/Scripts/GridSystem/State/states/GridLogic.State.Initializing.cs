@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Chickensoft.LogicBlocks;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
@@ -7,8 +8,8 @@ namespace SnekSweeper.GridSystem.State;
 public abstract partial record GridState
 {
     /// <summary>
-    /// 关卡初始化：RegularStart/FromRunRecord 等待首次输入触发布雷；
-    /// FromGridSnapshot 续局在进入时即恢复棋盘。记录起始信息并发出 InitializeGrid 效果，
+    /// 关卡初始化：RegularStart/FromRunRecord 等待首次输入触发布雷（LayMinesAt）；
+    /// FromGridSnapshot 续局在进入时即恢复棋盘（RestoreGrid）。
     /// 异步初始化完成后以 InitCompleted 进入 Running。
     /// </summary>
     public record Initializing : GridState, IGet<Input.PlayerInput>, IGet<Input.InitCompleted>
@@ -26,7 +27,7 @@ public abstract partial record GridState
                 if (source is FromGridSnapshot snapshot)
                 {
                     Context.RunRecorder.MarkRunStartInfo(snapshot.StartInfo);
-                    Output(new Output.InitializeGrid(source, FirstInput: null));
+                    Output(new Output.RestoreGrid(snapshot));
                 }
             });
 
@@ -42,25 +43,25 @@ public abstract partial record GridState
             var source = Get<GridLogic.Data>().LoadLevelSource;
             var firstInput = input.GridInput;
 
-            // 续局已提前初始化，此状态不再接收输入（点击由 Running 处理）
-            if (source is FromGridSnapshot)
-                return ToSelf();
-
-            // 首次输入已接受，等待初始化完成；期间忽略后续输入
-            if (Get<GridLogic.Data>().PendingFirstInput is not null)
-                return ToSelf();
-
-            if (source is FromRunRecord fromRecord && firstInput.Index != fromRecord.RunRecord.StartIndex)
-                return ToSelf();
-            if (source is RegularStart && firstInput is not PrimaryReleased)
+            if (!AcceptsFirstInput(source, firstInput))
                 return ToSelf();
 
             Get<GridLogic.Data>().PendingFirstInput = firstInput;
             Context.RunRecorder.MarkRunStartInfo(new RunStartInfo(DateTime.Now, firstInput.Index));
-            Output(new Output.InitializeGrid(source, firstInput));
+            Output(new Output.LayMinesAt(source, firstInput));
             return ToSelf();
         }
 
         public Type On(in Input.InitCompleted input) => To<GameRunning>();
+
+        /// <summary>首次输入接受策略：新局只收左键、重试只收记录开始格；续局与已接受后均忽略。</summary>
+        bool AcceptsFirstInput(LoadLevelSource source, GridInput first) =>
+            Get<GridLogic.Data>().PendingFirstInput is null && source switch
+            {
+                FromGridSnapshot => false,
+                FromRunRecord fromRecord => first.Index == fromRecord.RunRecord.StartIndex,
+                RegularStart => first is PrimaryReleased,
+                _ => throw new SwitchExpressionException(),
+            };
     }
 }

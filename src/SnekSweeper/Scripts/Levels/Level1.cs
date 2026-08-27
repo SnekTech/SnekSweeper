@@ -100,9 +100,13 @@ public partial class Level1 : Node2D,
         void SetupGridBinding()
         {
             GridBinding = GridLogic.Bind()
-                .OnOutput((in GridState.Output.InitializeGrid output) =>
+                .OnOutput((in GridState.Output.RestoreGrid output) =>
                 {
-                    InitGridAsync(output).Forget();
+                    RestoreGridAsync(output.Source).Forget();
+                })
+                .OnOutput((in GridState.Output.LayMinesAt output) =>
+                {
+                    LayMinesAsync(output.Source, output.FirstInput).Forget();
                 })
                 .OnOutput((in GridState.Output.ProcessInput output) =>
                 {
@@ -133,18 +137,20 @@ public partial class Level1 : Node2D,
 
             return;
 
-            // 初始化放在绑定层：RegularStart/FromRunRecord 现布雷，FromGridSnapshot 恢复完整棋盘状态
-            async GDTaskVoid InitGridAsync(GridState.Output.InitializeGrid output)
+            // 初始化放在绑定层：续局恢复完整棋盘状态，新局/重试按首次点击布雷
+            async GDTaskVoid RestoreGridAsync(FromGridSnapshot source)
             {
-                var ct = this.GetCancellationTokenOnTreeExit();
-                if (output.Source is FromGridSnapshot snapshot)
-                    await grid.InitCellsAsync(snapshot.Snapshot, ct);
-                else
-                    // 首次点击触发的布雷路径：FirstInput 恒非空（续局走上面的 snapshot 分支）
-                    await grid.InitCellsAsync(output.Source.LayMineFn(output.FirstInput!.Index), ct);
-
-                GridLogic.Input(new GridState.Input.InitCompleted());
+                await grid.InitCellsAsync(source.Snapshot, this.GetCancellationTokenOnTreeExit());
+                CompleteInit();
             }
+
+            async GDTaskVoid LayMinesAsync(LoadLevelSource source, GridInput firstInput)
+            {
+                await grid.InitCellsAsync(source.LayMineFn(firstInput.Index), this.GetCancellationTokenOnTreeExit());
+                CompleteInit();
+            }
+
+            void CompleteInit() => GridLogic.Input(new GridState.Input.InitCompleted());
 
             // 异步输入处理放在绑定层：FSM 只发效果、不 await，完成后以 InputProcessed 回调回 FSM
             async GDTaskVoid HandleInputAsync(GridInput gridInput)
