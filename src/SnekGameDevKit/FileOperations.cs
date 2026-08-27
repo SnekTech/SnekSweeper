@@ -9,8 +9,11 @@ public static class FileOperations
 {
     public static async Task SafeWriteAllTextAsync(string path, string contents, CancellationToken ct = default)
     {
-        // 1. 在同一目录下创建一个唯一的临时文件
-        var tempPath = Path.Combine(Path.GetDirectoryName(path)!, $"temp_{Path.GetFileName(path)}");
+        // 1. 解析为绝对路径：临时文件与目标同目录（同卷才能保证 File.Move 原子替换）
+        var fullPath = Path.GetFullPath(path);
+        var tempPath = Path.Combine(
+            Path.GetDirectoryName(fullPath)!,
+            $"{Path.GetFileName(fullPath)}.{Guid.NewGuid():N}.tmp");
 
         try
         {
@@ -18,7 +21,6 @@ public static class FileOperations
             await File.WriteAllTextAsync(tempPath, contents, ct);
 
             // 3. 确保数据完全写入磁盘
-            // BUG: on level first click, the temp_xxx.json file not found
             await using (var fs = new FileStream(tempPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None, 4096,
                              true))
             {
@@ -27,7 +29,7 @@ public static class FileOperations
 
             // 4. 关键操作：用临时文件原子地替换目标文件
             // 此操作在大多数操作系统上是原子的
-            File.Move(tempPath, path, overwrite: true);
+            File.Move(tempPath, fullPath, overwrite: true);
         }
         finally
         {
