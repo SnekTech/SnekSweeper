@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Chickensoft.LogicBlocks;
-using SnekSweeperCore.LevelManagement;
+﻿using Chickensoft.LogicBlocks;
 
 namespace SnekSweeper.GridSystem.State;
 
@@ -10,15 +8,8 @@ public abstract partial record GridState
     {
         public Type On(in Input.Init input)
         {
-            var loadLevelSource = input.LoadLevelSource;
-            Get<GridLogic.Data>().LoadLevelSource = loadLevelSource;
-            return loadLevelSource switch
-            {
-                RegularStart regularStart => To<RegularInstantiated>(),
-                FromRunRecord fromRunRecord => To<InstantiatedFromRecord>(),
-                FromGridSnapshot fromGridSnapshot => To<InstantiatedFromSnapshot>(),
-                _ => throw new SwitchExpressionException(),
-            };
+            Get<GridLogic.Data>().LoadLevelSource = input.LoadLevelSource;
+            return To<Initializing>();
         }
     }
 }

@@ -6,6 +6,7 @@ using GodotGadgets.Tasks;
 using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GameStateManagement;
+using SnekSweeper.GridSystem;
 using SnekSweeper.GridSystem.State;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.Commands;
@@ -99,6 +100,10 @@ public partial class Level1 : Node2D,
         void SetupGridBinding()
         {
             GridBinding = GridLogic.Bind()
+                .OnOutput((in GridState.Output.InitializeGrid output) =>
+                {
+                    InitGridAsync(output).Forget();
+                })
                 .OnOutput((in GridState.Output.ProcessInput output) =>
                 {
                     HandleInputAsync(output.GridInput).Forget();
@@ -127,6 +132,19 @@ public partial class Level1 : Node2D,
                 });
 
             return;
+
+            // 初始化放在绑定层：RegularStart/FromRunRecord 现布雷，FromGridSnapshot 恢复完整棋盘状态
+            async GDTaskVoid InitGridAsync(GridState.Output.InitializeGrid output)
+            {
+                var ct = this.GetCancellationTokenOnTreeExit();
+                if (output.Source is FromGridSnapshot snapshot)
+                    await grid.InitCellsAsync(snapshot.Snapshot, ct);
+                else
+                    // 首次点击触发的布雷路径：FirstInput 恒非空（续局走上面的 snapshot 分支）
+                    await grid.InitCellsAsync(output.Source.LayMineFn(output.FirstInput!.Index), ct);
+
+                GridLogic.Input(new GridState.Input.InitCompleted());
+            }
 
             // 异步输入处理放在绑定层：FSM 只发效果、不 await，完成后以 InputProcessed 回调回 FSM
             async GDTaskVoid HandleInputAsync(GridInput gridInput)

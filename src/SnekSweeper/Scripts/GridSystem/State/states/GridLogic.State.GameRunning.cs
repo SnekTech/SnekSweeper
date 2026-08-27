@@ -11,7 +11,18 @@ public abstract partial record GridState
     {
         public GameRunning()
         {
-            this.OnEnter(delegate { Context.HumbleGrid.TriggerInitEffects(); });
+            this.OnEnter(delegate
+            {
+                Context.HumbleGrid.TriggerInitEffects();
+
+                // 消费初始化阶段暂存的首次输入：进入 Running 后直接处理
+                var pendingFirstClick = Get<GridLogic.Data>().PendingFirstInput;
+                if (pendingFirstClick != null)
+                {
+                    Get<GridLogic.Data>().PendingFirstInput = null;
+                    Output(new Output.ProcessInput(pendingFirstClick));
+                }
+            });
         }
 
         public Type On(in Input.PlayerInput input)
