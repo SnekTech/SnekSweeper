@@ -1,5 +1,6 @@
 using GodotGadgets.Extensions;
 using GodotTask;
+using SnekGameDevKit;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
@@ -10,7 +11,8 @@ namespace SnekSweeper.Autoloads;
 
 /// <summary>
 /// Single source of truth for the player's save data (D 阶段)。
-/// 唯一写入入口 <see cref="Dispatch"/>；每次状态变更自动落盘并触发 <see cref="StateChanged"/>。
+/// 唯一写入入口 <see cref="Dispatch"/>；每次状态变更入队落盘并触发 <see cref="StateChanged"/>。
+/// 落盘由 <see cref="SaveQueue{T}"/> 单写者串行执行：写顺序 = Dispatch 顺序，突发合并只写最新。
 /// 当前用 static 访问器过渡，E 阶段改为 DI 注入（Get&lt;SaveData&gt;()）。
 /// </summary>
 public partial class SaveData : Node
@@ -18,6 +20,8 @@ public partial class SaveData : Node
     public static SaveData Instance { get; private set; } = null!;
 
     PlayerSaveData _state = null!;
+    readonly SaveQueue<PlayerSaveData> _saveQueue =
+        new((state, ct) => state.SaveAsync(OS.GetUserDataDir(), SaveFormat.Json, ct));
     public PlayerSaveData State => _state;
     public event Action<PlayerSaveData>? StateChanged;
     public event Action? SavedFeedback;
@@ -25,7 +29,9 @@ public partial class SaveData : Node
     public override void _Ready()
     {
         Instance = this;
+
         _state = LoadOrCreate();
+        _saveQueue.RunAsync(QuitHandler.QuitGameToken).AsGDTask().Forget();
     }
 
     public void Dispatch(Func<PlayerSaveData, PlayerSaveData> reduce)
@@ -35,7 +41,7 @@ public partial class SaveData : Node
 
         _state = next;
         StateChanged?.Invoke(_state);
-        PersistAsync(_state).Forget();
+        _saveQueue.RequestSave(_state);
     }
 
     public static void SaveNow() => Instance._state.Save(OS.GetUserDataDir());
@@ -68,10 +74,5 @@ public partial class SaveData : Node
 
         "cannot load player save data from disk, will create an empty new one".DumpGd();
         return PlayerSaveData.CreateEmpty();
-    }
-
-    async GDTask PersistAsync(PlayerSaveData state)
-    {
-        await state.SaveAsync(OS.GetUserDataDir(), SaveFormat.Json, QuitHandler.QuitGameToken);
     }
 }
