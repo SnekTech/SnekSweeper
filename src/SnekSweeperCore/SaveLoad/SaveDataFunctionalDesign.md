@@ -179,6 +179,17 @@ public partial class SaveData : Node
 
 record 化 + 单一入口之后，`SaveData` 成为可注入服务（像 `ISceneSwitcher` / `IAppRepo`），场景里 `Get<SaveData>()` 注入，彻底告别 static 单例。`MainSetting` 只是 `SaveData.State.MainSetting` 的普通字段，不再需要像 `currentSkin` 那样特殊处理。
 
+### 决策 7：放弃 C2（领域直接序列化）——仅生命末期才考虑
+
+**决策（2026-08-29）**：不做"领域 record 直接 `[MemoryPackable]`、删 DTO+Mapperly"。理由：
+
+- C2 只省一个"当前版本 DTO"，却付出三笔代价：
+  1. **每个新版本都要做"冻结转换"**：当前设计里每个版本生来就是 DTO，冻结 = "不再修改"，零转换；C2 则每次要把当前 domain 手动复制成冻结 DTO。
+  2. **DTO 与 domain 混层**：迁移层同时存在"历史 = DTO、当前 = domain"两种 schema 类型；当前设计只有一种（全 DTO），domain 纯净。
+  3. **序列化约束泄漏进 domain**：domain 直接 `[MemoryPackable]` 要处理 `ImmutableHashSet`/`ImmutableList` 等 MemoryPack 不原生支持的类型。
+- 当前设计的 DTO 层成本本来就低：Mapperly 自动生成映射（B 阶段全程零改动）、DTO 是薄类型、冻结免费。
+- **保留**：版本化信封 + 每版本一个冻结 DTO + 最新 DTO→Mapperly→domain 的分离形态。**仅当确认永远不再出新存档版本（游戏定稿）时**，才可把当前 DTO 折叠进 domain 作为终局简化。
+
 ## 4. 调用形态（消费端）
 
 ```csharp
@@ -222,19 +233,15 @@ public void add_record_returns_new_state_and_keeps_original_untouched()
 }
 ```
 
-## 6. 待办（下一步）
+## 6. 完成状态（B/D/E 全部落地，2026-08-28）
 
-1. **B 阶段（未完成，本文档的前置条件）**：`MainSetting` / `ActivatedCheatCodeSet` / `CurrentRunInfo` / `History` record 化。
-   - 建议顺序：先 `CurrentRunInfo` + `MainSetting`（纯属性、无集合），再 `ActivatedCheatCodeSet` + `History`（带集合，涉及 Immutable 取舍）。
-   - 注意：record 化会触及 DTO/映射（`Mapping.cs` / `SaveMigrations.cs`），需同步。
-2. **D 阶段**：建 `SaveDataLenses`（4 个提升器）+ 各领域 reducer 块 + `SaveData` autoload，逐个消费端替换。
-   - **GameRunRecorder 重构（D 阶段一起做）**：
-     - 定位：一局游戏的 save-data 生命周期协调器，**保留不删**，网格状态经 `Context.RunRecorder` 调用。
-     - `GenerateRecentRecord` 纯函数化 → 静态 `GameRunRecord.FromRun(startInfo, winning, bombs)`，脱离 recorder 实例。
-     - 加复合方法 `FinishRun(winning, bombs)` = 清快照 + 生成记录 + 入库（把 Win 状态当前的 3 连调用收敛成 1 个原子动作）。
-     - 构造从 3 个委托（get/update/history）收敛为注入单个 `ISaveDataWriter`（或 `SaveData`），内部 `writer.UpdateCurrentRunInfo(...)` / `writer.UpdateHistory(...)`。
-     - 保持 Godot-free（若直接依赖 `SaveData` autoload 则挪到 Godot 层）；**不要**升级成小状态机/事件溯源（过度设计）。
-3. **E 阶段**：`SaveData` 注册进 DI 容器，`MainSetting` 注入。
+1. **B 阶段 ✅**：`MainSetting` / `ActivatedCheatCodeSet` / `CurrentRunInfo` / `History` 全部 record 化（不可变 + Immutable 集合），Mapperly 全程零改动。
+2. **D 阶段 ✅**：
+   - `SaveDataLenses`（4 个 UpdateDomain 提升器）+ `SaveData` autoload（Dispatch/StateChanged/SaveQueue 事件驱动保存）。
+   - `GameRunRecorder` 重构：收敛为单 `ISaveDataStore` 依赖 + `FinishRun` 复合方法（清快照+生成记录+入库，返回记录）；`GameRunRecord.FromRun` 纯函数；删 `GenerateRecentRecord`/`SaveRecord`/`ClearSnapshot`。
+   - 保存视觉反馈：`ISaveDataStore.NotifySaved()`/`SavedFeedback` + 组合根订阅 toast。
+3. **E 阶段 ✅**：`Main` `IProvide<ISaveDataStore>`；消费端 `[Dependency] ISaveDataStore SaveData` 注入（读 State / 写 UpdateX 扩展 / CurrentSkin 派生查询），`SaveData` 只剩 `Instance` static；AppRepo 简化为纯 app 事件持有者。
+4. **C2（已放弃）**：见决策 7——领域直接序列化不采纳，保持"DTO 层版本化 + domain 纯净"。
 
 ## 7. 关联决策（已完成，本方案依赖）
 
