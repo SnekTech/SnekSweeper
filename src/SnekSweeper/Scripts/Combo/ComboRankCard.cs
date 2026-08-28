@@ -1,8 +1,8 @@
 ﻿using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
-using SnekSweeper.Autoloads;
 using SnekSweeper.Levels;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.SaveLoad;
 using CoreFS.ComboDomain;
 
 namespace SnekSweeper.Combo;
@@ -19,25 +19,24 @@ public partial class ComboRankCard : VBoxContainer, ISceneScript
     [Dependency]
     LevelData LevelData => this.DependOn<LevelData>();
 
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
+
     public void OnResolved()
     {
-        LevelData.GridEventBus.BatchRevealed += OnBatchRevealed;
-    }
-
-    public void OnExitTree()
-    {
-        LevelData.GridEventBus.BatchRevealed -= OnBatchRevealed;
-    }
-
-    public override void _Ready()
-    {
-        if (!SaveData.MainSetting.ComboRankDisplay)
+        if (!SaveData.State.MainSetting.ComboRankDisplay)
         {
             Hide();
             return;
         }
 
+        LevelData.GridEventBus.BatchRevealed += OnBatchRevealed;
         RefreshDisplay();
+    }
+
+    public void OnExitTree()
+    {
+        LevelData.GridEventBus.BatchRevealed -= OnBatchRevealed;
     }
 
     public override void _Process(double delta)

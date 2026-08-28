@@ -4,7 +4,6 @@ using Chickensoft.Introspection;
 using Chickensoft.LogicBlocks;
 using GodotGadgets.Tasks;
 using GodotTask;
-using SnekSweeper.Autoloads;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.GridSystem;
 using SnekSweeper.GridSystem.State;
@@ -13,6 +12,7 @@ using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
+using SnekSweeperCore.SaveLoad;
 using GridState = SnekSweeper.GridSystem.State.GridState;
 
 namespace SnekSweeper.Levels;
@@ -30,6 +30,9 @@ public partial class Level1 : Node2D,
 
     [Dependency]
     IAppRepo AppRepo => this.DependOn<IAppRepo>();
+
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     GridLogic GridLogic { get; set; } = null!;
     LogicBlock.Binding GridBinding { get; set; } = null!;
@@ -70,7 +73,7 @@ public partial class Level1 : Node2D,
 
         Grid CreateGrid()
         {
-            var gridSkin = AppRepo.CurrentSkin;
+            var gridSkin = SaveData.CurrentSkin;
             TheGrid.HumbleCellsContainer.Clear(); // 建图前清空演示容器（集合角色，Godot 层驱动）
             return loadLevelSource.CreateGrid(TheGrid.CellFactory, gridSkin, _levelData.GridEventBus,
                 _levelData.GridCommandInvoker);
@@ -89,7 +92,7 @@ public partial class Level1 : Node2D,
             GridLogic.Set(new GridStateContext(
                 grid,
                 TheGrid,
-                new GameRunRecorder(SaveData.Instance),
+                new GameRunRecorder(SaveData),
                 this
             ));
         }
@@ -175,7 +178,7 @@ public partial class Level1 : Node2D,
 
     public void NewGame()
     {
-        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.MainSetting));
+        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.State.MainSetting));
     }
 
     public void BackToMainMenu()

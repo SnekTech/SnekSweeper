@@ -1,14 +1,17 @@
-﻿using SnekSweeper.Autoloads;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
+using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeper.UI.Settings;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class GenerateSolvableGridToggle : HBoxContainer
 {
-    public override void _Ready()
-    {
-        InitSolvableToggle();
-    }
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     public override void _EnterTree()
     {
@@ -20,12 +23,12 @@ public partial class GenerateSolvableGridToggle : HBoxContainer
         Toggle.Toggled -= OnSolvableToggled;
     }
 
-    void InitSolvableToggle()
+    public void OnResolved()
     {
-        Toggle.SetPressedNoSignal(SaveData.MainSetting.GenerateSolvableGrid);
+        Toggle.SetPressedNoSignal(SaveData.State.MainSetting.GenerateSolvableGrid);
     }
 
-    static void OnSolvableToggled(bool toggledOn)
+    void OnSolvableToggled(bool toggledOn)
     {
         SaveData.UpdateMainSetting(m => m with { GenerateSolvableGrid = toggledOn });
     }

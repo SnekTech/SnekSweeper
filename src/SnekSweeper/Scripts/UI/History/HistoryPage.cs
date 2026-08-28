@@ -1,17 +1,25 @@
-﻿using GodotGadgets.Extensions;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
+using GodotGadgets.Extensions;
 using GodotGadgets.UI.Pagination;
-using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
+using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeper.UI.History;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class HistoryPage : CanvasLayer, ISceneScript
 {
     const int RunRecordPageSize = 2;
-    
-    public override void _Ready()
+
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
+
+    public void OnResolved()
     {
         ResetRunRecords();
     }
@@ -34,7 +42,7 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
 
     void InitPagination()
     {
-        var records = SaveData.History.Records
+        var records = SaveData.State.History.Records
             .OrderByDescending(r => r.Duration.EndAt).ToList();
         var historyQuery = new HistoryQuery(records);
         var pagination = new Pagination<GameRunRecord>(historyQuery, RunRecordPageSize);

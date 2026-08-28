@@ -1,15 +1,23 @@
-﻿using GodotGadgets.Extensions;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
+using GodotGadgets.Extensions;
 using GodotGadgets.TooltipSystem;
-using SnekSweeper.Autoloads;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CheatCodeSystem;
+using SnekSweeperCore.SaveLoad;
 using SnekTech.Tooltip;
 
 namespace SnekSweeper.CheatCodeSystem.UI;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class CheatCodeCard : PanelContainer, ISceneScript
 {
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
+
     CheatCode _cheatCode = null!;
 
     public override void _EnterTree()
@@ -28,7 +36,7 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
 
         NameLabel.Text = cheatCode.Data.Name;
         Icon.Texture = cheatCode.Icon;
-        CheckButton.SetPressed(cheatCode.IsActivatedIn(SaveData.ActivatedCheatCodeSet));
+        CheckButton.SetPressed(cheatCode.IsActivatedIn(SaveData.State.ActivatedCheatCodeSet));
         
         InitTooltip();
         return;

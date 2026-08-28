@@ -1,16 +1,19 @@
-﻿using SnekSweeper.Autoloads;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using SnekSweeper.SkinSystem;
+using SnekSweeperCore.SaveLoad;
 using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.UI.Settings;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class SkinSelect : HBoxContainer
 {
-    public override void _Ready()
-    {
-        InitSkinOptions();
-    }
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     public override void _EnterTree()
     {
@@ -22,12 +25,12 @@ public partial class SkinSelect : HBoxContainer
         SkinOptionButton.ItemSelected -= OnSkinSelected;
     }
     
-    static void OnSkinSelected(long index)
+    void OnSkinSelected(long index)
     {
         SaveData.UpdateMainSetting(m => m with { CurrentSkinKey = SkinKey.FromLong(index) });
     }
     
-    void InitSkinOptions()
+    public void OnResolved()
     {
         SkinOptionButton.Clear();
 
@@ -37,7 +40,7 @@ public partial class SkinSelect : HBoxContainer
             SkinOptionButton.AddItem(skin.Name, (int)skin.Key);
         }
 
-        var savedSkinIndex = skins.FindIndex(skin => skin.Key == SaveData.MainSetting.CurrentSkinKey);
+        var savedSkinIndex = skins.FindIndex(skin => skin.Key == SaveData.State.MainSetting.CurrentSkinKey);
         if (savedSkinIndex != -1)
         {
             SkinOptionButton.Select(savedSkinIndex);

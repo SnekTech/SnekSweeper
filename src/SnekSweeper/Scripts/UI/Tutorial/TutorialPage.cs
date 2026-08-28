@@ -2,9 +2,9 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using GodotGadgets.Extensions;
 using GodotGadgets.UI.Pagination;
-using SnekSweeper.GameStateManagement;
 using SnekSweeper.UI.Tutorial.Example;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.SaveLoad;
 using SnekSweeperCore.Tutorial;
 
 namespace SnekSweeper.UI.Tutorial;
@@ -16,7 +16,7 @@ public partial class TutorialPage : Control, ISceneScript
     const int ExamplePageSize = 1;
     
     [Dependency]
-    IAppRepo AppRepo => this.DependOn<IAppRepo>();
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     public override void _Ready()
     {
@@ -31,7 +31,7 @@ public partial class TutorialPage : Control, ISceneScript
             _ =>
             {
                 var card = ExampleCard.Instantiate();
-                card.Skin = AppRepo.CurrentSkin;
+                card.Skin = SaveData.CurrentSkin;
                 return card;
             }
             , pagination);

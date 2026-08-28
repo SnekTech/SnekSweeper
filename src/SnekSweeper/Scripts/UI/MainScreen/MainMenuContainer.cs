@@ -1,10 +1,10 @@
 ﻿using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using GodotGadgets.UI.ScrollMenuCore;
-using SnekSweeper.Autoloads;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
+using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeper.UI.MainScreen;
 
@@ -17,7 +17,10 @@ public partial class MainMenuContainer : Control, ISceneScript
     [Dependency]
     AppLogic AppLogic => this.DependOn<AppLogic>();
 
-    public override void _Ready()
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
+
+    public void OnResolved()
     {
         var bindings = new List<MenuItemBinding>
         {
@@ -36,7 +39,7 @@ public partial class MainMenuContainer : Control, ISceneScript
         _.ScrollMenuView.Init(bindings);
         return;
 
-        bool HasAnOngoingGame() => SaveData.CurrentRunInfo.GridSnapshot != null;
+        bool HasAnOngoingGame() => SaveData.State.CurrentRunInfo.GridSnapshot != null;
     }
 
     void OnTutorialButonPressed()
@@ -61,7 +64,7 @@ public partial class MainMenuContainer : Control, ISceneScript
 
     void OnStartButtonPressed()
     {
-        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.MainSetting));
+        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.State.MainSetting));
     }
 
     void OnQuitPressed()
@@ -71,8 +74,9 @@ public partial class MainMenuContainer : Control, ISceneScript
 
     void OnContinueButtonPressed()
     {
+        // todo: refactor this ! operator
         var fromSnapshot =
-            new FromGridSnapshot(SaveData.CurrentRunInfo.GridSnapshot!, SaveData.CurrentRunInfo.StartInfo);
+            new FromGridSnapshot(SaveData.State.CurrentRunInfo.GridSnapshot!, SaveData.State.CurrentRunInfo.StartInfo);
         AppLogic.InputNewGame(fromSnapshot);
     }
 

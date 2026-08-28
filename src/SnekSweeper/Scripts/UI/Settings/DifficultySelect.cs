@@ -1,15 +1,18 @@
-﻿using SnekSweeper.Autoloads;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using SnekSweeperCore.GridSystem.Difficulty;
+using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeper.UI.Settings;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class DifficultySelect : HBoxContainer
 {
-    public override void _Ready()
-    {
-        InitDifficultyOptions();
-    }
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     public override void _EnterTree()
     {
@@ -21,7 +24,7 @@ public partial class DifficultySelect : HBoxContainer
         DifficultyOptionButton.ItemSelected -= OnDifficultySelected;
     }
 
-    void InitDifficultyOptions()
+    public void OnResolved()
     {
         DifficultyOptionButton.Clear();
         var difficulties = DifficultyFactory.Difficulties.ToList();
@@ -31,11 +34,11 @@ public partial class DifficultySelect : HBoxContainer
         }
 
         var savedDifficultyIndex =
-            difficulties.FindIndex(difficulty => difficulty.Key == SaveData.MainSetting.CurrentDifficultyKey);
+            difficulties.FindIndex(difficulty => difficulty.Key == SaveData.State.MainSetting.CurrentDifficultyKey);
         DifficultyOptionButton.Select(savedDifficultyIndex);
     }
 
-    static void OnDifficultySelected(long index)
+    void OnDifficultySelected(long index)
     {
         SaveData.UpdateMainSetting(m => m with { CurrentDifficultyKey = GridDifficultyKey.FromLong(index) });
     }

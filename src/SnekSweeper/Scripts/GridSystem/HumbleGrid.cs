@@ -1,13 +1,21 @@
-﻿using SnekSweeper.Autoloads;
+﻿using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeper.GridSystem;
 
+[Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
+    public override void _Notification(int what) => this.Notify(what);
+
+    [Dependency]
+    ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
+
     GridSize _gridSize;
 
     public override void _EnterTree()
@@ -28,7 +36,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();
 
-    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(SaveData.ActivatedCheatCodeSet);
+    public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(SaveData.State.ActivatedCheatCodeSet);
 
     void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
     {
