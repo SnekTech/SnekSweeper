@@ -15,18 +15,13 @@ public abstract partial record GridState
         {
             this.OnEnter(() =>
             {
-                Context.RunRecorder.ClearSnapshot();
                 Get<GridLogic.Data>().AppRepo.InvokeGameEnded();
                 EndLevelResult = Get<GridLogic.Data>().EndLevelResult;
             });
         }
 
-        protected GameRunRecord SaveRunRecord(bool winning, bool[,] bombs)
-        {
-            var runRecord = Context.RunRecorder.GenerateRecentRecord(winning, bombs);
-            Context.RunRecorder.SaveRecord(runRecord);
-            return runRecord;
-        }
+        protected GameRunRecord SaveRunRecord(bool winning, bool[,] bombs) =>
+            Context.RunRecorder.FinishRun(winning, bombs);
     }
 
     public record Win : End

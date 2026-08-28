@@ -89,10 +89,7 @@ public partial class Level1 : Node2D,
             GridLogic.Set(new GridStateContext(
                 grid,
                 TheGrid,
-                new GameRunRecorder(
-                    () => SaveData.CurrentRunInfo,
-                    SaveData.UpdateCurrentRunInfo,
-                    SaveData.UpdateHistory),
+                new GameRunRecorder(SaveData.Instance),
                 this
             ));
         }

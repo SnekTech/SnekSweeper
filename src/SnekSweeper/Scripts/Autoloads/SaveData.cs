@@ -15,7 +15,7 @@ namespace SnekSweeper.Autoloads;
 /// 落盘由 <see cref="SaveQueue{T}"/> 单写者串行执行：写顺序 = Dispatch 顺序，突发合并只写最新。
 /// 当前用 static 访问器过渡，E 阶段改为 DI 注入（Get&lt;SaveData&gt;()）。
 /// </summary>
-public partial class SaveData : Node
+public partial class SaveData : Node, ISaveDataStore
 {
     public static SaveData Instance { get; private set; } = null!;
 

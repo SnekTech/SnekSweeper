@@ -1,5 +1,6 @@
 ﻿using MemoryPack;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GameHistory;
 
@@ -21,8 +22,7 @@ static class GameRunRecordExtensions
 
     extension(GameRunRecord)
     {
-        internal static GameRunRecord Create(RunDuration duration, bool winning, bool[,] bombMatrix,
-            GridIndex startIndex)
-            => new(duration, winning, bombMatrix, startIndex);
+        internal static GameRunRecord FromRun(RunStartInfo startInfo, DateTime endAt, bool winning, bool[,] bombMatrix) =>
+            new(RunDuration.Create(startInfo.StartAt, endAt), winning, bombMatrix, startInfo.StartIndex);
     }
 }

@@ -1,32 +1,26 @@
 ﻿using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeperCore.LevelManagement;
 
-public class GameRunRecorder(
-    Func<CurrentRunInfo> getCurrentRunInfo,
-    Action<Func<CurrentRunInfo, CurrentRunInfo>> updateCurrentRunInfo,
-    Action<Func<History, History>> updateHistory)
+public class GameRunRecorder(ISaveDataStore store)
 {
-    RunStartInfo StartInfo => getCurrentRunInfo().StartInfo;
+    RunStartInfo StartInfo => store.State.CurrentRunInfo.StartInfo;
 
     public void MarkRunStartInfo(RunStartInfo startInfo) =>
-        updateCurrentRunInfo(r => r with { StartInfo = startInfo });
-
-    public GameRunRecord GenerateRecentRecord(bool winning, bool[,] bombs) => GameRunRecord.Create(
-        RunDuration.Create(StartInfo.StartAt, DateTime.Now),
-        winning,
-        bombs,
-        StartInfo.StartIndex
-    );
-
-    public void SaveRecord(GameRunRecord runRecord) => updateHistory(h => h.Add(runRecord));
+        store.Dispatch(s => s.UpdateCurrentRunInfo(r => r with { StartInfo = startInfo }));
 
     public void UpdateGridSnapshot(Grid grid) =>
-        updateCurrentRunInfo(r => r with { GridSnapshot = grid.GetSnapshot() });
+        store.Dispatch(s => s.UpdateCurrentRunInfo(r => r with { GridSnapshot = grid.GetSnapshot() }));
 
-    public void ClearSnapshot() =>
-        updateCurrentRunInfo(r => r with { GridSnapshot = null });
+    public GameRunRecord FinishRun(bool winning, bool[,] bombs)
+    {
+        var record = GameRunRecord.FromRun(StartInfo, DateTime.Now, winning, bombs);
+        store.Dispatch(s => s.UpdateHistory(h => h.Add(record)));
+        store.Dispatch(s => s.UpdateCurrentRunInfo(r => r with { GridSnapshot = null }));
+        return record;
+    }
 }
 
 public readonly record struct RunStartInfo(DateTime StartAt, GridIndex StartIndex);
