@@ -80,11 +80,7 @@ public sealed class PlayerSaveDataRoundTripSpecs
         var original = new PlayerSaveData(
             new MainSetting(),
             new ActivatedCheatCodeSet([]),
-            new CurrentRunInfo
-            {
-                GridSnapshot = SampleGridSnapshot(),
-                StartInfo = SampleStartInfo(),
-            },
+            new CurrentRunInfo(new OngoingGame(SampleGridSnapshot(), SampleStartInfo())),
             new History([]));
 
         original.Save(_saveDir);
@@ -116,11 +112,7 @@ public sealed class PlayerSaveDataRoundTripSpecs
         var original = new PlayerSaveData(
             CustomizedMainSetting(),
             new ActivatedCheatCodeSet([CheatCodeKey.TransparentCover, CheatCodeKey.Messenger]),
-            new CurrentRunInfo
-            {
-                GridSnapshot = SampleGridSnapshot(),
-                StartInfo = SampleStartInfo(),
-            },
+            new CurrentRunInfo(new OngoingGame(SampleGridSnapshot(), SampleStartInfo())),
             new History([WinningRecord(), LosingRecord()]));
 
         original.Save(_saveDir);
@@ -136,11 +128,7 @@ public sealed class PlayerSaveDataRoundTripSpecs
         var original = new PlayerSaveData(
             CustomizedMainSetting(),
             new ActivatedCheatCodeSet([CheatCodeKey.Messenger]),
-            new CurrentRunInfo
-            {
-                GridSnapshot = SampleGridSnapshot(),
-                StartInfo = SampleStartInfo(),
-            },
+            new CurrentRunInfo(new OngoingGame(SampleGridSnapshot(), SampleStartInfo())),
             new History([WinningRecord()]));
 
         await original.SaveAsync(_saveDir);

@@ -115,17 +115,15 @@ public sealed class GoldenEnvelopeSpecs
             GenerateSolvableGrid = false,
         },
         new ActivatedCheatCodeSet([CheatCodeKey.Messenger]),
-        new CurrentRunInfo
-        {
-            GridSnapshot = new GridSnapshot(
+        new CurrentRunInfo(new OngoingGame(
+            new GridSnapshot(
                 new[,]
                 {
                     { CellSnapshotState.Revealed, CellSnapshotState.Flagged },
                     { CellSnapshotState.Covered, CellSnapshotState.Irrelevant },
                 },
                 new[,] { { false, true }, { true, false } }),
-            StartInfo = new RunStartInfo(DateTime.UnixEpoch, new(1, 2)),
-        },
+            new RunStartInfo(DateTime.UnixEpoch, new(1, 2)))),
         new History([WinningRecord()]));
 
     static GameRunRecord WinningRecord() => new(

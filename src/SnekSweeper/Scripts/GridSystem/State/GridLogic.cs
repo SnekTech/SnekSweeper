@@ -27,6 +27,7 @@ public partial class GridLogic : LogicBlock
         Set(new GridState.Initializing());
         Set(new GridState.Lose());
         Set(new GridState.PreInstantiated());
+        Set(new GridState.Resuming());
         Set(new GridState.Win());
     }
 }

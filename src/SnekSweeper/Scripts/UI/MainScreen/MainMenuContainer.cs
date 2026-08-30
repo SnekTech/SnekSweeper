@@ -31,15 +31,18 @@ public partial class MainMenuContainer : Control, ISceneScript
             CreateButtonWithBinding("Tutorial", OnTutorialButonPressed),
             CreateButtonWithBinding("Quit", OnQuitPressed),
         };
-        if (HasAnOngoingGame())
-        {
-            bindings.Insert(0, CreateButtonWithBinding("Continue", OnContinueButtonPressed));
-        }
+        TrySetupContinueButton();
 
         _.ScrollMenuView.Init(bindings);
         return;
 
-        bool HasAnOngoingGame() => SaveData.State.CurrentRunInfo.GridSnapshot != null;
+        void TrySetupContinueButton()
+        {
+            if (SaveData.State.CurrentRunInfo.OngoingGame is not { } ongoingGame) return;
+
+            var fromOngoingGame = new FromOngoingGame(ongoingGame);
+            bindings.Insert(0, CreateButtonWithBinding("Continue", () => AppLogic.InputNewGame(fromOngoingGame)));
+        }
     }
 
     void OnTutorialButonPressed()
@@ -70,14 +73,6 @@ public partial class MainMenuContainer : Control, ISceneScript
     void OnQuitPressed()
     {
         GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
-    }
-
-    void OnContinueButtonPressed()
-    {
-        // todo: refactor this ! operator
-        var fromSnapshot =
-            new FromGridSnapshot(SaveData.State.CurrentRunInfo.GridSnapshot!, SaveData.State.CurrentRunInfo.StartInfo);
-        AppLogic.InputNewGame(fromSnapshot);
     }
 
     static MenuItemBinding CreateButtonWithBinding(string buttonText, Action onConfirm) =>

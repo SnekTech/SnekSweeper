@@ -6,20 +6,30 @@ using SnekSweeperCore.SaveLoad;
 namespace BasicTests.SaveLoad;
 
 /// <summary>
-/// B1：CurrentRunInfo record 化后的领域级 reducer 测试。
-/// 同时覆盖 lens 提升（正确领域、原状态不可变）与子状态语义。
+/// CurrentRunInfo 改为 OngoingGame? 后的领域级 reducer 测试。
+/// 覆盖 lens 提升（正确领域、原状态不可变）与 OngoingGame 语义。
 /// </summary>
 public sealed class CurrentRunInfoReducersSpecs
 {
     [Test]
-    public void update_current_run_info_lifts_start_info_and_keeps_original_untouched()
+    public void update_current_run_info_lifts_ongoing_game_and_keeps_original_untouched()
     {
         var original = PlayerSaveData.CreateEmpty();
-        var startInfo = new RunStartInfo(DateTime.UnixEpoch, new GridIndex(1, 2));
+        var ongoingGame = new OngoingGame(
+            SampleGridSnapshot(),
+            new RunStartInfo(DateTime.UnixEpoch, new GridIndex(1, 2)));
 
-        var next = original.UpdateCurrentRunInfo(r => r with { StartInfo = startInfo });
+        var next = original.UpdateCurrentRunInfo(r => r with { OngoingGame = ongoingGame });
 
-        next.CurrentRunInfo.StartInfo.Should().Be(startInfo);
-        original.CurrentRunInfo.StartInfo.Should().Be(default(RunStartInfo));
+        next.CurrentRunInfo.OngoingGame.Should().Be(ongoingGame);
+        original.CurrentRunInfo.OngoingGame.Should().BeNull();
     }
+
+    static GridSnapshot SampleGridSnapshot() => new(
+        new[,]
+        {
+            { CellSnapshotState.Covered, CellSnapshotState.Covered },
+            { CellSnapshotState.Covered, CellSnapshotState.Covered },
+        },
+        new[,] { { false, false }, { false, false } });
 }

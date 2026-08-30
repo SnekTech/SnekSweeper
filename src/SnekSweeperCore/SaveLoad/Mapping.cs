@@ -37,7 +37,7 @@ partial record PlayerSaveDataDtoV1(
     CurrentRunInfoDtoV1 CurrentRunInfo,
     HistoryDtoV1 History);
 
-// --- Current version 2 ---
+// --- Historical version 2 ---
 [MemoryPackable]
 partial record MainSettingDtoV2(
     GridDifficultyKey CurrentDifficultyKey,
@@ -62,9 +62,20 @@ partial record PlayerSaveDataDtoV2(
     CurrentRunInfoDtoV2 CurrentRunInfo,
     HistoryDtoV2 History);
 
+// --- Current version 3 ---
+[MemoryPackable]
+partial record CurrentRunInfoDtoV3(OngoingGame? OngoingGame);
+
+[MemoryPackable]
+partial record PlayerSaveDataDtoV3(
+    MainSettingDtoV2 MainSetting,
+    ActivatedCheatCodeSetDtoV2 ActivatedCheatCodeSet,
+    CurrentRunInfoDtoV3 CurrentRunInfo,
+    HistoryDtoV2 History);
+
 [Mapper]
 static partial class PlayerSaveDataMapper
 {
-    internal static partial PlayerSaveDataDtoV2 ToDto(this PlayerSaveData playerSaveData);
-    internal static partial PlayerSaveData ToPlayerSaveData(this PlayerSaveDataDtoV2 dto);
+    internal static partial PlayerSaveDataDtoV3 ToDto(this PlayerSaveData playerSaveData);
+    internal static partial PlayerSaveData ToPlayerSaveData(this PlayerSaveDataDtoV3 dto);
 }

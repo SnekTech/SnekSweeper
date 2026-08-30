@@ -1,4 +1,5 @@
 ﻿using Chickensoft.LogicBlocks;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;
 
@@ -9,7 +10,11 @@ public abstract partial record GridState
         public Type On(in Input.Init input)
         {
             Get<GridLogic.Data>().LoadLevelSource = input.LoadLevelSource;
-            return To<Initializing>();
+            return input.LoadLevelSource switch
+            {
+                FromOngoingGame => To<Resuming>(),
+                _ => To<Initializing>(),
+            };
         }
     }
 }

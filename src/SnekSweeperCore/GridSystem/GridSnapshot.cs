@@ -17,7 +17,7 @@ public partial record GridSnapshot(
     bool[,] BombMatrix
 );
 
-static class GridSnapshotExtensions
+public static class GridSnapshotExtensions
 {
     extension(Grid grid)
     {

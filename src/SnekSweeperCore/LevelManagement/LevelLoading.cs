@@ -21,7 +21,7 @@ public sealed record FromRunRecord(
     GameRunRecord RunRecord
 ) : LoadLevelSource;
 
-public sealed record FromGridSnapshot(GridSnapshot Snapshot, RunStartInfo StartInfo) : LoadLevelSource;
+public sealed record FromOngoingGame(OngoingGame OngoingGame) : LoadLevelSource;
 
 public static class LevelLoading
 {
@@ -43,7 +43,7 @@ public static class LevelLoading
                 ? startIndex => LayMineStrategies.LayMineSolvable(regularStart.DifficultyData, startIndex)
                 : startIndex => LayMineStrategies.LayMineClassic(regularStart.DifficultyData, startIndex),
             FromRunRecord fromRunRecord => _ => fromRunRecord.RunRecord.BombMatrix,
-            FromGridSnapshot fromGridSnapshot => _ => fromGridSnapshot.Snapshot.BombMatrix,
+            FromOngoingGame fromOngoingGame => _ => fromOngoingGame.OngoingGame.GridSnapshot.BombMatrix,
             _ => throw new SwitchExpressionException(),
         };
 
@@ -57,7 +57,7 @@ public static class LevelLoading
         {
             RegularStart regularStart => regularStart.DifficultyData.Size,
             FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.Size,
-            FromGridSnapshot fromGridSnapshot => fromGridSnapshot.Snapshot.BombMatrix.Size,
+            FromOngoingGame fromOngoingGame => fromOngoingGame.OngoingGame.GridSnapshot.BombMatrix.Size,
             _ => throw new SwitchExpressionException(),
         };
     }

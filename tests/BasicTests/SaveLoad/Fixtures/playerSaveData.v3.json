@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "data": {
     "MainSetting": {
       "CurrentDifficultyKey": 2,
@@ -13,33 +13,35 @@
       ]
     },
     "CurrentRunInfo": {
-      "GridSnapshot": {
-        "SnapshotStates": [
-          [
-            1,
-            2
+      "OngoingGame": {
+        "GridSnapshot": {
+          "SnapshotStates": [
+            [
+              1,
+              2
+            ],
+            [
+              0,
+              3
+            ]
           ],
-          [
-            0,
-            3
+          "BombMatrix": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              0
+            ]
           ]
-        ],
-        "BombMatrix": [
-          [
-            0,
-            1
-          ],
-          [
-            1,
-            0
-          ]
-        ]
-      },
-      "StartInfo": {
-        "StartAt": "1970-01-01T00:00:00Z",
-        "StartIndex": {
-          "I": 1,
-          "J": 2
+        },
+        "StartInfo": {
+          "StartAt": "1970-01-01T00:00:00Z",
+          "StartIndex": {
+            "I": 1,
+            "J": 2
+          }
         }
       }
     },

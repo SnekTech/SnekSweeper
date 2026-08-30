@@ -20,7 +20,7 @@ public abstract partial record GridState : LogicBlockState
     {
         public readonly record struct ProcessInput(GridInput GridInput);
         public readonly record struct LayMinesAt(LoadLevelSource Source, GridInput FirstInput);
-        public readonly record struct RestoreGrid(FromGridSnapshot Source);
+        public readonly record struct RestoreGrid(GridSnapshot Snapshot);
         public readonly record struct EndGameChoiceOnWin(PopupChoiceOnWin Choice, GameRunRecord RecentRecord);
         public readonly record struct EndGameChoiceOnLose(PopupChoiceOnLose Choice, GameRunRecord RecentRecord);
     }

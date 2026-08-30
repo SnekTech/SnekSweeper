@@ -71,20 +71,21 @@ public sealed class VersionedSaveLoadSpecs
     }
 
     [Test]
-    public void migrate_v1_to_current_yields_current_version_with_values()
+    public void migrate_v1_to_v3_yields_current_version_with_values()
     {
         var v1 = SampleDtoV1();
 
-        var current = SaveMigrations.MigrateToCurrent(v1);
+        var current = SaveMigrations.MigrateV1ToV3(v1);
 
         // 从 v1 搬运过来的字段：逐字段与来源比较，避免在样本里 hardcode 期望值。
-        // （将来 v2 有新增/改名字段时，再补"新字段取默认值/映射值"的显式断言——那时没有 v1 对应项。）
+        // （将来有新增/改名字段时，再补"新字段取默认值/映射值"的显式断言——那时没有 v1 对应项。）
         current.MainSetting.CurrentDifficultyKey.Should().Be(v1.MainSetting.CurrentDifficultyKey);
         current.MainSetting.CurrentSkinKey.Should().Be(v1.MainSetting.CurrentSkinKey);
         current.MainSetting.ComboRankDisplay.Should().Be(v1.MainSetting.ComboRankDisplay);
         current.MainSetting.GenerateSolvableGrid.Should().Be(v1.MainSetting.GenerateSolvableGrid);
         current.ActivatedCheatCodeSet.ActivatedSet.Should().BeEquivalentTo(v1.ActivatedCheatCodeSet.ActivatedSet);
         current.History.Records.Should().BeEquivalentTo(v1.History.Records);
+        current.CurrentRunInfo.OngoingGame.Should().BeNull();
     }
 
     [Test]
@@ -101,6 +102,29 @@ public sealed class VersionedSaveLoadSpecs
         snapshot.SnapshotStates[0, 0].Should().Be(CellSnapshotState.Revealed);
         snapshot.SnapshotStates[1, 1].Should().Be(CellSnapshotState.Irrelevant);
         snapshot.BombMatrix[1, 0].Should().BeTrue();
+    }
+
+    [Test]
+    public void migrate_v2_to_v3_wraps_snapshot_into_ongoing_game()
+    {
+        var v2 = SampleDtoV2WithSnapshot();
+
+        var v3 = SaveMigrations.MigrateV2ToV3(v2);
+
+        var ongoing = v3.CurrentRunInfo.OngoingGame;
+        ongoing.Should().NotBeNull();
+        ongoing.GridSnapshot.Should().Be(v2.CurrentRunInfo.GridSnapshot);
+        ongoing.StartInfo.Should().Be(v2.CurrentRunInfo.StartInfo);
+    }
+
+    [Test]
+    public void migrate_v2_to_v3_drops_snapshot_less_run()
+    {
+        var v2 = SampleDtoV2WithStaleStartInfo();
+
+        var v3 = SaveMigrations.MigrateV2ToV3(v2);
+
+        v3.CurrentRunInfo.OngoingGame.Should().BeNull();
     }
 
     [Test]
@@ -121,17 +145,15 @@ public sealed class VersionedSaveLoadSpecs
             GenerateSolvableGrid = false,
         },
         new ActivatedCheatCodeSet([CheatCodeKey.TransparentCover, CheatCodeKey.Messenger]),
-        new CurrentRunInfo
-        {
-            GridSnapshot = new GridSnapshot(
+        new CurrentRunInfo(new OngoingGame(
+            new GridSnapshot(
                 new[,]
                 {
                     { CellSnapshotState.Revealed, CellSnapshotState.Flagged },
                     { CellSnapshotState.Covered, CellSnapshotState.Irrelevant },
                 },
                 new[,] { { false, true }, { true, false } }),
-            StartInfo = new RunStartInfo(DateTime.UnixEpoch, new(1, 2)),
-        },
+            new RunStartInfo(DateTime.UnixEpoch, new(1, 2)))),
         new History([WinningRecord()]));
 
     static GameRunRecord WinningRecord() => new(
@@ -145,6 +167,26 @@ public sealed class VersionedSaveLoadSpecs
         new ActivatedCheatCodeSetDtoV1([CheatCodeKey.Messenger]),
         new CurrentRunInfoDtoV1(null, new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
         new HistoryDtoV1([]));
+
+    static PlayerSaveDataDtoV2 SampleDtoV2WithSnapshot() => new(
+        new MainSettingDtoV2(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),
+        new ActivatedCheatCodeSetDtoV2([CheatCodeKey.Messenger]),
+        new CurrentRunInfoDtoV2(
+            new GridSnapshot(
+                new[,]
+                {
+                    { CellSnapshotState.Revealed, CellSnapshotState.Flagged },
+                    { CellSnapshotState.Covered, CellSnapshotState.Irrelevant },
+                },
+                new[,] { { false, true }, { true, false } }),
+            new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
+        new HistoryDtoV2([]));
+
+    static PlayerSaveDataDtoV2 SampleDtoV2WithStaleStartInfo() => new(
+        new MainSettingDtoV2(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),
+        new ActivatedCheatCodeSetDtoV2([CheatCodeKey.Messenger]),
+        new CurrentRunInfoDtoV2(null, new RunStartInfo(DateTime.UnixEpoch, new(1, 2))),
+        new HistoryDtoV2([]));
 
     static PlayerSaveDataDtoV1 SampleDtoV1WithSnapshot() => new(
         new MainSettingDtoV1(GridDifficultyKey.Expert, SkinKey.Mahjong, false, false),

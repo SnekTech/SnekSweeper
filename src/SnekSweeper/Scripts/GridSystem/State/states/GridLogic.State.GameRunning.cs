@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Chickensoft.LogicBlocks;
 using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GridSystem.State;
 
@@ -15,13 +16,11 @@ public abstract partial record GridState
             {
                 Context.HumbleGrid.TriggerInitEffects();
 
-                // 消费初始化阶段暂存的首次输入：进入 Running 后直接处理
+                // 消费初始化阶段暂存的首次输入：进入 Running 后直接处理。
+                // 注意：不在此消费 PendingFirstInput——首次输入处理完成（InputProcessed）时才构造 startInfo 并创建 OngoingGame。
                 var pendingFirstClick = Get<GridLogic.Data>().PendingFirstInput;
                 if (pendingFirstClick != null)
-                {
-                    Get<GridLogic.Data>().PendingFirstInput = null;
                     Output(new Output.ProcessInput(pendingFirstClick));
-                }
             });
         }
 
@@ -34,16 +33,26 @@ public abstract partial record GridState
 
         public Type On(in Input.InputProcessed input)
         {
+            var data = Get<GridLogic.Data>();
             var judgedResult = Referee.Judge(input.ProcessResult);
-            if (judgedResult is Surviving)
+
+            // 首次输入处理完成 = 本局真正开始：startInfo + snapshot 同时就绪，创建 OngoingGame。
+            //（首击即负也走这里——先创建再走结束流程，与正常游玩完全一致）
+            if (data.PendingFirstInput is { } firstClick)
             {
-                // 处理期间到达的冗余输入返回 NothingHappens，跳过无意义的快照更新
-                if (input.ProcessResult is not NothingHappens)
-                    Context.RunRecorder.UpdateGridSnapshot(Context.Grid);
-                return ToSelf();
+                data.PendingFirstInput = null;
+                Context.RunRecorder.StartOngoingGame(Context.Grid.GetSnapshot(),
+                    new RunStartInfo(DateTime.Now, firstClick.Index));
+            }
+            else if (judgedResult is Surviving && input.ProcessResult is not NothingHappens)
+            {
+                // 续局/后续：只更新快照，保留最初 startInfo
+                Context.RunRecorder.UpdateOngoingGame(Context.Grid.GetSnapshot());
             }
 
-            Get<GridLogic.Data>().EndLevelResult = judgedResult;
+            if (judgedResult is Surviving) return ToSelf();
+
+            data.EndLevelResult = judgedResult;
 
             return judgedResult switch
             {

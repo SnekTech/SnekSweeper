@@ -102,7 +102,7 @@ public partial class Level1 : Node2D,
             GridBinding = GridLogic.Bind()
                 .OnOutput((in GridState.Output.RestoreGrid output) =>
                 {
-                    RestoreGridAsync(output.Source).Forget();
+                    RestoreGridAsync(output.Snapshot).Forget();
                 })
                 .OnOutput((in GridState.Output.LayMinesAt output) =>
                 {
@@ -138,9 +138,9 @@ public partial class Level1 : Node2D,
             return;
 
             // 初始化放在绑定层：续局恢复完整棋盘状态，新局/重试按首次点击布雷
-            async GDTaskVoid RestoreGridAsync(FromGridSnapshot source)
+            async GDTaskVoid RestoreGridAsync(GridSnapshot snapshot)
             {
-                await grid.InitCellsAsync(source.Snapshot, this.GetCancellationTokenOnTreeExit());
+                await grid.InitCellsAsync(snapshot, this.GetCancellationTokenOnTreeExit());
                 CompleteInit();
             }
 
