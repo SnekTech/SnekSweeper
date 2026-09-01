@@ -1,4 +1,5 @@
-﻿using GodotGadgets.Extensions;
+﻿using System.Runtime.CompilerServices;
+using GodotGadgets.Extensions;
 using GodotGadgets.Tasks;
 using GodotGadgets.UI.ScrollMenuCore;
 
@@ -11,6 +12,7 @@ public partial class ScrollMenuView : Control
 
     ScrollMenu _menu = null!;
     ScrollMenuViewAnimator _animator = null!;
+    ScrollMenuInputMapper _inputMapper = null!;
     CancellationTokenSource? _tweenCts;
     IReadOnlyList<Control> _itemNodes = [];
     Dictionary<IScrollMenuItem, Action> _bindings = null!;
@@ -44,49 +46,56 @@ public partial class ScrollMenuView : Control
 
         PlaceAllItems(items);
 
-        _menu.FocusChanged += OnMenuFocusChanged;
+        _inputMapper = new ScrollMenuInputMapper(HitTest);
         ApplyWindow(_menu.VisibleWindow, NavigateDirection.Down); // up or down doesn't matter here
     }
 
     public override void _ExitTree()
     {
         _tweenCts?.CancelAndDispose();
-        _menu.FocusChanged -= OnMenuFocusChanged;
     }
 
-    // todo: custom input handling strategy for mouse | keyboard | joypad 
     public override void _Input(InputEvent @event)
     {
-        if (@event.IsActionPressed("ui_up"))
+        if (_inputMapper.Map(@event) is not { } command) return;
+        Apply(_menu.Handle(command));
+    }
+
+    void Apply(ScrollMenuEffect effect)
+    {
+        switch (effect)
         {
-            _menu.NavigateUp();
-        }
-        else if (@event.IsActionPressed("ui_down"))
-        {
-            _menu.NavigateDown();
-        }
-        else if (@event.IsActionPressed("ui_accept"))
-        {
-            ConfirmFocused();
+            case FocusMoved moved:
+                ApplyWindow(moved.Window, moved.Direction);
+                break;
+            case ConfirmRequested confirm:
+                RunBinding(confirm.Item);
+                break;
+            default:
+                throw new SwitchExpressionException();
         }
     }
 
-    void ConfirmFocused()
+    void RunBinding(IScrollMenuItem item)
     {
-        var focused = _menu.CurrentFocused;
-        if (focused is Button button)
-        {
-            button.EmitSignal(BaseButton.SignalName.Pressed);
-        }
-
-        if (_bindings.TryGetValue(focused, out var action))
+        if (_bindings.TryGetValue(item, out var action))
         {
             action();
         }
     }
 
-    void OnMenuFocusChanged(IReadOnlyList<VisibleSlot> window, NavigateDirection direction) =>
-        ApplyWindow(window, direction);
+    IScrollMenuItem? HitTest(Vector2 viewportPosition)
+    {
+        foreach (var node in _itemNodes)
+        {
+            if (node.GetGlobalRect().HasPoint(viewportPosition))
+            {
+                return (IScrollMenuItem)node;
+            }
+        }
+
+        return null;
+    }
 
     void PlaceAllItems(IReadOnlyList<IScrollMenuItem> items)
     {

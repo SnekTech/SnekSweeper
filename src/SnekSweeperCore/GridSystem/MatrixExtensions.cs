@@ -2,7 +2,6 @@
 
 namespace SnekSweeperCore.GridSystem;
 
-// todo: move this to the DevKit project
 public static class MatrixExtensions
 {
     extension<T>(T[,] matrix)
