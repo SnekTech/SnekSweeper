@@ -4,10 +4,9 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Todo
 
-- [ ] multiple save slots
 - [ ] balatro-like background shader
-- [ ] utilize more of ms-toollib
-- [ ] save on mid-game quit
+- [ ] controller radial menu like Monster Hunter item selector
+- [ ] fix todo component flickering
 
 ## Done
 
@@ -42,13 +41,19 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [x] save random seed for each game history record
 - [ ] *moving bombs every click, show the moving direction
 - [x] no-guess
-- [ ] after win or lose, don't switch scene until player confirmed
+- [x] after win or lose, don't switch scene until player confirmed
+- [ ] utilize more of ms-toollib
 
 ## User Input
 
-- [ ] controller support
-  - [ ] like Monster Hunter item selector
+- [ ] different UI for different input device
 - [ ] input re-mapping
+
+### controller support
+
+- [ ] like Monster Hunter item selector
+- [ ] vim-like
+
 
 ## Animation
 
@@ -74,8 +79,9 @@ A minesweeper game with modern game features & nice pixel art assets.
     - [x] activated cheat code set
     - [x] game history
 - [x] use JSON
+- [x] save on mid-game quit
 - [ ] multiple save slots
-- [ ] migration across different versions
+- [x] migration across different versions
 - [ ] Steam cloud save
 
 ## UI
@@ -130,7 +136,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Digital Museum
 
-- [ ] 百科全书
+- [ ] wiki
 - [ ] animation show off
 - [ ] skin show off
 

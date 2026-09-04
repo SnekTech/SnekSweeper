@@ -28,6 +28,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets\GodotGadgets.csproj" />
+        <ProjectReference Include="..\..\..\..\RiderProjects\GodotGadgets\GodotGadgets.FSCore\GodotGadgets.FSCore.fsproj" />
         <ProjectReference Include="..\CoreFS\CoreFS.fsproj" />
         <ProjectReference Include="..\SnekSweeperCore\SnekSweeperCore.csproj" />
         <ProjectReference Include="..\SnekGameDevKit\SnekGameDevKit.csproj" />
