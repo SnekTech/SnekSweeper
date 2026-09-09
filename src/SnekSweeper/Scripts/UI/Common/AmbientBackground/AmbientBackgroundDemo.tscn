@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://5fflqxg1jtra"]
+
+[ext_resource type="Shader" uid="uid://ciparhatc1h0j" path="res://Scripts/UI/Common/AmbientBackground/AmbientPaint.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ambient"]
+shader = ExtResource("1_shader")
+shader_parameter/colour_1 = Color(0.160784, 0.678431, 1, 1)
+shader_parameter/colour_2 = Color(1, 0, 0.301961, 1)
+shader_parameter/colour_3 = Color(1, 0.92549, 0.152941, 1)
+shader_parameter/contrast = 2.6
+shader_parameter/swirl_amount = 0.32
+shader_parameter/spin_speed = 0.45
+shader_parameter/flow_speed = 1.10000005225
+shader_parameter/field_zoom = 30.0
+shader_parameter/cell_px = 0.0
+shader_parameter/brightness = 1.0
+
+[node name="AmbientBackgroundDemo" type="ColorRect" unique_id=1445581443]
+material = SubResource("ShaderMaterial_ambient")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HintLabel" type="Label" parent="." unique_id=76251915]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 14
+text = "AmbientPaint demo - 选中 AmbientBackgroundDemo, 在 Inspector 里调它 material 的 uniform"
+horizontal_alignment = 1
+vertical_alignment = 1
