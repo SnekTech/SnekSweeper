@@ -4,16 +4,18 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ambient"]
 shader = ExtResource("1_shader")
-shader_parameter/colour_1 = Color(0.160784, 0.678431, 1, 1)
-shader_parameter/colour_2 = Color(1, 0, 0.301961, 1)
-shader_parameter/colour_3 = Color(1, 0.92549, 0.152941, 1)
-shader_parameter/contrast = 2.6
+shader_parameter/colour_base = Color(0.02, 0.05, 0.09, 1)
+shader_parameter/colour_main = Color(0.07, 0.38, 0.68, 1)
+shader_parameter/colour_accent = Color(0.88, 0.34, 0.24, 1)
+shader_parameter/band_scale = 0.07600000326074
+shader_parameter/band_hardness = 0.4
 shader_parameter/swirl_amount = 0.32
 shader_parameter/spin_speed = 0.45
-shader_parameter/flow_speed = 1.10000005225
+shader_parameter/flow_amount = 1.0
+shader_parameter/flow_speed = 1.1
 shader_parameter/field_zoom = 30.0
-shader_parameter/cell_px = 0.0
 shader_parameter/brightness = 1.0
+shader_parameter/cell_px = 0.0
 
 [node name="AmbientBackgroundDemo" type="ColorRect" unique_id=1445581443]
 material = SubResource("ShaderMaterial_ambient")
