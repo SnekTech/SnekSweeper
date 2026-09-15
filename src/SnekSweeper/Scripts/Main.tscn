@@ -3,9 +3,12 @@
 [ext_resource type="Script" uid="uid://dqf36uha7m26h" path="res://Scripts/Main.cs" id="1_gw17c"]
 [ext_resource type="Script" uid="uid://b70dq8055xqom" path="res://Scripts/GameStateManagement/SceneSwitcher.cs" id="2_nv0mc"]
 [ext_resource type="PackedScene" uid="uid://bfeldd5yvi488" path="res://Scripts/UI/MainScreen/SplashScreen.tscn" id="4_yg5tw"]
+[ext_resource type="PackedScene" path="res://Scripts/UI/Common/AmbientBackground/AmbientBackground.tscn" id="5_ambient"]
 
 [node name="Main" type="Node" unique_id=848112042]
 script = ExtResource("1_gw17c")
+
+[node name="AmbientBackground" parent="." instance=ExtResource("5_ambient")]
 
 [node name="SceneSwitcher" type="Node" parent="." unique_id=52601089 node_paths=PackedStringArray("CurrentSceneHolder")]
 unique_name_in_owner = true

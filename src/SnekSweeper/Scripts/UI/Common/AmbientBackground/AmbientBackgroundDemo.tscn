@@ -15,7 +15,7 @@ shader_parameter/flow_amount = 1.0
 shader_parameter/flow_speed = 1.1
 shader_parameter/field_zoom = 30.0
 shader_parameter/brightness = 1.0
-shader_parameter/cell_px = 0.0
+shader_parameter/cell_px = 1.0
 
 [node name="AmbientBackgroundDemo" type="ColorRect" unique_id=1445581443]
 material = SubResource("ShaderMaterial_ambient")

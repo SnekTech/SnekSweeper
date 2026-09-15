@@ -54,11 +54,13 @@ uniform float spin_speed   : hint_range(-2.0, 2.0) = 0.45; // 大漩涡自转速
 // ---- 流动 -------------------------------------------------------------------
 uniform float flow_amount  : hint_range(0.0, 1.0) = 1.0;    // 搅拌强度
 uniform float flow_speed   : hint_range(0.0, 4.0) = 1.1;    // 流动速度
-uniform float field_zoom   : hint_range(1.0, 120.0) = 30.0; // 色场频率
 
 // ---- 输出 -------------------------------------------------------------------
 uniform float brightness : hint_range(0.0, 2.0) = 1.0;      // 整体亮度
-uniform float cell_px    : hint_range(0.0, 8.0, 1.0) = 0.0; // 平涂颗粒(游戏像素, 0=关)
+
+// ---- 固定值(不随主题变化; C# 侧不会去改它们, 要调就改这里的默认值) --------------
+uniform float field_zoom : hint_range(1.0, 120.0) = 30.0;    // 色场频率
+uniform float cell_px    : hint_range(0.0, 8.0, 1.0) = 1.0;  // 平涂颗粒(游戏像素, 1≈关)
 
 // ============================================================================
 // 单中心大漩涡: 旋转量随"到中心的半径"增大
