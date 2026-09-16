@@ -8,7 +8,8 @@
 [node name="Main" type="Node" unique_id=848112042]
 script = ExtResource("1_gw17c")
 
-[node name="AmbientBackground" parent="." instance=ExtResource("5_ambient")]
+[node name="Background" parent="." instance=ExtResource("5_ambient")]
+unique_name_in_owner = true
 
 [node name="SceneSwitcher" type="Node" parent="." unique_id=52601089 node_paths=PackedStringArray("CurrentSceneHolder")]
 unique_name_in_owner = true

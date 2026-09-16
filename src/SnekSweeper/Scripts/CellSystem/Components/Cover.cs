@@ -37,6 +37,7 @@ public partial class Cover : Node2D, ICover, ISceneScript
         _tweenCts?.CancelAndDispose();
         _tweenCts = new CancellationTokenSource();
 
+        // BUG: tutorial page 中，快速翻页会报错
         RandomizeNoise();
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _tweenCts.Token);

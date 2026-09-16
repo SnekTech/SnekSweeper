@@ -1,6 +1,4 @@
 ﻿using Chickensoft.LogicBlocks;
-using GodotTask;
-using SnekSweeper.Levels;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeper.GameStateManagement;
@@ -45,6 +43,20 @@ public abstract record AppState : LogicBlockState
         public readonly record struct GameEnd;
     }
 
+    /// <summary>
+    /// 大脑发出的命令: 只说"去哪", 不说"长什么样"。
+    /// 具体是哪个场景、配哪套背景主题, 由组合根(Main)翻译。
+    /// </summary>
+    public static class Output
+    {
+        public readonly record struct ShowMainMenu;
+        public readonly record struct ShowSettings;
+        public readonly record struct ShowHistory;
+        public readonly record struct ShowCheatCode;
+        public readonly record struct ShowTutorial;
+        public readonly record struct ShowLevel(LoadLevelSource Source);
+    }
+
     public record SplashScreen : AppState, IGet<Input.AnyKeyPressed>
     {
         public Type On(in Input.AnyKeyPressed input) => To<MainMenu>();
@@ -59,7 +71,7 @@ public abstract record AppState : LogicBlockState
     {
         public MainMenu()
         {
-            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.MainScreen.MainMenuContainer>());
+            this.OnEnter(() => Output(new Output.ShowMainMenu()));
         }
 
         public Type On(in Input.NewGame input)
@@ -81,12 +93,7 @@ public abstract record AppState : LogicBlockState
             this.OnEnter(() => Get<IAppRepo>().GameEnded += OnGameEnded);
             this.OnExit(() => Get<IAppRepo>().GameEnded -= OnGameEnded);
 
-            this.OnEnter(delegate
-            {
-                var loadLevelSource = Get<AppLogic.Data>().LoadLevelSource;
-                Get<ISceneSwitcher>().GotoSceneAsync<Level1>(level => level.LoadLevel(loadLevelSource),
-                    CancellationToken.None).Forget();
-            });
+            this.OnEnter(() => Output(new Output.ShowLevel(Get<AppLogic.Data>().LoadLevelSource)));
         }
 
         void OnGameEnded() => Input(new Input.GameEnd());
@@ -111,7 +118,7 @@ public abstract record AppState : LogicBlockState
     {
         public SettingsPage()
         {
-            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.Settings.SettingsPage>());
+            this.OnEnter(() => Output(new Output.ShowSettings()));
         }
 
         public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
@@ -121,7 +128,7 @@ public abstract record AppState : LogicBlockState
     {
         public CheatCodePage()
         {
-            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<CheatCodeSystem.UI.CheatCodePage>());
+            this.OnEnter(() => Output(new Output.ShowCheatCode()));
         }
 
         public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
@@ -131,7 +138,7 @@ public abstract record AppState : LogicBlockState
     {
         public HistoryPage()
         {
-            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.History.HistoryPage>());
+            this.OnEnter(() => Output(new Output.ShowHistory()));
         }
 
         public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
@@ -147,7 +154,7 @@ public abstract record AppState : LogicBlockState
     {
         public TutorialPage()
         {
-            this.OnEnter(() => Get<ISceneSwitcher>().GotoScene<UI.Tutorial.TutorialPage>());
+            this.OnEnter(() => Output(new Output.ShowTutorial()));
         }
 
         public Type On(in Input.BackToMainMenu input) => To<MainMenu>();
