@@ -8,7 +8,7 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
 {
     [Export]
     Node CurrentSceneHolder { get; set; } = null!;
-    
+
     Node _currentScene = null!;
 
     public override void _Ready()
@@ -16,7 +16,7 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
         _currentScene = CurrentSceneHolder.GetChild(0);
     }
 
-    public async GDTask GotoSceneAsync<T>(Func<T, GDTask> onSceneEnteredTree, CancellationToken ct = default)
+    public async GDTask GotoSceneAsync<T>(Action<T>? configure, CancellationToken ct = default)
         where T : Node, ISceneScript
     {
         var newScene = SceneFactory.Instantiate<T>();
@@ -29,7 +29,8 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
         // add the new scene to root
         _currentScene = newScene;
         CurrentSceneHolder.AddChild(newScene);
-        await onSceneEnteredTree(newScene);
+
+        configure?.Invoke(newScene);
 
         await fadingMask.FadeOutAsync(ct);
         fadingMask.QueueFree();

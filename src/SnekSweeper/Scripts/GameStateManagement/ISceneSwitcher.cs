@@ -5,6 +5,5 @@ namespace SnekSweeper.GameStateManagement;
 
 public interface ISceneSwitcher
 {
-    GDTask GotoSceneAsync<T>(Func<T, GDTask> onSceneEnteredTree, CancellationToken ct) where T : Node, ISceneScript;
-    void GotoScene<T>() where T : Node, ISceneScript => GotoSceneAsync<T>(_ => GDTask.CompletedTask, CancellationToken.None).Forget();
+    GDTask GotoSceneAsync<T>(Action<T>? configure = null, CancellationToken ct = default) where T : Node, ISceneScript;
 }

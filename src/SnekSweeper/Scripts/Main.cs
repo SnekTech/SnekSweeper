@@ -54,9 +54,8 @@ public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>, IProvi
             // 将来要按关卡区分主题时, 在这里用 output.Source 决定
             .OnOutput((in AppState.Output.ShowLevel output) =>
             {
-                var input = output;
-                SceneSwitcher.GotoSceneAsync<Level1>(level => level.LoadLevel(input.Source), CancellationToken.None).Forget();
-                Background.GoTo(AmbientThemes.Level, AmbientTransitionDuration);
+                var source = output.Source;
+                Show<Level1>(AmbientThemes.Level, level => level.LoadLevel(source));
             });
 
         SaveData.Instance.SavedFeedback += () => MessageBox.Print("已保存");
@@ -68,9 +67,9 @@ public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>, IProvi
 
     public override void _ExitTree() => _binding.Dispose();
 
-    void Show<T>(AmbientTheme theme) where T : Node, ISceneScript
+    void Show<T>(AmbientTheme theme, Action<T>? initialize = null) where T : Node, ISceneScript
     {
-        SceneSwitcher.GotoScene<T>();
+        SceneSwitcher.GotoSceneAsync(initialize).Forget();
         Background.GoTo(theme, AmbientTransitionDuration);
     }
 }
