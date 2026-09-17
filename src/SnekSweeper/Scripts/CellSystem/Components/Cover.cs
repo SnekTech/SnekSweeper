@@ -37,14 +37,20 @@ public partial class Cover : Node2D, ICover, ISceneScript
         _tweenCts?.CancelAndDispose();
         _tweenCts = new CancellationTokenSource();
 
-        // BUG: tutorial page 中，快速翻页会报错 access disposed object
         RandomizeNoise();
-        var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration);
+
+        // 收尾动作挂在 OnComplete 上, 而不是写在 await 之后:
+        //  - 自然完成时它同步执行(此刻节点必然还活着);
+        //  - 被新动画取代、或节点销毁时 tween 会被 Kill, 而 Kill 不会触发 OnComplete。
+        // 于是不存在"续体排在队列里、轮到它执行时节点已经死了"的窗口
+        // (那个窗口会抛 ObjectDisposedException, 因为 await 的续体是被同步上下文在下一帧泵出来的)。
+        var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration)
+            .OnComplete(Hide);
+
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _tweenCts.Token);
 
-        // 取消（被新动画取代/节点销毁）时 await 抛 OCE，自然跳过 Hide；OCE 交给调用方的 fire-and-forget 处理
+        // 取消（被新动画取代/节点销毁）时 await 抛 OCE；OCE 交给调用方的 fire-and-forget 处理
         await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
-        Hide();
     }
 
     public async Task PutOnAsync(CancellationToken ct = default)
