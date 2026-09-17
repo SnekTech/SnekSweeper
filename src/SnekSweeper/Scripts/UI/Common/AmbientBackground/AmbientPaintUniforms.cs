@@ -21,6 +21,8 @@ sealed class AmbientPaintUniforms(ShaderMaterial material)
     const string FlowAmountName = "flow_amount";
     const string FlowSpeedName = "flow_speed";
     const string BrightnessName = "brightness";
+    const string SpinPhaseName = "spin_phase";
+    const string FlowPhaseName = "flow_phase";
 
     readonly Uniform<Color> _base = material.GetUniform<Color>(BaseName);
     readonly Uniform<Color> _main = material.GetUniform<Color>(MainName);
@@ -30,6 +32,8 @@ sealed class AmbientPaintUniforms(ShaderMaterial material)
     readonly Uniform<float> _swirlAmount = material.GetUniform<float>(SwirlAmountName);
     readonly Uniform<float> _spinSpeed = material.GetUniform<float>(SpinSpeedName);
     readonly Uniform<float> _flowAmount = material.GetUniform<float>(FlowAmountName);
+    readonly Uniform<float> _spinPhase = material.GetUniform<float>(SpinPhaseName);
+    readonly Uniform<float> _flowPhase = material.GetUniform<float>(FlowPhaseName);
     readonly Uniform<float> _flowSpeed = material.GetUniform<float>(FlowSpeedName);
     readonly Uniform<float> _brightness = material.GetUniform<float>(BrightnessName);
 
@@ -61,5 +65,15 @@ sealed class AmbientPaintUniforms(ShaderMaterial material)
         _flowAmount.Value = theme.FlowAmount;
         _flowSpeed.Value = theme.FlowSpeed;
         _brightness.Value = theme.Brightness;
+    }
+
+    /// <summary>
+    /// 按真实时间推进累积相位(相位 = 速率对时间的积分)。
+    /// 速率仍然可以被 lerp, 而相位只随时间增量前进 —— 永远不会被"改写过去"。
+    /// </summary>
+    public void AdvancePhases(float delta)
+    {
+        _spinPhase.Value += _spinSpeed.Value * delta;
+        _flowPhase.Value += _flowSpeed.Value * delta;
     }
 }

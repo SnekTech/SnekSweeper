@@ -67,9 +67,9 @@ public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>, IProvi
 
     public override void _ExitTree() => _binding.Dispose();
 
-    void Show<T>(AmbientTheme theme, Action<T>? initialize = null) where T : Node, ISceneScript
+    void Show<T>(AmbientTheme theme, Action<T>? configure = null) where T : Node, ISceneScript
     {
-        SceneSwitcher.GotoSceneAsync(initialize).Forget();
+        SceneSwitcher.GotoSceneAsync(configure).Forget();
         Background.GoTo(theme, AmbientTransitionDuration);
     }
 }

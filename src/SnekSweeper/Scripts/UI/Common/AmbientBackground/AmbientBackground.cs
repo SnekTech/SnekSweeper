@@ -24,6 +24,9 @@ public partial class AmbientBackground : CanvasLayer, ISceneScript
         SnapTo(AmbientThemes.Menu);
     }
 
+    // 相位 = 速率对时间的积分: 每帧推进, 而不是让 shader 用 TIME * 速率(那会让 lerp 速率时"改写过去")
+    public override void _Process(double delta) => _uniforms.AdvancePhases((float)delta);
+
     public override void _ExitTree() => _transition.Dispose();
 
     /// <summary>立即切到某主题(不插值)。</summary>

@@ -55,6 +55,13 @@ uniform float spin_speed   : hint_range(-2.0, 2.0) = 0.45; // 大漩涡自转速
 uniform float flow_amount  : hint_range(0.0, 1.0) = 1.0;    // 搅拌强度
 uniform float flow_speed   : hint_range(0.0, 4.0) = 1.1;    // 流动速度
 
+// ---- 累积相位(运行时状态; 由 C# 每帧 phase += speed * dt, 这里不要用 TIME) -------
+// 为什么不是 TIME * speed: 那样"速率"是乘在总时间上的系数, 一旦被 lerp 就会
+// 追溯性地改变已累积的角度(偏差 ∝ TIME), 切换瞬间会多转整圈。
+// 累积相位只让速率影响"此后的增量", 数学上就不存在那种跳变。
+uniform float spin_phase = 0.0;   // = ∫ spin_speed dt
+uniform float flow_phase = 0.0;   // = ∫ flow_speed dt
+
 // ---- 输出 -------------------------------------------------------------------
 uniform float brightness : hint_range(0.0, 2.0) = 1.0;      // 整体亮度
 
@@ -68,7 +75,7 @@ uniform float cell_px    : hint_range(0.0, 8.0, 1.0) = 1.0;  // 平涂颗粒(游
 vec2 swirl(vec2 p) {
     float r = length(p);
     float a = atan(p.y, p.x)
-            + TIME * spin_speed * 0.3
+            + 0.3 * spin_phase
             - 20.0 * swirl_amount * r;
     return vec2(cos(a), sin(a)) * r;
 }
@@ -80,7 +87,7 @@ vec2 swirl(vec2 p) {
 // ============================================================================
 vec2 flow_warp(vec2 p) {
     p *= field_zoom;
-    float t = TIME * flow_speed;
+    float t = flow_phase;
     vec2 q = vec2(p.x + p.y);
     for (int i = 0; i < 5; i++) {
         q += sin(max(p.x, p.y)) + p;
