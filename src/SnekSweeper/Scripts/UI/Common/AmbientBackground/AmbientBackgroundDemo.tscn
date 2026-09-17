@@ -1,39 +1,34 @@
-[gd_scene format=3 uid="uid://5fflqxg1jtra"]
+[gd_scene load_steps=3 format=3 uid="uid://5fflqxg1jtra"]
 
-[ext_resource type="Shader" uid="uid://ciparhatc1h0j" path="res://Scripts/UI/Common/AmbientBackground/AmbientPaint.gdshader" id="1_shader"]
+[ext_resource type="Script" path="res://Scripts/UI/Common/AmbientBackground/AmbientBackgroundDemo.cs" id="1_script"]
+[ext_resource type="PackedScene" path="res://Scripts/UI/Common/AmbientBackground/AmbientBackground.tscn" id="2_background"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ambient"]
-shader = ExtResource("1_shader")
-shader_parameter/colour_base = Color(0.02, 0.05, 0.09, 1)
-shader_parameter/colour_main = Color(0.07, 0.38, 0.68, 1)
-shader_parameter/colour_accent = Color(0.88, 0.34, 0.24, 1)
-shader_parameter/band_scale = 0.07600000326074
-shader_parameter/band_hardness = 0.4
-shader_parameter/swirl_amount = 0.32
-shader_parameter/spin_speed = 0.45
-shader_parameter/flow_amount = 1.0
-shader_parameter/flow_speed = 1.1
-shader_parameter/field_zoom = 30.0
-shader_parameter/brightness = 1.0
-shader_parameter/cell_px = 1.0
-
-[node name="AmbientBackgroundDemo" type="ColorRect" unique_id=1445581443]
-material = SubResource("ShaderMaterial_ambient")
+[node name="AmbientBackgroundDemo" type="Control"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
+script = ExtResource("1_script")
 
-[node name="HintLabel" type="Label" parent="." unique_id=76251915]
-layout_mode = 0
-anchor_right = 1.0
+[node name="Background" parent="." instance=ExtResource("2_background")]
+unique_name_in_owner = true
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -56.0
+offset_right = 160.0
+offset_bottom = -16.0
 grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.85)
-theme_override_font_sizes/font_size = 14
-text = "AmbientPaint demo - 选中 AmbientBackgroundDemo, 在 Inspector 里调它 material 的 uniform"
-horizontal_alignment = 1
-vertical_alignment = 1
+grow_vertical = 0
+alignment = 1
+theme_override_constants/separation = 12
+
