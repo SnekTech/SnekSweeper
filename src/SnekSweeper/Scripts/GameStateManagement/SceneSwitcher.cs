@@ -17,7 +17,7 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
         _currentScene = CurrentSceneHolder.GetChild(0);
     }
 
-    public async GDTask GotoSceneAsync<T>(Action<T>? configure, CancellationToken ct = default)
+    public async GDTask GotoSceneAsync<T>(Action<T>? onSceneEntered, CancellationToken ct = default)
         where T : Node, ISceneScript
     {
         // 单飞: 过渡期间忽略新请求。整个过渡期间遮罩都会挡住输入(mouse_filter 默认 Stop),
@@ -39,7 +39,7 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
             _currentScene = newScene;
             CurrentSceneHolder.AddChild(newScene);
 
-            configure?.Invoke(newScene);
+            onSceneEntered?.Invoke(newScene);
 
             await fadingMask.FadeOutAsync(ct);
         }
