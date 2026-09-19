@@ -41,11 +41,10 @@ public partial class Flag : Node2D, IFlag, ISceneScript
         _tweenCts?.CancelAndDispose();
         _tweenCts = new CancellationTokenSource();
 
-        var tween = FlagSprite.TweenPositionY(StartPositionY, AnimationDuration).SetEasing(Easing.InQuad);
+        var tween = FlagSprite.TweenPositionY(StartPositionY, AnimationDuration).SetEasing(Easing.InQuad)
+            .OnComplete(Hide);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _tweenCts.Token);
 
-        // 取消（被新动画取代/节点销毁）时 await 抛 OCE，自然跳过 Hide；OCE 交给调用方的 fire-and-forget 处理
         await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
-        Hide();
     }
 }
