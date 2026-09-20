@@ -28,7 +28,12 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
     }
 
-    public void Init(GridSize gridSize) => _gridSize = gridSize;
+    public void Init(GridSize gridSize)
+    {
+        _gridSize = gridSize;
+        // 尺寸是"网格多大"这一个事实: 光标和输入翻译都需要它, 在这里一并下发
+        GridInputListener.Init(gridSize);
+    }
 
     public IHumbleCellCollection HumbleCellsContainer => CellsContainer;
     public ICellFactory CellFactory => CellsContainer;
@@ -38,8 +43,5 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(SaveData.State.ActivatedCheatCodeSet);
 
-    void OnHoveringGridIndexChanged(GridIndex hoveringGridIndex)
-    {
-        Cursor.ShowAt(hoveringGridIndex, _gridSize);
-    }
+    void OnHoveringGridIndexChanged(GridIndex? hoveringGridIndex) => Cursor.ShowAt(hoveringGridIndex, _gridSize);
 }

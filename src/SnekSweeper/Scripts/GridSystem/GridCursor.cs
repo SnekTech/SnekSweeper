@@ -13,18 +13,19 @@ public partial class GridCursor : Sprite2D, IGridCursor
         Hide();
     }
 
-    public void ShowAt(GridIndex gridIndex, GridSize gridSize)
+    // todo: refactor bool-like param
+    public void ShowAt(GridIndex? gridIndex, GridSize gridSize)
     {
         if (_isLocked) return;
 
-        if (!gridIndex.IsWithin(gridSize))
+        if (gridIndex is not { } index || !index.IsWithin(gridSize))
         {
             Hide();
             return;
         }
 
         Show();
-        Position = gridIndex.ToPosition();
+        Position = index.ToPosition();
     }
 
     public void LockTo(GridIndex gridIndex, GridSize gridSize)

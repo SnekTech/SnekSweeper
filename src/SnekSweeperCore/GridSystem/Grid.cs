@@ -49,9 +49,9 @@ public class Grid(Cell[,] cells, GridEventBus gridEventBus, ICommandRecorder com
         _isAnyCellProcessing = true;
         var processResult = await (gridInput switch
         {
-            PrimaryReleased => RevealAtAsync(gridInput.Index, ct),
-            PrimaryDoubleClicked => RevealAroundAsync(gridInput.Index, ct),
-            SecondaryReleased => SwitchFlagAtAsync(gridInput.Index, ct),
+            RevealAt => RevealAtAsync(gridInput.Index, ct),
+            ChordAt => RevealAroundAsync(gridInput.Index, ct),
+            SwitchFlagAt => SwitchFlagAtAsync(gridInput.Index, ct),
             _ => throw new SwitchExpressionException(),
         });
         _isAnyCellProcessing = false;

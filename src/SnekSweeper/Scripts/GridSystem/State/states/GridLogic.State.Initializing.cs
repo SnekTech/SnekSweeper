@@ -45,12 +45,12 @@ public abstract partial record GridState
 
         public Type On(in Input.InitCompleted input) => To<GameRunning>();
 
-        /// <summary>首次输入接受策略：新局只收左键、重试只收记录开始格；续局与已接受后均忽略。</summary>
+        /// <summary>首次输入接受策略：新局只收"揭示"、重试只收记录开始格；续局与已接受后均忽略。</summary>
         bool AcceptsFirstInput(LoadLevelSource source, GridInput first) =>
             Get<GridLogic.Data>().PendingFirstInput is null && source switch
             {
                 FromRunRecord fromRecord => first.Index == fromRecord.RunRecord.StartIndex,
-                RegularStart => first is PrimaryReleased,
+                RegularStart => first is RevealAt,
                 _ => throw new SwitchExpressionException(),
             };
     }
