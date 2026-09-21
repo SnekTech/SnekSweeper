@@ -32,6 +32,7 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
         try
         {
             await fadingMask.FadeInAsync(ct);
+            await GDTask.Yield();
 
             // It is now safe to remove the current scene.
             _currentScene.Free();
