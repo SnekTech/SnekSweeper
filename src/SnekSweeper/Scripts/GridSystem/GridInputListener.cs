@@ -7,7 +7,9 @@ namespace SnekSweeper.GridSystem;
 public partial class GridInputListener : Node2D
 {
     public event Action<GridInput>? GridInputEmitted;
-    public event Action<GridIndex?>? HoveringGridIndexChanged;
+
+    /// <summary>指针位置变了（换格 / 离开网格）；表现层据此移动悬停光标。</summary>
+    public event Action<Pointer>? PointerChanged;
 
     GridSize _gridSize;
     GridInputSession _session = GridInputSession.Initial;
@@ -25,8 +27,8 @@ public partial class GridInputListener : Node2D
         if (Translate(mouseEvent) is not { } transition) return;
 
         // 会话是唯一真相源: 悬停光标与意图都从它派生
-        if (transition.Session.Hovered != _session.Hovered)
-            HoveringGridIndexChanged?.Invoke(transition.Session.Hovered);
+        if (transition.Session.Position != _session.Position)
+            PointerChanged?.Invoke(transition.Session.Position);
 
         _session = transition.Session;
 

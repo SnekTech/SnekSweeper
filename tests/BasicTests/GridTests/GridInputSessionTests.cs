@@ -22,7 +22,7 @@ public class GridInputSessionTests
         var trace = GridInputSession.Initial.Move(OnCell1);
 
         trace.Intent.Should().BeNull();
-        trace.Session.Hovered.Should().Be(Cell1);
+        trace.Session.Position.Should().Be(OnCell1);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class GridInputSessionTests
 
         trace.Intent.Should().BeNull();
         trace.Session.Should().BeOfType<GridInputSession.Idle>();
-        trace.Session.Hovered.Should().Be(Cell1);
+        trace.Session.Position.Should().Be(OnCell1);
     }
 
     /// <summary>刻意保留的手感：按错了不松手滑到真正想按的格子，松开生效在那一格。</summary>
@@ -59,7 +59,7 @@ public class GridInputSessionTests
         var trace = session.Move(OnCell2).Session.Release(GridButton.Primary, OnCell2);
 
         trace.Intent.Should().Be(new RevealAt(Cell2));
-        trace.Session.Hovered.Should().Be(Cell2);
+        trace.Session.Position.Should().Be(OnCell2);
     }
 
     [Test]
@@ -105,7 +105,7 @@ public class GridInputSessionTests
 
         trace.Intent.Should().BeNull();
         trace.Session.Should().BeOfType<GridInputSession.Pressing>();
-        trace.Session.Hovered.Should().Be(Cell2);
+        trace.Session.Position.Should().Be(OnCell2);
         trace.Session.PressedPreview.Should().Be(Cell2);
     }
 

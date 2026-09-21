@@ -30,8 +30,8 @@ public interface IHumbleCellCollection
 
 public interface IGridCursor
 {
-    /// <summary>把光标显示在指定格；<paramref name="gridIndex"/> 为 null 表示指针不在网格内（隐藏光标）。</summary>
-    void ShowAt(GridIndex? gridIndex, GridSize gridSize);
-    void LockTo(GridIndex gridIndex, GridSize gridSize);
+    /// <summary>把光标移到指针位置：指向某一格就显示在那里，不在网格内就隐藏。</summary>
+    void ShowAt(Pointer pointer);
+    void LockTo(GridIndex gridIndex);
     void Unlock();
 }

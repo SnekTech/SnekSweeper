@@ -1,4 +1,5 @@
-﻿using SnekSweeperCore.GridSystem;
+﻿using System.Runtime.CompilerServices;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;
 
@@ -13,24 +14,28 @@ public partial class GridCursor : Sprite2D, IGridCursor
         Hide();
     }
 
-    // todo: refactor bool-like param
-    public void ShowAt(GridIndex? gridIndex, GridSize gridSize)
+    public void ShowAt(Pointer pointer)
     {
         if (_isLocked) return;
 
-        if (gridIndex is not { } index || !index.IsWithin(gridSize))
+        switch (pointer)
         {
-            Hide();
-            return;
+            case Pointer.OnGrid onGrid:
+                Show();
+                Position = onGrid.Index.ToPosition();
+                break;
+            case Pointer.OffGrid:
+                Hide();
+                break;
+            default:
+                throw new SwitchExpressionException();
         }
-
-        Show();
-        Position = index.ToPosition();
     }
 
-    public void LockTo(GridIndex gridIndex, GridSize gridSize)
+    public void LockTo(GridIndex gridIndex)
     {
-        ShowAt(gridIndex, gridSize);
+        // todo: decide whether to check if index is within grid
+        ShowAt(new Pointer.OnGrid(gridIndex));
 
         SelfModulate = Colors.Blue;
         _isLocked = true;

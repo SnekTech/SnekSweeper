@@ -20,7 +20,7 @@ public abstract partial record GridState
                 var source = Get<GridLogic.Data>().LoadLevelSource;
 
                 if (source is FromRunRecord fromRecord)
-                    Context.HumbleGrid.GridCursor.LockTo(fromRecord.RunRecord.StartIndex, Context.Grid.Size);
+                    Context.HumbleGrid.GridCursor.LockTo(fromRecord.RunRecord.StartIndex);
             });
 
             this.OnExit(delegate

@@ -16,24 +16,18 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     [Dependency]
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
-    GridSize _gridSize;
-
     public override void _EnterTree()
     {
-        GridInputListener.HoveringGridIndexChanged += OnHoveringGridIndexChanged;
+        GridInputListener.PointerChanged += OnPointerChanged;
     }
 
     public override void _ExitTree()
     {
-        GridInputListener.HoveringGridIndexChanged -= OnHoveringGridIndexChanged;
+        GridInputListener.PointerChanged -= OnPointerChanged;
     }
 
-    public void Init(GridSize gridSize)
-    {
-        _gridSize = gridSize;
-        // 尺寸是"网格多大"这一个事实: 光标和输入翻译都需要它, 在这里一并下发
-        GridInputListener.Init(gridSize);
-    }
+    /// <summary>尺寸是"网格多大"这一个事实，输入翻译靠它判断指针是否落在网格内。</summary>
+    public void Init(GridSize gridSize) => GridInputListener.Init(gridSize);
 
     public IHumbleCellCollection HumbleCellsContainer => CellsContainer;
     public ICellFactory CellFactory => CellsContainer;
@@ -43,5 +37,5 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(SaveData.State.ActivatedCheatCodeSet);
 
-    void OnHoveringGridIndexChanged(GridIndex? hoveringGridIndex) => Cursor.ShowAt(hoveringGridIndex, _gridSize);
+    void OnPointerChanged(Pointer pointer) => Cursor.ShowAt(pointer);
 }

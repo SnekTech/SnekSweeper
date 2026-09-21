@@ -53,11 +53,11 @@ public static class GridInputSessionExtensions
     {
         public static GridInputSession Initial => new GridInputSession.Idle(new Pointer.OffGrid());
 
-        /// <summary>指针当前所在的格；null = 不在网格内（悬停光标用）。</summary>
-        public GridIndex? Hovered => session switch
+        /// <summary>指针当前的位置（Idle 与 Pressing 都带着它）。</summary>
+        public Pointer Position => session switch
         {
-            GridInputSession.Idle idle => idle.Position.Index,
-            GridInputSession.Pressing pressing => pressing.Position.Index,
+            GridInputSession.Idle idle => idle.Position,
+            GridInputSession.Pressing pressing => pressing.Position,
             _ => throw new SwitchExpressionException(),
         };
 
