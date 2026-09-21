@@ -36,31 +36,34 @@ public partial class GridInputListener : Node2D
     /// <summary>把 Godot 鼠标事件翻译成会话的一步；不关心的事件返回 null。</summary>
     GridInputTransition? Translate(InputEventMouse mouseEvent)
     {
-        var index = GetGridIndexAt(mouseEvent.Position);
+        var pointer = PointerAt(mouseEvent.Position);
 
         return mouseEvent switch
         {
-            InputEventMouseMotion => _session.MoveTo(index),
+            InputEventMouseMotion => _session.Move(pointer),
             InputEventMouseButton button when button.IsActionPressed(InputActions.Primary) =>
-                _session.Press(GridButton.Primary, index, button.DoubleClick),
+                _session.Press(GridButton.Primary, pointer, button.DoubleClick),
             InputEventMouseButton button when button.IsActionPressed(InputActions.Secondary) =>
-                _session.Press(GridButton.Secondary, index, button.DoubleClick),
+                _session.Press(GridButton.Secondary, pointer, button.DoubleClick),
             InputEventMouseButton button when button.IsActionReleased(InputActions.Primary) =>
-                _session.Release(GridButton.Primary, index),
+                _session.Release(GridButton.Primary, pointer),
             InputEventMouseButton button when button.IsActionReleased(InputActions.Secondary) =>
-                _session.Release(GridButton.Secondary, index),
+                _session.Release(GridButton.Secondary, pointer),
             _ => null,
         };
     }
 
-    /// <summary>屏幕坐标 → 网格坐标；落在网格外返回 null —— "没有指向任何格子"是语义，不是错误值。</summary>
-    GridIndex? GetGridIndexAt(Vector2 mousePosition)
+    /// <summary>
+    /// 屏幕坐标 → 指针位置；落在网格外是 <see cref="Pointer.OffGrid"/> ——
+    /// "没有指向任何格子"是一种状态，不是错误值。
+    /// </summary>
+    Pointer PointerAt(Vector2 mousePosition)
     {
         var localMousePosition = mousePosition - GlobalPosition;
         var i = Mathf.FloorToInt(localMousePosition.Y / HumbleCell.CellSizeInPixels);
         var j = Mathf.FloorToInt(localMousePosition.X / HumbleCell.CellSizeInPixels);
         var gridIndex = new GridIndex(i, j);
-        return gridIndex.IsWithin(_gridSize) ? gridIndex : null;
+        return gridIndex.IsWithin(_gridSize) ? new Pointer.OnGrid(gridIndex) : new Pointer.OffGrid();
     }
 
     void EmitGridInput(GridInput gridInput) => GridInputEmitted?.Invoke(gridInput);
