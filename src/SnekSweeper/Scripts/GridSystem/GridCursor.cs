@@ -1,12 +1,16 @@
 ﻿using System.Runtime.CompilerServices;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.GridSystem.CursorManagement;
 
 namespace SnekSweeper.GridSystem;
 
 public partial class GridCursor : Sprite2D, IGridCursor
 {
     const int CursorZIndex = 1;
-    bool _isLocked;
+    static readonly Color OriginalColor = Colors.White;
+    static readonly Color LockedColor = Colors.Blue;
+    
+    CursorState _state = CursorState.Initial;
 
     public override void _Ready()
     {
@@ -16,34 +20,42 @@ public partial class GridCursor : Sprite2D, IGridCursor
 
     public void ShowAt(Pointer pointer)
     {
-        if (_isLocked) return;
+        ApplyState(_state.ShowAt(pointer));
+    }
 
-        switch (pointer)
+    public void LockTo(GridIndex gridIndex)
+    {
+        ApplyState(_state.LockTo(gridIndex));
+    }
+
+    public void Unlock()
+    {
+        ApplyState(_state.Unlock());
+    }
+
+    void ApplyState(CursorState next)
+    {
+        if (next == _state) return;
+
+        _state = next;
+        
+        switch (_state)
         {
-            case Pointer.OnGrid onGrid:
+            case CursorState.Free free:
                 Show();
-                Position = onGrid.Index.ToPosition();
+                Position = free.Index.ToPosition();
+                SelfModulate = OriginalColor;
                 break;
-            case Pointer.OffGrid:
+            case CursorState.Locked locked:
+                Show();
+                Position = locked.Index.ToPosition();
+                SelfModulate = LockedColor;
+                break;
+            case CursorState.Hidden:
                 Hide();
                 break;
             default:
                 throw new SwitchExpressionException();
         }
-    }
-
-    public void LockTo(GridIndex gridIndex)
-    {
-        // todo: decide whether to check if index is within grid
-        ShowAt(new Pointer.OnGrid(gridIndex));
-
-        SelfModulate = Colors.Blue;
-        _isLocked = true;
-    }
-
-    public void Unlock()
-    {
-        SelfModulate = Colors.White;
-        _isLocked = false;
     }
 }

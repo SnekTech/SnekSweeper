@@ -38,6 +38,7 @@ public static class PlayerSaveDataExtensions
         public Task SaveAsync(string userDataDir, SaveFormat format = SaveFormat.Json, CancellationToken ct = default) =>
             StrategyFor(format).SaveAsync(playerSaveData, userDataDir.ToDir(), ct);
 
+        // todo: check if the loaded startIndex is within grid
         public static PlayerSaveData? Load(string userDataDir, SaveFormat format = SaveFormat.Json) =>
             StrategyFor(format).Load(userDataDir.ToDir());
     }
