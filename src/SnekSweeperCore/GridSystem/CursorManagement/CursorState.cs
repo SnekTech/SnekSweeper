@@ -24,12 +24,12 @@ public static class CursorStateExtensions
             _ => cursorState,
         };
 
-        public CursorState ShowAt(Pointer pointer) =>
-            (cursorState, pointer) switch
+        public CursorState ShowAt(PointerTarget target) =>
+            (cursorState, target) switch
             {
                 (CursorState.Locked locked, _) => locked, // locked cursor does not move
-                (_, Pointer.OffGrid) => new CursorState.Hidden(), // other states hide when pointer off grid
-                (_, Pointer.OnGrid onGrid) => new CursorState.Free(onGrid
+                (_, PointerTarget.OffGrid) => new CursorState.Hidden(), // other states hide when pointer off grid
+                (_, PointerTarget.OnGrid onGrid) => new CursorState.Free(onGrid
                     .Index), // other states show when pointer on grid
                 _ => throw new SwitchExpressionException(),
             };

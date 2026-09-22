@@ -18,12 +18,12 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public override void _EnterTree()
     {
-        GridInputListener.PointerChanged += OnPointerChanged;
+        GridInputListener.TargetChanged += OnTargetChanged;
     }
 
     public override void _ExitTree()
     {
-        GridInputListener.PointerChanged -= OnPointerChanged;
+        GridInputListener.TargetChanged -= OnTargetChanged;
     }
 
     /// <summary>尺寸是"网格多大"这一个事实，输入翻译靠它判断指针是否落在网格内。</summary>
@@ -37,5 +37,5 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 
     public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(SaveData.State.ActivatedCheatCodeSet);
 
-    void OnPointerChanged(Pointer pointer) => Cursor.ShowAt(pointer);
+    void OnTargetChanged(PointerTarget target) => Cursor.ShowAt(target);
 }

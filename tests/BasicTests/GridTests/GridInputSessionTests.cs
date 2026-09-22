@@ -12,9 +12,30 @@ public class GridInputSessionTests
     static readonly GridIndex Cell1 = new(1, 1);
     static readonly GridIndex Cell2 = new(2, 2);
 
-    static readonly Pointer OnCell1 = new Pointer.OnGrid(Cell1);
-    static readonly Pointer OnCell2 = new Pointer.OnGrid(Cell2);
-    static readonly Pointer Outside = new Pointer.OffGrid();
+    static readonly PointerTarget OnCell1 = new PointerTarget.OnGrid(Cell1);
+    static readonly PointerTarget OnCell2 = new PointerTarget.OnGrid(Cell2);
+    static readonly PointerTarget Outside = new PointerTarget.OffGrid();
+
+    /// <summary>
+    /// 把一串会话步骤跑完：返回最终 session 和这一路上发出的所有意图。
+    /// 会话一步的产出是（新 session + 意图），直接链式会被 .Session 隔断 ——
+    /// 但"要连走好几步"只发生在测试里（生产端每个鼠标事件只走一步），所以这个 fold 放在测试侧。
+    /// </summary>
+    static (GridInputSession Session, List<GridInput> Intents) Run(
+        params Func<GridInputSession, GridInputOutcome>[] steps)
+    {
+        var session = GridInputSession.Initial;
+        var intents = new List<GridInput>();
+        
+        foreach (var step in steps)
+        {
+            var outcome = step(session);
+            session = outcome.Session;
+            if (outcome.Intent is { } intent) intents.Add(intent);
+        }
+
+        return (session, intents);
+    }
 
     [Test]
     public void move_alone_produces_no_intent()
@@ -22,7 +43,7 @@ public class GridInputSessionTests
         var trace = GridInputSession.Initial.Move(OnCell1);
 
         trace.Intent.Should().BeNull();
-        trace.Session.Position.Should().Be(OnCell1);
+        trace.Session.Target.Should().Be(OnCell1);
     }
 
     /// <summary>
@@ -41,25 +62,26 @@ public class GridInputSessionTests
     [Test]
     public void press_outside_grid_then_release_inside_produces_no_intent()
     {
-        var trace = GridInputSession.Initial
-            .Press(GridButton.Primary, Outside)
-            .Session.Release(GridButton.Primary, OnCell1);
+        var (session, intents) = Run(
+            s => s.Press(GridButton.Primary, Outside),
+            s => s.Release(GridButton.Primary, OnCell1));
 
-        trace.Intent.Should().BeNull();
-        trace.Session.Should().BeOfType<GridInputSession.Idle>();
-        trace.Session.Position.Should().Be(OnCell1);
+        intents.Should().BeEmpty();
+        session.PressState.Should().Be(new PressState.Idle());
+        session.Target.Should().Be(OnCell1); // 指针位置照样跟随
     }
 
     /// <summary>刻意保留的手感：按错了不松手滑到真正想按的格子，松开生效在那一格。</summary>
     [Test]
     public void release_on_a_different_cell_reveals_that_cell()
     {
-        var session = GridInputSession.Initial.Press(GridButton.Primary, OnCell1).Session;
+        var (session, intents) = Run(
+            s => s.Press(GridButton.Primary, OnCell1),
+            s => s.Move(OnCell2),
+            s => s.Release(GridButton.Primary, OnCell2));
 
-        var trace = session.Move(OnCell2).Session.Release(GridButton.Primary, OnCell2);
-
-        trace.Intent.Should().Be(new RevealAt(Cell2));
-        trace.Session.Position.Should().Be(OnCell2);
+        intents.Should().Equal(new RevealAt(Cell2));
+        session.Target.Should().Be(OnCell2);
     }
 
     [Test]
@@ -85,28 +107,26 @@ public class GridInputSessionTests
     [Test]
     public void secondary_press_flags_immediately()
     {
-        var pressed = GridInputSession.Initial.Press(GridButton.Secondary, OnCell1);
+        var (session, intents) = Run(
+            s => s.Press(GridButton.Secondary, OnCell1),
+            s => s.Release(GridButton.Secondary, OnCell1));
 
-        pressed.Intent.Should().Be(new SwitchFlagAt(Cell1));
-
-        var released = pressed.Session.Release(GridButton.Secondary, OnCell1);
-
-        released.Intent.Should().BeNull();
-        released.Session.Should().BeOfType<GridInputSession.Idle>();
+        intents.Should().Equal(new SwitchFlagAt(Cell1));
+        session.PressState.Should().Be(new PressState.Idle());
     }
 
     /// <summary>抬起一个不是"手里那个"的键：这次按下还作数，只是指针跟着走了。</summary>
     [Test]
     public void releasing_a_button_that_is_not_held_keeps_pressing()
     {
-        var trace = GridInputSession.Initial
-            .Press(GridButton.Primary, OnCell1)
-            .Session.Release(GridButton.Secondary, OnCell2);
+        var (session, intents) = Run(
+            s => s.Press(GridButton.Primary, OnCell1),
+            s => s.Release(GridButton.Secondary, OnCell2));
 
-        trace.Intent.Should().BeNull();
-        trace.Session.Should().BeOfType<GridInputSession.Pressing>();
-        trace.Session.Position.Should().Be(OnCell2);
-        trace.Session.PressedPreview.Should().Be(Cell2);
+        intents.Should().BeEmpty();
+        session.PressState.Should().BeOfType<PressState.Pressing>();
+        session.Target.Should().Be(OnCell2);
+        session.PressedPreview.Should().Be(Cell2);
     }
 
     [Test]

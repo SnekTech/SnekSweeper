@@ -9,9 +9,9 @@ public class CursorStateTests
     static readonly GridIndex Cell1 = new(1, 1);
     static readonly GridIndex Cell2 = new(2, 2);
 
-    static readonly Pointer OnCell1 = new Pointer.OnGrid(Cell1);
-    static readonly Pointer OnCell2 = new Pointer.OnGrid(Cell2);
-    static readonly Pointer Outside = new Pointer.OffGrid();
+    static readonly PointerTarget OnCell1 = new PointerTarget.OnGrid(Cell1);
+    static readonly PointerTarget OnCell2 = new PointerTarget.OnGrid(Cell2);
+    static readonly PointerTarget Outside = new PointerTarget.OffGrid();
     
     [Test]
     public void cursor_start_as_hidden()

@@ -18,9 +18,9 @@ public partial class GridCursor : Sprite2D, IGridCursor
         Hide();
     }
 
-    public void ShowAt(Pointer pointer)
+    public void ShowAt(PointerTarget target)
     {
-        ApplyState(_state.ShowAt(pointer));
+        ApplyState(_state.ShowAt(target));
     }
 
     public void LockTo(GridIndex gridIndex)
