@@ -1,5 +1,4 @@
 ﻿using GodotTask;
-using SnekSweeper.UI.Common;
 using SnekSweeper.Widgets;
 
 namespace SnekSweeper.GameStateManagement;
@@ -20,34 +19,32 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
     public async GDTask GotoSceneAsync<T>(Action<T>? onSceneEntered, CancellationToken ct = default)
         where T : Node, ISceneScript
     {
-        // 单飞: 过渡期间忽略新请求。整个过渡期间遮罩都会挡住输入(mouse_filter 默认 Stop),
-        // 所以正常操作下不会真的丢请求; 但非输入来源(定时器 / FSM 自动转移)仍可能触发,
-        // 届时会出现"画面落后于状态" —— 若真发生, 再改成"排队最后一次"或"取消前一个"。
+        // 单飞: 换场期间忽略新请求。换场目前只占一帧, 所以只有"同一帧内被触发两次"才命中;
+        // 非输入来源(定时器 / FSM 自动转移)若真造成"画面落后于状态", 再改成"排队最后一次"或"取消前一个"。
         if (_isTransitioning) return;
         _isTransitioning = true;
 
-        var newScene = SceneFactory.Instantiate<T>();
-        var fadingMask = FadingMask.InstantiateOnParent(CurrentSceneHolder);
-
         try
         {
-            await fadingMask.FadeInAsync(ct);
+            var newScene = SceneFactory.Instantiate<T>();
+
+            // Free() 是同步销毁: 节点的 _ExitTree / Dispose 在那一行返回前就跑完了, 不存在"等旧场景退场"。
+            // 需要这一帧的是另一件事 —— 换场是从旧场景自己的按钮按下那条链上发出来的,
+            // 不能在它的输入/信号回调里把它拆掉(这也是 QueueFree() 存在的原因);
+            // 这个帧边界的续体在调用栈解开之后才跑, 就是那道保护。
+            // (将来旧场景有了退场效果, 这里会变成 await 那个退场动画。)
             await GDTask.Yield();
 
-            // It is now safe to remove the current scene.
             _currentScene.Free();
-            // add the new scene to root
             _currentScene = newScene;
             CurrentSceneHolder.AddChild(newScene);
 
             onSceneEntered?.Invoke(newScene);
-
-            await fadingMask.FadeOutAsync(ct);
         }
         finally
         {
-            // finally 里同样可能"节点已死"(例如退出游戏时整棵树被拆掉), 所以先校验再释放
-            if (IsInstanceValid(fadingMask)) fadingMask.QueueFree();
+            // onSceneEntered 可能抛(例如关卡初始化), 抛了也必须把单飞标志放回去,
+            // 否则之后所有换场都会被静默忽略
             _isTransitioning = false;
         }
     }
