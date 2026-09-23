@@ -11,6 +11,7 @@ public abstract record GridInput(GridIndex Index);
 /// <summary>揭示这一格（左键抬起，作用在抬起所在的格）。</summary>
 public sealed record RevealAt(GridIndex Index) : GridInput(Index);
 
+// todo: 实现双键 chord，注意它与右键按下立即插旗互斥
 /// <summary>以这一格为中心 chord：若它是已翻开的数字且周围旗数等于雷数，则揭开邻居（左键双击）。</summary>
 public sealed record ChordAt(GridIndex Index) : GridInput(Index);
 

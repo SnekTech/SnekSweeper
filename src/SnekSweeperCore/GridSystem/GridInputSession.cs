@@ -38,6 +38,7 @@ public abstract record PressState
 /// </summary>
 public readonly record struct GridInputSession(PointerTarget Target, PressState PressState)
 {
+    // todo: implement the presentation layer
     /// <summary>应该表现为"凹下去"的格（供表现层使用）；null = 没有按压（或指针不在网格内）。</summary>
     public GridIndex? PressedPreview => (PressState, Target) switch
     {
