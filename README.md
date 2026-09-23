@@ -4,8 +4,6 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Todo
 
-- [ ] balatro-like background shader
-  - [x] lerp this background on scene transition
 - [x] controller radial menu like Monster Hunter item selector
 - [ ] fix todo component flickering
 
@@ -61,14 +59,12 @@ A minesweeper game with modern game features & nice pixel art assets.
 - [x] cell sprite animation
     - [x] cover animation
     - [x] flag animation
-- [x] fade out animation on scene switch
 
 ## Visual Effects
 
 - [ ] 2D lighting
-- [ ] scrolling background
-    - [x] using shader
-    - [ ] random generated like Balatro
+- [x] balatro-like background shader
+  - [x] lerp this background on scene transition
 - [ ] 闪卡
 - [ ] 夜光，黑暗环境下某些元素发光提示
 

@@ -7,11 +7,15 @@
 
 ## 0. 一句话任务
 
-全仓扫了一遍「await 之后访问节点」的写法，共命中 **11 个文件 / 15 处**。请按「修法优先级」逐处修复，
-每修一处都要能说清「这个窗口为什么消失了」，**不要只是加个 null 检查糊过去**。
+全仓扫了一遍「await 之后访问节点」的写法，共命中 **11 个文件 / 12 处**（原为 15 处：其中 4 处随
+`FadingMask` 的删除合并成 1 处，见 §4 / §6）。请按「修法优先级」逐处修复，每修一处都要能说清
+「这个窗口为什么消失 / 为什么不成立」，**不要只是加个 null 检查糊过去**。
 
-建议顺序：`Tooltip` → `PaginationBinder` + `ExampleCard` → `SceneSwitcher` 自身 → 其余按风险排。
-（`Flag.cs` 已由用户自行修复，未提交，见 §4。）
+建议顺序：`Tooltip` → `PaginationBinder` + `ExampleCard` → `PopupLayer` 两条 → 其余按风险排
+（`SceneSwitcher` 那一条的可达性存疑，**先判断再决定**，见 §6）。
+
+> **进度**：`Flag.cs` 已由用户按优先级 1 修复并提交；`SceneSwitcher` 的黑幕过渡已被整体删除
+> （该组件已不存在，旧命中点随之作废）。其余待修。
 
 ---
 
@@ -66,7 +70,12 @@ GodotTask（GDTask 3.2.0）的 await 续体由 `GodotSynchronizationContext.Exec
 - `GTween.Kill()` **不会触发 `OnComplete`**；而自然播完会**同步**触发。
   ⇒ 把"收尾动作"放进 `OnComplete`，"该不该收尾"就完全由 tween 的生死决定，不再需要 token 守卫。
 - `PlayAsyncUntilNodeDestroy(node, ct)` 只在 tween **运行期间**随节点销毁而取消，救不了"完成后"。
-- `GodotObject.IsInstanceValid(x)` 是兜底手段（包括在 `finally` 里 —— 同样存在窗口）。
+- **`GDTask.Yield()` / `GDTask.Delay()` 这类等待原语不接受 token**。
+  ⇒ 修法优先级第 2 条（把 token 绑到节点生命周期）对它们**根本不可用**，只能走第 1 条（改结构）
+  或第 3 条（`IsInstanceValid`）。看到这类 `await` 就别想着"绑个 token 就好了"。
+- 若副作用不必发生在 await 之后，**把它搬到 await 之前**。比任何守卫都便宜。
+- `GodotObject.IsInstanceValid(x)` 是兜底手段；它只能保护**那一次**访问，**不是结构性修复**
+  （包括写在 `finally` 里 —— 窗口只是被缩小到一次判断，而它自身同样可能读到一个已释放的引用）。
 
 ### 架构约定（本仓库技能，务必遵守）
 
@@ -97,14 +106,24 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 它**顺手修掉了第二个隐藏 bug**：旧写法下，一个被 `PutOnAsync` 取代的 `RevealAsync`
 会在 await 之后执行 `Hide()` —— 即"刚盖上又被藏起来"。用 `OnComplete` 后，被取代 = tween 被 Kill = 回调不跑。
 
-### 范例 B：`SceneSwitcher.GotoSceneAsync`（finally 兜底）
+### 范例 B：`Flag.PutDownAsync`（用户采用，同一形状的第二例）
 
 ```csharp
-try { ... } finally {
-    if (GodotObject.IsInstanceValid(fadingMask)) fadingMask.QueueFree();
-    _isTransitioning = false;
-}
+// S: src/SnekSweeper/Scripts/CellSystem/Components/Flag.cs:48-52
+var tween = FlagSprite.TweenPositionY(StartPositionY, AnimationDuration).SetEasing(Easing.InQuad)
+    .OnComplete(Hide);                                  // ← 收尾搬进 OnComplete，await 之后零节点访问
+using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _tweenCts.Token);
+await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 ```
+
+（同文件 `RaiseAsync` 是另一条路：`Show()` 放在 await **之前**，await 之后就没有任何访问了 ——
+即上文"能搬就搬"那条。）
+
+### ⚠️ 已被删除、不要照抄的旧模板
+
+`SceneSwitcher` 曾经有一个 `finally { if (IsInstanceValid(fadingMask)) fadingMask.QueueFree(); }`。
+那是**尾守卫**而非结构性修复，而且 `FadingMask` 这个组件已被整体删除 —— 守卫本身连同它所掩盖的窗口
+一起不复存在。不要再把"在 `finally` 里校验一下"当作通用模板。
 
 ### 其他已守卫的点
 
@@ -118,24 +137,22 @@ try { ... } finally {
 
 > 路径前缀：`S:` = `d:\Dev\GodotProjects\SnekSweeper\src\`，`G:` = `d:\Dev\RiderProjects\GodotGadgets\GodotGadgets\`
 > 行号在提交 `e7612e6` 附近有效，若漂移请按符号名重新定位。
+> 例外：第 5 行（`SceneSwitcher`）对应"删除 `FadingMask`"之后的新版本。
 
 | # | 文件:行 | await 的东西 | await 之后碰的节点 | 风险 | 状态 |
 |---|---|---|---|---|---|
-| 1 | `S:/SnekSweeper/Scripts/CellSystem/Components/Flag.cs:49` | `tween.PlayAsyncUntilNodeDestroy` | `Hide();` | 中高 | ✅ **已修（用户改的，未提交）** |
+| 1 | `S:/SnekSweeper/Scripts/CellSystem/Components/Flag.cs:49` | `tween.PlayAsyncUntilNodeDestroy` | `Hide();` | 中高 | ✅ **已修（用户改的，已提交）** |
 | 2 | `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs:36` | `TweenModulateAlpha(0,…).PlayAsyncGD(token)` | `Hide();` | **高** | 待修 |
 | 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | 待修 |
 | 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)` | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | 待修 |
-| 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:37` | `fadingMask.FadeInAsync(ct)` | `_currentScene.Free();` | **高** | 待修（见 §6 尾巴） |
-| 6 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:40` | 同上 | `CurrentSceneHolder.AddChild(newScene);` | **高** | 待修 |
-| 7 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:42` | 同上 | `configure?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 中高 | 待修 |
-| 8 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:44` | 同上 | `await fadingMask.FadeOutAsync(ct)`（fadingMask 是 Main 的子节点） | 中高 | 待修 |
-| 9 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 待修 |
-| 10 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 待修 |
-| 11 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs:26` | `MarkPlayerErrorsAsync(...)` | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)` → 内部碰 HUD/PopupLayer | 中 | 待修 |
-| 12 | `S:/SnekSweeper/Scripts/UI/Level/Popup/WinPopup.cs:30` | `_popupChoiceListener.GetChoiceAsync(ct)` | `_animator.HideAsync(ct)` → `SlideOutAsync` → `target.TweenGlobalPosition` / `target.Hide()` | 中 | 待修 |
-| 13 | `S:/SnekSweeper/Scripts/UI/Level/Popup/LosePopup.cs:30` | 同上 | 同上 | 中 | 待修 |
-| 14 | `G:/TweenStuff/TweenExtensions.cs:44` | `target.TweenGlobalPosition(…).PlayAsyncUntilNodeDestroy(target, ct)` | `target.Hide();`（**库级**，所有调用方受影响） | 中 | 待修 |
-| 15 | `S:/SnekSweeper/Scripts/Autoloads/MessageBox.cs:47-48` | `GDTask.Delay`、`messageLabel.FadeOutAsync` | `messageLabel.QueueFree();` | 低（autoload 与整棵树同命） | 可延后 |
+| 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中（可达性存疑） | 待判断，见 §6 |
+| 6 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 待修 |
+| 7 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 待修 |
+| 8 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs:26` | `MarkPlayerErrorsAsync(...)` | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)` → 内部碰 HUD/PopupLayer | 中 | 待修 |
+| 9 | `S:/SnekSweeper/Scripts/UI/Level/Popup/WinPopup.cs:30` | `_popupChoiceListener.GetChoiceAsync(ct)` | `_animator.HideAsync(ct)` → `SlideOutAsync` → `target.TweenGlobalPosition` / `target.Hide()` | 中 | 待修 |
+| 10 | `S:/SnekSweeper/Scripts/UI/Level/Popup/LosePopup.cs:30` | 同上 | 同上 | 中 | 待修 |
+| 11 | `G:/TweenStuff/TweenExtensions.cs:44` | `target.TweenGlobalPosition(…).PlayAsyncUntilNodeDestroy(target, ct)` | `target.Hide();`（**库级**，所有调用方受影响） | 中 | 待修 |
+| 12 | `S:/SnekSweeper/Scripts/Autoloads/MessageBox.cs:47-48` | `GDTask.Delay`、`messageLabel.FadeOutAsync` | `messageLabel.QueueFree();` | 低（autoload 与整棵树同命） | 可延后 |
 
 ### 4.1 三个最值得优先处理
 
@@ -145,7 +162,7 @@ try { ... } finally {
 2. **`PaginationBinder.RefreshAsync:90-92` + `ExampleCard.cs:33`** —— 走**常规路径**（翻页/数据变更必触发），
    且 `PaginationBar.ClearContent()` 会 `QueueFree()` 掉仍在 `InitAsync` 中的卡片 ⇒ 二者是**同一个窗口的两端**，
    修一处等于同时关掉两个命中点。注意 `PaginationBinder` 里的 `catch (OperationCanceledException)` 只覆盖"被取消"，不覆盖"完成之后节点才死"。
-3. **`SceneSwitcher` 自身** —— 见 §6。
+3. **`SceneSwitcher` 自身** —— 只剩一条，且**先判断可达性再决定**（很可能是"记录理由、不修"），见 §6。
 
 ### 4.2 类 D（**不同问题，别混进来**）
 
@@ -183,15 +200,17 @@ try { ... } finally {
 
 - 每处修改都要能回答："这个窗口是怎么消失的？" —— 答不上来就是没修好。
 - 每改一个文件跑一次全工作区错误检查（`get_errors`），保持干净。
-- **`SceneSwitcher` 尾巴**：我（上一轮）新写的过渡正文自己也在命中表上 ——
-  `await FadeInAsync(ct)` 之后要碰 `_currentScene` / `CurrentSceneHolder` / `configure`。
-  只靠 `finally` 不够。**推荐修法**：把过渡用的 token 绑到 `Main` 的生命周期
-  （`this.GetCancellationTokenOnTreeExit()`），整棵树被拆时过渡被取消，正文就不会执行。
-- **建议的顺手清理**（用户提过、尚未做）：
-  - `ISceneSwitcher.configure` 与 `Main.Show(…, initialize)` 命名不统一。
-  - `FadingMask` 的释放已在 `try/finally` 内（已做），但 `FadingMask` 目前挂在
-    `CurrentSceneHolder` 下、`layer = 2`，会盖住 `layer = -1` 的背景 —— 后续要挪到 `Main` 作用域。
-    （**注意**：这属于另一个待办，本次不一定要动，先问用户。）
+- **`SceneSwitcher` 的那一条**：`FadingMask` 已整体删除，旧的 4 处命中只剩 1 处 ——
+  `await GDTask.Yield()` 之后的 `_currentScene.Free()` / `CurrentSceneHolder.AddChild` /
+  `onSceneEntered?.Invoke`。
+  **先判断可达性，别急着加守卫**：
+  - `GDTask.Yield()` **不接受 token** ⇒ 修法优先级第 2 条在这里不可用，只剩 `IsInstanceValid`。
+  - 命中条件是"`SceneSwitcher` 所在的整棵树在『续体已排队、尚未泵出』的那一帧内被拆掉"
+    （例如退出游戏 / 卸载 root）。正常换场景路径**不命中**：换场是它自己做的，且单飞标志保护了同帧重入。
+  - 因此这一步的合理产出可能是「判定为低危 / 不可达，记录理由后**不修**」。这正是本任务要求的
+    "说清窗口为什么存在或不存在" —— 硬加一个守卫反而是倒退。判断完请把结论写进 commit message
+    或代码注释，不要只在对话里说。
+  - `finally { _isTransitioning = false; }` 是纯 C# 字段写入，**不碰 Godot 对象，天然安全**，不用动。
 - **不要**顺手重构无关代码；一次一个概念。
 
 ### 怎么验证
