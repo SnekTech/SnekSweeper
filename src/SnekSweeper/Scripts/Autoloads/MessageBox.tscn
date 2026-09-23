@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://b40kl5oblpvrf"]
+[gd_scene format=3 uid="uid://b40kl5oblpvrf"]
 
 [ext_resource type="Script" uid="uid://c1mva8f4s8dkt" path="res://Scripts/Autoloads/MessageBox.cs" id="1_c0buq"]
 
-[node name="MessageBox" type="Control"]
+[node name="MessageBox" type="Control" unique_id=1742197106]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_c0buq")
 
-[node name="MessageContainer" type="VBoxContainer" parent="."]
+[node name="MessageContainer" type="VBoxContainer" parent="." unique_id=1063051939]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3

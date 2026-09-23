@@ -24,7 +24,7 @@ config/icon="res://mine_icon.png"
 GTweensGodotUpdater="*res://Scripts/Autoloads/GTweensGodotUpdater.cs"
 SaveData="*res://Scripts/Autoloads/SaveData.cs"
 MessageBox="*res://Scripts/Autoloads/MessageBox.tscn"
-QuitHandler="*res://Autoloads/QuitHandler.tscn"
+QuitHandler="*uid://cxvipmchokb61"
 
 [display]
 
