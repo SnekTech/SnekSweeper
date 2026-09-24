@@ -21,7 +21,9 @@
 >   `GridSystem/CursorStateManagement` 与 `GridInputSession`），旧实现不再投入。
 > - **`SceneSwitcher`（#5）判定为不可达，维持现状、不修**（理由见 §6）。
 > - **#11 `SlideOutAsync` 已按 §5 第 2 档（token 绑节点 + 续体自检）修**，#9/#10 随之关闭。
-> - 剩余：#6/#7 `PopupLayer`、#8 `GridLogic.State.Lose`、#12 `MessageBox`（低危可延后）。
+> - **#6/#7 `PopupLayer`、#8 `Lose`、#12 `MessageBox` 判定不可达，不修**（理由见 §4.1）。
+> - **至此清单结清**：已修 2 处（#1、#11，连带 #9/#10 关闭）；搁置 3 处（#2/#3/#4）；
+>   判定不修 5 处（#5/#6/#7/#8/#12）。
 
 ---
 
@@ -185,13 +187,13 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | ⏸ 搁置（翻页将用 DU 重写） |
 | 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)` | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | ⏸ 搁置（同上） |
 | 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中 | 🚫 判定不可达，不修（见 §6） |
-| 6 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 待修 |
-| 7 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 待修 |
-| 8 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs:26` | `MarkPlayerErrorsAsync(...)` | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)` → 内部碰 HUD/PopupLayer | 中 | 待修 |
+| 6 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 🚫 判定不可达（见 §4.1） |
+| 7 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 🚫 判定不可达（见 §4.1） |
+| 8 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs:26` | `MarkPlayerErrorsAsync(...)` | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)` → 内部碰 HUD/PopupLayer | 中 | 🚫 判定不可达（见 §4.1） |
 | 9 | `S:/SnekSweeper/Scripts/UI/Level/Popup/WinPopup.cs:30` | `_popupChoiceListener.GetChoiceAsync(ct)` | `_animator.HideAsync(ct)` → `SlideOutAsync` → `target.TweenGlobalPosition` / `target.Hide()` | 中 | ✅ 随 #11 关闭 |
 | 10 | `S:/SnekSweeper/Scripts/UI/Level/Popup/LosePopup.cs:30` | 同上 | 同上 | 中 | ✅ 随 #11 关闭 |
 | 11 | `G:/TweenStuff/TweenExtensions.cs:38-45`（`SlideOutAsync`） | `target.TweenGlobalPosition(…).PlayAsync(…)` | `target.Hide();`（**库级**，本工作区唯一调用方是 `PopupAnimator`） | 中 | ✅ **已修（§5 第 2 档）** |
-| 12 | `S:/SnekSweeper/Scripts/Autoloads/MessageBox.cs:47-48` | `GDTask.Delay`、`messageLabel.FadeOutAsync` | `messageLabel.QueueFree();` | 低（autoload 与整棵树同命） | 可延后 |
+| 12 | `S:/SnekSweeper/Scripts/Autoloads/MessageBox.cs:47-48` | `GDTask.Delay`、`messageLabel.FadeOutAsync` | `messageLabel.QueueFree();` | 低（autoload 与整棵树同命） | 🚫 判定不可达（见 §4.1） |
 
 ### 4.1 当前处置（2026-09-24）
 
@@ -202,8 +204,20 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 3. **`SceneSwitcher`（#5）—— 判定不可达，不修**，见 §6。
 4. **`SlideOutAsync`（#11）—— 已按 §5 第 2 档修**，`WinPopup`/`LosePopup`（#9/#10）随之关闭
    （它俩 await 之后只有 `return choice`，真正的尾巴在库里）。
-5. **剩余待修**：`PopupLayer`（#6/#7）与 `GridLogic.State.Lose`（#8）—— 两者是同一类窗口，
-   **先判可达性再动手**；`MessageBox`（#12）低危可延后。
+5. **`PopupLayer`（#6/#7）与 `GridLogic.State.Lose`（#8）—— 判定不可达，不修。**
+   理由（2026-09-24 复核）：`ct` = `LevelExitToken` = `Level1.GetCancellationTokenOnTreeExit()`，
+   而能拆掉 `Level1` 的**唯一**入口是 `SceneSwitcher.GotoSceneAsync`，它由 `AppLogic` 的 output 驱动，
+   而 level 内的 output 又只在**拿到弹窗选择之后**才产生：
+   - #6/#7：`IsInputBlocked = false` 发生在 choice 交回逻辑块**之前** ⇒ 那一帧不可能有换场在飞；
+   - #8：`Lose` 的续体是弹窗流程的**起点** ⇒ 它执行时更不可能有换场在飞。
+   换场本身还要再等 `await GDTask.Yield()` 一个帧边界才 `Free()`，所以即便整条链在同一帧的泵里内联跑完，
+   `Free()` 也至少晚一帧。
+   剩下的唯一路径是**整个应用退出**（`QuitHandler` → `GetTree().Quit()`）：主循环在当次迭代后停止，
+   树是在循环结束后的 `finalize` 才被拆 ⇒ 已排队的续体要么在当次迭代里（树还活着）跑完，要么永远不会被执行。
+   **注意**：这个结论依赖 `GDTask.Yield()` 是真正的帧边界（也正是 `SceneSwitcher` 那个设计能成立的原因）。
+6. **`MessageBox`（#12）—— 判定不可达，不修**：`messageLabel` 的唯一所有者是 autoload `MessageBox`
+   （`MessageContainer` 不做 `ClearChildren`，`MessageQueue` 也不碰 label），所以它只在应用退出时死；
+   退出时按第 5 条同理，续体不会再撞上已释放的树。
 
 ### 4.2 类 D（**不同问题，别混进来**）
 

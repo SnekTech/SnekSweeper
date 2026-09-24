@@ -48,7 +48,6 @@ public partial class Cover : Node2D, ICover, ISceneScript
         var tween = GTweenExtensions.Tween(GetDissolveProgress, SetDissolveProgress, 1, AnimationDuration)
             .OnComplete(Hide);
 
-        // todo: check if the using statement is suitable here
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _tweenCts.Token);
 
         // 取消（被新动画取代/节点销毁）时 await 抛 OCE；OCE 交给调用方的 fire-and-forget 处理
