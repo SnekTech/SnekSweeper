@@ -11,11 +11,17 @@
 `FadingMask` 的删除合并成 1 处，见 §4 / §6）。请按「修法优先级」逐处修复，每修一处都要能说清
 「这个窗口为什么消失 / 为什么不成立」，**不要只是加个 null 检查糊过去**。
 
-建议顺序：`Tooltip` → `PaginationBinder` + `ExampleCard` → `PopupLayer` 两条 → 其余按风险排
-（`SceneSwitcher` 那一条的可达性存疑，**先判断再决定**，见 §6）。
+建议顺序：见 §4.1「当前处置」（早期版本的"`Tooltip` → `PaginationBinder` → …"顺序已作废：前两项已搁置）。
+`SceneSwitcher` 那一条的可达性已判完（**不可达，不修**，见 §6）。
 
-> **进度**：`Flag.cs` 已由用户按优先级 1 修复并提交；`SceneSwitcher` 的黑幕过渡已被整体删除
-> （该组件已不存在，旧命中点随之作废）。其余待修。
+> **进度（2026-09-24 更新）**：
+> - `Flag.cs` 已修（用户提交）；`FadingMask` 已整体删除（旧命中点作废）。
+> - **Tooltip（#2）搁置**：整个 tooltip feature 将重新设计，不在旧实现上做修。
+> - **翻页（#3 `PaginationBinder` + #4 `ExampleCard`）搁置**：翻页会用 C# DU 重写（参考
+>   `GridSystem/CursorStateManagement` 与 `GridInputSession`），旧实现不再投入。
+> - **`SceneSwitcher`（#5）判定为不可达，维持现状、不修**（理由见 §6）。
+> - **#11 `SlideOutAsync` 已按 §5 第 2 档（token 绑节点 + 续体自检）修**，#9/#10 随之关闭。
+> - 剩余：#6/#7 `PopupLayer`、#8 `GridLogic.State.Lose`、#12 `MessageBox`（低危可延后）。
 
 ---
 
@@ -39,13 +45,18 @@ GodotTask（GDTask 3.2.0）的 await 续体由 `GodotSynchronizationContext.Exec
 帧 N+1 : 续体才被泵出 → 访问已释放的节点 → ObjectDisposedException
 ```
 
-**关键认识**：所有现成的"取消机制"（`PlayAsyncUntilNodeDestroy`、`ct.LinkWithNodeDestroy(node)`、
-`_ExitTree` 里 cancel）都只保护 **还在进行中的 await**。任务一旦完成、续体已排队，
-这些机制**全部失效** —— 而 .NET 里**已排队的续体无法取消**。
+**关键认识**：`CancellationToken` 只能作用于**尚未完成**的操作。被等待的操作一旦正常完成、续体已排入
+同步上下文，就没有任何接口能撤回它 —— .NET 如此，Godot 的 `CallDeferred` 队列也如此。
 
-→ 所以有且只有两条路：
-- (a) 让续体自己检查取消/有效性；
-- (b) **压根不产生续体**（首选，见「修法优先级」第 1 条）。
+同时要纠正一个容易走偏的说法：这里**不是**"续体假装没被取消"。真实时序是 —— 取消发生在
+**节点死的那一刻**（`Free()`/`QueueFree` 触发的 `_ExitTree` → `TreeExited` → token 被取消），
+而续体要到**下一帧**才被泵出。所以只要 token 与那棵树**同命**，续体执行时就能看见取消，
+从而在碰节点之前退出。
+
+→ 于是有两条路，优先级见「修法优先级」：
+- (a) **不产生续体**（消除窗口）：把副作用搬到 await 之前 / 不 await / tween 的 `OnComplete`
+  （仅限终结性的**同步**副作用，见 §5）；
+- (b) **续体自检**（检测窗口，Godot 侧的通用默认）：token 绑节点生命周期 + 在碰节点前检查它。
 
 ### 放大器：为什么这类 bug 很难被发现
 
@@ -69,13 +80,35 @@ GodotTask（GDTask 3.2.0）的 await 续体由 `GodotSynchronizationContext.Exec
 
 - `GTween.Kill()` **不会触发 `OnComplete`**；而自然播完会**同步**触发。
   ⇒ 把"收尾动作"放进 `OnComplete`，"该不该收尾"就完全由 tween 的生死决定，不再需要 token 守卫。
-- `PlayAsyncUntilNodeDestroy(node, ct)` 只在 tween **运行期间**随节点销毁而取消，救不了"完成后"。
-- **`GDTask.Yield()` / `GDTask.Delay()` 这类等待原语不接受 token**。
-  ⇒ 修法优先级第 2 条（把 token 绑到节点生命周期）对它们**根本不可用**，只能走第 1 条（改结构）
-  或第 3 条（`IsInstanceValid`）。看到这类 `await` 就别想着"绑个 token 就好了"。
+- `PlayAsyncUntilNodeDestroy(node, ct)` 只在 tween **运行期间**随节点销毁而取消 —— 它在**内部**建的节点链接
+  **不暴露给调用方**，所以续体里无从检查它。要自检就得自己在使用点建链接（见下面的通用约定），
+  并且用 `PlayAsyncGD(linked.Token)`，不要再叠一层 `PlayAsyncUntilNodeDestroy`。
+- **`GDTask.Yield()` / 不传 token 的 `GDTask.Delay()` 根本不接受 token** ⇒ 没有 ct 可查，
+  第 2 档对它们**不可用**，只能走第 1 档（改结构）或第 3 档（`IsInstanceValid`）。
+  看到这类 `await` 就别想着"绑个 token 就好了"。
 - 若副作用不必发生在 await 之后，**把它搬到 await 之前**。比任何守卫都便宜。
 - `GodotObject.IsInstanceValid(x)` 是兜底手段；它只能保护**那一次**访问，**不是结构性修复**
   （包括写在 `finally` 里 —— 窗口只是被缩小到一次判断，而它自身同样可能读到一个已释放的引用）。
+  它仍有明确的存在价值：问的是"这个对象现在还活着吗"，不依赖任何 token 图不变式。
+
+### 通用约定：await 之后要碰节点时
+
+两个半边**缺一不可**：
+
+1. **token 必须与"你要碰的那棵树"同命** —— 靠 `ct.LinkWithNodeDestroy(node)` / `node.GetCancellationTokenOnTreeExit()`，
+   或在 `_ExitTree()` 里 cancel 自己的 `_tweenCts`。没有这半边，下半边就是空转。
+2. **续体在碰节点的前一行检查它** —— 检查必须放在**使用点**，且链接要在**使用点自建**：
+   签名里的 `CancellationToken ct = default` 在调用方不传时不可取消，只查调用方传来的 token 是
+   **真空的假安全**。
+
+```csharp
+using var linked = ct.LinkWithNodeDestroy(node);   // 自建, 不依赖调用方
+await tween.PlayAsyncGD(linked.Token);             // 不再叠一层 PlayAsyncUntilNodeDestroy
+linked.Token.ThrowIfCancellationRequested();       // 完成之后节点才死 → 在这里退出
+Hide();                                           // 这一行起才允许碰节点
+```
+
+取消时抛 `OCE`，与既有约定一致（`GDTask.Forget()` / `Task.Fire()` 默认吞 `OCE`）。
 
 ### 架构约定（本仓库技能，务必遵守）
 
@@ -91,9 +124,14 @@ GodotTask（GDTask 3.2.0）的 await 续体由 `GodotSynchronizationContext.Exec
 
 ---
 
-## 3. 已修好的范例（可直接照抄的形状）
+## 3. 已修好的范例（**只适用于 tween**，通用做法见 §5）
 
-### 范例 A：`Cover.RevealAsync`（最佳范例，窗口结构性消失）
+> ⚠️ 下面两例都是 §5 第 1 档"消除续体"在 **tween 场景**下的特例。tween 是唯一带 `OnComplete` 钩子的
+> 异步源，所以这两个形状**不能**当通用模板照抄到别的 `await` 上（那正是本文档早期版本走偏之处：
+> `OnComplete` 只能收同步 `Action`，传 async 就是 `async void` + 回调内部同样有窗口；
+> 普通 `Task`/`GDTask` 也根本没有这种钩子）。
+
+### 范例 A：`Cover.RevealAsync`（tween 场景下窗口结构性消失）
 
 ```csharp
 // S: src/SnekSweeper/Scripts/CellSystem/Components/Cover.cs
@@ -127,7 +165,8 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 
 ### 其他已守卫的点
 
-- `S: Scripts/Levels/Level1.cs:166,171` —— `ct.LinkWithNodeDestroy(this)`（只救 await 期间，单独用不够）
+- `S: Scripts/Levels/Level1.cs:166,171` —— `ct.LinkWithNodeDestroy(this)`（这是通用约定的**上半边**；
+  要配上下半边"续体在碰节点前自检 ct"才完整）
 - `S: Scripts/UI/Common/Pagination.cs:77-86` —— `catch (OperationCanceledException) { return; }`
 - `G: Tasks/TaskCancellationExtensions.cs` —— `CancelAndDispose` 已改为幂等（吞掉 `Cancel()` 的 ODE）
 
@@ -142,27 +181,29 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | # | 文件:行 | await 的东西 | await 之后碰的节点 | 风险 | 状态 |
 |---|---|---|---|---|---|
 | 1 | `S:/SnekSweeper/Scripts/CellSystem/Components/Flag.cs:49` | `tween.PlayAsyncUntilNodeDestroy` | `Hide();` | 中高 | ✅ **已修（用户改的，已提交）** |
-| 2 | `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs:36` | `TweenModulateAlpha(0,…).PlayAsyncGD(token)` | `Hide();` | **高** | 待修 |
-| 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | 待修 |
-| 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)` | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | 待修 |
-| 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中（可达性存疑） | 待判断，见 §6 |
+| 2 | `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs:36` | `TweenModulateAlpha(0,…).PlayAsyncGD(token)` | `Hide();` | **高** | ⏸ 搁置（tooltip 重设计中） |
+| 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | ⏸ 搁置（翻页将用 DU 重写） |
+| 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)` | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | ⏸ 搁置（同上） |
+| 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中 | 🚫 判定不可达，不修（见 §6） |
 | 6 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 待修 |
 | 7 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 待修 |
 | 8 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs:26` | `MarkPlayerErrorsAsync(...)` | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)` → 内部碰 HUD/PopupLayer | 中 | 待修 |
-| 9 | `S:/SnekSweeper/Scripts/UI/Level/Popup/WinPopup.cs:30` | `_popupChoiceListener.GetChoiceAsync(ct)` | `_animator.HideAsync(ct)` → `SlideOutAsync` → `target.TweenGlobalPosition` / `target.Hide()` | 中 | 待修 |
-| 10 | `S:/SnekSweeper/Scripts/UI/Level/Popup/LosePopup.cs:30` | 同上 | 同上 | 中 | 待修 |
-| 11 | `G:/TweenStuff/TweenExtensions.cs:44` | `target.TweenGlobalPosition(…).PlayAsyncUntilNodeDestroy(target, ct)` | `target.Hide();`（**库级**，所有调用方受影响） | 中 | 待修 |
+| 9 | `S:/SnekSweeper/Scripts/UI/Level/Popup/WinPopup.cs:30` | `_popupChoiceListener.GetChoiceAsync(ct)` | `_animator.HideAsync(ct)` → `SlideOutAsync` → `target.TweenGlobalPosition` / `target.Hide()` | 中 | ✅ 随 #11 关闭 |
+| 10 | `S:/SnekSweeper/Scripts/UI/Level/Popup/LosePopup.cs:30` | 同上 | 同上 | 中 | ✅ 随 #11 关闭 |
+| 11 | `G:/TweenStuff/TweenExtensions.cs:38-45`（`SlideOutAsync`） | `target.TweenGlobalPosition(…).PlayAsync(…)` | `target.Hide();`（**库级**，本工作区唯一调用方是 `PopupAnimator`） | 中 | ✅ **已修（§5 第 2 档）** |
 | 12 | `S:/SnekSweeper/Scripts/Autoloads/MessageBox.cs:47-48` | `GDTask.Delay`、`messageLabel.FadeOutAsync` | `messageLabel.QueueFree();` | 低（autoload 与整棵树同命） | 可延后 |
 
-### 4.1 三个最值得优先处理
+### 4.1 当前处置（2026-09-24）
 
-1. **`Tooltip.cs:36`** —— 保护层级最薄：token 只来自 `TooltipLayer._currentActionCancellationSource`，
-   **没有 `LinkWithNodeDestroy`**，`TooltipLayer` 也**没有 `_ExitTree` 取消** ⇒ 切场景时窗口完全裸奔。
-   同文件 `ShowAsync` 里的 `Callable.From(UpdateTooltipPosition).CallDeferred()` 属**同一家族**（"排队到之后再执行"），建议一并处理。
-2. **`PaginationBinder.RefreshAsync:90-92` + `ExampleCard.cs:33`** —— 走**常规路径**（翻页/数据变更必触发），
-   且 `PaginationBar.ClearContent()` 会 `QueueFree()` 掉仍在 `InitAsync` 中的卡片 ⇒ 二者是**同一个窗口的两端**，
-   修一处等于同时关掉两个命中点。注意 `PaginationBinder` 里的 `catch (OperationCanceledException)` 只覆盖"被取消"，不覆盖"完成之后节点才死"。
-3. **`SceneSwitcher` 自身** —— 只剩一条，且**先判断可达性再决定**（很可能是"记录理由、不修"），见 §6。
+1. **`Tooltip`（#2，含同文件的 `CallDeferred` 家族）—— 搁置**：整个 tooltip feature 将重新设计。
+2. **`PaginationBinder` + `ExampleCard`（#3/#4）—— 搁置**：翻页将用 C# DU 重写，旧实现不再投入。
+   （两者确实还是"同一个窗口的两端"：`PaginationBar.ClearContent()` 会 `QueueFree()` 掉仍在 `InitAsync` 中的卡片，
+   而 `catch (OperationCanceledException)` 只覆盖"被取消"，不覆盖"完成之后节点才死"。）
+3. **`SceneSwitcher`（#5）—— 判定不可达，不修**，见 §6。
+4. **`SlideOutAsync`（#11）—— 已按 §5 第 2 档修**，`WinPopup`/`LosePopup`（#9/#10）随之关闭
+   （它俩 await 之后只有 `return choice`，真正的尾巴在库里）。
+5. **剩余待修**：`PopupLayer`（#6/#7）与 `GridLogic.State.Lose`（#8）—— 两者是同一类窗口，
+   **先判可达性再动手**；`MessageBox`（#12）低危可延后。
 
 ### 4.2 类 D（**不同问题，别混进来**）
 
@@ -184,12 +225,23 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 
 ## 5. 修法优先级（模板）
 
-1. **把收尾动作搬进 `tween.OnComplete`** —— 窗口**结构性消失**，代码最短。**首选。**
-   （判据：await 之后的语句只有"收尾副作用"，例如 `Hide()` / `QueueFree()` / 置标志位。）
-2. **让参与的 token 绑到节点生命周期**（`ct.LinkWithNodeDestroy(node)`）—— 只救"await 期间"，
-   **单独用不够**，必须与 1 或 3 配合。
-3. **`GodotObject.IsInstanceValid(x)` 兜底** —— 用于无法改结构、或访问的是**另一个**节点的场景
-   （如 `PopupLayer` 访问 `Level1` 里的节点）。
+按"能不能**消除**窗口"排序，逐档降级：
+
+1. **不产生续体（消除窗口，首选）**
+   - 副作用能搬到 await **之前** → 搬。比任何守卫都便宜。
+   - 不需要等 → 不 await。
+   - 只有"终结性的**同步**副作用"、且恰好有 tween 钩子 → 挂 `tween.OnComplete`。
+     ⚠️ 这是第 1 档的**特例，不是通用范式**：`OnComplete` 是 tween 独有的，而且只能收同步 `Action`
+     （传 async = `async void` = 新的 fire-and-forget，回调内部同样有窗口）；`Task`/`GDTask` 根本没有这种钩子。
+2. **续体自检 ct（检测窗口，**Godot 侧的通用默认**）**
+   - token 必须与"你要碰的那棵树"同命，且**在使用点自建链接**（不能依赖调用方传 token）。
+   - 形状与理由见 §2「通用约定：await 之后要碰节点时」。
+   - 取消时抛 `OCE`，与既有约定一致。
+3. **`GodotObject.IsInstanceValid(x)` 兜底** —— 只在 1/2 覆盖不到时用：
+   - **没有 token 的等待**：`GDTask.Yield()`、`CallDeferred` 的 flush、不传 token 的 `GDTask.Delay`；
+   - **非 Node 的 Godot 对象**：`Resource`/`ShaderMaterial`/`Tween` 不是 Node，`TreeExited` 不会替它们取消；
+   - 要碰的是**另一条生命周期**、token 串不进来的节点（例如 `PaginationBinder` 的 `_ui`）。
+   - 它只保护**那一次**访问，不是结构性修复。
 
 ⚠️ 反模式：`if (node != null)` —— C# 里 Godot 对象的 `!= null` 会走重载/引用比较，
 对"已释放但引用还在"的节点**不可靠**，请用 `IsInstanceValid`。
@@ -199,6 +251,8 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 ## 6. 交付要求与验收
 
 - 每处修改都要能回答："这个窗口是怎么消失的？" —— 答不上来就是没修好。
+- 用第 2 档（自检 ct）时还要能回答："这个 token 凭什么会在节点死时被取消？"，
+  以及"链接是不是在使用点自建的（而不是依赖调用方传进来的 `ct`）？" —— 两个都是否，就是真空的假安全。
 - 每改一个文件跑一次全工作区错误检查（`get_errors`），保持干净。
 - **`SceneSwitcher` 的那一条**：`FadingMask` 已整体删除，旧的 4 处命中只剩 1 处 ——
   `await GDTask.Yield()` 之后的 `_currentScene.Free()` / `CurrentSceneHolder.AddChild` /

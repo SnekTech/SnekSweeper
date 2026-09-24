@@ -4,8 +4,10 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Todo
 
-- [x] controller radial menu like Monster Hunter item selector
 - [ ] fix todo component flickering
+- [ ] minesweeper controller support
+  - [ ] camera zoom
+  - [ ] camera focus
 
 ## Done
 
@@ -47,6 +49,7 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 - [ ] different UI for different input device
 - [ ] input re-mapping
+- [x] controller radial menu like Monster Hunter item selector
 
 ### controller support
 
