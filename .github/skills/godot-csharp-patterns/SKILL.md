@@ -3,10 +3,11 @@ name: godot-csharp-patterns
 description: >
   Use when: writing Godot C# scene scripts, implementing Core interfaces in
   Godot, creating Godot scenes, wiring Core logic to Godot presentation
-  layer, adding animations or shader effects, or structuring Godot C# project
-  architecture. Applies the POCO+interface pattern where Core defines
-  abstractions and Godot scene scripts implement them as the presentation
-  layer.
+  layer, adding animations or shader effects, writing async/await code that
+  touches nodes (cancellation, node lifetime, fire-and-forget), or
+  structuring Godot C# project architecture. Applies the POCO+interface
+  pattern where Core defines abstractions and Godot scene scripts implement
+  them as the presentation layer.
 ---
 
 # Godot C# Patterns
@@ -136,8 +137,9 @@ var foo = GD.Load<PackedScene>("res://path/to/scene.tscn").Instantiate<HumbleFoo
 Animations are a Godot-layer concern. Core never knows about tweens or frames.
 
 - **Prefer GTweens** for tween-based animations.
-- Always pass `CancellationToken` and use `PlayAsyncUntilNodeDestroy(this, ct)` so
-  tweens cancel automatically if the node is freed.
+- Always pass `CancellationToken` and use `PlayAsyncUntilNodeDestroy(this, ct)`.
+  ⚠️ 但这只保护 **await 期间**（节点销毁会让 await 抛 OCE）；它救不了"tween 已正常播完、
+  同一帧节点才死"这个窗口。所以 **`await` 之后不要再碰节点**，收尾副作用挂到 tween 上（见下）。
 
 ```csharp
 using GTweens.Extensions;
@@ -149,12 +151,16 @@ public async Task RevealAsync(CancellationToken ct = default)
         a => _.Sprite.Modulate = _.Sprite.Modulate with { A = a },
         targetValue: 0f,
         duration: 0.2f
-    );
+    ).OnComplete(Hide);        // 收尾副作用挂到 tween: 自然完成时同步执行, 被 Kill 时不执行
+
     await tween.PlayAsyncUntilNodeDestroy(this, ct);
-    Hide();
+    // ← await 之后零节点访问
 }
 ```
 
+- `OnComplete` 只能收**同步** `Action`，而且只有 tween 有这种钩子 —— 它是局部特例，**不是通用范式**。
+  普通 `await`（`WhenAll` / 弹窗选择 / 自定义异步流程）要碰节点时，按
+  「Asynchronous Operations → await 之后要碰节点时」处理。
 - Godot's built-in `Tween` is available as a fallback if GTweens is not suitable.
 
 ## Shaders
@@ -192,7 +198,7 @@ public override void _Input(InputEvent @event)
 - Core uses standard `Task` / `ValueTask`. Convert at the boundary as needed.
 
 ```csharp
-using GDTask;
+using GodotTask;
 
 // Fire-and-forget an async operation (e.g., in event handlers)
 void OnSomeEvent() => DoSomethingAsync(CancellationToken.None).AsGDTask().Forget();
@@ -203,6 +209,46 @@ await GDTask.WhenAll(tasks);
 // Convert standard Task to GDTask
 await someTask.AsGDTask();
 ```
+
+### `await` 之后要碰节点时（**必读**）
+
+GDTask 的续体由 `GodotSynchronizationContext` 在**下一帧**泵出。被等待的操作一旦**正常完成**，
+就没有任何接口能撤回已排队的续体 —— "tween 播完 / `WhenAll` 完成，同一帧节点才死"这种情况下，
+续体照跑，然后撞上已释放的对象（`ObjectDisposedException`）。取消机制（`PlayAsyncUntilNodeDestroy`、
+`LinkWithNodeDestroy`、`_ExitTree` 里 cancel）只能作用于**尚未完成**的操作，救不了这个窗口。
+
+按"能不能**消除**窗口"逐档降级：
+
+1. **不产生续体**（首选）：副作用搬到 `await` **之前**；不需要等就不 `await`；只有"终结性的**同步**副作用"
+   且恰好是 tween → 挂 `.OnComplete(...)`。
+2. **续体自检 ct**（Godot 侧的**默认写法**）：token 与"你要碰的那棵树"同命，且**在使用点自建链接** ——
+   签名里的 `CancellationToken ct = default` 在调用方不传时不可取消，只查调用方传进来的就是**真空的假安全**。
+3. **`GodotObject.IsInstanceValid(x)` 兜底**：只在 1/2 覆盖不到时用 —— 没有 token 的等待（`GDTask.Yield()`、
+   `CallDeferred` 的 flush）、**非 Node** 的 GodotObject（`Resource`/`ShaderMaterial`/`Tween`）、
+   或要碰的是**另一条生命周期**、token 串不进来的节点。
+
+```csharp
+using GodotGadgets.Tasks;   // LinkWithNodeDestroy
+
+public async GDTask SlideOutAsync(CancellationToken ct = default)
+{
+    using var linked = ct.LinkWithNodeDestroy(this);   // 自建, 不依赖调用方
+    await MyTweenAsync().PlayAsyncGD(linked.Token);     // 别再叠 PlayAsyncUntilNodeDestroy
+
+    // 必须在碰节点之前: 已排队的续体无法取消, 这是唯一能挡住它的手段
+    linked.Token.ThrowIfCancellationRequested();
+
+    Hide();                                            // 这一行起才允许碰节点
+}
+```
+
+- **`using` 的语义**：释放发生在**方法返回时**，它只是断开与父 token 的链接并释放自身，
+  **不会触发取消**；驱动取消的始终是父（外层 `ct` / 节点 `TreeExited`）。所以只要 token **不逃逸出本方法**
+  （自己 await 完再碰节点），`using` 就是对的。反之，若把 token 交给活得比方法更久的消费者
+  （fire-and-forget 传出去），返回时释放会让链接失效，后续 `Register` 还会抛 `ObjectDisposedException`。
+- 取消时抛 `OCE`，与既有约定一致（`GDTask.Forget()` / `Task.Fire()` 默认吞 `OCE`）。
+
+❌ 反模式：`if (node != null)` —— Godot 对象的重载比较对"已释放但引用还在"不可靠，请用 `IsInstanceValid`。
 
 ## Dependency Injection (Optional)
 
