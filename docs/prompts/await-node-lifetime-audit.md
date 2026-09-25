@@ -22,8 +22,10 @@
 > - **`SceneSwitcher`（#5）判定为不可达，维持现状、不修**（理由见 §6）。
 > - **#11 `SlideOutAsync` 已按 §5 第 2 档（token 绑节点 + 续体自检）修**，#9/#10 随之关闭。
 > - **#6/#7 `PopupLayer`、#8 `Lose`、#12 `MessageBox` 判定不可达，不修**（理由见 §4.1）。
-> - **至此清单结清**：已修 2 处（#1、#11，连带 #9/#10 关闭）；搁置 3 处（#2/#3/#4）；
->   判定不修 5 处（#5/#6/#7/#8/#12）。
+> - **`Level1.cs:144,150,159`（§4.4 间接路径）判定不可达**（时序论证见 §4.1 第 7 条）。
+> - **至此清单结清**：已修 2 处（#1、#11，连带 #9/#10 关闭）；随重写处理 3 项（#2 tooltip、#3/#4 翻页、
+>   `InputMask` 输入拦截）；判定不修 6 处（#5/#6/#7/#8/#12 + `Level1` 三处）。
+> - **重写开工前的遗留总览（含验证缺口）见 §4.5。**
 
 ---
 
@@ -195,7 +197,7 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | 11 | `G:/TweenStuff/TweenExtensions.cs:38-45`（`SlideOutAsync`） | `target.TweenGlobalPosition(…).PlayAsync(…)` | `target.Hide();`（**库级**，本工作区唯一调用方是 `PopupAnimator`） | 中 | ✅ **已修（§5 第 2 档）** |
 | 12 | `S:/SnekSweeper/Scripts/Autoloads/MessageBox.cs:47-48` | `GDTask.Delay`、`messageLabel.FadeOutAsync` | `messageLabel.QueueFree();` | 低（autoload 与整棵树同命） | 🚫 判定不可达（见 §4.1） |
 
-### 4.1 当前处置（2026-09-24）
+### 4.1 当前处置（2026-09-24，09-25 更新）
 
 1. **`Tooltip`（#2，含同文件的 `CallDeferred` 家族）—— 搁置**：整个 tooltip feature 将重新设计。
 2. **`PaginationBinder` + `ExampleCard`（#3/#4）—— 搁置**：翻页将用 C# DU 重写，旧实现不再投入。
@@ -218,11 +220,31 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 6. **`MessageBox`（#12）—— 判定不可达，不修**：`messageLabel` 的唯一所有者是 autoload `MessageBox`
    （`MessageContainer` 不做 `ClearChildren`，`MessageQueue` 也不碰 label），所以它只在应用退出时死；
    退出时按第 5 条同理，续体不会再撞上已释放的树。
+7. **`Level1.cs:144,150,159`（§4.4 的间接路径）—— 判定不可达，不修（2026-09-25）。**
+   依据是**时序**（与 #8 同源），不是"引用不会悬空"：
+   - 能拆 `Level1` 的只有 `SceneSwitcher`，而 level 内的换场由弹窗 choice 之后的 output 驱动；
+   - `:144/:150`（`InitCellsAsync` 之后的 `CompleteInit()`）必然早于弹窗出现；
+   - `:159`（`HandleInputAsync` 之后的 `GridLogic.Input(InputProcessed)`）同样早于弹窗；
+     换场帧也不可能**新起**一次输入驱动的续体 —— 输入监听节点随树销毁，死节点不会再发事件。
+   **不依赖 `InputMask` 是否拦得住**：即便输入漏过去，最坏也只是"弹窗期间还能操作棋盘"（行为问题），
+   不会产生撞死节点的续体。
+   附带的结构前提（**假设，须长期保持**）：`TheGrid`(HumbleGrid) 与 `Level1` 同生死、`GridLogic` 由 `Level1` 持有
+   ⇒ `Context.HumbleGrid` / `Context.LevelOrchestrator` 这类访问**不需要**防御式检查。
+   若将来支持"不换场地原地重建网格"（复用池 / 中途重开一局），这条前提失效，上述访问点必须重新审。
+8. **`InputMask` 的输入拦截 —— 不属于本清单，标记为待重写**（随输入会话 / 弹窗重做）：
+   现状是 `ColorRect` + `MOUSE_FILTER_STOP`，**只影响鼠标**；键盘/手柄不经 GUI 命中测试
+   （`GridInputListener._UnhandledInput` 收得很宽）。要设备无关，正确位置是在**输入适配层**放显式闸门
+   （例如 `GridInputListener` 先问 `IsInputBlocked`），而不是依赖 GUI 命中测试。
+   另：`InputMask` 只覆盖屏幕一部分时，未覆盖区域的鼠标事件会漏过去。
 
 ### 4.2 类 D（**不同问题，别混进来**）
 
 事件总线 / FSM 输出在**订阅者节点已死之后**仍然投递（`GridExtensions` → `HumbleCell` 绑定、
 `Grid.cs` → `HUD.OnBombCountChanged` 等）。这不是 await 问题，而是"订阅者生命周期"问题，**本任务不处理**。
+
+**处置（2026-09-25）**：不做专门排查，等后续遇到再单独处理（开发过程中已按"及时退订"执行）。
+若将来要扫，判据就两条：① **emitter 的生命周期 > 订阅者**；② 订阅没有在 `_ExitTree` 退订。
+（已核对的 `HUD.OnBombCountChanged` 两端同生共死且 `_ExitTree` 退订 ✓）
 
 ### 4.3 已确认干净（9 个文件）
 
@@ -234,6 +256,33 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 
 `SnekGameDevKit/Messaging/MessageQueue.cs:17`、`GridExtensions.cs:35,44-45`、`Grid.cs:27,100,111`、
 `Level1.cs:144,150,159`、`Pagination.cs:87`、`G/FSM/StateMachineV2.cs:16,31,33`（后者当前无引用）。
+
+**复核状态（2026-09-24，09-25 更新）**：
+- 已确认干净：`MessageQueue`（只转发字符串、不碰 label）、`GridExtensions.InitCellsAsync`（await 之后无节点访问）、
+  Core `Grid`（纯逻辑，碰不到节点）。`Pagination.cs:87`、`G/FSM/StateMachineV2.cs` 随翻页 / FSM 重构处理。
+- **`Level1.cs:144,150,159` —— 判定不可达**（2026-09-25，论证见 §4.1 第 7 条）。
+- 残余的不确定项（**不影响上面任何结论**）：① LogicBlocks 在 `Stop()` 之后收到 `Input` 的确切行为未确认；
+  ② `InputMask` 是否拦得住键盘/手柄输入未确认（已单列为待重写项，见 §4.1 第 8 条）。
+- 另外，全仓 `Callable.From` / `CallDeferred` / `SetDeferred`（"排队到之后执行"的另一套家族）只有 1 处，
+  即 `Tooltip.cs:19` —— 已随 tooltip 搁置。
+
+### 4.5 重写开工前的遗留总览（2026-09-25）
+
+| 桶 | 内容 |
+|---|---|
+| ✅ 已修 | #1 `Flag`；#11 `SlideOutAsync`（连带 #9/#10）；`TaskCancellationExtensions.GetCancellationTokenOnTreeExit` 改为按节点缓存 |
+| 🚫 判定不修（有论证） | #5 `SceneSwitcher`；#6/#7 `PopupLayer`；#8 `Lose`；#12 `MessageBox`；`Level1.cs:144/150/159` |
+| ⏸ 随重写处理 | #2 tooltip（含 `CallDeferred` 家族）；#3/#4 翻页；`InputMask` 输入拦截（§4.1 第 8 条） |
+| 🕓 另立一类不处理 | 类 D 订阅者生命周期（判据见 §4.2） |
+
+**验证缺口（唯一没闭合的一环）**：以上结论除 #1/#11/缓存那次改动外，**全是静态推理**，没有运行时验证。
+按 §6 跑一遍手动回归（反复切场景 / 翻页 / tooltip 悬停 / 胜负弹窗），并确认输出面板里没有
+`UnobservedTaskException` / `ObjectDisposedException`。`GetCancellationTokenOnTreeExit` 的缓存改动最值得先跑一次
+（它影响每次动画、每次输入、每条消息的 token）。
+
+> **🏗️ 重构提醒（pagination / tooltip 开工时主动提）**：那两个领域重写时，凡 `await` 之后要碰节点的写法
+> 都按 §5 三档处理（token 绑节点生命周期 + 在使用点自建链接 + 续体自检；当心 `ct = default` 的假安全陷阱）。
+
 
 ---
 
