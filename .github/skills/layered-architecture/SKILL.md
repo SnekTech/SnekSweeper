@@ -55,8 +55,13 @@ GodotGadgets/                     ← Layer 1 + 2, shared across projects
     ItemAction.cs                 ← Layer 1
     ScrollMenuViewAnimator.cs     ← Layer 2 (references GodotSharp)
   UI/Pagination/
-    Pagination.cs                 ← Layer 1
-    PaginationBinder.cs           ← Layer 2
+    PaginationState.cs            ← Layer 1 (状态 + 派生 + ToViewData)
+    PageNav.cs                    ← Layer 1 (导航意图的和类型)
+    PageRequest.cs                ← Layer 1
+    PageResult.cs                 ← Layer 1 (数据源边界契约: 窗口 + 边界, 同一快照)
+    PageQueryExtensions.cs        ← Layer 1 (SlicePage)
+    IPaginationView.cs            ← Layer 2 契约 (Godot-aware, 含 IAsyncContent)
+    PaginationBinder.cs           ← Layer 2 (导航 → 纯转移 → 取数 → 渲染)
 
 SnekSweeper/                      ← Layer 3
   Scripts/UI/MainScreen/
@@ -90,9 +95,9 @@ Scroll Menu      ScrollMenu              ScrollMenuViewAnimator     ScrollMenuVi
                  ScrollMenuConfig
                  ItemAction / VisibleSlot
 
-Pagination       Pagination<T>           PaginationBinder<T>        PaginationBar
-                 IPageQuery<T>                                      TutorialPage
-                 IPaginationUI                                      HistoryPage
+Pagination       PaginationState         PaginationBinder<T>        PaginationBar
+                 PageNav                                        TutorialPage
+                 PageRequest / PageResult                       HistoryPage
 
 Cell System      Cell                    Cover (ICover impl)        HumbleCell
                  ICover / CoverStatus    (ShaderMaterial access)    HumbleGrid

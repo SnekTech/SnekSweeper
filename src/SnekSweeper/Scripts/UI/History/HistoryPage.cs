@@ -44,17 +44,16 @@ public partial class HistoryPage : CanvasLayer, ISceneScript
     {
         var records = SaveData.State.History.Records
             .OrderByDescending(r => r.Duration.EndAt).ToList();
-        var historyQuery = new HistoryQuery(records);
-        var pagination = new Pagination<GameRunRecord>(historyQuery, RunRecordPageSize);
         RunRecordPaginationBar.Bind(
             RecordsContainer,
+            RunRecordPageSize,
+            request => records.SlicePage(request),
             runRecord =>
             {
                 var card = RecordCard.Instantiate();
                 card.RunRecord = runRecord;
                 return card;
-            },
-            pagination);
+            });
     }
 
     void OnClearButtonPressed()

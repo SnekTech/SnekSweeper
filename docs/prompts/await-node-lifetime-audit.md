@@ -17,14 +17,15 @@
 > **进度（2026-09-24 更新）**：
 > - `Flag.cs` 已修（用户提交）；`FadingMask` 已整体删除（旧命中点作废）。
 > - **Tooltip（#2）搁置**：整个 tooltip feature 将重新设计，不在旧实现上做修。
-> - **翻页（#3 `PaginationBinder` + #4 `ExampleCard`）搁置**：翻页会用 C# DU 重写（参考
->   `GridSystem/CursorStateManagement` 与 `GridInputSession`），旧实现不再投入。
+> - **翻页（#3 `PaginationBinder` + #4 `ExampleCard`）—— 已随 DU 重写关闭（2026-09-26）**：核心改为
+>   `PaginationState` + `PageNav`（纯，无 async / ct / 锁 / 事件），binder 不再 await 内容任务
+>   （`Task.WhenAll` + `catch(OCE)` 一并删除），`ExampleCard` 的封面状态搬到 await 之前。
 > - **`SceneSwitcher`（#5）判定为不可达，维持现状、不修**（理由见 §6）。
 > - **#11 `SlideOutAsync` 已按 §5 第 2 档（token 绑节点 + 续体自检）修**，#9/#10 随之关闭。
 > - **#6/#7 `PopupLayer`、#8 `Lose`、#12 `MessageBox` 判定不可达，不修**（理由见 §4.1）。
 > - **`Level1.cs:144,150,159`（§4.4 间接路径）判定不可达**（时序论证见 §4.1 第 7 条）。
-> - **至此清单结清**：已修 2 处（#1、#11，连带 #9/#10 关闭）；随重写处理 3 项（#2 tooltip、#3/#4 翻页、
->   `InputMask` 输入拦截）；判定不修 6 处（#5/#6/#7/#8/#12 + `Level1` 三处）。
+> - **至此清单结清**：已修 4 处（#1 `Flag`；#11 `SlideOutAsync` 连带 #9/#10；#3/#4 随翻页 DU 重写）；
+>   随重写处理 2 项（#2 tooltip、`InputMask` 输入拦截）；判定不修 6 处（#5/#6/#7/#8/#12 + `Level1` 三处）。
 > - **重写开工前的遗留总览（含验证缺口）见 §4.5。**
 
 ---
@@ -186,8 +187,8 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 |---|---|---|---|---|---|
 | 1 | `S:/SnekSweeper/Scripts/CellSystem/Components/Flag.cs:49` | `tween.PlayAsyncUntilNodeDestroy` | `Hide();` | 中高 | ✅ **已修（用户改的，已提交）** |
 | 2 | `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs:36` | `TweenModulateAlpha(0,…).PlayAsyncGD(token)` | `Hide();` | **高** | ⏸ 搁置（tooltip 重设计中） |
-| 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | ⏸ 搁置（翻页将用 DU 重写） |
-| 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)` | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | ⏸ 搁置（同上） |
+| 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | ✅ 随翻页 DU 重写关闭 |
+| 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)` | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | ✅ 随翻页 DU 重写关闭 |
 | 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中 | 🚫 判定不可达，不修（见 §6） |
 | 6 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 🚫 判定不可达（见 §4.1） |
 | 7 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 🚫 判定不可达（见 §4.1） |
@@ -200,9 +201,11 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 ### 4.1 当前处置（2026-09-24，09-25 更新）
 
 1. **`Tooltip`（#2，含同文件的 `CallDeferred` 家族）—— 搁置**：整个 tooltip feature 将重新设计。
-2. **`PaginationBinder` + `ExampleCard`（#3/#4）—— 搁置**：翻页将用 C# DU 重写，旧实现不再投入。
-   （两者确实还是"同一个窗口的两端"：`PaginationBar.ClearContent()` 会 `QueueFree()` 掉仍在 `InitAsync` 中的卡片，
-   而 `catch (OperationCanceledException)` 只覆盖"被取消"，不覆盖"完成之后节点才死"。）
+2. **`PaginationBinder` + `ExampleCard`（#3/#4）—— 已随翻页 DU 重写关闭（2026-09-26）。**
+   旧实现里 `PaginationBar.ClearContent()` 会 `QueueFree()` 掉仍在 `InitAsync` 中的卡片，而
+   `catch (OperationCanceledException)` 只覆盖"被取消"、不覆盖"完成之后节点才死" —— 这正是同一个窗口的两端。
+   重写后：binder 是"导航 → 纯转移 → 取数 → 渲染"的同步流程（`await Task.WhenAll` + `catch(OCE)` 一并删除），
+   卡片的封面状态搬到 await 之前，两处的续体都不再碰节点。
 3. **`SceneSwitcher`（#5）—— 判定不可达，不修**，见 §6。
 4. **`SlideOutAsync`（#11）—— 已按 §5 第 2 档修**，`WinPopup`/`LosePopup`（#9/#10）随之关闭
    （它俩 await 之后只有 `return choice`，真正的尾巴在库里）。
@@ -270,9 +273,9 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 
 | 桶 | 内容 |
 |---|---|
-| ✅ 已修 | #1 `Flag`；#11 `SlideOutAsync`（连带 #9/#10）；`TaskCancellationExtensions.GetCancellationTokenOnTreeExit` 改为按节点缓存 |
+| ✅ 已修 | #1 `Flag`；#11 `SlideOutAsync`（连带 #9/#10）；#3/#4 随翻页 DU 重写；`TaskCancellationExtensions.GetCancellationTokenOnTreeExit` 改为按节点缓存 |
 | 🚫 判定不修（有论证） | #5 `SceneSwitcher`；#6/#7 `PopupLayer`；#8 `Lose`；#12 `MessageBox`；`Level1.cs:144/150/159` |
-| ⏸ 随重写处理 | #2 tooltip（含 `CallDeferred` 家族）；#3/#4 翻页；`InputMask` 输入拦截（§4.1 第 8 条） |
+| ⏸ 随重写处理 | #2 tooltip（含 `CallDeferred` 家族）；`InputMask` 输入拦截（§4.1 第 8 条） |
 | 🕓 另立一类不处理 | 类 D 订阅者生命周期（判据见 §4.2） |
 
 **验证缺口（唯一没闭合的一环）**：以上结论除 #1/#11/缓存那次改动外，**全是静态推理**，没有运行时验证。

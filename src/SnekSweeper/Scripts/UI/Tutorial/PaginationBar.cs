@@ -5,28 +5,28 @@ using GodotGadgets.UI.Pagination;
 namespace SnekSweeper.UI.Tutorial;
 
 [SceneTree]
-public partial class PaginationBar : HBoxContainer, IPaginationUI
+public partial class PaginationBar : HBoxContainer, IPaginationView
 {
-    public event Action? FirstPageRequested;
-    public event Action? PreviousPageRequested;
-    public event Action? NextPageRequested;
-    public event Action? LastPageRequested;
+    public event Action<PageNav>? NavigationRequested;
 
-    public void SetPageText(int currentPage, int totalPages)
+    /// <summary>页码文字与导航可用性：同一个快照，一次给全。</summary>
+    public void ShowPage(PaginationViewData page)
     {
-        PageTextLabel.Text = $"{currentPage} / {totalPages}";
+        PageTextLabel.Text = $"{page.PageNumber} / {page.TotalPages}";
+
+        // 首页/末页 与 上一页/下一页 共用同一条事实（在首页就不存在"上一页"）
+        FirstButton.Disabled = !page.HasPreviousPage;
+        PrevButton.Disabled = !page.HasPreviousPage;
+        NextButton.Disabled = !page.HasNextPage;
+        LastButton.Disabled = !page.HasNextPage;
     }
 
-    public void SetNavigationEnabled(bool canGoFirst, bool canGoPrevious, bool canGoNext, bool canGoLast)
+    /// <summary>整屏替换内容；空列表就是清空。</summary>
+    public void ShowItems(IReadOnlyList<Control> items)
     {
-        FirstButton.Disabled = !canGoFirst;
-        PrevButton.Disabled = !canGoPrevious;
-        NextButton.Disabled = !canGoNext;
-        LastButton.Disabled = !canGoLast;
+        _contentContainer?.ClearChildren();
+        foreach (var item in items) _contentContainer?.AddChild(item);
     }
-
-    public void ClearContent() => _contentContainer?.ClearChildren();
-    public void AddContentItem(Control item) => _contentContainer?.AddChild(item);
 
     Container? _contentContainer;
 
@@ -36,20 +36,21 @@ public partial class PaginationBar : HBoxContainer, IPaginationUI
     public override void _Ready()
     {
         _buttonBindings = new ButtonBindings(
-            FirstButton.BindHandler(() => FirstPageRequested?.Invoke()),
-            PrevButton.BindHandler(() => PreviousPageRequested?.Invoke()),
-            NextButton.BindHandler(() => NextPageRequested?.Invoke()),
-            LastButton.BindHandler(() => LastPageRequested?.Invoke())
+            FirstButton.BindHandler(() => NavigationRequested?.Invoke(new PageNav.First())),
+            PrevButton.BindHandler(() => NavigationRequested?.Invoke(new PageNav.Previous())),
+            NextButton.BindHandler(() => NavigationRequested?.Invoke(new PageNav.Next())),
+            LastButton.BindHandler(() => NavigationRequested?.Invoke(new PageNav.Last()))
         );
     }
 
     public void Bind<TItem>(Container contentContainer,
-        Func<TItem, Control> entryFactory,
-        Pagination<TItem> pagination)
+        int pageSize,
+        Func<PageRequest, PageResult<TItem>> fetchPage,
+        Func<TItem, Control> entryFactory)
     {
         _paginationBinder?.Dispose();
         _contentContainer = contentContainer;
-        _paginationBinder = new PaginationBinder<TItem>(this, pagination, entryFactory);
+        _paginationBinder = new PaginationBinder<TItem>(this, pageSize, fetchPage, entryFactory);
     }
 
     public override void _ExitTree()

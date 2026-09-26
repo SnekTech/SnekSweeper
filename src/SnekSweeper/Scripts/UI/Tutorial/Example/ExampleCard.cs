@@ -28,9 +28,12 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IAsyncContent<Ex
 
         GridParentMarker.Position = GetParentPosition(GridSubViewport.Size, grid.Size.ToPixels());
 
-        await grid.InitCellsAsync(snapshot, ct);
-
+        // 封面状态放在 await **之前**：HumbleCell（含 Cover）在 Grid.Create 时就已同步建好，不必等 InitCellsAsync。
+        // 放到 await 之后，会让"卡片已被换页清掉、续体才回来"的那一帧撞上死节点（审计里的 #4）；
+        // 搬前之后，本方法在 await 之后零节点访问。
         ApplyCoverStatus();
+
+        await grid.InitCellsAsync(snapshot, ct);
 
         return;
 

@@ -4,7 +4,8 @@ A minesweeper game with modern game features & nice pixel art assets.
 
 ## Todo
 
-- [ ] fix todo component flickering
+- [ ] refactor pagination using DU
+- [ ] fix tooltip component flickering
 - [ ] minesweeper controller support
   - [ ] camera zoom
   - [ ] camera focus

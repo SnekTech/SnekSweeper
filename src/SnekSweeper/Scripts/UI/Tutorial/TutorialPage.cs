@@ -25,16 +25,16 @@ public partial class TutorialPage : Control, ISceneScript
 
     public void OnResolved()
     {
-        var pagination = new Pagination<ExampleData>(new BuiltinExampleQuery(), ExamplePageSize);
         ExamplePaginationBar.Bind(
             ExampleCardContainer,
+            ExamplePageSize,
+            request => TutorialExampleCollection.BuiltinExamples.SlicePage(request),
             _ =>
             {
                 var card = ExampleCard.Instantiate();
                 card.Skin = SaveData.CurrentSkin;
                 return card;
-            }
-            , pagination);
+            });
     }
 
     public override void _Notification(int what) => this.Notify(what);
