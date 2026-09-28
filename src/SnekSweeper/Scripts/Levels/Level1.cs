@@ -54,6 +54,8 @@ public partial class Level1 : Node2D,
 
         TheGrid.GridInputListener.GridInputEmitted -= OnGridInputEmitted;
 
+        HUD.UndoRequested -= OnUndoRequested;
+
         GridLogic.Stop();
         GridBinding.Dispose();
     }
@@ -66,6 +68,8 @@ public partial class Level1 : Node2D,
         SetupGridLogic();
         SetupGridBinding();
 
+        HUD.UndoRequested += OnUndoRequested;
+
         GridLogic.Start<GridState.PreInstantiated>();
         GridLogic.Input(new GridState.Input.Init(loadLevelSource));
 
@@ -73,10 +77,11 @@ public partial class Level1 : Node2D,
 
         Grid CreateGrid()
         {
-            var gridSkin = SaveData.CurrentSkin;
-            TheGrid.HumbleCellsContainer.Clear(); // 建图前清空演示容器（集合角色，Godot 层驱动）
-            return loadLevelSource.CreateGrid(TheGrid.CellFactory, gridSkin, _levelData.GridEventBus,
-                _levelData.GridCommandInvoker);
+            // todo: commandInvoker 相关设计是不是需要重构
+            var newGrid = loadLevelSource.CreateGrid(_levelData.GridEventBus, _levelData.GridCommandInvoker,
+                TheGrid.CellRenderer);
+            TheGrid.InstantiateCells(newGrid.Size, SaveData.CurrentSkin);
+            return newGrid;
         }
 
         void SetupGridLogic()
@@ -93,7 +98,8 @@ public partial class Level1 : Node2D,
                 grid,
                 TheGrid,
                 new GameRunRecorder(SaveData),
-                this
+                this,
+                _levelData.GridCommandInvoker
             ));
         }
 
@@ -102,15 +108,15 @@ public partial class Level1 : Node2D,
             GridBinding = GridLogic.Bind()
                 .OnOutput((in GridState.Output.RestoreGrid output) =>
                 {
-                    RestoreGridAsync(output.Snapshot).Forget();
+                    RestoreGrid(output.Snapshot);
                 })
                 .OnOutput((in GridState.Output.LayMinesAt output) =>
                 {
-                    LayMinesAsync(output.Source, output.FirstInput).Forget();
+                    LayMines(output.Source, output.FirstInput);
                 })
                 .OnOutput((in GridState.Output.ProcessInput output) =>
                 {
-                    HandleInputAsync(output.GridInput).Forget();
+                    HandleInput(output.GridInput);
                 })
                 .OnOutput((in GridState.Output.EndGameChoiceOnWin output) =>
                 {
@@ -137,27 +143,25 @@ public partial class Level1 : Node2D,
 
             return;
 
-            // 初始化放在绑定层：续局恢复完整棋盘状态，新局/重试按首次点击布雷
-            async GDTaskVoid RestoreGridAsync(GridSnapshot snapshot)
+            // 初始化放在绑定层：续局恢复完整棋盘状态，新局/重试按首次点击布雷（两者都是同步的）
+            void RestoreGrid(GridSnapshot snapshot)
             {
-                await grid.InitCellsAsync(snapshot, this.GetCancellationTokenOnTreeExit());
+                grid.InitCells(snapshot);
                 CompleteInit();
             }
 
-            async GDTaskVoid LayMinesAsync(LoadLevelSource source, GridInput firstInput)
+            void LayMines(LoadLevelSource source, GridInput firstInput)
             {
-                await grid.InitCellsAsync(source.LayMineFn(firstInput.Index), this.GetCancellationTokenOnTreeExit());
+                grid.InitCells(source.LayMineFn(firstInput.Index));
                 CompleteInit();
             }
 
             void CompleteInit() => GridLogic.Input(new GridState.Input.InitCompleted());
 
-            // 异步输入处理放在绑定层：FSM 只发效果、不 await，完成后以 InputProcessed 回调回 FSM
-            async GDTaskVoid HandleInputAsync(GridInput gridInput)
-            {
-                var processResult = await grid.HandleInputAsync(gridInput, this.GetCancellationTokenOnTreeExit());
-                GridLogic.Input(new GridState.Input.InputProcessed(processResult));
-            }
+            // 输入处理放在绑定层：FSM 只发效果；处理本身是纯同步的，结果直接打回 FSM
+            // todo: 都是同步，是不是没必要传出来再传进去？
+            void HandleInput(GridInput gridInput) =>
+                GridLogic.Input(new GridState.Input.InputProcessed(grid.HandleInput(gridInput)));
         }
     }
 
@@ -175,6 +179,8 @@ public partial class Level1 : Node2D,
     {
         GridLogic.Input(new GridState.Input.PlayerInput(input));
     }
+
+    void OnUndoRequested() => GridLogic.Input(new GridState.Input.Undo());
 
     public void NewGame()
     {

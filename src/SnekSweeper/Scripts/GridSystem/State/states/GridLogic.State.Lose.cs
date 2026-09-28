@@ -1,5 +1,6 @@
 using Chickensoft.LogicBlocks;
 using GodotTask;
+using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameMode;
 
@@ -22,13 +23,18 @@ public abstract partial record GridState
 
             async GDTaskVoid TriggerLoseTasksAsync(GameLose gameLose,GameRunRecord recentRecord, CancellationToken ct = default)
             {
-                await MarkPlayerErrorsAsync(gameLose, ct);
+                MarkPlayerErrors(gameLose);
                 var choice = await Context.LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct);
                 Output(new Output.EndGameChoiceOnLose(choice, recentRecord));
             }
-        }
 
-        static GDTask MarkPlayerErrorsAsync(GameLose gameLose,CancellationToken ct = default) =>
-            GDTask.WhenAll(gameLose.CellsInThisBatch.Select(cell => cell.MarkErrorAsync(ct).AsGDTask()));
+            void MarkPlayerErrors(GameLose gameLose)
+            {
+                foreach (var index in gameLose.CellsInThisBatch)
+                {
+                    Context.Grid.ApplyCommand(index, new CellCommand.MarkError());
+                }
+            }
+        }
     }
 }

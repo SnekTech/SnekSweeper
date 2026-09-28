@@ -8,7 +8,7 @@ namespace SnekSweeper.GridSystem.State;
 
 public abstract partial record GridState
 {
-    public record GameRunning : GridState, IGet<Input.PlayerInput>, IGet<Input.InputProcessed>
+    public record GameRunning : GridState, IGet<Input.PlayerInput>, IGet<Input.InputProcessed>, IGet<Input.Undo>
     {
         public GameRunning()
         {
@@ -28,6 +28,12 @@ public abstract partial record GridState
         {
             // 只发效果：异步输入处理交给 Godot 绑定层，完成后以 InputProcessed 回调回来
             Output(new Output.ProcessInput(input.GridInput));
+            return ToSelf();
+        }
+
+        public Type On(in Input.Undo input)
+        {
+            Context.CommandInvoker.UndoCommand(Context.Grid);
             return ToSelf();
         }
 

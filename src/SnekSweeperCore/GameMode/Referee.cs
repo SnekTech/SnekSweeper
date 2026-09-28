@@ -16,7 +16,7 @@ public static class Referee
     {
         var (grid, cellsInThisBatch) = batchRevealed;
 
-        if (cellsInThisBatch.Any(cell => cell.IsRevealedBomb))
+        if (cellsInThisBatch.Any(index => grid.StateAt(index).IsRevealed && grid.InfoAt(index).HasBomb))
         {
             return new GameLose(grid.BombMatrix, cellsInThisBatch);
         }
@@ -34,33 +34,9 @@ public abstract record JudgedResult;
 
 public sealed record GameWin(bool[,] Bombs) : JudgedResult;
 
-public sealed record GameLose(bool[,] Bombs, List<Cell> CellsInThisBatch) : JudgedResult;
+public sealed record GameLose(bool[,] Bombs, IReadOnlyList<GridIndex> CellsInThisBatch) : JudgedResult;
 
 public sealed record Surviving : JudgedResult
 {
     public static Surviving Instance { get; } = new();
-}
-
-static class GridExtensionsForReferee
-{
-    extension(Grid grid)
-    {
-        // if all safe cells are revealed, the grid is resolved
-        internal bool IsResolved => grid.Cells.Where(cell => !cell.HasBomb).All(cell => cell.IsRevealed);
-
-        internal bool[,] BombMatrix
-        {
-            get
-            {
-                var size = grid.Size;
-                var bombs = new bool[size.Rows, size.Columns];
-                foreach (var cell in grid.Cells)
-                {
-                    bombs.SetAt(cell.GridIndex, cell.HasBomb);
-                }
-
-                return bombs;
-            }
-        }
-    }
 }

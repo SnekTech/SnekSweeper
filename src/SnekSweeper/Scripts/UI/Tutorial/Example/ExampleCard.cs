@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using GodotGadgets.UI.Pagination;
+﻿using GodotGadgets.UI.Pagination;
 using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem.Components;
@@ -11,29 +10,26 @@ using SnekSweeperCore.Tutorial;
 namespace SnekSweeper.UI.Tutorial.Example;
 
 [SceneTree]
-public partial class ExampleCard : HBoxContainer, ISceneScript, IAsyncContent<ExampleData>
+public partial class ExampleCard : HBoxContainer, ISceneScript, IInitializableContent<ExampleData>
 {
     public GridSkin Skin { get; set; } = SkinKey.Classic.ToSkin();
 
-    public async Task InitAsync(ExampleData exampleData, CancellationToken ct = default)
+    public void Init(ExampleData exampleData)
     {
         var snapshot = exampleData.Snapshot;
 
         ExampleDescriptionView.Description = exampleData.Description;
 
-        var grid = Grid.Create(TheGrid.CellFactory, snapshot.BombMatrix.Size, Skin, new GridEventBus(), new CommandInvoker());
+        var grid = new Grid(snapshot.BombMatrix.Size, new GridEventBus(), new CommandInvoker(), TheGrid.CellRenderer);
+        // todo: these two lines should combine?
+        TheGrid.InstantiateCells(grid.Size, Skin);
         TheGrid.Init(grid.Size);
-        
-        ct.ThrowIfCancellationRequested();
 
         GridParentMarker.Position = GetParentPosition(GridSubViewport.Size, grid.Size.ToPixels());
 
-        // 封面状态放在 await **之前**：HumbleCell（含 Cover）在 Grid.Create 时就已同步建好，不必等 InitCellsAsync。
-        // 放到 await 之后，会让"卡片已被换页清掉、续体才回来"的那一帧撞上死节点（审计里的 #4）；
-        // 搬前之后，本方法在 await 之后零节点访问。
         ApplyCoverStatus();
 
-        await grid.InitCellsAsync(snapshot, ct);
+        grid.InitCells(snapshot);
 
         return;
 
@@ -41,12 +37,12 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IAsyncContent<Ex
         {
             foreach (var safeIndex in exampleData.SafeCoveredCells)
             {
-                grid.GetCellAt(safeIndex).HumbleCell.Cover.SetStatus(CoverStatus.Safe);
+                TheGrid.HumbleCellsContainer.CellAt(safeIndex).Cover.SetStatus(CoverStatus.Safe);
             }
 
             foreach (var uncertainIndex in exampleData.UncertainCoveredCells)
             {
-                grid.GetCellAt(uncertainIndex).HumbleCell.Cover.SetStatus(CoverStatus.Uncertain);
+                TheGrid.HumbleCellsContainer.CellAt(uncertainIndex).Cover.SetStatus(CoverStatus.Uncertain);
             }
         }
     }

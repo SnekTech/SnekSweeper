@@ -2,8 +2,10 @@
 using Chickensoft.Introspection;
 using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SaveLoad;
+using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.GridSystem;
 
@@ -30,8 +32,10 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     public void Init(GridSize gridSize) => GridInputListener.Init(gridSize);
 
     public IHumbleCellCollection HumbleCellsContainer => CellsContainer;
-    public ICellFactory CellFactory => CellsContainer;
+    public ICellRenderer CellRenderer => CellsContainer;
     public IGridCursor GridCursor => Cursor;
+
+    public void InstantiateCells(GridSize gridSize, GridSkin skin) => CellsContainer.InstantiateCells(gridSize, skin);
 
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();
 

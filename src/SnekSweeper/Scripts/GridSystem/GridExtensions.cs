@@ -1,5 +1,5 @@
-﻿using GodotTask;
-using SnekSweeper.CellSystem;
+﻿using SnekSweeper.CellSystem;
+using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem;
@@ -29,24 +29,26 @@ static class GridSnapshotExtensions
 {
     extension(Grid grid)
     {
-        public async GDTask InitCellsAsync(GridSnapshot snapshot, CancellationToken ct)
+        public void InitCells(GridSnapshot snapshot)
         {
-            await grid.InitCellsAsync(snapshot.BombMatrix, ct);
-            await grid.RestoreCellStatesAsync(snapshot.SnapshotStates, ct);
+            grid.InitCells(snapshot.BombMatrix);
+            grid.RestoreCellStates(snapshot.SnapshotStates);
         }
-        
-        async GDTask RestoreCellStatesAsync(CellSnapshotState[,] snapshotStates, CancellationToken ct = default)
-        {
-            var tasks = grid.Cells
-                .Select(cell => (cell, state: snapshotStates.At(cell.GridIndex)))
-                .Select(tuple => tuple.state switch
-                {
-                    CellSnapshotState.Revealed => tuple.cell.RevealAsync(ct).AsGDTask(),
-                    CellSnapshotState.Flagged => tuple.cell.SwitchFlagAsync(ct).AsGDTask(),
-                    _ => GDTask.CompletedTask,
-                });
 
-            await GDTask.WhenAll(tasks);
+        void RestoreCellStates(CellSnapshotState[,] snapshotStates)
+        {
+            foreach (var index in grid.Indices)
+            {
+                switch (snapshotStates.At(index))
+                {
+                    case CellSnapshotState.Revealed:
+                        grid.ApplyCommand(index, new CellCommand.RevealCover());
+                        break;
+                    case CellSnapshotState.Flagged:
+                        grid.ApplyCommand(index, new CellCommand.ToggleFlag());
+                        break;
+                }
+            }
         }
     }
 }

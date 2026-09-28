@@ -1,3 +1,4 @@
+using SnekSweeperCore.Commands;
 using SnekSweeperCore.LevelManagement;
 
 namespace SnekSweeperCore.GridSystem;
@@ -9,5 +10,6 @@ public record GridStateContext(
     Grid Grid,
     IHumbleGrid HumbleGrid,
     GameRunRecorder RunRecorder,
-    ILevelOrchestrator LevelOrchestrator
+    ILevelOrchestrator LevelOrchestrator,
+    CommandInvoker CommandInvoker
 );

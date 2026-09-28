@@ -1,139 +1,149 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 
 namespace SnekSweeperCore.GridSystem;
 
-public class Grid(Cell[,] cells, GridEventBus gridEventBus, ICommandRecorder commandRecorder)
+/// <summary>
+/// 棋盘：唯一持有格子状态的地方（<see cref="CellState"/> 本身是不可变的值）。
+/// 每次转移完成后当场交给 <see cref="ICellRenderer"/> 渲染，所以不需要把"变化"传出去。
+/// </summary>
+public class Grid
 {
-    bool _isAnyCellProcessing;
-    public GridSize Size { get; } = cells.Size;
+    readonly GridEventBus _gridEventBus;
+    readonly ICommandRecorder _commandRecorder;
+    readonly ICellRenderer _renderer;
 
-    public IEnumerable<Cell> Cells => cells.Elements;
-    public Cell GetCellAt(GridIndex index) => cells.At(index);
+    readonly bool[,] _bombs;
+    readonly int[,] _neighborBombCounts;
+    readonly CellState[,] _states;
 
-    int BombCount => Cells.Count(cell => cell.HasBomb);
-    int FlagCount => Cells.Count(cell => cell.IsFlagged);
-
-    public async Task InitCellsAsync(bool[,] bombs, CancellationToken ct = default)
+    // todo: 有没有某种方法把 gridEventBus、commandRecorder、renderer 都去掉，grid就是逻辑上的grid
+    //   或者说，这么做值得吗？优缺点在于什么？
+    public Grid(GridSize size, GridEventBus gridEventBus, ICommandRecorder commandRecorder, ICellRenderer renderer)
     {
-        if (_isAnyCellProcessing) return;
+        Size = size;
+        _gridEventBus = gridEventBus;
+        _commandRecorder = commandRecorder;
+        _renderer = renderer;
 
-        // must init individual cells *after* bombs planted
-        _isAnyCellProcessing = true;
-        await InitAllCellsAsync();
-        _isAnyCellProcessing = false;
-
-        gridEventBus.EmitBombCountChanged(BombCount);
-        return;
-
-        Task InitAllCellsAsync()
-        {
-            var initCellTasks = Cells.Select(cell => cell.InitAsync(CreateInitData(cell), ct));
-            return Task.WhenAll(initCellTasks);
-        }
-
-        CellInitData CreateInitData(Cell cell)
-        {
-            var hasBomb = bombs.At(cell.GridIndex);
-            var neighborBombCount = cell.GridIndex.GetNeighborIndicesWithin(Size).Count(bombs.At);
-            return new CellInitData(hasBomb, neighborBombCount);
-        }
+        _bombs = new bool[size.Rows, size.Columns];
+        _neighborBombCounts = new int[size.Rows, size.Columns];
+        _states = MatrixExtensions.Create(size, _ => CellState.Initial);
     }
 
-    public async Task<GridInputProcessResult> HandleInputAsync(GridInput gridInput, CancellationToken ct = default)
-    {
-        if (!gridInput.Index.IsWithin(Size) || _isAnyCellProcessing)
-            return NothingHappens.Instance;
+    public GridSize Size { get; }
 
-        _isAnyCellProcessing = true;
-        var processResult = await (gridInput switch
+    public bool[,] BombMatrix => _bombs;
+
+    public IEnumerable<GridIndex> Indices => _states.Indices();
+
+    public int BombCount => _bombs.Elements.Count(hasBomb => hasBomb);
+
+    /// <summary>所有非雷格都翻开了 = 这一局通了。</summary>
+    public bool IsResolved => Indices.Where(index => !_bombs.At(index)).All(index => _states.At(index).IsRevealed);
+
+    public CellInfo InfoAt(GridIndex index) => new(index, _bombs.At(index), _neighborBombCounts.At(index));
+
+    public CellState StateAt(GridIndex index) => _states.At(index);
+
+    public void InitCells(bool[,] bombs)
+    {
+        foreach (var index in Indices)
         {
-            RevealAt => RevealAtAsync(gridInput.Index, ct),
-            ChordAt => RevealAroundAsync(gridInput.Index, ct),
-            SwitchFlagAt => SwitchFlagAtAsync(gridInput.Index, ct),
+            _bombs.SetAt(index, bombs.At(index));
+            _neighborBombCounts.SetAt(index, index.GetNeighborIndicesWithin(Size).Count(bombs.At));
+            _states.SetAt(index, CellState.Initial);
+
+            _renderer.Render(InfoAt(index), new CellOutcome(CellState.Initial, null));
+        }
+
+        _gridEventBus.EmitBombCountChanged(BombCount);
+    }
+
+    public GridInputProcessResult HandleInput(GridInput input)
+    {
+        return input switch
+        {
+            RevealAt => ProcessRevealAt(input.Index),
+            ChordAt => ProcessRevealAround(input.Index),
+            SwitchFlagAt => ProcessSwitchFlagAt(input.Index),
             _ => throw new SwitchExpressionException(),
-        });
-        _isAnyCellProcessing = false;
-
-        return processResult;
+        };
     }
 
-    async Task<GridInputProcessResult> RevealAtAsync(GridIndex gridIndex, CancellationToken ct = default)
+    public CellOutcome ApplyCommand(GridIndex index, CellCommand command)
     {
-        var cellsToReveal = new HashSet<Cell>();
-        FindCellsToReveal(gridIndex, cellsToReveal);
+        var info = InfoAt(index);
+        var outcome = _states.At(index).Apply(info, command);
+        _states.SetAt(index, outcome.NextState);
 
-        return await RevealCells(cellsToReveal, ct);
+        if (outcome.Event is not null) _renderer.Render(info, outcome);
+
+        return outcome;
     }
 
-    async Task<GridInputProcessResult> RevealAroundAsync(GridIndex gridIndex, CancellationToken ct = default)
+    GridInputProcessResult ProcessRevealAt(GridIndex index)
     {
-        var cell = cells.At(gridIndex);
-        if (!CanRevealAround())
-            return NothingHappens.Instance;
+        var cellsToReveal = new HashSet<GridIndex>();
+        FindCellsToReveal(index, cellsToReveal);
+        return RevealCells(cellsToReveal);
+    }
 
-        var cellsToReveal = new HashSet<Cell>();
-        foreach (var neighbor in GetNeighbors(cell))
+    GridInputProcessResult ProcessRevealAround(GridIndex index)
+    {
+        if (!CanRevealAround()) return NothingHappens.Instance;
+
+        var cellsToReveal = new HashSet<GridIndex>();
+        foreach (var neighborIndex in index.GetNeighborIndicesWithin(Size))
         {
-            FindCellsToReveal(neighbor.GridIndex, cellsToReveal);
-            cellsToReveal.Add(neighbor);
+            FindCellsToReveal(neighborIndex, cellsToReveal);
+            cellsToReveal.Add(neighborIndex);
         }
 
-        return await RevealCells(cellsToReveal, ct);
+        return RevealCells(cellsToReveal);
 
-        bool CanRevealAround()
-        {
-            var cellIsRevealed = cell is { IsRevealed: true, HasBomb: false };
-            var flagCountMatchesBomb = GetNeighborFlagCount(cell) == GetNeighborBombCount(cell);
-            return cellIsRevealed && flagCountMatchesBomb;
-        }
+        bool CanRevealAround() =>
+            _states.At(index).IsRevealed
+            && !_bombs.At(index)
+            && NeighborFlagCount(index) == NeighborBombCount(index);
     }
 
-    IEnumerable<Cell> GetNeighbors(Cell cell) => cell.GridIndex.GetNeighborIndicesWithin(Size).Select(cells.At);
-    int GetNeighborBombCount(Cell cell) => GetNeighbors(cell).Count(neighbor => neighbor.HasBomb);
-    int GetNeighborFlagCount(Cell cell) => GetNeighbors(cell).Count(neighbor => neighbor.IsFlagged);
-
-    async Task<GridInputProcessResult> SwitchFlagAtAsync(GridIndex gridIndex, CancellationToken ct = default)
+    GridInputProcessResult ProcessSwitchFlagAt(GridIndex index)
     {
-        await cells.At(gridIndex).SwitchFlagAsync(ct);
-        gridEventBus.EmitFlagCountChanged(FlagCount);
+        ApplyCommand(index, new CellCommand.ToggleFlag());
+        _gridEventBus.EmitFlagCountChanged(FlagCount);
+
         return FlagSwitched.Instance;
     }
 
-    async Task<GridInputProcessResult> RevealCells(HashSet<Cell> cellsToReveal, CancellationToken ct = default)
+    GridInputProcessResult RevealCells(HashSet<GridIndex> cellsToReveal)
     {
-        if (cellsToReveal.Count == 0)
-            return NothingHappens.Instance;
+        if (cellsToReveal.Count == 0) return NothingHappens.Instance;
 
-        await ExecuteRevealBatchCommandAsync();
-
-        gridEventBus.EmitBatchRevealed();
+        _commandRecorder.ExecuteAndRecord(this,
+            new CompoundCommand(cellsToReveal.Select(index => new RevealCellCommand(index))));
+        _gridEventBus.EmitBatchRevealed();
 
         return new BatchRevealed(this, cellsToReveal.ToList());
-
-        Task ExecuteRevealBatchCommandAsync()
-        {
-            var commands = cellsToReveal.Select(cell => new RevealCellCommand(cell));
-            return commandRecorder.ExecuteAndRecordAsync(new CompoundCommand(commands), ct);
-        }
     }
 
-    void FindCellsToReveal(GridIndex gridIndex, ICollection<Cell> cellsToReveal)
+    void FindCellsToReveal(GridIndex index, ICollection<GridIndex> cellsToReveal)
     {
-        var cell = cells.At(gridIndex);
-        var visited = cellsToReveal.Contains(cell);
-        if (visited || !cell.IsCovered)
-            return;
+        var visited = cellsToReveal.Contains(index);
+        if (visited || !_states.At(index).IsCovered) return;
 
-        cellsToReveal.Add(cell);
+        cellsToReveal.Add(index);
 
-        if (cell.HasBomb || GetNeighborBombCount(cell) > 0)
-            return;
+        if (_bombs.At(index) || NeighborBombCount(index) > 0) return;
 
-        foreach (var neighborIndex in cell.GridIndex.GetNeighborIndicesWithin(Size))
+        foreach (var neighborIndex in index.GetNeighborIndicesWithin(Size))
         {
             FindCellsToReveal(neighborIndex, cellsToReveal);
         }
     }
+
+    int FlagCount => _states.Elements.Count(state => state.IsFlagged);
+    int NeighborBombCount(GridIndex index) => _neighborBombCounts.At(index);
+    int NeighborFlagCount(GridIndex index) => index.GetNeighborIndicesWithin(Size).Count(i => _states.At(i).IsFlagged);
 }

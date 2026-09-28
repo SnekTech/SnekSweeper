@@ -1,13 +1,16 @@
-﻿namespace SnekSweeperCore.Commands;
+﻿using SnekSweeperCore.GridSystem;
 
+namespace SnekSweeperCore.Commands;
+
+// todo: 参数绑定了 grid 就不再通用了，有必要改吗？
 public interface ICommand
 {
     string Name { get; }
-    Task ExecuteAsync(CancellationToken cancellationToken);
-    Task UndoAsync(CancellationToken cancellationToken);
+    void Execute(Grid grid);
+    void Undo(Grid grid);
 }
 
 public interface ICommandRecorder
 {
-    Task ExecuteAndRecordAsync(ICommand command, CancellationToken ct = default);
+    void ExecuteAndRecord(Grid grid, ICommand command);
 }

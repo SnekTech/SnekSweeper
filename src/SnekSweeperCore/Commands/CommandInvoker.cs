@@ -1,23 +1,21 @@
-﻿namespace SnekSweeperCore.Commands;
+using SnekSweeperCore.GridSystem;
 
-public class CommandInvoker: ICommandRecorder
+namespace SnekSweeperCore.Commands;
+
+public class CommandInvoker : ICommandRecorder
 {
     readonly Stack<ICommand> _undoStack = new();
 
-    public async Task ExecuteCommandAsync(ICommand command, CancellationToken cancellationToken = default)
+    public void ExecuteAndRecord(Grid grid, ICommand command)
     {
-        await command.ExecuteAsync(cancellationToken);
+        command.Execute(grid);
         _undoStack.Push(command);
     }
 
-    public async Task UndoCommandAsync(CancellationToken cancellationToken = default)
+    public void UndoCommand(Grid grid)
     {
-        if (_undoStack.Count == 0)
-            return;
+        if (_undoStack.Count == 0) return;
 
-        var activeCommand = _undoStack.Pop();
-        await activeCommand.UndoAsync(cancellationToken);
+        _undoStack.Pop().Undo(grid);
     }
-
-    public Task ExecuteAndRecordAsync(ICommand command, CancellationToken ct = default) => ExecuteCommandAsync(command, ct);
 }

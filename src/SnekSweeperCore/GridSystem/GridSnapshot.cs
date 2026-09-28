@@ -1,5 +1,5 @@
 ﻿using MemoryPack;
-using SnekSweeperCore.GameMode;
+using SnekSweeperCore.CellSystem;
 
 namespace SnekSweeperCore.GridSystem;
 
@@ -25,16 +25,15 @@ public static class GridSnapshotExtensions
         {
             var (rows, columns) = grid.Size;
             var snapshotStates = new CellSnapshotState[rows, columns];
-            foreach (var cell in grid.Cells)
+            foreach (var index in grid.Indices)
             {
-                var stateValue = cell switch
+                snapshotStates.SetAt(index, grid.StateAt(index) switch
                 {
-                    { IsCovered: true } => CellSnapshotState.Covered,
-                    { IsRevealed: true } => CellSnapshotState.Revealed,
-                    { IsFlagged: true } => CellSnapshotState.Flagged,
+                    CellState.Covered => CellSnapshotState.Covered,
+                    CellState.Revealed => CellSnapshotState.Revealed,
+                    CellState.Flagged => CellSnapshotState.Flagged,
                     _ => CellSnapshotState.Irrelevant,
-                };
-                snapshotStates.SetAt(cell.GridIndex, stateValue);
+                });
             }
 
             return new GridSnapshot(snapshotStates, grid.BombMatrix);

@@ -14,6 +14,7 @@ public abstract partial record GridState : LogicBlockState
         public readonly record struct PlayerInput(GridInput GridInput);
         public readonly record struct InputProcessed(GridInputProcessResult ProcessResult);
         public readonly record struct InitCompleted;
+        public readonly record struct Undo;
     }
 
     public static class Output

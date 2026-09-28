@@ -1,18 +1,13 @@
-﻿using SnekSweeperCore.CellSystem;
+using SnekSweeperCore.CellSystem;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeperCore.Commands;
 
-public class RevealCellCommand(Cell cell) : ICommand
+public class RevealCellCommand(GridIndex index) : ICommand
 {
-    public string Name => $"reveal cell at {cell.GridIndex}";
+    public string Name => $"reveal cell at {index}";
 
-    public Task ExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        return cell.RevealAsync(cancellationToken);
-    }
+    public void Execute(Grid grid) => grid.ApplyCommand(index, new CellCommand.RevealCover());
 
-    public Task UndoAsync(CancellationToken cancellationToken = default)
-    {
-        return cell.PutOnCoverAsync(cancellationToken);
-    }
+    public void Undo(Grid grid) => grid.ApplyCommand(index, new CellCommand.PutOnCover());
 }

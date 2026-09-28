@@ -1,11 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
+using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
 using SnekSweeperCore.GridSystem.LayMineStrategies;
-using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.LevelManagement;
 
@@ -47,11 +47,8 @@ public static class LevelLoading
             _ => throw new SwitchExpressionException(),
         };
 
-        public Grid CreateGrid(ICellFactory cellFactory, GridSkin gridSkin, GridEventBus gridEventBus,
-            CommandInvoker commandInvoker)
-        {
-            return Grid.Create(cellFactory, loadLevelSource.GetGridSize(), gridSkin, gridEventBus, commandInvoker);
-        }
+        public Grid CreateGrid(GridEventBus gridEventBus, ICommandRecorder commandRecorder, ICellRenderer renderer) =>
+            new(loadLevelSource.GetGridSize(), gridEventBus, commandRecorder, renderer);
 
         GridSize GetGridSize() => loadLevelSource switch
         {

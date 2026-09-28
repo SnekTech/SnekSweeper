@@ -41,5 +41,7 @@ public partial class HUD : CanvasLayer, ISceneScript
     void OnBombCountChanged(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
     void OnFlagCountChanged(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
 
-    void OnUndoPressed() => LevelData.GridCommandInvoker.UndoCommandAsync().AsGDTask().Forget();
+    void OnUndoPressed() => UndoRequested?.Invoke();
+
+    public event Action? UndoRequested;
 }

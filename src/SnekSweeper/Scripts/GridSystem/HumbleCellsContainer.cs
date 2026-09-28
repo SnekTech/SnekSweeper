@@ -12,25 +12,40 @@ using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeper.GridSystem;
 
-public partial class HumbleCellsContainer : Node2D, ICellFactory, IHumbleCellCollection
+public partial class HumbleCellsContainer : Node2D, ICellRenderer, IHumbleCellCollection
 {
-    public Cell InstantiateCell(GridIndex gridIndex, GridSkin gridSkin)
+    readonly Dictionary<GridIndex, HumbleCell> _cells = [];
+
+    public IEnumerable<IHumbleCell> HumbleCells => _cells.Values;
+
+    public void InstantiateCells(GridSize gridSize, GridSkin skin)
     {
-        var humbleCell = HumbleCell.InstantiateOnParent(this);
-        humbleCell.OnInstantiate(gridIndex, gridSkin);
-        return new Cell(humbleCell, gridIndex, humbleCell.Logic);
+        Clear();
+
+        foreach (var index in gridSize.Indices())
+        {
+            var cell = HumbleCell.InstantiateOnParent(this);
+            cell.SetUpAt(index, skin);
+            _cells.Add(index, cell);
+        }
     }
 
-    public IEnumerable<IHumbleCell> HumbleCells => this.GetChildrenOfType<HumbleCell>();
+    public IHumbleCell CellAt(GridIndex index) => _cells[index];
 
-    public void Clear() => this.ClearChildren();
+    public void Render(CellInfo info, CellOutcome outcome) => _cells[info.Index].Render(info, outcome);
+
+    public void Clear()
+    {
+        this.ClearChildren();
+        _cells.Clear();
+    }
 
     public void PlayShuffleEffect()
     {
         const float duration = 0.1f;
 
         var shuffleTweenBuilder = GTweenSequenceBuilder.New();
-        foreach (var humbleCell in this.GetChildrenOfType<HumbleCell>())
+        foreach (var humbleCell in _cells.Values)
         {
             var singleCellShuffle = humbleCell.TweenPosition(Vector2.Zero, duration)
                 .SetEasing(Easing.OutQuint);

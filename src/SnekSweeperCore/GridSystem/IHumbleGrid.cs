@@ -1,5 +1,4 @@
 ﻿using SnekSweeperCore.CellSystem;
-using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.GridSystem;
 
@@ -12,19 +11,12 @@ public interface IHumbleGrid
 }
 
 /// <summary>
-/// 工厂角色：为 Core 的 Grid.Create 创建领域 <see cref="Cell"/>（Godot 层实现）。
-/// </summary>
-public interface ICellFactory
-{
-    Cell InstantiateCell(GridIndex gridIndex, GridSkin gridSkin);
-}
-
-/// <summary>
 /// 集合角色：暴露 / 清空 humble cell 集合（Godot 层实现）。
 /// </summary>
 public interface IHumbleCellCollection
 {
     IEnumerable<IHumbleCell> HumbleCells { get; }
+    IHumbleCell CellAt(GridIndex index);
     void Clear();
 }
 

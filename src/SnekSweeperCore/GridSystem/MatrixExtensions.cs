@@ -4,6 +4,20 @@ namespace SnekSweeperCore.GridSystem;
 
 public static class MatrixExtensions
 {
+    extension(GridSize size)
+    {
+        public IEnumerable<GridIndex> Indices()
+        {
+            for (var i = 0; i < size.Rows; i++)
+            {
+                for (var j = 0; j < size.Columns; j++)
+                {
+                    yield return new GridIndex(i, j);
+                }
+            }
+        }
+    }
+
     extension<T>(T[,] matrix)
     {
         public GridSize Size => new(matrix.GetLength(0), matrix.GetLength(1));

@@ -1,42 +1,26 @@
-﻿using System.Text;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeperCore.Commands;
 
 public class CompoundCommand : ICommand
 {
-    readonly IList<ICommand> _commands;
+    readonly IReadOnlyList<ICommand> _commands;
 
     public CompoundCommand(IEnumerable<ICommand> commands)
     {
         _commands = commands.ToList();
-        Name = CalculateCommandName();
+        Name = string.Join(" + ", _commands.Select(command => command.Name));
     }
 
     public string Name { get; }
 
-    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public void Execute(Grid grid)
     {
-        var executeTasks = _commands.Select(command => command.ExecuteAsync(cancellationToken));
-        return Task.WhenAll(executeTasks);
+        foreach (var command in _commands) command.Execute(grid);
     }
 
-    public Task UndoAsync(CancellationToken cancellationToken = default)
+    public void Undo(Grid grid)
     {
-        var undoTasks = _commands.Select(command => command.UndoAsync(cancellationToken));
-        return Task.WhenAll(undoTasks);
-    }
-
-    private string CalculateCommandName()
-    {
-        var stringBuilder = new StringBuilder();
-        stringBuilder.Append("Compound: [");
-        foreach (var command in _commands)
-        {
-            stringBuilder.Append(command.Name).Append(", ");
-        }
-
-        stringBuilder.Append("] command");
-
-        return stringBuilder.ToString();
+        foreach (var command in _commands) command.Undo(grid);
     }
 }

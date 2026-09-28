@@ -1,17 +1,19 @@
 ﻿using SnekSweeperCore.CellSystem.Components;
-using SnekSweeperCore.GridSystem;
-using SnekSweeperCore.SkinSystem;
 
 namespace SnekSweeperCore.CellSystem;
 
+/// <summary>
+/// 一格的表现：把"事实 + 转移结果"渲染出来。渲染是幂等的，视图不做任何决策。
+/// </summary>
 public interface IHumbleCell
 {
-    // Cover/Flag 仍被外部通过接口调用（cheat code 的 SetAlpha、tutorial 的 SetStatus），保留。
-    // MarkAsWrongFlagged / MarkAsBombRevealed 已不再被 Core 调用，改为 HumbleCell 内部方法。
     ICover Cover { get; }
     IFlag Flag { get; }
-    void OnInstantiate(GridIndex gridIndex, GridSkin skin);
-    void OnInit(CellInitData initData);
+    void Render(CellInfo info, CellOutcome outcome);
 }
 
-public readonly record struct CellInitData(bool HasBomb, int NeighborBombCount);
+/// <summary>棋盘要渲染某一格时的去处（Godot 层按索引分派到具体节点）。</summary>
+public interface ICellRenderer
+{
+    void Render(CellInfo info, CellOutcome outcome);
+}
