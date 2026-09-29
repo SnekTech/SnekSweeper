@@ -1,5 +1,6 @@
 ﻿using GodotGadgets.Extensions;
 using GodotGadgets.TweenStuff;
+using GodotTask;
 using GTweens.Builders;
 using GTweens.Easings;
 using GTweens.Enums;
@@ -55,6 +56,7 @@ public partial class HumbleCellsContainer : Node2D, ICellRenderer, IHumbleCellCo
 
         var tween = shuffleTweenBuilder.Build()
             .SetMaxLoops(ResetMode.PingPong);
-        tween.PlayAsyncUntilNodeDestroy(this);
+        // todo: 想办法在 Win.OnExit 中终止庆祝动画更合理
+        tween.PlayAsyncUntilNodeDestroy(this).Forget();
     }
 }
