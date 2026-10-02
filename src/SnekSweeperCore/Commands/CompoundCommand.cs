@@ -8,19 +8,21 @@ public class CompoundCommand : ICommand
 
     public CompoundCommand(IEnumerable<ICommand> commands)
     {
-        _commands = commands.ToList();
+        _commands = [.. commands];
         Name = string.Join(" + ", _commands.Select(command => command.Name));
     }
 
     public string Name { get; }
 
-    public void Execute(Grid grid)
+    public GridOutcome Execute(Grid grid)
     {
-        foreach (var command in _commands) command.Execute(grid);
+        return _commands.Select(command => command.Execute(grid))
+            .Aggregate<GridOutcome, GridOutcome>(new GridOutcome.NothingHappens(), (outcomeAcc, nextOutcome) => outcomeAcc.MergeWith(nextOutcome));
     }
 
-    public void Undo(Grid grid)
+    public GridOutcome Undo(Grid grid)
     {
-        foreach (var command in _commands) command.Undo(grid);
+        return _commands.Select(command => command.Undo(grid))
+            .Aggregate<GridOutcome, GridOutcome>(new GridOutcome.NothingHappens(), (outcomeAcc, nextOutcome) => outcomeAcc.MergeWith(nextOutcome));
     }
 }

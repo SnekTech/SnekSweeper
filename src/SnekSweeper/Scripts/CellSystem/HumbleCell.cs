@@ -24,9 +24,9 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
         Content.ChangeTexture(skin.Texture);
     }
 
-    public void Render(CellInfo info, CellOutcome outcome)
+    public void Render(CellOutcome outcome)
     {
-        RenderContent(info);
+        RenderContent(outcome.Info);
 
         switch (outcome.Event)
         {
@@ -43,16 +43,44 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
                 Flag.PutDownAsync().AsGDTask().Forget();
                 break;
             case CellEvent.RevealedBomb:
+                Paint(outcome.Info, new CellState.BombRevealed());
+                break;
+            case CellEvent.FlagTurnedOutWrong:
+                Paint(outcome.Info, new CellState.WrongFlagged());
+                break;
+            default:
+                throw new SwitchExpressionException();
+        }
+    }
+    
+    public void Paint(CellInfo info, CellState state)
+    {
+        RenderContent(info);
+
+        switch (state)
+        {
+            case CellState.Covered:
+                CellCover.Show();
+                CellFlag.Hide();
+                break;
+            case CellState.Revealed:
+                CellCover.Hide();
+                CellFlag.Hide();
+                break;
+            case CellState.Flagged:
+                CellCover.Show();
+                CellFlag.Show();
+                // todo: decide whether to define a method to paint flag
+                CellFlag.FlagSprite.Position = CellFlag.FlagSprite.Position with { Y = 0 };
+                break;
+            case CellState.BombRevealed:
                 CellCover.Hide();
                 _.Ground.SelfModulate = Colors.Red;
                 break;
-            case CellEvent.FlagTurnedOutWrong:
+            case CellState.WrongFlagged:
                 CellCover.Hide();
                 CellFlag.Hide();
                 Content.MarkAsWrongFlagged();
-                break;
-            case null:
-                ResetVisuals();
                 break;
             default:
                 throw new SwitchExpressionException();
@@ -69,12 +97,5 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
         {
             Content.ShowNeighbourBombCount(info.NeighborBombCount);
         }
-    }
-
-    void ResetVisuals()
-    {
-        CellCover.Show();
-        CellFlag.Hide();
-        _.Ground.SelfModulate = Colors.White;
     }
 }

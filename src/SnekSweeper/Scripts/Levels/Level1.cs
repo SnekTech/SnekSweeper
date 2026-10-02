@@ -3,9 +3,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Chickensoft.LogicBlocks;
 using GodotGadgets.Tasks;
-using GodotTask;
 using SnekSweeper.GameStateManagement;
-using SnekSweeper.GridSystem;
 using SnekSweeper.GridSystem.State;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.Commands;
@@ -78,8 +76,7 @@ public partial class Level1 : Node2D,
         Grid CreateGrid()
         {
             // todo: commandInvoker 相关设计是不是需要重构
-            var newGrid = loadLevelSource.CreateGrid(_levelData.GridEventBus, _levelData.GridCommandInvoker,
-                TheGrid.CellRenderer);
+            var newGrid = loadLevelSource.CreateGrid(_levelData.GridEventBus, _levelData.GridCommandInvoker);
             TheGrid.InstantiateCells(newGrid.Size, SaveData.CurrentSkin);
             return newGrid;
         }
@@ -146,7 +143,7 @@ public partial class Level1 : Node2D,
             // 初始化放在绑定层：续局恢复完整棋盘状态，新局/重试按首次点击布雷（两者都是同步的）
             void RestoreGrid(GridSnapshot snapshot)
             {
-                grid.InitCells(snapshot);
+                grid.RestoreCellStates(snapshot);
                 CompleteInit();
             }
 
@@ -156,12 +153,20 @@ public partial class Level1 : Node2D,
                 CompleteInit();
             }
 
-            void CompleteInit() => GridLogic.Input(new GridState.Input.InitCompleted());
+            void CompleteInit()
+            {
+                TheGrid.Paint(grid);
+                GridLogic.Input(new GridState.Input.InitCompleted());
+            }
 
             // 输入处理放在绑定层：FSM 只发效果；处理本身是纯同步的，结果直接打回 FSM
             // todo: 都是同步，是不是没必要传出来再传进去？
-            void HandleInput(GridInput gridInput) =>
-                GridLogic.Input(new GridState.Input.InputProcessed(grid.HandleInput(gridInput)));
+            void HandleInput(GridInput gridInput)
+            {
+                var outcome = grid.HandleInput(gridInput);
+                TheGrid.ApplyGridOutcome(outcome);
+                GridLogic.Input(new GridState.Input.InputProcessed(outcome));
+            }
         }
     }
 

@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeperCore.CellSystem;
@@ -43,8 +42,7 @@ public abstract record CellEvent
     public sealed record FlagTurnedOutWrong : CellEvent;
 }
 
-/// <summary>转移的产出：新状态 + 发生了什么。事实为 null 表示这次意图在当前状态不成立（状态不变）。</summary>
-public readonly record struct CellOutcome(CellState NextState, CellEvent? Event);
+public sealed record CellOutcome(CellInfo Info, CellEvent Event);
 
 public static class CellStateExtensions
 {
@@ -62,21 +60,21 @@ public static class CellStateExtensions
         /// 纯全函数：意图在当前状态不成立时原样返回（不抛异常、不改状态）。
         /// 守卫用到的事实全部来自 <paramref name="info"/>，不读任何外部可变数据。
         /// </summary>
-        public CellOutcome Apply(CellInfo info, CellCommand command) => (state, command) switch
+        public (CellState NextState, CellOutcome? Outcome) Apply(CellInfo info, CellCommand command) => (state, command) switch
         {
             (CellState.Covered, CellCommand.RevealCover) =>
-                new(new CellState.Revealed(), new CellEvent.CoverRevealed()),
+                (new CellState.Revealed(), new CellOutcome(info, new CellEvent.CoverRevealed())),
             (CellState.Covered, CellCommand.ToggleFlag) =>
-                new(new CellState.Flagged(), new CellEvent.FlagRaised()),
+                (new CellState.Flagged(), new CellOutcome(info, new CellEvent.FlagRaised())),
             (CellState.Revealed, CellCommand.PutOnCover) =>
-                new(new CellState.Covered(), new CellEvent.CoverPutOn()),
+                (new CellState.Covered(), new CellOutcome(info, new CellEvent.CoverPutOn())),
             (CellState.Revealed, CellCommand.MarkError) when info.HasBomb =>
-                new(new CellState.BombRevealed(), new CellEvent.RevealedBomb()),
+                (new CellState.BombRevealed(), new CellOutcome(info, new CellEvent.RevealedBomb())),
             (CellState.Flagged, CellCommand.ToggleFlag) =>
-                new(new CellState.Covered(), new CellEvent.FlagPutDown()),
+                (new CellState.Covered(), new CellOutcome(info, new CellEvent.FlagPutDown())),
             (CellState.Flagged, CellCommand.MarkError) when !info.HasBomb =>
-                new(new CellState.WrongFlagged(), new CellEvent.FlagTurnedOutWrong()),
-            _ => new(state, null),
+                (new CellState.WrongFlagged(), new CellOutcome(info, new CellEvent.FlagTurnedOutWrong())),
+            _ => (state, null),
         };
     }
 }

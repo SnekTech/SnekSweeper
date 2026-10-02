@@ -7,7 +7,19 @@ public class RevealCellCommand(GridIndex index) : ICommand
 {
     public string Name => $"reveal cell at {index}";
 
-    public void Execute(Grid grid) => grid.ApplyCommand(index, new CellCommand.RevealCover());
+    public GridOutcome Execute(Grid grid)
+    {
+        var cellOutcome = grid.ApplyCommand(index, new CellCommand.RevealCover());
+        return cellOutcome is null
+            ? new GridOutcome.NothingHappens()
+            : new GridOutcome.BatchRevealed([cellOutcome]);
+    }
 
-    public void Undo(Grid grid) => grid.ApplyCommand(index, new CellCommand.PutOnCover());
+    public GridOutcome Undo(Grid grid)
+    {
+        var cellOutcome = grid.ApplyCommand(index, new CellCommand.PutOnCover());
+        return cellOutcome is null
+            ? new GridOutcome.NothingHappens()
+            : new GridOutcome.BatchCovered([cellOutcome]);
+    }
 }

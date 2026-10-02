@@ -6,11 +6,11 @@ namespace SnekSweeperCore.Commands;
 public interface ICommand
 {
     string Name { get; }
-    void Execute(Grid grid);
-    void Undo(Grid grid);
+    GridOutcome Execute(Grid grid);
+    GridOutcome Undo(Grid grid);
 }
 
 public interface ICommandRecorder
 {
-    void ExecuteAndRecord(Grid grid, ICommand command);
+    GridOutcome ExecuteAndRecord(Grid grid, ICommand command);
 }

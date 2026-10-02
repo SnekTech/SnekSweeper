@@ -9,11 +9,7 @@ public interface IHumbleCell
 {
     ICover Cover { get; }
     IFlag Flag { get; }
-    void Render(CellInfo info, CellOutcome outcome);
+    void Render(CellOutcome outcome);
+    void Paint(CellInfo info, CellState state);
 }
 
-/// <summary>棋盘要渲染某一格时的去处（Godot 层按索引分派到具体节点）。</summary>
-public interface ICellRenderer
-{
-    void Render(CellInfo info, CellOutcome outcome);
-}

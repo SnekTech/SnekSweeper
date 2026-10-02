@@ -33,7 +33,7 @@ public partial class HumbleCellsContainer : Node2D, ICellRenderer, IHumbleCellCo
 
     public IHumbleCell CellAt(GridIndex index) => _cells[index];
 
-    public void Render(CellInfo info, CellOutcome outcome) => _cells[info.Index].Render(info, outcome);
+    public void Render(CellOutcome outcome) => _cells[outcome.Info.Index].Render(outcome);
 
     public void Clear()
     {

@@ -17,14 +17,33 @@ public class GridSpecs
     };
 
     [Test]
-    public void init_renders_every_cell_as_covered()
+    public void init_covers_every_cell()
     {
-        var board = CreateInitializedBoard(keepInitRenders: true);
+        var (grid, _) = CreateInitializedBoard();
 
-        board.Renderer.Outcomes.Should().HaveCount(9);
-        board.Renderer.Outcomes.Select(outcome => outcome.NextState).Should().AllBeOfType<CellState.Covered>();
-        board.Renderer.Outcomes.Select(outcome => outcome.Event).Should().AllSatisfy(@event => @event.Should().BeNull());
-        board.Grid.BombCount.Should().Be(1);
+        grid.Indices.Select(index => grid.StateAt(index)).Should().AllBeOfType<CellState.Covered>();
+        grid.BombCount.Should().Be(1);
+    }
+
+    [Test]
+    public void restoring_a_snapshot_rebuilds_the_same_board()
+    {
+        var source = new Grid(new GridSize(3, 3), new GridEventBus(), new CommandInvoker());
+        source.InitCells(Bombs);
+        source.HandleInput(new RevealAt(new GridIndex(0, 1))); // 邻居雷数=1, 不会扩散
+        source.HandleInput(new SwitchFlagAt(new GridIndex(1, 1)));
+        var snapshot = source.GetSnapshot();
+
+        var restored = new Grid(new GridSize(3, 3), new GridEventBus(), new CommandInvoker());
+        restored.RestoreCellStates(snapshot);
+
+        foreach (var index in restored.Indices)
+        {
+            restored.StateAt(index).Should().Be(source.StateAt(index));
+            restored.InfoAt(index).Should().Be(source.InfoAt(index)); // 含邻居雷数重算
+        }
+
+        restored.BombCount.Should().Be(1);
     }
 
     [Test]
@@ -44,9 +63,9 @@ public class GridSpecs
 
         var result = board.Grid.HandleInput(new RevealAt(new GridIndex(0, 0)));
 
-        var batch = result.Should().BeOfType<BatchRevealed>().Subject;
-        batch.CellsInThisBatch.Should().Contain(new GridIndex(0, 0));
-        board.Renderer.LastEvent.Should().BeOfType<CellEvent.CoverRevealed>();
+        var batch = result.Should().BeOfType<GridOutcome.BatchRevealed>().Subject;
+        batch.Cells.Select(c => c.Info.Index).Should().Contain(new GridIndex(0, 0));
+        batch.Cells.Select(c => c.Event).Should().Contain(new CellEvent.CoverRevealed());
     }
 
     [Test]
@@ -58,22 +77,22 @@ public class GridSpecs
 
         board.Grid.StateAt(new GridIndex(0, 0)).IsRevealed.Should().BeTrue();
         board.Grid.InfoAt(new GridIndex(0, 0)).HasBomb.Should().BeTrue();
-        Referee.Judge(result).Should().BeOfType<GameLose>();
+        Referee.Judge(board.Grid, result).Should().BeOfType<GameLose>();
     }
 
     [Test]
     public void switch_flag_toggles_the_flag()
     {
-        var board = CreateInitializedBoard();
+        var (grid, _) = CreateInitializedBoard();
         var index = new GridIndex(1, 1);
 
-        board.Grid.HandleInput(new SwitchFlagAt(index));
-        board.Grid.StateAt(index).IsFlagged.Should().BeTrue();
-        board.Renderer.LastEvent.Should().BeOfType<CellEvent.FlagRaised>();
+        var gridOutcome = grid.HandleInput(new SwitchFlagAt(index));
+        grid.StateAt(index).IsFlagged.Should().BeTrue();
+        gridOutcome.Should().BeOfType<GridOutcome.FlagToggled>().Which.IsRaised.Should().BeTrue();
 
-        board.Grid.HandleInput(new SwitchFlagAt(index));
-        board.Grid.StateAt(index).IsCovered.Should().BeTrue();
-        board.Renderer.LastEvent.Should().BeOfType<CellEvent.FlagPutDown>();
+        var gridOutcome2 = grid.HandleInput(new SwitchFlagAt(index));
+        grid.StateAt(index).IsFlagged.Should().BeFalse();
+        gridOutcome2.Should().BeOfType<GridOutcome.FlagToggled>().Which.IsRaised.Should().BeFalse();
     }
 
     [Test]
@@ -98,31 +117,17 @@ public class GridSpecs
         var result = board.Grid.HandleInput(new RevealAt(new GridIndex(2, 2)));
 
         board.Grid.IsResolved.Should().BeTrue();
-        Referee.Judge(result).Should().BeOfType<GameWin>();
+        Referee.Judge(board.Grid, result).Should().BeOfType<GameWin>();
     }
 
-    // todo: Board 为什么放到测试中了？按原计划，Board应该也是immutable cell设计的一部分
-    static Board CreateInitializedBoard(bool keepInitRenders = false)
+    static Board CreateInitializedBoard()
     {
-        var renderer = new RecordingCellRenderer();
         var commandInvoker = new CommandInvoker();
-        var grid = new Grid(new GridSize(3, 3), new GridEventBus(), commandInvoker, renderer);
+        var grid = new Grid(new GridSize(3, 3), new GridEventBus(), commandInvoker);
         grid.InitCells(Bombs);
-        if (!keepInitRenders) renderer.Clear();
 
-        return new Board(grid, commandInvoker, renderer);
+        return new Board(grid, commandInvoker);
     }
 
-    readonly record struct Board(Grid Grid, CommandInvoker CommandInvoker, RecordingCellRenderer Renderer);
-
-    class RecordingCellRenderer : ICellRenderer
-    {
-        readonly List<CellOutcome> _outcomes = [];
-
-        public IReadOnlyList<CellOutcome> Outcomes => _outcomes;
-        public CellEvent? LastEvent => _outcomes.Count == 0 ? null : _outcomes[^1].Event;
-
-        public void Render(CellInfo info, CellOutcome outcome) => _outcomes.Add(outcome);
-        public void Clear() => _outcomes.Clear();
-    }
+    readonly record struct Board(Grid Grid, CommandInvoker CommandInvoker);
 }

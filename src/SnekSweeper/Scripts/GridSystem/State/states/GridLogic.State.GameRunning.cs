@@ -33,14 +33,15 @@ public abstract partial record GridState
 
         public Type On(in Input.Undo input)
         {
-            Context.CommandInvoker.UndoCommand(Context.Grid);
+            var outcome = Context.CommandInvoker.UndoCommand(Context.Grid);
+            Context.HumbleGrid.ApplyGridOutcome(outcome);
             return ToSelf();
         }
 
         public Type On(in Input.InputProcessed input)
         {
             var data = Get<GridLogic.Data>();
-            var judgedResult = Referee.Judge(input.ProcessResult);
+            var judgedResult = Referee.Judge(Context.Grid, input.Outcome);
 
             // 首次输入处理完成 = 本局真正开始：startInfo + snapshot 同时就绪，创建 OngoingGame。
             //（首击即负也走这里——先创建再走结束流程，与正常游玩完全一致）
@@ -50,7 +51,7 @@ public abstract partial record GridState
                 Context.RunRecorder.StartOngoingGame(Context.Grid.GetSnapshot(),
                     new RunStartInfo(DateTime.Now, firstClick.Index));
             }
-            else if (judgedResult is Surviving && input.ProcessResult is not NothingHappens)
+            else if (judgedResult is Surviving && input.Outcome is not GridOutcome.NothingHappens)
             {
                 // 续局/后续：只更新快照，保留最初 startInfo
                 Context.RunRecorder.UpdateOngoingGame(Context.Grid.GetSnapshot());

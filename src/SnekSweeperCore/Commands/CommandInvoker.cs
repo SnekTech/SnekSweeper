@@ -6,16 +6,15 @@ public class CommandInvoker : ICommandRecorder
 {
     readonly Stack<ICommand> _undoStack = new();
 
-    public void ExecuteAndRecord(Grid grid, ICommand command)
+    public GridOutcome ExecuteAndRecord(Grid grid, ICommand command)
     {
-        command.Execute(grid);
+        var outcome = command.Execute(grid);
         _undoStack.Push(command);
+        return outcome;
     }
 
-    public void UndoCommand(Grid grid)
+    public GridOutcome UndoCommand(Grid grid)
     {
-        if (_undoStack.Count == 0) return;
-
-        _undoStack.Pop().Undo(grid);
+        return _undoStack.Count == 0 ? new GridOutcome.NothingHappens() : _undoStack.Pop().Undo(grid);
     }
 }

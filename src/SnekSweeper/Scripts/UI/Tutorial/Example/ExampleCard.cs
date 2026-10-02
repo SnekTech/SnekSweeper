@@ -20,7 +20,7 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IInitializableCo
 
         ExampleDescriptionView.Description = exampleData.Description;
 
-        var grid = new Grid(snapshot.BombMatrix.Size, new GridEventBus(), new CommandInvoker(), TheGrid.CellRenderer);
+        var grid = new Grid(snapshot.BombMatrix.Size, new GridEventBus(), new CommandInvoker());
         // todo: these two lines should combine?
         TheGrid.InstantiateCells(grid.Size, Skin);
         TheGrid.Init(grid.Size);
@@ -29,10 +29,12 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IInitializableCo
 
         ApplyCoverStatus();
 
-        grid.InitCells(snapshot);
+        grid.RestoreCellStates(snapshot);
+        TheGrid.Paint(grid);
 
         return;
 
+        // todo: this feels like domain logic, but mostly visual, so now lives in Godot-layer
         void ApplyCoverStatus()
         {
             foreach (var safeIndex in exampleData.SafeCoveredCells)

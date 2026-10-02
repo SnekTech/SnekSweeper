@@ -5,20 +5,20 @@ namespace SnekSweeperCore.GameMode;
 
 public static class Referee
 {
-    public static JudgedResult Judge(GridInputProcessResult processResult) =>
-        processResult switch
+    public static JudgedResult Judge(Grid grid, GridOutcome gridOutcome) =>
+        gridOutcome switch
         {
-            BatchRevealed batchRevealed => GetGameResult(batchRevealed),
+            GridOutcome.BatchRevealed batchRevealed => GetGameResult(grid, batchRevealed),
             _ => Surviving.Instance,
         };
 
-    static JudgedResult GetGameResult(BatchRevealed batchRevealed)
+    static JudgedResult GetGameResult(Grid grid, GridOutcome.BatchRevealed batchRevealed)
     {
-        var (grid, cellsInThisBatch) = batchRevealed;
+        var cells = batchRevealed.Cells;
 
-        if (cellsInThisBatch.Any(index => grid.StateAt(index).IsRevealed && grid.InfoAt(index).HasBomb))
+        if (cells.Any(cellOutcome => grid.StateAt(cellOutcome.Info.Index).IsRevealed && cellOutcome.Info.HasBomb))
         {
-            return new GameLose(grid.BombMatrix, cellsInThisBatch);
+            return new GameLose(grid.BombMatrix, [..cells.Select(c => c.Info.Index)]);
         }
 
         if (grid.IsResolved)

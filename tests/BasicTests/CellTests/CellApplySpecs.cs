@@ -18,91 +18,97 @@ public class CellApplySpecs
     [Test]
     public void reveal_cover_moves_covered_to_revealed()
     {
-        var outcome = CellState.Initial.Apply(SafeCell, new CellCommand.RevealCover());
+        var (next, outcome) = CellState.Initial.Apply(SafeCell, new CellCommand.RevealCover());
 
-        outcome.NextState.IsRevealed.Should().BeTrue();
-        outcome.Event.Should().BeOfType<CellEvent.CoverRevealed>();
+        next.IsRevealed.Should().BeTrue();
+        outcome.Should().BeOfType<CellOutcome>()
+            .Which.Event.Should().Be(new CellEvent.CoverRevealed());
     }
 
     [Test]
     public void toggle_flag_raises_flag_on_covered()
     {
-        var outcome = CellState.Initial.Apply(SafeCell, new CellCommand.ToggleFlag());
+        var (next, outcome) = CellState.Initial.Apply(SafeCell, new CellCommand.ToggleFlag());
 
-        outcome.NextState.IsFlagged.Should().BeTrue();
-        outcome.Event.Should().BeOfType<CellEvent.FlagRaised>();
+        next.IsFlagged.Should().BeTrue();
+        outcome.Should().BeOfType<CellOutcome>()
+            .Which.Event.Should().Be(new CellEvent.FlagRaised());
     }
 
     [Test]
     public void toggle_flag_puts_down_flag_on_flagged()
     {
-        var outcome = new CellState.Flagged().Apply(SafeCell, new CellCommand.ToggleFlag());
+        var (next, outcome) = new CellState.Flagged().Apply(SafeCell, new CellCommand.ToggleFlag());
 
-        outcome.NextState.IsCovered.Should().BeTrue();
-        outcome.Event.Should().BeOfType<CellEvent.FlagPutDown>();
+        next.IsCovered.Should().BeTrue();
+        outcome.Should().BeOfType<CellOutcome>()
+            .Which.Event.Should().Be(new CellEvent.FlagPutDown());
     }
 
     [Test]
     public void toggle_flag_is_ignored_on_revealed()
     {
-        var outcome = new CellState.Revealed().Apply(SafeCell, new CellCommand.ToggleFlag());
+        var (next, outcome) = new CellState.Revealed().Apply(SafeCell, new CellCommand.ToggleFlag());
 
-        outcome.NextState.IsRevealed.Should().BeTrue();
-        outcome.Event.Should().BeNull();
+        next.IsRevealed.Should().BeTrue();
+        outcome.Should().BeNull();
     }
 
     [Test]
     public void reveal_cover_is_ignored_on_flagged()
     {
-        var outcome = new CellState.Flagged().Apply(SafeCell, new CellCommand.RevealCover());
+        var (next, outcome) = new CellState.Flagged().Apply(SafeCell, new CellCommand.RevealCover());
 
-        outcome.NextState.IsFlagged.Should().BeTrue();
-        outcome.Event.Should().BeNull();
+        next.IsFlagged.Should().BeTrue();
+        outcome.Should().BeNull();
     }
 
     [Test]
     public void put_on_cover_moves_revealed_to_covered()
     {
-        var outcome = new CellState.Revealed().Apply(SafeCell, new CellCommand.PutOnCover());
+        var (next, outcome) = new CellState.Revealed().Apply(SafeCell, new CellCommand.PutOnCover());
 
-        outcome.NextState.IsCovered.Should().BeTrue();
-        outcome.Event.Should().BeOfType<CellEvent.CoverPutOn>();
+        next.IsCovered.Should().BeTrue();
+        outcome.Should().BeOfType<CellOutcome>()
+            .Which.Event.Should().Be(new CellEvent.CoverPutOn());
     }
 
     [Test]
     public void mark_error_reveals_bomb_on_bomb_cell()
     {
-        var outcome = new CellState.Revealed().Apply(BombCell, new CellCommand.MarkError());
+        var (next, outcome) = new CellState.Revealed().Apply(BombCell, new CellCommand.MarkError());
 
-        outcome.NextState.IsRevealedBomb.Should().BeTrue();
-        outcome.Event.Should().BeOfType<CellEvent.RevealedBomb>();
+        next.IsRevealedBomb.Should().BeTrue();
+        outcome.Should().BeOfType<CellOutcome>()
+            .Which.Event.Should().Be(new CellEvent.RevealedBomb());
     }
 
     [Test]
     public void mark_error_is_ignored_on_revealed_safe_cell()
     {
-        var outcome = new CellState.Revealed().Apply(SafeCell, new CellCommand.MarkError());
+        var (next, outcome) = new CellState.Revealed().Apply(SafeCell, new CellCommand.MarkError());
 
-        outcome.NextState.IsRevealed.Should().BeTrue();
-        outcome.Event.Should().BeNull();
+        next.IsRevealed.Should().BeTrue();
+        outcome.Should().BeNull();
     }
 
     [Test]
     public void mark_error_marks_wrong_flag_on_flagged_safe_cell()
     {
-        var outcome = new CellState.Flagged().Apply(SafeCell, new CellCommand.MarkError());
+        var (next, outcome) = new CellState.Flagged().Apply(SafeCell, new CellCommand.MarkError());
 
-        outcome.NextState.IsWrongFlagged.Should().BeTrue();
-        outcome.Event.Should().BeOfType<CellEvent.FlagTurnedOutWrong>();
+        next.IsWrongFlagged.Should().BeTrue();
+        outcome.Should().BeOfType<CellOutcome>()
+            .Which.Event.Should().Be(new CellEvent.FlagTurnedOutWrong());
     }
 
     [Test]
     public void mark_error_is_ignored_on_flagged_bomb_cell()
     {
-        var outcome = new CellState.Flagged().Apply(BombCell, new CellCommand.MarkError());
+        var (next, outcome) = new CellState.Flagged().Apply(BombCell, new CellCommand.MarkError());
 
-        outcome.NextState.IsFlagged.Should().BeTrue();
-        outcome.Event.Should().BeNull();
+        next.IsFlagged.Should().BeTrue();
+        outcome.Should().BeNull();
     }
 
     [Test]
@@ -121,10 +127,10 @@ public class CellApplySpecs
 
         foreach (var command in commands)
         {
-            var outcome = terminal.Apply(BombCell, command);
+            var (next, outcome) = terminal.Apply(BombCell, command);
 
-            outcome.NextState.Should().Be(terminal);
-            outcome.Event.Should().BeNull();
+            next.Should().Be(terminal);
+            outcome.Should().BeNull();
         }
     }
 }

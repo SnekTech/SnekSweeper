@@ -3,6 +3,7 @@ using GodotTask;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameMode;
+using SnekSweeperCore.GridSystem;
 
 namespace SnekSweeper.GridSystem.State;
 
@@ -10,7 +11,6 @@ public abstract partial record GridState
 {
     public record Lose : End
     {
-
         public Lose()
         {
             this.OnEnter(() =>
@@ -21,7 +21,8 @@ public abstract partial record GridState
             });
             return;
 
-            async GDTaskVoid TriggerLoseTasksAsync(GameLose gameLose,GameRunRecord recentRecord, CancellationToken ct = default)
+            async GDTaskVoid TriggerLoseTasksAsync(GameLose gameLose, GameRunRecord recentRecord,
+                CancellationToken ct = default)
             {
                 MarkPlayerErrors(gameLose);
                 var choice = await Context.LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct);
@@ -30,10 +31,10 @@ public abstract partial record GridState
 
             void MarkPlayerErrors(GameLose gameLose)
             {
-                foreach (var index in gameLose.CellsInThisBatch)
-                {
-                    Context.Grid.ApplyCommand(index, new CellCommand.MarkError());
-                }
+                var outcomeList = gameLose.CellsInThisBatch
+                    .Select(index => Context.Grid.ApplyCommand(index, new CellCommand.MarkError()))
+                    .OfType<CellOutcome>();
+                Context.HumbleGrid.ApplyGridOutcome(new GridOutcome.ErrorsMarked([.. outcomeList]));
             }
         }
     }

@@ -15,17 +15,3 @@ public sealed record ChordAt(GridIndex Index) : GridInput(Index);
 
 /// <summary>切换这一格的旗子（右键按下）。</summary>
 public sealed record SwitchFlagAt(GridIndex Index) : GridInput(Index);
-
-public abstract record GridInputProcessResult;
-
-public sealed record BatchRevealed(Grid Grid, IReadOnlyList<GridIndex> CellsInThisBatch) : GridInputProcessResult;
-
-public sealed record FlagSwitched : GridInputProcessResult
-{
-    public static FlagSwitched Instance { get; } = new();
-}
-
-public sealed record NothingHappens : GridInputProcessResult
-{
-    public static NothingHappens Instance { get; } = new();
-}

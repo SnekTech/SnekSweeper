@@ -1,8 +1,9 @@
-﻿using Chickensoft.AutoInject;
+﻿using System.Runtime.CompilerServices;
+using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using SnekSweeper.CellSystem;
 using SnekSweeper.CheatCodeSystem;
 using SnekSweeper.Widgets;
-using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SaveLoad;
 using SnekSweeperCore.SkinSystem;
@@ -15,7 +16,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
 {
     public override void _Notification(int what) => this.Notify(what);
 
-    [Dependency]
+    [Chickensoft.AutoInject.Dependency]
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     public override void _EnterTree()
@@ -32,7 +33,6 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     public void Init(GridSize gridSize) => GridInputListener.Init(gridSize);
 
     public IHumbleCellCollection HumbleCellsContainer => CellsContainer;
-    public ICellRenderer CellRenderer => CellsContainer;
     public IGridCursor GridCursor => Cursor;
 
     public void InstantiateCells(GridSize gridSize, GridSkin skin) => CellsContainer.InstantiateCells(gridSize, skin);
@@ -40,6 +40,37 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();
 
     public void TriggerInitEffects() => this.TriggerCheatCodeInitEffects(SaveData.State.ActivatedCheatCodeSet);
+
+    public void ApplyGridOutcome(GridOutcome gridOutcome)
+    {
+        switch (gridOutcome)
+        {
+            case GridOutcome.BatchRevealed batchRevealed:
+                CellsContainer.RenderSome(batchRevealed.Cells);
+                break;
+            case GridOutcome.BatchCovered batchCovered:
+                CellsContainer.RenderSome(batchCovered.Cells);
+                break;
+            case GridOutcome.FlagToggled flagToggled:
+                CellsContainer.Render(flagToggled.CellOutcome);
+                break;
+            case GridOutcome.ErrorsMarked errorsMarked:
+                CellsContainer.RenderSome(errorsMarked.Cells);
+                break;
+            case GridOutcome.NothingHappens:
+                break;
+            default:
+                throw new SwitchExpressionException();
+        }
+    }
+
+    public void Paint(Grid grid)
+    {
+        foreach (var index in grid.Indices)
+        {
+            CellsContainer.CellAt(index).Paint(grid.InfoAt(index), grid.StateAt(index));
+        }
+    }
 
     void OnTargetChanged(PointerTarget target) => Cursor.ShowAt(target);
 }

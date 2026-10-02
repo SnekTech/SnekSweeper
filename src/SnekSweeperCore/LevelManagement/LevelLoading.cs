@@ -47,8 +47,8 @@ public static class LevelLoading
             _ => throw new SwitchExpressionException(),
         };
 
-        public Grid CreateGrid(GridEventBus gridEventBus, ICommandRecorder commandRecorder, ICellRenderer renderer) =>
-            new(loadLevelSource.GetGridSize(), gridEventBus, commandRecorder, renderer);
+        public Grid CreateGrid(GridEventBus gridEventBus, ICommandRecorder commandRecorder) =>
+            new(loadLevelSource.GetGridSize(), gridEventBus, commandRecorder);
 
         GridSize GetGridSize() => loadLevelSource switch
         {

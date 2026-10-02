@@ -6,26 +6,23 @@ namespace SnekSweeperCore.GridSystem;
 
 /// <summary>
 /// 棋盘：唯一持有格子状态的地方（<see cref="CellState"/> 本身是不可变的值）。
-/// 每次转移完成后当场交给 <see cref="ICellRenderer"/> 渲染，所以不需要把"变化"传出去。
 /// </summary>
 public class Grid
 {
     readonly GridEventBus _gridEventBus;
     readonly ICommandRecorder _commandRecorder;
-    readonly ICellRenderer _renderer;
 
     readonly bool[,] _bombs;
     readonly int[,] _neighborBombCounts;
     readonly CellState[,] _states;
 
-    // todo: 有没有某种方法把 gridEventBus、commandRecorder、renderer 都去掉，grid就是逻辑上的grid
+    // todo: 有没有某种方法把 gridEventBus、commandRecorder 都去掉，grid就是逻辑上的grid
     //   或者说，这么做值得吗？优缺点在于什么？
-    public Grid(GridSize size, GridEventBus gridEventBus, ICommandRecorder commandRecorder, ICellRenderer renderer)
+    public Grid(GridSize size, GridEventBus gridEventBus, ICommandRecorder commandRecorder)
     {
         Size = size;
         _gridEventBus = gridEventBus;
         _commandRecorder = commandRecorder;
-        _renderer = renderer;
 
         _bombs = new bool[size.Rows, size.Columns];
         _neighborBombCounts = new int[size.Rows, size.Columns];
@@ -54,14 +51,34 @@ public class Grid
             _bombs.SetAt(index, bombs.At(index));
             _neighborBombCounts.SetAt(index, index.GetNeighborIndicesWithin(Size).Count(bombs.At));
             _states.SetAt(index, CellState.Initial);
-
-            _renderer.Render(InfoAt(index), new CellOutcome(CellState.Initial, null));
         }
 
         _gridEventBus.EmitBombCountChanged(BombCount);
     }
 
-    public GridInputProcessResult HandleInput(GridInput input)
+    // 只接受 Covered/Revealed/Flagged，Irrelevant 目前没有处理好
+    public void RestoreCellStates(GridSnapshot snapshot)
+    {
+        foreach (var index in Indices)
+        {
+            _bombs.SetAt(index, snapshot.BombMatrix.At(index));
+            _neighborBombCounts.SetAt(index, index.GetNeighborIndicesWithin(Size).Count(snapshot.BombMatrix.At));
+
+            CellState restoredState = snapshot.SnapshotStates.At(index) switch
+            {
+                CellSnapshotState.Covered => new CellState.Covered(),
+                CellSnapshotState.Revealed => new CellState.Revealed(),
+                CellSnapshotState.Flagged => new CellState.Flagged(),
+                _ => throw new SwitchExpressionException(),
+            };
+
+            _states.SetAt(index, restoredState);
+        }
+
+        _gridEventBus.EmitBombCountChanged(BombCount);
+    }
+
+    public GridOutcome HandleInput(GridInput input)
     {
         return input switch
         {
@@ -72,27 +89,25 @@ public class Grid
         };
     }
 
-    public CellOutcome ApplyCommand(GridIndex index, CellCommand command)
+    public CellOutcome? ApplyCommand(GridIndex index, CellCommand command)
     {
         var info = InfoAt(index);
-        var outcome = _states.At(index).Apply(info, command);
-        _states.SetAt(index, outcome.NextState);
-
-        if (outcome.Event is not null) _renderer.Render(info, outcome);
+        var (nextState, outcome) = _states.At(index).Apply(info, command);
+        _states.SetAt(index, nextState);
 
         return outcome;
     }
 
-    GridInputProcessResult ProcessRevealAt(GridIndex index)
+    GridOutcome ProcessRevealAt(GridIndex index)
     {
         var cellsToReveal = new HashSet<GridIndex>();
         FindCellsToReveal(index, cellsToReveal);
         return RevealCells(cellsToReveal);
     }
 
-    GridInputProcessResult ProcessRevealAround(GridIndex index)
+    GridOutcome ProcessRevealAround(GridIndex index)
     {
-        if (!CanRevealAround()) return NothingHappens.Instance;
+        if (!CanRevealAround()) return new GridOutcome.NothingHappens();
 
         var cellsToReveal = new HashSet<GridIndex>();
         foreach (var neighborIndex in index.GetNeighborIndicesWithin(Size))
@@ -109,23 +124,25 @@ public class Grid
             && NeighborFlagCount(index) == NeighborBombCount(index);
     }
 
-    GridInputProcessResult ProcessSwitchFlagAt(GridIndex index)
+    GridOutcome ProcessSwitchFlagAt(GridIndex index)
     {
-        ApplyCommand(index, new CellCommand.ToggleFlag());
+        var cellOutcome = ApplyCommand(index, new CellCommand.ToggleFlag());
         _gridEventBus.EmitFlagCountChanged(FlagCount);
 
-        return FlagSwitched.Instance;
+        return cellOutcome is null
+            ? new GridOutcome.NothingHappens()
+            : new GridOutcome.FlagToggled(cellOutcome);
     }
 
-    GridInputProcessResult RevealCells(HashSet<GridIndex> cellsToReveal)
+    GridOutcome RevealCells(HashSet<GridIndex> cellsToReveal)
     {
-        if (cellsToReveal.Count == 0) return NothingHappens.Instance;
+        if (cellsToReveal.Count == 0) return new GridOutcome.NothingHappens();
 
-        _commandRecorder.ExecuteAndRecord(this,
+        var gridOutcome = _commandRecorder.ExecuteAndRecord(this,
             new CompoundCommand(cellsToReveal.Select(index => new RevealCellCommand(index))));
         _gridEventBus.EmitBatchRevealed();
 
-        return new BatchRevealed(this, cellsToReveal.ToList());
+        return gridOutcome;
     }
 
     void FindCellsToReveal(GridIndex index, ICollection<GridIndex> cellsToReveal)
