@@ -6,7 +6,6 @@ using GodotGadgets.Tasks;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.GridSystem.State;
 using SnekSweeper.Widgets;
-using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
@@ -18,7 +17,6 @@ namespace SnekSweeper.Levels;
 [Meta(typeof(IAutoNode))]
 [SceneTree]
 public partial class Level1 : Node2D,
-    IProvide<LevelData>,
     ISceneScript, ILevelOrchestrator
 {
     public override void _Notification(int what) => this.Notify(what);
@@ -35,14 +33,8 @@ public partial class Level1 : Node2D,
     GridLogic GridLogic { get; set; } = null!;
     LogicBlock.Binding GridBinding { get; set; } = null!;
 
-    LevelData _levelData = null!;
-    LevelData IProvide<LevelData>.Value() => _levelData;
-
     public override void _EnterTree()
     {
-        _levelData = new LevelData(new CommandInvoker());
-        this.Provide();
-
         TheGrid.GridInputListener.GridInputEmitted += OnGridInputEmitted;
     }
 
@@ -75,8 +67,7 @@ public partial class Level1 : Node2D,
 
         Grid CreateGrid()
         {
-            // todo: commandInvoker 相关设计是不是需要重构
-            var newGrid = loadLevelSource.CreateGrid(_levelData.GridCommandInvoker);
+            var newGrid = loadLevelSource.CreateGrid();
             TheGrid.InstantiateCells(newGrid.Size, SaveData.CurrentSkin);
             return newGrid;
         }
@@ -95,8 +86,7 @@ public partial class Level1 : Node2D,
                 grid,
                 TheGrid,
                 new GameRunRecorder(SaveData),
-                this,
-                _levelData.GridCommandInvoker
+                this
             ));
         }
 
@@ -106,6 +96,7 @@ public partial class Level1 : Node2D,
                 .OnOutput((in GridState.Output.RestoreGrid output) => { RestoreGrid(output.Snapshot); })
                 .OnOutput((in GridState.Output.LayMinesAt output) => { LayMines(output.Source, output.FirstInput); })
                 .OnOutput((in GridState.Output.ProcessInput output) => { HandleInput(output.GridInput); })
+                .OnOutput((in GridState.Output.UndoApplied output) => { ShowOutcome(output.Outcome); })
                 .OnOutput((in GridState.Output.EndGameChoiceOnWin output) =>
                 {
                     Action handleChoiceAction = output.Choice switch
@@ -152,21 +143,23 @@ public partial class Level1 : Node2D,
                 GridLogic.Input(new GridState.Input.InitCompleted());
             }
 
-            // 输入处理放在绑定层：FSM 只发效果；处理本身是纯同步的，结果直接打回 FSM
             // todo: 都是同步，是不是没必要传出来再传进去？
             void HandleInput(GridInput gridInput)
             {
                 var outcome = grid.HandleInput(gridInput);
-                TheGrid.ApplyGridOutcome(outcome);
-                
-                HUD.UpdateFlagCount(grid.FlagCount);
+                ShowOutcome(outcome);
 
+                GridLogic.Input(new GridState.Input.InputProcessed(outcome));
+            }
+
+            void ShowOutcome(GridOutcome outcome)
+            {
+                TheGrid.ApplyGridOutcome(outcome);
+                HUD.UpdateFlagCount(grid.FlagCount);
                 if (outcome is GridOutcome.BatchRevealed)
                 {
                     HUD.IncreaseCombo();
                 }
-
-                GridLogic.Input(new GridState.Input.InputProcessed(outcome));
             }
         }
     }

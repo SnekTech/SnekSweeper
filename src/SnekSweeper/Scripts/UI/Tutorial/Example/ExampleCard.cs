@@ -2,7 +2,6 @@
 using SnekSweeper.GridSystem;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CellSystem.Components;
-using SnekSweeperCore.Commands;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.SkinSystem;
 using SnekSweeperCore.Tutorial;
@@ -20,7 +19,7 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IInitializableCo
 
         ExampleDescriptionView.Description = exampleData.Description;
 
-        var grid = new Grid(snapshot.BombMatrix.Size, new CommandInvoker());
+        var grid = new Grid(snapshot.BombMatrix.Size);
         // todo: these two lines should combine?
         TheGrid.InstantiateCells(grid.Size, Skin);
         TheGrid.Init(grid.Size);

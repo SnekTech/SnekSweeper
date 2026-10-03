@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using SnekSweeperCore.CellSystem;
-using SnekSweeperCore.Commands;
 
 namespace SnekSweeperCore.GridSystem;
 
@@ -9,17 +8,13 @@ namespace SnekSweeperCore.GridSystem;
 /// </summary>
 public class Grid
 {
-    readonly ICommandRecorder _commandRecorder;
-
     readonly bool[,] _bombs;
     readonly int[,] _neighborBombCounts;
     readonly CellState[,] _states;
 
-    // todo: 把 commandRecorder 去掉，grid就是逻辑上的grid
-    public Grid(GridSize size, ICommandRecorder commandRecorder)
+    public Grid(GridSize size)
     {
         Size = size;
-        _commandRecorder = commandRecorder;
 
         _bombs = new bool[size.Rows, size.Columns];
         _neighborBombCounts = new int[size.Rows, size.Columns];
@@ -70,6 +65,15 @@ public class Grid
 
             _states.SetAt(index, restoredState);
         }
+    }
+
+    public GridOutcome CoverCells(IEnumerable<GridIndex> indices)
+    {
+        var cellOutcomes = indices
+            .Select(index => ApplyCommand(index, new CellCommand.PutOnCover()))
+            .OfType<CellOutcome>()
+            .ToArray();
+        return cellOutcomes.Length == 0 ? new GridOutcome.NothingHappens() : new GridOutcome.BatchCovered(cellOutcomes);
     }
 
     public GridOutcome HandleInput(GridInput input)
@@ -131,10 +135,12 @@ public class Grid
     {
         if (cellsToReveal.Count == 0) return new GridOutcome.NothingHappens();
 
-        var gridOutcome = _commandRecorder.ExecuteAndRecord(this,
-            new CompoundCommand(cellsToReveal.Select(index => new RevealCellCommand(index))));
+        var cellOutcomes = cellsToReveal
+            .Select(index => ApplyCommand(index, new CellCommand.RevealCover()))
+            .OfType<CellOutcome>()
+            .ToArray();
 
-        return gridOutcome;
+        return new GridOutcome.BatchRevealed(cellOutcomes);
     }
 
     void FindCellsToReveal(GridIndex index, ICollection<GridIndex> cellsToReveal)

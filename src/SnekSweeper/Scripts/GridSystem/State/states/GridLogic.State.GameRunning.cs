@@ -33,15 +33,22 @@ public abstract partial record GridState
 
         public Type On(in Input.Undo input)
         {
-            var outcome = Context.CommandInvoker.UndoCommand(Context.Grid);
-            Context.HumbleGrid.ApplyGridOutcome(outcome);
+            if (!Get<GridLogic.Data>().UndoStack.TryPop(out var batchRevealed))
+                return ToSelf();
+
+            var undoOutcome = Context.Grid.CoverCells(batchRevealed.Cells.Select(cell => cell.Info.Index));
+            Context.RunRecorder.UpdateOngoingGame(Context.Grid.GetSnapshot());
+            Output(new Output.UndoApplied(undoOutcome));
             return ToSelf();
         }
 
         public Type On(in Input.InputProcessed input)
         {
+            // todo: refactor this method, too much nesting
+
             var data = Get<GridLogic.Data>();
             var judgedResult = Referee.Judge(Context.Grid, input.Outcome);
+            var isFirstClick = data.PendingFirstInput is not null;
 
             // 首次输入处理完成 = 本局真正开始：startInfo + snapshot 同时就绪，创建 OngoingGame。
             //（首击即负也走这里——先创建再走结束流程，与正常游玩完全一致）
@@ -57,7 +64,16 @@ public abstract partial record GridState
                 Context.RunRecorder.UpdateOngoingGame(Context.Grid.GetSnapshot());
             }
 
-            if (judgedResult is Surviving) return ToSelf();
+            if (judgedResult is Surviving)
+            {
+                // first click does not push
+                if (input.Outcome is GridOutcome.BatchRevealed revealed && !isFirstClick)
+                {
+                    data.UndoStack.Push(revealed);
+                }
+
+                return ToSelf();
+            }
 
             data.EndLevelResult = judgedResult;
 

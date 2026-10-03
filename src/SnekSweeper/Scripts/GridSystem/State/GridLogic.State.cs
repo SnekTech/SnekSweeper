@@ -24,6 +24,7 @@ public abstract partial record GridState : LogicBlockState
         public readonly record struct RestoreGrid(GridSnapshot Snapshot);
         public readonly record struct EndGameChoiceOnWin(PopupChoiceOnWin Choice, GameRunRecord RecentRecord);
         public readonly record struct EndGameChoiceOnLose(PopupChoiceOnLose Choice, GameRunRecord RecentRecord);
+        public readonly record struct UndoApplied(GridOutcome Outcome);
     }
 
     GridStateContext Context => Get<GridStateContext>();

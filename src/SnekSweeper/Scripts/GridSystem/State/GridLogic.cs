@@ -19,6 +19,8 @@ public partial class GridLogic : LogicBlock
 
         /// <summary>初始化阶段暂存的首次输入，进入 Running 后消费。</summary>
         public GridInput? PendingFirstInput { get; set; }
+
+        public Stack<GridOutcome.BatchRevealed> UndoStack { get; } = new();
     }
 
     public GridLogic()

@@ -1,6 +1,5 @@
 using AwesomeAssertions;
 using SnekSweeperCore.CellSystem;
-using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem;
 
@@ -19,22 +18,22 @@ public class GridSpecs
     [Test]
     public void init_covers_every_cell()
     {
-        var (grid, _) = CreateInitializedBoard();
+        var grid = CreateInitializedGrid();
 
-        grid.Indices.Select(index => grid.StateAt(index)).Should().AllBeOfType<CellState.Covered>();
+        grid.Indices.Select(grid.StateAt).Should().AllBeOfType<CellState.Covered>();
         grid.BombCount.Should().Be(1);
     }
 
     [Test]
     public void restoring_a_snapshot_rebuilds_the_same_board()
     {
-        var source = new Grid(new GridSize(3, 3), new CommandInvoker());
+        var source = new Grid(new GridSize(3, 3));
         source.InitCells(Bombs);
         source.HandleInput(new RevealAt(new GridIndex(0, 1))); // 邻居雷数=1, 不会扩散
         source.HandleInput(new SwitchFlagAt(new GridIndex(1, 1)));
         var snapshot = source.GetSnapshot();
 
-        var restored = new Grid(new GridSize(3, 3), new CommandInvoker());
+        var restored = new Grid(new GridSize(3, 3));
         restored.RestoreCellStates(snapshot);
 
         foreach (var index in restored.Indices)
@@ -49,19 +48,19 @@ public class GridSpecs
     [Test]
     public void info_carries_bomb_and_neighbor_bomb_count()
     {
-        var board = CreateInitializedBoard();
+        var grid = CreateInitializedGrid();
 
-        board.Grid.InfoAt(new GridIndex(0, 0)).HasBomb.Should().BeTrue();
-        board.Grid.InfoAt(new GridIndex(0, 1)).NeighborBombCount.Should().Be(1);
-        board.Grid.InfoAt(new GridIndex(2, 2)).NeighborBombCount.Should().Be(0);
+        grid.InfoAt(new GridIndex(0, 0)).HasBomb.Should().BeTrue();
+        grid.InfoAt(new GridIndex(0, 1)).NeighborBombCount.Should().Be(1);
+        grid.InfoAt(new GridIndex(2, 2)).NeighborBombCount.Should().Be(0);
     }
 
     [Test]
     public void reveal_at_reports_a_batch_and_animates_the_cover()
     {
-        var board = CreateInitializedBoard();
+        var grid = CreateInitializedGrid();
 
-        var result = board.Grid.HandleInput(new RevealAt(new GridIndex(0, 0)));
+        var result = grid.HandleInput(new RevealAt(new GridIndex(0, 0)));
 
         var batch = result.Should().BeOfType<GridOutcome.BatchRevealed>().Subject;
         batch.Cells.Select(c => c.Info.Index).Should().Contain(new GridIndex(0, 0));
@@ -71,19 +70,19 @@ public class GridSpecs
     [Test]
     public void revealing_a_bomb_is_an_uncovered_bomb_and_judged_as_lose()
     {
-        var board = CreateInitializedBoard();
+        var grid = CreateInitializedGrid();
 
-        var result = board.Grid.HandleInput(new RevealAt(new GridIndex(0, 0)));
+        var result = grid.HandleInput(new RevealAt(new GridIndex(0, 0)));
 
-        board.Grid.StateAt(new GridIndex(0, 0)).IsRevealed.Should().BeTrue();
-        board.Grid.InfoAt(new GridIndex(0, 0)).HasBomb.Should().BeTrue();
-        Referee.Judge(board.Grid, result).Should().BeOfType<GameLose>();
+        grid.StateAt(new GridIndex(0, 0)).IsRevealed.Should().BeTrue();
+        grid.InfoAt(new GridIndex(0, 0)).HasBomb.Should().BeTrue();
+        Referee.Judge(grid, result).Should().BeOfType<GameLose>();
     }
 
     [Test]
     public void switch_flag_toggles_the_flag()
     {
-        var (grid, _) = CreateInitializedBoard();
+        var grid = CreateInitializedGrid();
         var index = new GridIndex(1, 1);
 
         var gridOutcome = grid.HandleInput(new SwitchFlagAt(index));
@@ -98,38 +97,35 @@ public class GridSpecs
     }
 
     [Test]
-    public void undo_puts_the_cover_back()
+    public void covering_revealed_cells_puts_the_cover_back()
     {
-        var board = CreateInitializedBoard();
+        var grid = CreateInitializedGrid();
         var index = new GridIndex(1, 1);
 
-        board.Grid.HandleInput(new RevealAt(index));
-        board.Grid.StateAt(index).IsRevealed.Should().BeTrue();
+        var revealed = grid.HandleInput(new RevealAt(index))
+            .Should().BeOfType<GridOutcome.BatchRevealed>().Subject;
+        grid.StateAt(index).IsRevealed.Should().BeTrue();
 
-        board.CommandInvoker.UndoCommand(board.Grid);
-
-        board.Grid.StateAt(index).IsCovered.Should().BeTrue();
+        var undoOutcome = grid.CoverCells(revealed.Cells.Select(cell => cell.Info.Index));
+        grid.StateAt(index).IsCovered.Should().BeTrue();
+        undoOutcome.Should().BeOfType<GridOutcome.BatchCovered>();
     }
 
     [Test]
     public void revealing_every_safe_cell_is_judged_as_win()
     {
-        var board = CreateInitializedBoard();
+        var grid = CreateInitializedGrid();
 
-        var result = board.Grid.HandleInput(new RevealAt(new GridIndex(2, 2)));
+        var result = grid.HandleInput(new RevealAt(new GridIndex(2, 2)));
 
-        board.Grid.IsResolved.Should().BeTrue();
-        Referee.Judge(board.Grid, result).Should().BeOfType<GameWin>();
+        grid.IsResolved.Should().BeTrue();
+        Referee.Judge(grid, result).Should().BeOfType<GameWin>();
     }
 
-    static Board CreateInitializedBoard()
+    static Grid CreateInitializedGrid()
     {
-        var commandInvoker = new CommandInvoker();
-        var grid = new Grid(new GridSize(3, 3), commandInvoker);
+        var grid = new Grid(Bombs.Size);
         grid.InitCells(Bombs);
-
-        return new Board(grid, commandInvoker);
+        return grid;
     }
-
-    readonly record struct Board(Grid Grid, CommandInvoker CommandInvoker);
 }
