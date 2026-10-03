@@ -28,13 +28,13 @@ public class GridSpecs
     [Test]
     public void restoring_a_snapshot_rebuilds_the_same_board()
     {
-        var source = new Grid(new GridSize(3, 3), new GridEventBus(), new CommandInvoker());
+        var source = new Grid(new GridSize(3, 3), new CommandInvoker());
         source.InitCells(Bombs);
         source.HandleInput(new RevealAt(new GridIndex(0, 1))); // 邻居雷数=1, 不会扩散
         source.HandleInput(new SwitchFlagAt(new GridIndex(1, 1)));
         var snapshot = source.GetSnapshot();
 
-        var restored = new Grid(new GridSize(3, 3), new GridEventBus(), new CommandInvoker());
+        var restored = new Grid(new GridSize(3, 3), new CommandInvoker());
         restored.RestoreCellStates(snapshot);
 
         foreach (var index in restored.Indices)
@@ -88,10 +88,12 @@ public class GridSpecs
 
         var gridOutcome = grid.HandleInput(new SwitchFlagAt(index));
         grid.StateAt(index).IsFlagged.Should().BeTrue();
+        grid.FlagCount.Should().Be(1);
         gridOutcome.Should().BeOfType<GridOutcome.FlagToggled>().Which.IsRaised.Should().BeTrue();
 
         var gridOutcome2 = grid.HandleInput(new SwitchFlagAt(index));
         grid.StateAt(index).IsFlagged.Should().BeFalse();
+        grid.FlagCount.Should().Be(0);
         gridOutcome2.Should().BeOfType<GridOutcome.FlagToggled>().Which.IsRaised.Should().BeFalse();
     }
 
@@ -123,7 +125,7 @@ public class GridSpecs
     static Board CreateInitializedBoard()
     {
         var commandInvoker = new CommandInvoker();
-        var grid = new Grid(new GridSize(3, 3), new GridEventBus(), commandInvoker);
+        var grid = new Grid(new GridSize(3, 3), commandInvoker);
         grid.InitCells(Bombs);
 
         return new Board(grid, commandInvoker);

@@ -40,7 +40,7 @@ public partial class Level1 : Node2D,
 
     public override void _EnterTree()
     {
-        _levelData = new LevelData(new GridEventBus(), new CommandInvoker());
+        _levelData = new LevelData(new CommandInvoker());
         this.Provide();
 
         TheGrid.GridInputListener.GridInputEmitted += OnGridInputEmitted;
@@ -76,7 +76,7 @@ public partial class Level1 : Node2D,
         Grid CreateGrid()
         {
             // todo: commandInvoker 相关设计是不是需要重构
-            var newGrid = loadLevelSource.CreateGrid(_levelData.GridEventBus, _levelData.GridCommandInvoker);
+            var newGrid = loadLevelSource.CreateGrid(_levelData.GridCommandInvoker);
             TheGrid.InstantiateCells(newGrid.Size, SaveData.CurrentSkin);
             return newGrid;
         }
@@ -103,18 +103,9 @@ public partial class Level1 : Node2D,
         void SetupGridBinding()
         {
             GridBinding = GridLogic.Bind()
-                .OnOutput((in GridState.Output.RestoreGrid output) =>
-                {
-                    RestoreGrid(output.Snapshot);
-                })
-                .OnOutput((in GridState.Output.LayMinesAt output) =>
-                {
-                    LayMines(output.Source, output.FirstInput);
-                })
-                .OnOutput((in GridState.Output.ProcessInput output) =>
-                {
-                    HandleInput(output.GridInput);
-                })
+                .OnOutput((in GridState.Output.RestoreGrid output) => { RestoreGrid(output.Snapshot); })
+                .OnOutput((in GridState.Output.LayMinesAt output) => { LayMines(output.Source, output.FirstInput); })
+                .OnOutput((in GridState.Output.ProcessInput output) => { HandleInput(output.GridInput); })
                 .OnOutput((in GridState.Output.EndGameChoiceOnWin output) =>
                 {
                     Action handleChoiceAction = output.Choice switch
@@ -156,6 +147,8 @@ public partial class Level1 : Node2D,
             void CompleteInit()
             {
                 TheGrid.Paint(grid);
+                HUD.UpdateBombCount(grid.BombCount);
+                HUD.UpdateFlagCount(grid.FlagCount);
                 GridLogic.Input(new GridState.Input.InitCompleted());
             }
 
@@ -165,6 +158,14 @@ public partial class Level1 : Node2D,
             {
                 var outcome = grid.HandleInput(gridInput);
                 TheGrid.ApplyGridOutcome(outcome);
+                
+                HUD.UpdateFlagCount(grid.FlagCount);
+
+                if (outcome is GridOutcome.BatchRevealed)
+                {
+                    HUD.IncreaseCombo();
+                }
+
                 GridLogic.Input(new GridState.Input.InputProcessed(outcome));
             }
         }

@@ -1,7 +1,6 @@
 ﻿using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using GodotTask;
-using SnekSweeper.Levels;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
 
@@ -13,22 +12,13 @@ public partial class HUD : CanvasLayer, ISceneScript
 {
     public override void _Notification(int what) => this.Notify(what);
 
-    [Dependency]
-    LevelData LevelData => this.DependOn<LevelData>();
-
     public void OnResolved()
     {
-        var gridEvents = LevelData.GridEventBus;
-        gridEvents.BombCountChanged += OnBombCountChanged;
-        gridEvents.FlagCountChanged += OnFlagCountChanged;
         UndoButton.Pressed += OnUndoPressed;
     }
 
     public override void _ExitTree()
     {
-        var gridEvents = LevelData.GridEventBus;
-        gridEvents.BombCountChanged -= OnBombCountChanged;
-        gridEvents.FlagCountChanged -= OnFlagCountChanged;
         UndoButton.Pressed -= OnUndoPressed;
     }
 
@@ -38,10 +28,11 @@ public partial class HUD : CanvasLayer, ISceneScript
     public GDTask<PopupChoiceOnLose> ShowAndGetChoiceOnLoseAsync(CancellationToken ct = default) =>
         _.PopupLayer.ShowAndGetChoiceOnLoseAsync(ct);
 
-    void OnBombCountChanged(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
-    void OnFlagCountChanged(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
-
     void OnUndoPressed() => UndoRequested?.Invoke();
 
     public event Action? UndoRequested;
+
+    public void UpdateBombCount(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
+    public void UpdateFlagCount(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
+    public void IncreaseCombo() => ComboRankCard.IncreaseCombo();
 }

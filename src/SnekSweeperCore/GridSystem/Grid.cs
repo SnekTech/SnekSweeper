@@ -9,19 +9,16 @@ namespace SnekSweeperCore.GridSystem;
 /// </summary>
 public class Grid
 {
-    readonly GridEventBus _gridEventBus;
     readonly ICommandRecorder _commandRecorder;
 
     readonly bool[,] _bombs;
     readonly int[,] _neighborBombCounts;
     readonly CellState[,] _states;
 
-    // todo: 有没有某种方法把 gridEventBus、commandRecorder 都去掉，grid就是逻辑上的grid
-    //   或者说，这么做值得吗？优缺点在于什么？
-    public Grid(GridSize size, GridEventBus gridEventBus, ICommandRecorder commandRecorder)
+    // todo: 把 commandRecorder 去掉，grid就是逻辑上的grid
+    public Grid(GridSize size, ICommandRecorder commandRecorder)
     {
         Size = size;
-        _gridEventBus = gridEventBus;
         _commandRecorder = commandRecorder;
 
         _bombs = new bool[size.Rows, size.Columns];
@@ -36,6 +33,7 @@ public class Grid
     public IEnumerable<GridIndex> Indices => _states.Indices();
 
     public int BombCount => _bombs.Elements.Count(hasBomb => hasBomb);
+    public int FlagCount => _states.Elements.Count(state => state.IsFlagged);
 
     /// <summary>所有非雷格都翻开了 = 这一局通了。</summary>
     public bool IsResolved => Indices.Where(index => !_bombs.At(index)).All(index => _states.At(index).IsRevealed);
@@ -52,11 +50,9 @@ public class Grid
             _neighborBombCounts.SetAt(index, index.GetNeighborIndicesWithin(Size).Count(bombs.At));
             _states.SetAt(index, CellState.Initial);
         }
-
-        _gridEventBus.EmitBombCountChanged(BombCount);
     }
 
-    // 只接受 Covered/Revealed/Flagged，Irrelevant 目前没有处理好
+    // 遇到 Irrelevant（结算期瞬时状态）会 throw；当前不可达，因为 GetSnapshot() 只在 Running 期间被调用
     public void RestoreCellStates(GridSnapshot snapshot)
     {
         foreach (var index in Indices)
@@ -74,8 +70,6 @@ public class Grid
 
             _states.SetAt(index, restoredState);
         }
-
-        _gridEventBus.EmitBombCountChanged(BombCount);
     }
 
     public GridOutcome HandleInput(GridInput input)
@@ -127,7 +121,6 @@ public class Grid
     GridOutcome ProcessSwitchFlagAt(GridIndex index)
     {
         var cellOutcome = ApplyCommand(index, new CellCommand.ToggleFlag());
-        _gridEventBus.EmitFlagCountChanged(FlagCount);
 
         return cellOutcome is null
             ? new GridOutcome.NothingHappens()
@@ -140,7 +133,6 @@ public class Grid
 
         var gridOutcome = _commandRecorder.ExecuteAndRecord(this,
             new CompoundCommand(cellsToReveal.Select(index => new RevealCellCommand(index))));
-        _gridEventBus.EmitBatchRevealed();
 
         return gridOutcome;
     }
@@ -160,7 +152,6 @@ public class Grid
         }
     }
 
-    int FlagCount => _states.Elements.Count(state => state.IsFlagged);
     int NeighborBombCount(GridIndex index) => _neighborBombCounts.At(index);
     int NeighborFlagCount(GridIndex index) => index.GetNeighborIndicesWithin(Size).Count(i => _states.At(i).IsFlagged);
 }

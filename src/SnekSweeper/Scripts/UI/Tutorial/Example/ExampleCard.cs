@@ -20,7 +20,7 @@ public partial class ExampleCard : HBoxContainer, ISceneScript, IInitializableCo
 
         ExampleDescriptionView.Description = exampleData.Description;
 
-        var grid = new Grid(snapshot.BombMatrix.Size, new GridEventBus(), new CommandInvoker());
+        var grid = new Grid(snapshot.BombMatrix.Size, new CommandInvoker());
         // todo: these two lines should combine?
         TheGrid.InstantiateCells(grid.Size, Skin);
         TheGrid.Init(grid.Size);

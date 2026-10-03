@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.Commands;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
@@ -47,8 +46,8 @@ public static class LevelLoading
             _ => throw new SwitchExpressionException(),
         };
 
-        public Grid CreateGrid(GridEventBus gridEventBus, ICommandRecorder commandRecorder) =>
-            new(loadLevelSource.GetGridSize(), gridEventBus, commandRecorder);
+        public Grid CreateGrid(ICommandRecorder commandRecorder) =>
+            new(loadLevelSource.GetGridSize(), commandRecorder);
 
         GridSize GetGridSize() => loadLevelSource switch
         {
