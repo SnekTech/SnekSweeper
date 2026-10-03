@@ -23,9 +23,12 @@
 > - **`SceneSwitcher`（#5）判定为不可达，维持现状、不修**（理由见 §6）。
 > - **#11 `SlideOutAsync` 已按 §5 第 2 档（token 绑节点 + 续体自检）修**，#9/#10 随之关闭。
 > - **#6/#7 `PopupLayer`、#8 `Lose`、#12 `MessageBox` 判定不可达，不修**（理由见 §4.1）。
-> - **`Level1.cs:144,150,159`（§4.4 间接路径）判定不可达**（时序论证见 §4.1 第 7 条）。
+> - **`Level1.cs` 的初始化 / 输入路径（原 `:144,150,159`）—— 窗口已结构性关闭**：整条链现在**全同步**
+>   （`InitCells` / `RestoreCellStates` / `HandleInput` / `Paint` / 消费 `GridOutcome`），
+>   不再产生任何续体（详见 §4.1 第 7 条；原先的"时序论证"随之作废）。
 > - **至此清单结清**：已修 4 处（#1 `Flag`；#11 `SlideOutAsync` 连带 #9/#10；#3/#4 随翻页 DU 重写）；
->   随重写处理 2 项（#2 tooltip、`InputMask` 输入拦截）；判定不修 6 处（#5/#6/#7/#8/#12 + `Level1` 三处）。
+>   随重写处理 2 项（#2 tooltip、`InputMask` 输入拦截）；判定不修 5 处（#5/#6/#7/#8/#12）；
+>   另有 1 处（`Level1` 初始化 / 输入路径）已**结构性关闭**。
 > - **重写开工前的遗留总览（含验证缺口）见 §4.5。**
 
 ---
@@ -170,10 +173,10 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 
 ### 其他已守卫的点
 
-- `S: Scripts/Levels/Level1.cs:166,171` —— `ct.LinkWithNodeDestroy(this)`（这是通用约定的**上半边**；
-  要配上下半边"续体在碰节点前自检 ct"才完整）
-- `S: Scripts/UI/Common/Pagination.cs:77-86` —— `catch (OperationCanceledException) { return; }`
-- `G: Tasks/TaskCancellationExtensions.cs` —— `CancelAndDispose` 已改为幂等（吞掉 `Cancel()` 的 ODE）
+- `S: Scripts/Levels/Level1.cs` 的 `GetPopupChoiceOnWinAsync` / `GetPopupChoiceOnLoseAsync` ——
+  `ct.LinkWithNodeDestroy(this)`（这是通用约定的**上半边**；要配上下半边"续体在碰节点前自检 ct"才完整）
+- `G: Tasks/TaskCancellationExtensions.cs` —— `CancelAndDispose` 已改为幂等（吞掉 `Cancel()` 的 ODE）；
+  `GetCancellationTokenOnTreeExit` 按节点缓存（见 §4.5）
 
 ---
 
@@ -188,11 +191,11 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | 1 | `S:/SnekSweeper/Scripts/CellSystem/Components/Flag.cs:49` | `tween.PlayAsyncUntilNodeDestroy` | `Hide();` | 中高 | ✅ **已修（用户改的，已提交）** |
 | 2 | `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs:36` | `TweenModulateAlpha(0,…).PlayAsyncGD(token)` | `Hide();` | **高** | ⏸ 搁置（tooltip 重设计中） |
 | 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | ✅ 随翻页 DU 重写关闭 |
-| 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)` | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | ✅ 随翻页 DU 重写关闭 |
+| 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)`（**该 API 已删除**） | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | ✅ 已关闭：`InitCellsAsync` 删除，`ExampleCard.Init` 全同步 |
 | 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中 | 🚫 判定不可达，不修（见 §6） |
 | 6 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 🚫 判定不可达（见 §4.1） |
 | 7 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 🚫 判定不可达（见 §4.1） |
-| 8 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs:26` | `MarkPlayerErrorsAsync(...)` | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)` → 内部碰 HUD/PopupLayer | 中 | 🚫 判定不可达（见 §4.1） |
+| 8 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs`（`TriggerLoseTasksAsync`） | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)`（原先的 `MarkPlayerErrorsAsync` 已改为同步、且在 await **之前**） | `Output(EndGameChoiceOnLose)` → `Level1.GetPopupChoiceOnLoseAsync` → `HUD` / `PopupLayer` | 中 | 🚫 判定不可达（见 §4.1） |
 | 9 | `S:/SnekSweeper/Scripts/UI/Level/Popup/WinPopup.cs:30` | `_popupChoiceListener.GetChoiceAsync(ct)` | `_animator.HideAsync(ct)` → `SlideOutAsync` → `target.TweenGlobalPosition` / `target.Hide()` | 中 | ✅ 随 #11 关闭 |
 | 10 | `S:/SnekSweeper/Scripts/UI/Level/Popup/LosePopup.cs:30` | 同上 | 同上 | 中 | ✅ 随 #11 关闭 |
 | 11 | `G:/TweenStuff/TweenExtensions.cs:38-45`（`SlideOutAsync`） | `target.TweenGlobalPosition(…).PlayAsync(…)` | `target.Hide();`（**库级**，本工作区唯一调用方是 `PopupAnimator`） | 中 | ✅ **已修（§5 第 2 档）** |
@@ -223,14 +226,17 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 6. **`MessageBox`（#12）—— 判定不可达，不修**：`messageLabel` 的唯一所有者是 autoload `MessageBox`
    （`MessageContainer` 不做 `ClearChildren`，`MessageQueue` 也不碰 label），所以它只在应用退出时死；
    退出时按第 5 条同理，续体不会再撞上已释放的树。
-7. **`Level1.cs:144,150,159`（§4.4 的间接路径）—— 判定不可达，不修（2026-09-25）。**
-   依据是**时序**（与 #8 同源），不是"引用不会悬空"：
-   - 能拆 `Level1` 的只有 `SceneSwitcher`，而 level 内的换场由弹窗 choice 之后的 output 驱动；
-   - `:144/:150`（`InitCellsAsync` 之后的 `CompleteInit()`）必然早于弹窗出现；
-   - `:159`（`HandleInputAsync` 之后的 `GridLogic.Input(InputProcessed)`）同样早于弹窗；
-     换场帧也不可能**新起**一次输入驱动的续体 —— 输入监听节点随树销毁，死节点不会再发事件。
-   **不依赖 `InputMask` 是否拦得住**：即便输入漏过去，最坏也只是"弹窗期间还能操作棋盘"（行为问题），
-   不会产生撞死节点的续体。
+7. **`Level1.cs` 的初始化 / 输入路径 —— 窗口已结构性关闭（不再是"推理不可达"）。**
+   整条链现在**全同步**，根本不存在"已排队续体"这个东西：
+   - `RestoreGrid` / `LayMines`：`grid.RestoreCellStates` / `grid.InitCells` → `TheGrid.Paint(grid)` →
+     `HUD.UpdateBombCount/UpdateFlagCount` → `GridLogic.Input(InitCompleted)`，全是同步调用；
+   - `HandleInput`：`grid.HandleInput`（同步纯转移）→ `ShowOutcome`（`ApplyGridOutcome` + HUD 同步）
+     → `GridLogic.Input(InputProcessed)`，同样全同步；
+   - 驱动这一切的 `GridOutcome` 是**返回值**，渲染由调用方同步消费（`Grid` 既不持有 renderer，
+     也不发总线事件）。
+   这条路径上唯一还会 await 的是格子动画**内部**的续体（`Cover.RevealAsync` 等），
+   而那部分由 §5 第 1/2 档在各自的使用点自守卫 —— `Level1` 侧不再承担这个窗口。
+   **不依赖 `InputMask` 是否拦得住**：即便输入漏过去，最坏也只是"弹窗期间还能操作棋盘"（行为问题）。
    附带的结构前提（**假设，须长期保持**）：`TheGrid`(HumbleGrid) 与 `Level1` 同生死、`GridLogic` 由 `Level1` 持有
    ⇒ `Context.HumbleGrid` / `Context.LevelOrchestrator` 这类访问**不需要**防御式检查。
    若将来支持"不换场地原地重建网格"（复用池 / 中途重开一局），这条前提失效，上述访问点必须重新审。
@@ -242,28 +248,36 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 
 ### 4.2 类 D（**不同问题，别混进来**）
 
-事件总线 / FSM 输出在**订阅者节点已死之后**仍然投递（`GridExtensions` → `HumbleCell` 绑定、
-`Grid.cs` → `HUD.OnBombCountChanged` 等）。这不是 await 问题，而是"订阅者生命周期"问题，**本任务不处理**。
+事件总线 / FSM 输出在**订阅者节点已死之后**仍然投递。这不是 await 问题，而是"订阅者生命周期"问题，
+**本任务不处理**。
 
-**处置（2026-09-25）**：不做专门排查，等后续遇到再单独处理（开发过程中已按"及时退订"执行）。
+原举例的两处**已经不存在**：`GridEventBus` 整类删除，原来的三个通知（`BombCountChanged` /
+`FlagCountChanged` / `BatchRevealed`）改成"消费方主动查询 grid（`BombCount` / `FlagCount`）
++ 消费 `GridOutcome`"，订阅者与 emitter 之间的耦合随之消失。
+
+处置：不做专门排查，等后续遇到再单独处理（开发过程中已按"及时退订"执行）。
 若将来要扫，判据就两条：① **emitter 的生命周期 > 订阅者**；② 订阅没有在 `_ExitTree` 退订。
-（已核对的 `HUD.OnBombCountChanged` 两端同生共死且 `_ExitTree` 退订 ✓）
+当前剩下的订阅都在同一棵场景树内、且 `_ExitTree` 退订（`Level1 ← HUD.UndoRequested`、
+`Level1 ← TheGrid.GridInputListener.GridInputEmitted`）。
 
-### 4.3 已确认干净（9 个文件）
+### 4.3 已确认干净（7 个文件）
 
-`SnekGameDevKit/FileOperations.cs`、`SnekGameDevKit/SaveQueue.cs`、`CommandInvoker.cs`、
-`JsonSerializationService.cs`、`GridLogic.State.Win.cs`、`G/Tasks/TaskFireAndForget.cs`、
-`CellStateTests.cs`、`MatrixConverterSpecs.cs`、`PlayerSaveDataRoundTripSpecs.cs`。
+`SnekGameDevKit/FileOperations.cs`、`SnekGameDevKit/SaveQueue.cs`、`JsonSerializationService.cs`、
+`GridLogic.State.Win.cs`、`G/Tasks/TaskFireAndForget.cs`、`MatrixConverterSpecs.cs`、
+`PlayerSaveDataRoundTripSpecs.cs`。
 
-### 4.4 需人工确认的间接路径（6 处）
+（原清单中的 `CommandInvoker.cs`、`CellStateTests.cs` 已分别随"删除命令层"、"cell 值化重构"移除。）
 
-`SnekGameDevKit/Messaging/MessageQueue.cs:17`、`GridExtensions.cs:35,44-45`、`Grid.cs:27,100,111`、
-`Level1.cs:144,150,159`、`Pagination.cs:87`、`G/FSM/StateMachineV2.cs:16,31,33`（后者当前无引用）。
+### 4.4 需人工确认的间接路径（原 6 处，现只剩 2 处）
 
-**复核状态（2026-09-24，09-25 更新）**：
-- 已确认干净：`MessageQueue`（只转发字符串、不碰 label）、`GridExtensions.InitCellsAsync`（await 之后无节点访问）、
-  Core `Grid`（纯逻辑，碰不到节点）。`Pagination.cs:87`、`G/FSM/StateMachineV2.cs` 随翻页 / FSM 重构处理。
-- **`Level1.cs:144,150,159` —— 判定不可达**（2026-09-25，论证见 §4.1 第 7 条）。
+`SnekGameDevKit/Messaging/MessageQueue.cs:17`、`G/FSM/StateMachineV2.cs:16,31,33`（当前无引用）。
+
+**复核状态**：
+- 已确认干净：`MessageQueue`（只转发字符串、不碰 label）、Core `Grid`（纯逻辑，碰不到节点）。
+- 已随重构消失、无需再查：原 `GridExtensions.cs` 的 `InitCellsAsync`（Godot 层的快照恢复扩展已删除，
+  恢复逻辑回到 Core 的 `Grid.RestoreCellStates`，纯同步）、原 `Grid.cs:27,100,111`（那三个 `EmitXxx`
+  随 `GridEventBus` 删除）、原 `Level1.cs:144,150,159`（见 §4.1 第 7 条：整条链已全同步）、
+  原 `Pagination.cs:87`（随翻页重写删除，binder 不再有 await）。
 - 残余的不确定项（**不影响上面任何结论**）：① LogicBlocks 在 `Stop()` 之后收到 `Input` 的确切行为未确认；
   ② `InputMask` 是否拦得住键盘/手柄输入未确认（已单列为待重写项，见 §4.1 第 8 条）。
 - 另外，全仓 `Callable.From` / `CallDeferred` / `SetDeferred`（"排队到之后执行"的另一套家族）只有 1 处，
@@ -274,9 +288,10 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | 桶 | 内容 |
 |---|---|
 | ✅ 已修 | #1 `Flag`；#11 `SlideOutAsync`（连带 #9/#10）；#3/#4 随翻页 DU 重写；`TaskCancellationExtensions.GetCancellationTokenOnTreeExit` 改为按节点缓存 |
-| 🚫 判定不修（有论证） | #5 `SceneSwitcher`；#6/#7 `PopupLayer`；#8 `Lose`；#12 `MessageBox`；`Level1.cs:144/150/159` |
+| 🚫 判定不修（有论证） | #5 `SceneSwitcher`；#6/#7 `PopupLayer`；#8 `Lose`；#12 `MessageBox` |
+| ✅ 已结构性关闭 | `Level1.cs` 初始化 / 输入路径（整条链全同步，见 §4.1 第 7 条）；类 D 的两个实例随 `GridEventBus` 删除而消失（见 §4.2） |
 | ⏸ 随重写处理 | #2 tooltip（含 `CallDeferred` 家族）；`InputMask` 输入拦截（§4.1 第 8 条） |
-| 🕓 另立一类不处理 | 类 D 订阅者生命周期（判据见 §4.2） |
+| 🕓 另立一类不处理 | 类 D 订阅者生命周期（判据见 §4.2；实例已消失，判据留作将来用） |
 
 **验证缺口（唯一没闭合的一环）**：以上结论除 #1/#11/缓存那次改动外，**全是静态推理**，没有运行时验证。
 按 §6 跑一遍手动回归（反复切场景 / 翻页 / tooltip 悬停 / 胜负弹窗），并确认输出面板里没有
