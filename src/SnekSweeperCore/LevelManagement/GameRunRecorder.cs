@@ -30,6 +30,10 @@ public class GameRunRecorder(ISaveDataStore store)
         store.Dispatch(s => s.UpdateCurrentRunInfo(r => r with { OngoingGame = null }));
         return record;
     }
+
+    // todo: refactor to remove the ! operator
+    // BUG: level lose retry is not working
+    public GameRunRecord LatestRecord => store.State.History.Records.MaxBy(record => record.Duration.EndAt)!;
 }
 
 public readonly record struct RunStartInfo(DateTime StartAt, GridIndex StartIndex);

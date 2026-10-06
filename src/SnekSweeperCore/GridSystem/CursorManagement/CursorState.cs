@@ -9,29 +9,26 @@ public abstract record CursorState
     public sealed record Hidden : CursorState;
 }
 
+public abstract record CursorPolicy
+{
+    public sealed record FollowPointer : CursorPolicy;
+    public sealed record LockedTo(GridIndex Index) : CursorPolicy;
+}
+
 public static class CursorStateExtensions
 {
-    extension(CursorState cursorState)
+    extension(CursorState)
     {
-        public static CursorState Initial => new CursorState.Hidden();
-
-        public CursorState LockTo(GridIndex index) => new CursorState.Locked(index);
-
-        public CursorState Unlock() => cursorState switch
+        public static CursorState From(CursorPolicy policy, PointerTarget target) => policy switch
         {
-            // only locked can be unlocked
-            CursorState.Locked locked => new CursorState.Free(locked.Index),
-            _ => cursorState,
-        };
-
-        public CursorState ShowAt(PointerTarget target) =>
-            (cursorState, target) switch
+            CursorPolicy.LockedTo lockedTo => new CursorState.Locked(lockedTo.Index),
+            CursorPolicy.FollowPointer => target switch
             {
-                (CursorState.Locked locked, _) => locked, // locked cursor does not move
-                (_, PointerTarget.OffGrid) => new CursorState.Hidden(), // other states hide when pointer off grid
-                (_, PointerTarget.OnGrid onGrid) => new CursorState.Free(onGrid
-                    .Index), // other states show when pointer on grid
+                PointerTarget.OnGrid onGrid => new CursorState.Free(onGrid.Index),
+                PointerTarget.OffGrid => new CursorState.Hidden(),
                 _ => throw new SwitchExpressionException(),
-            };
+            },
+            _ => throw new SwitchExpressionException(),
+        };
     }
 }

@@ -35,6 +35,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     public IHumbleCellCollection HumbleCellsContainer => CellsContainer;
     public IGridCursor GridCursor => Cursor;
 
+    // todo: merge with Init(size)
     public void InstantiateCells(GridSize gridSize, GridSkin skin) => CellsContainer.InstantiateCells(gridSize, skin);
 
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();

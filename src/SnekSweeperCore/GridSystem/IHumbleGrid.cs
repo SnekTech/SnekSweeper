@@ -1,4 +1,5 @@
 ﻿using SnekSweeperCore.CellSystem;
+using SnekSweeperCore.GridSystem.CursorManagement;
 
 namespace SnekSweeperCore.GridSystem;
 
@@ -7,6 +8,7 @@ public interface IHumbleGrid
     IHumbleCellCollection HumbleCellsContainer { get; }
     void ApplyGridOutcome(GridOutcome gridOutcome);
     void Paint(Grid grid);
+    // BUG: does not show bomb under transparent cover
     void TriggerInitEffects();
     IGridCursor GridCursor { get; }
     void PlayCongratulationEffects();
@@ -26,6 +28,5 @@ public interface IGridCursor
 {
     /// <summary>把光标移到指针位置：指向某一格就显示在那里，不在网格内就隐藏。</summary>
     void ShowAt(PointerTarget target);
-    void LockTo(GridIndex gridIndex);
-    void Unlock();
+    void SetCursorPolicy(CursorPolicy policy);
 }

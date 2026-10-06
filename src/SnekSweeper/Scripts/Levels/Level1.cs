@@ -1,41 +1,42 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
-using Chickensoft.LogicBlocks;
 using GodotGadgets.Tasks;
+using GodotTask;
 using SnekSweeper.GameStateManagement;
-using SnekSweeper.GridSystem.State;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
+using SnekSweeperCore.GridSystem.Session;
 using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SaveLoad;
-using GridState = SnekSweeper.GridSystem.State.GridState;
 
 namespace SnekSweeper.Levels;
 
 [Meta(typeof(IAutoNode))]
 [SceneTree]
-public partial class Level1 : Node2D,
-    ISceneScript, ILevelOrchestrator
+public partial class Level1 : Node2D, ISceneScript
 {
     public override void _Notification(int what) => this.Notify(what);
 
-    [Dependency]
+    [Chickensoft.AutoInject.Dependency]
     AppLogic AppLogic => this.DependOn<AppLogic>();
 
-    [Dependency]
+    [Chickensoft.AutoInject.Dependency]
     IAppRepo AppRepo => this.DependOn<IAppRepo>();
 
-    [Dependency]
+    [Chickensoft.AutoInject.Dependency]
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
-    GridLogic GridLogic { get; set; } = null!;
-    LogicBlock.Binding GridBinding { get; set; } = null!;
+    Grid _grid = null!;
+    GridSession _gridSession = null!;
+
+    GameRunRecorder _runRecorder = null!;
 
     public override void _EnterTree()
     {
         TheGrid.GridInputListener.GridInputEmitted += OnGridInputEmitted;
+        HUD.UndoRequested += OnUndoRequested;
     }
 
     public override void _ExitTree()
@@ -43,143 +44,137 @@ public partial class Level1 : Node2D,
         SaveData.NotifySaved();
 
         TheGrid.GridInputListener.GridInputEmitted -= OnGridInputEmitted;
-
         HUD.UndoRequested -= OnUndoRequested;
-
-        GridLogic.Stop();
-        GridBinding.Dispose();
     }
 
     public void LoadLevel(LoadLevelSource loadLevelSource)
     {
-        var grid = CreateGrid();
-        TheGrid.Init(grid.Size);
-
-        SetupGridLogic();
-        SetupGridBinding();
-
-        HUD.UndoRequested += OnUndoRequested;
-
-        GridLogic.Start<GridState.PreInstantiated>();
-        GridLogic.Input(new GridState.Input.Init(loadLevelSource));
+        _runRecorder = new GameRunRecorder(SaveData);
+        StartGridSession();
 
         return;
 
-        Grid CreateGrid()
+        void StartGridSession()
         {
-            var newGrid = loadLevelSource.CreateGrid();
-            TheGrid.InstantiateCells(newGrid.Size, SaveData.CurrentSkin);
-            return newGrid;
+            var setup = loadLevelSource.ToSetup();
+            var size = setup.Size;
+            _grid = new Grid(size);
+
+            TheGrid.InstantiateCells(size, SaveData.CurrentSkin);
+            TheGrid.Init(size);
+
+            var (initialSession, effects) = GridSessionMachine.Start(_grid, setup);
+            _gridSession = initialSession;
+            PresentState();
+            ApplySessionEffects(effects);
+        }
+    }
+
+    void SendGridEvent(GridSession.Event evt)
+    {
+        var (next, effects) = GridSessionMachine.Update(_gridSession, evt, TimeProvider.System);
+        _gridSession = next;
+
+        PresentState();
+        ApplySessionEffects(effects);
+    }
+
+    void PresentState()
+    {
+        TheGrid.Cursor.SetCursorPolicy(_gridSession.CursorPolicy);
+        HUD.UpdateBombCount(_grid.BombCount);
+        HUD.UpdateFlagCount(_grid.FlagCount);
+    }
+
+    void ApplySessionEffects(IReadOnlyList<GridSession.Effect> effects)
+    {
+        foreach (var effect in effects)
+        {
+            ApplyGridSessionEffect(effect);
         }
 
-        void SetupGridLogic()
+        return;
+
+        void ApplyGridSessionEffect(GridSession.Effect effect)
         {
-            GridLogic = new GridLogic();
-
-            GridLogic.Set(new GridLogic.Data
+            switch (effect)
             {
-                AppRepo = AppRepo,
-                CancellationTokenOnLevelExit = this.GetCancellationTokenOnTreeExit(),
-            });
+                case GridSession.Effect.PaintBoard:
+                    TheGrid.Paint(_grid);
+                    break;
 
-            GridLogic.Set(new GridStateContext(
-                grid,
-                TheGrid,
-                new GameRunRecorder(SaveData),
-                this
-            ));
-        }
+                case GridSession.Effect.Render render:
+                    TheGrid.ApplyGridOutcome(render.Outcome);
+                    break;
+                
+                case GridSession.Effect.TriggerInitEffects:
+                    TheGrid.TriggerInitEffects();
+                    break;
 
-        void SetupGridBinding()
-        {
-            GridBinding = GridLogic.Bind()
-                .OnOutput((in GridState.Output.RestoreGrid output) => { RestoreGrid(output.Snapshot); })
-                .OnOutput((in GridState.Output.LayMinesAt output) => { LayMines(output.Source, output.FirstInput); })
-                .OnOutput((in GridState.Output.ProcessInput output) => { HandleInput(output.GridInput); })
-                .OnOutput((in GridState.Output.UndoApplied output) => { ShowOutcome(output.Outcome); })
-                .OnOutput((in GridState.Output.EndGameChoiceOnWin output) =>
-                {
-                    Action handleChoiceAction = output.Choice switch
-                    {
-                        PopupChoiceOnWin.NewGame => NewGame,
-                        PopupChoiceOnWin.Leave => BackToMainMenu,
-                        _ => delegate { },
-                    };
-                    handleChoiceAction();
-                })
-                .OnOutput((in GridState.Output.EndGameChoiceOnLose output) =>
-                {
-                    var recentRecord = output.RecentRecord;
-                    Action handleChoiceAction = output.Choice switch
-                    {
-                        PopupChoiceOnLose.Retry => () => Retry(recentRecord),
-                        PopupChoiceOnLose.NewGame => NewGame,
-                        PopupChoiceOnLose.Leave => BackToMainMenu,
-                        _ => delegate { },
-                    };
-                    handleChoiceAction();
-                });
+                case GridSession.Effect.StartOngoingRun startOngoingRun:
+                    // todo: fromRunRecord 开始的游戏，startInfo 能用现有的吗？
+                    _runRecorder.StartOngoingGame(startOngoingRun.Snapshot, startOngoingRun.StartInfo);
+                    break;
 
-            return;
+                case GridSession.Effect.UpdateOngoingRun updateOngoingRun:
+                    _runRecorder.UpdateOngoingGame(updateOngoingRun.Snapshot);
+                    break;
 
-            // 初始化放在绑定层：续局恢复完整棋盘状态，新局/重试按首次点击布雷（两者都是同步的）
-            void RestoreGrid(GridSnapshot snapshot)
-            {
-                grid.RestoreCellStates(snapshot);
-                CompleteInit();
-            }
-
-            void LayMines(LoadLevelSource source, GridInput firstInput)
-            {
-                grid.InitCells(source.LayMineFn(firstInput.Index));
-                CompleteInit();
-            }
-
-            void CompleteInit()
-            {
-                TheGrid.Paint(grid);
-                HUD.UpdateBombCount(grid.BombCount);
-                HUD.UpdateFlagCount(grid.FlagCount);
-                GridLogic.Input(new GridState.Input.InitCompleted());
-            }
-
-            // todo: 都是同步，是不是没必要传出来再传进去？
-            void HandleInput(GridInput gridInput)
-            {
-                var outcome = grid.HandleInput(gridInput);
-                ShowOutcome(outcome);
-
-                GridLogic.Input(new GridState.Input.InputProcessed(outcome));
-            }
-
-            void ShowOutcome(GridOutcome outcome)
-            {
-                TheGrid.ApplyGridOutcome(outcome);
-                HUD.UpdateFlagCount(grid.FlagCount);
-                if (outcome is GridOutcome.BatchRevealed)
-                {
+                case GridSession.Effect.IncreaseCombo:
                     HUD.IncreaseCombo();
-                }
+                    break;
+
+                case GridSession.Effect.FinishRun finishRun:
+                    _runRecorder.FinishRun(finishRun.Winning, finishRun.Bombs);
+                    break;
+
+                case GridSession.Effect.AskForWinChoice:
+                    HandleAskForWinChoice().Forget();
+                    break;
+
+                case GridSession.Effect.AskForLoseChoice:
+                    HandleAskForLoseChoice(_runRecorder.LatestRecord).Forget();
+                    break;
+
+                case GridSession.Effect.PlayCongratulationEffects:
+                    TheGrid.PlayCongratulationEffects();
+                    break;
+
+                default:
+                    throw new SwitchExpressionException();
             }
         }
     }
 
-    public async Task<PopupChoiceOnWin> GetPopupChoiceOnWinAsync(CancellationToken ct = default)
+    async GDTaskVoid HandleAskForWinChoice()
     {
-        return await HUD.ShowAndGetChoiceOnWinAsync(ct.LinkWithNodeDestroy(this).Token);
+        var choice = await HUD.ShowAndGetChoiceOnWinAsync(this.GetCancellationTokenOnTreeExit());
+
+        Action handleChoiceAction = choice switch
+        {
+            PopupChoiceOnWin.NewGame => NewGame,
+            PopupChoiceOnWin.Leave => BackToMainMenu,
+            _ => delegate { },
+        };
+        handleChoiceAction();
     }
 
-    public async Task<PopupChoiceOnLose> GetPopupChoiceOnLoseAsync(CancellationToken ct = default)
+    async GDTaskVoid HandleAskForLoseChoice(GameRunRecord recordJustFinished)
     {
-        return await HUD.ShowAndGetChoiceOnLoseAsync(ct.LinkWithNodeDestroy(this).Token);
+        var choice = await HUD.ShowAndGetChoiceOnLoseAsync(this.GetCancellationTokenOnTreeExit());
+        Action handleChoiceAction = choice switch
+        {
+            PopupChoiceOnLose.Retry => () => Retry(recordJustFinished),
+            PopupChoiceOnLose.NewGame => NewGame,
+            PopupChoiceOnLose.Leave => BackToMainMenu,
+            _ => delegate { },
+        };
+        handleChoiceAction();
     }
 
-    void OnGridInputEmitted(GridInput input)
-    {
-        GridLogic.Input(new GridState.Input.PlayerInput(input));
-    }
+    void OnGridInputEmitted(GridInput input) => SendGridEvent(new GridSession.Event.PlayerInput(input));
 
-    void OnUndoRequested() => GridLogic.Input(new GridState.Input.Undo());
+    void OnUndoRequested() => SendGridEvent(new GridSession.Event.UndoRequested());
 
     public void NewGame()
     {

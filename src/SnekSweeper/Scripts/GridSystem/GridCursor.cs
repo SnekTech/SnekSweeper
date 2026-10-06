@@ -9,51 +9,50 @@ public partial class GridCursor : Sprite2D, IGridCursor
     const int CursorZIndex = 1;
     static readonly Color OriginalColor = Colors.White;
     static readonly Color LockedColor = Colors.Blue;
-    
-    CursorState _state = CursorState.Initial;
+
+    CursorPolicy _policy = new CursorPolicy.FollowPointer();
+    PointerTarget _target = new PointerTarget.OffGrid();
 
     public override void _Ready()
     {
         ZIndex = CursorZIndex;
-        Hide();
+        Refresh();
+    }
+
+    public void SetCursorPolicy(CursorPolicy policy)
+    {
+        _policy = policy;
+        Refresh();
     }
 
     public void ShowAt(PointerTarget target)
     {
-        ApplyState(_state.ShowAt(target));
+        _target = target;
+        Refresh();
     }
 
-    public void LockTo(GridIndex gridIndex)
-    {
-        ApplyState(_state.LockTo(gridIndex));
-    }
-
-    public void Unlock()
-    {
-        ApplyState(_state.Unlock());
-    }
+    void Refresh() => ApplyState(CursorState.From(_policy, _target));
 
     void ApplyState(CursorState next)
     {
-        if (next == _state) return;
-
-        _state = next;
-        
-        switch (_state)
+        switch (next)
         {
             case CursorState.Free free:
                 Show();
                 Position = free.Index.ToPosition();
                 SelfModulate = OriginalColor;
                 break;
+
             case CursorState.Locked locked:
                 Show();
                 Position = locked.Index.ToPosition();
                 SelfModulate = LockedColor;
                 break;
+
             case CursorState.Hidden:
                 Hide();
                 break;
+
             default:
                 throw new SwitchExpressionException();
         }

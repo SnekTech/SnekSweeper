@@ -3,11 +3,9 @@ using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameSettings;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Difficulty;
-using SnekSweeperCore.GridSystem.LayMineStrategies;
 
 namespace SnekSweeperCore.LevelManagement;
 
-public delegate bool[,] LayMineFn(GridIndex startIndex);
 public abstract record LoadLevelSource;
 
 public sealed record RegularStart(
@@ -35,23 +33,41 @@ public static class LevelLoading
             return new RegularStart(difficulty, solvable);
         }
 
-        public LayMineFn LayMineFn => loadLevelSource switch
+        public LevelSetup ToSetup() => loadLevelSource switch
         {
-            RegularStart regularStart => regularStart.Solvable
-                ? startIndex => LayMineStrategies.LayMineSolvable(regularStart.DifficultyData, startIndex)
-                : startIndex => LayMineStrategies.LayMineClassic(regularStart.DifficultyData, startIndex),
-            FromRunRecord fromRunRecord => _ => fromRunRecord.RunRecord.BombMatrix,
-            FromOngoingGame fromOngoingGame => _ => fromOngoingGame.OngoingGame.GridSnapshot.BombMatrix,
+            FromOngoingGame { OngoingGame.GridSnapshot: var snapshot } => new LevelSetup.Resume(snapshot),
+            FromRunRecord
+            {
+                RunRecord:
+                {
+                    BombMatrix: var bombs,
+                    StartIndex: var startIndex,
+                },
+            } => new LevelSetup.NewGame(new MineLayout.Fixed(bombs), startIndex),
+            RegularStart
+            {
+                DifficultyData: var difficulty,
+                Solvable: var solvable,
+            } => new LevelSetup.NewGame(new MineLayout.Random(difficulty, solvable), null),
             _ => throw new SwitchExpressionException(),
         };
+    }
+}
 
-        public Grid CreateGrid() => new(loadLevelSource.GetGridSize());
+public abstract record LevelSetup
+{
+    public sealed record NewGame(MineLayout Layout, GridIndex? RequiredStartIndex) : LevelSetup;
+    public sealed record Resume(GridSnapshot Snapshot) : LevelSetup;
+}
 
-        GridSize GetGridSize() => loadLevelSource switch
+public static class LevelSetupExtensions
+{
+    extension(LevelSetup levelSetup)
+    {
+        public GridSize Size => levelSetup switch
         {
-            RegularStart regularStart => regularStart.DifficultyData.Size,
-            FromRunRecord fromRunRecord => fromRunRecord.RunRecord.BombMatrix.Size,
-            FromOngoingGame fromOngoingGame => fromOngoingGame.OngoingGame.GridSnapshot.BombMatrix.Size,
+            LevelSetup.NewGame { Layout.Size: var size } => size,
+            LevelSetup.Resume { Snapshot.BombMatrix.Size: var size } => size,
             _ => throw new SwitchExpressionException(),
         };
     }
