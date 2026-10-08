@@ -37,6 +37,7 @@ public partial class Cover : Node2D, ICover, ISceneScript
         _tweenCts?.CancelAndDispose();
         _tweenCts = new CancellationTokenSource();
 
+        Show();
         RandomizeNoise();
 
         // 收尾动作挂在 OnComplete 上 —— 这是本文件的局部选择, 不是通用范式:
