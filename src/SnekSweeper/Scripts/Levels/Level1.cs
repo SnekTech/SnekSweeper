@@ -60,8 +60,7 @@ public partial class Level1 : Node2D, ISceneScript
             var size = setup.Size;
             _grid = new Grid(size);
 
-            TheGrid.InstantiateCells(size, SaveData.CurrentSkin);
-            TheGrid.Init(size);
+            TheGrid.Init(size, SaveData.CurrentSkin);
 
             var (initialSession, effects) = GridSessionMachine.Start(_grid, setup);
             _gridSession = initialSession;

@@ -8,7 +8,6 @@ public interface IHumbleGrid
     IHumbleCellCollection HumbleCellsContainer { get; }
     void ApplyGridOutcome(GridOutcome gridOutcome);
     void Paint(Grid grid);
-    // BUG: does not show bomb under transparent cover
     void TriggerInitEffects();
     IGridCursor GridCursor { get; }
     void PlayCongratulationEffects();

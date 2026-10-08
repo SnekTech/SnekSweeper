@@ -29,14 +29,14 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
         GridInputListener.TargetChanged -= OnTargetChanged;
     }
 
-    /// <summary>尺寸是"网格多大"这一个事实，输入翻译靠它判断指针是否落在网格内。</summary>
-    public void Init(GridSize gridSize) => GridInputListener.Init(gridSize);
-
     public IHumbleCellCollection HumbleCellsContainer => CellsContainer;
     public IGridCursor GridCursor => Cursor;
 
-    // todo: merge with Init(size)
-    public void InstantiateCells(GridSize gridSize, GridSkin skin) => CellsContainer.InstantiateCells(gridSize, skin);
+    public void Init(GridSize gridSize, GridSkin skin)
+    {
+        GridInputListener.Init(gridSize);
+        CellsContainer.InstantiateCells(gridSize, skin);
+    }
 
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();
 
