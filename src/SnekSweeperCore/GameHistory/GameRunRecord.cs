@@ -13,16 +13,11 @@ public partial record GameRunRecord(
     bool[,] BombMatrix,
     GridIndex StartIndex);
 
-static class GameRunRecordExtensions
+public static class GameRunRecordExtensions
 {
-    extension(RunDuration)
-    {
-        internal static RunDuration Create(DateTime startAt, DateTime endAt) => new(startAt, endAt);
-    }
-
     extension(GameRunRecord)
     {
-        internal static GameRunRecord FromRun(RunStartInfo startInfo, DateTime endAt, bool winning, bool[,] bombMatrix) =>
-            new(RunDuration.Create(startInfo.StartAt, endAt), winning, bombMatrix, startInfo.StartIndex);
+        public static GameRunRecord FromRun(RunStartInfo startInfo, DateTime endAt, bool winning, bool[,] bombMatrix) =>
+            new(new RunDuration(startInfo.StartAt, endAt), winning, bombMatrix, startInfo.StartIndex);
     }
 }

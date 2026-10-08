@@ -35,7 +35,7 @@ public static class LevelLoading
 
         public LevelSetup ToSetup() => loadLevelSource switch
         {
-            FromOngoingGame { OngoingGame.GridSnapshot: var snapshot } => new LevelSetup.Resume(snapshot),
+            FromOngoingGame { OngoingGame: var ongoingGame } => new LevelSetup.Resume(ongoingGame),
             FromRunRecord
             {
                 RunRecord:
@@ -57,7 +57,7 @@ public static class LevelLoading
 public abstract record LevelSetup
 {
     public sealed record NewGame(MineLayout Layout, GridIndex? RequiredStartIndex) : LevelSetup;
-    public sealed record Resume(GridSnapshot Snapshot) : LevelSetup;
+    public sealed record Resume(OngoingGame OngoingGame) : LevelSetup;
 }
 
 public static class LevelSetupExtensions
@@ -67,7 +67,7 @@ public static class LevelSetupExtensions
         public GridSize Size => levelSetup switch
         {
             LevelSetup.NewGame { Layout.Size: var size } => size,
-            LevelSetup.Resume { Snapshot.BombMatrix.Size: var size } => size,
+            LevelSetup.Resume { OngoingGame.GridSnapshot.BombMatrix.Size: var size } => size,
             _ => throw new SwitchExpressionException(),
         };
     }

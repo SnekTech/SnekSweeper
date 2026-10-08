@@ -106,18 +106,13 @@ public partial class Level1 : Node2D, ISceneScript
                 case GridSession.Effect.Render render:
                     TheGrid.ApplyGridOutcome(render.Outcome);
                     break;
-                
+
                 case GridSession.Effect.TriggerInitEffects:
                     TheGrid.TriggerInitEffects();
                     break;
 
-                case GridSession.Effect.StartOngoingRun startOngoingRun:
-                    // todo: fromRunRecord 开始的游戏，startInfo 能用现有的吗？
-                    _runRecorder.StartOngoingGame(startOngoingRun.Snapshot, startOngoingRun.StartInfo);
-                    break;
-
-                case GridSession.Effect.UpdateOngoingRun updateOngoingRun:
-                    _runRecorder.UpdateOngoingGame(updateOngoingRun.Snapshot);
+                case GridSession.Effect.OngoingRunChanged ongoingRunChanged:
+                    _runRecorder.SaveOngoingRun(ongoingRunChanged.OngoingGame);
                     break;
 
                 case GridSession.Effect.IncreaseCombo:
@@ -125,15 +120,17 @@ public partial class Level1 : Node2D, ISceneScript
                     break;
 
                 case GridSession.Effect.FinishRun finishRun:
-                    _runRecorder.FinishRun(finishRun.Winning, finishRun.Bombs);
+                    _runRecorder.FinishRun(finishRun.LatestRun);
+                    // todo: refactor this when doing the [AppLogic -> DU] refactor
+                    AppRepo.InvokeGameEnded();
                     break;
 
                 case GridSession.Effect.AskForWinChoice:
                     HandleAskForWinChoice().Forget();
                     break;
 
-                case GridSession.Effect.AskForLoseChoice:
-                    HandleAskForLoseChoice(_runRecorder.LatestRecord).Forget();
+                case GridSession.Effect.AskForLoseChoice { LatestRun: var latestRun }:
+                    HandleAskForLoseChoice(latestRun).Forget();
                     break;
 
                 case GridSession.Effect.PlayCongratulationEffects:
@@ -159,12 +156,12 @@ public partial class Level1 : Node2D, ISceneScript
         handleChoiceAction();
     }
 
-    async GDTaskVoid HandleAskForLoseChoice(GameRunRecord recordJustFinished)
+    async GDTaskVoid HandleAskForLoseChoice(GameRunRecord latestRun)
     {
         var choice = await HUD.ShowAndGetChoiceOnLoseAsync(this.GetCancellationTokenOnTreeExit());
         Action handleChoiceAction = choice switch
         {
-            PopupChoiceOnLose.Retry => () => Retry(recordJustFinished),
+            PopupChoiceOnLose.Retry => () => Retry(latestRun),
             PopupChoiceOnLose.NewGame => NewGame,
             PopupChoiceOnLose.Leave => BackToMainMenu,
             _ => delegate { },

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using SnekSweeperCore.CellSystem;
+using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GameMode;
 using SnekSweeperCore.GridSystem.CursorManagement;
 using SnekSweeperCore.LevelManagement;
@@ -10,7 +11,10 @@ namespace SnekSweeperCore.GridSystem.Session;
 public abstract record GridSession
 {
     public sealed record AwaitingFirstReveal(Grid Grid, MineLayout Layout, GridIndex? RequiredFirstIndex) : GridSession;
-    public sealed record Running(Grid Grid, ImmutableStack<GridOutcome.BatchRevealed> UndoStack) : GridSession;
+
+    public sealed record Running(Grid Grid, ImmutableStack<GridOutcome.BatchRevealed> UndoStack, RunStartInfo StartInfo)
+        : GridSession;
+
     public sealed record Finished : GridSession;
 
     public abstract record Event
@@ -24,12 +28,11 @@ public abstract record GridSession
         public sealed record PaintBoard : Effect;
         public sealed record Render(GridOutcome Outcome) : Effect;
         public sealed record TriggerInitEffects : Effect;
-        public sealed record StartOngoingRun(GridSnapshot Snapshot, RunStartInfo StartInfo) : Effect;
-        public sealed record UpdateOngoingRun(GridSnapshot Snapshot) : Effect;
+        public sealed record OngoingRunChanged(OngoingGame OngoingGame) : Effect;
         public sealed record IncreaseCombo : Effect;
-        public sealed record FinishRun(bool Winning, bool[,] Bombs) : Effect;
+        public sealed record FinishRun(GameRunRecord LatestRun) : Effect;
         public sealed record AskForWinChoice : Effect;
-        public sealed record AskForLoseChoice : Effect;
+        public sealed record AskForLoseChoice(GameRunRecord LatestRun) : Effect;
         public sealed record PlayCongratulationEffects : Effect;
     }
 }
@@ -41,8 +44,8 @@ public static class GridSessionMachine
     public static SessionWithEffects Start(Grid grid, LevelSetup levelSetup) =>
         levelSetup switch
         {
-            LevelSetup.Resume { Snapshot: var snapshot } =>
-                new SessionWithEffects(Restore(grid, snapshot),
+            LevelSetup.Resume { OngoingGame: var ongoingGame } =>
+                new SessionWithEffects(Restore(grid, ongoingGame),
                     [new GridSession.Effect.PaintBoard(), new GridSession.Effect.TriggerInitEffects()]),
             LevelSetup.NewGame { Layout: var layout, RequiredStartIndex: var requiredIndex } =>
                 new SessionWithEffects(new GridSession.AwaitingFirstReveal(grid, layout, requiredIndex),
@@ -50,10 +53,11 @@ public static class GridSessionMachine
             _ => throw new SwitchExpressionException(),
         };
 
-    static GridSession Restore(Grid grid, GridSnapshot snapshot)
+    static GridSession Restore(Grid grid, OngoingGame ongoingGame)
     {
+        var (snapshot, startInfo) = ongoingGame;
         grid.RestoreCellStates(snapshot);
-        return new GridSession.Running(grid, ImmutableStack<GridOutcome.BatchRevealed>.Empty);
+        return new GridSession.Running(grid, ImmutableStack<GridOutcome.BatchRevealed>.Empty, startInfo);
     }
 
     public static SessionWithEffects Update(GridSession session, GridSession.Event evt,
@@ -63,7 +67,7 @@ public static class GridSessionMachine
             (GridSession.AwaitingFirstReveal first, GridSession.Event.PlayerInput input)
                 => HandleFirstReveal(first, input.Input, clock),
             (GridSession.Running running, GridSession.Event.PlayerInput input)
-                => HandleRunningInput(running, input.Input),
+                => HandleRunningInput(running, input.Input, clock),
             (GridSession.Running running, GridSession.Event.UndoRequested)
                 => HandleUndo(running),
 
@@ -81,20 +85,22 @@ public static class GridSessionMachine
         grid.InitCells(awaitingFirst.Layout.Lay(input.Index));
         var outcome = grid.HandleInput(input);
 
+        var startInfo = new RunStartInfo(clock.GetLocalNow().DateTime, input.Index);
+
         List<GridSession.Effect> effects =
         [
+            new GridSession.Effect.PaintBoard(),
             new GridSession.Effect.Render(outcome),
-            new GridSession.Effect.StartOngoingRun(grid.GetSnapshot(),
-                new RunStartInfo(clock.GetLocalNow().DateTime, input.Index)),
+            new GridSession.Effect.OngoingRunChanged(new OngoingGame(grid.GetSnapshot(), startInfo)),
         ];
 
         return Referee.Judge(grid, outcome) switch
         {
             Surviving => new SessionWithEffects(
-                new GridSession.Running(grid, ImmutableStack<GridOutcome.BatchRevealed>.Empty),
+                new GridSession.Running(grid, ImmutableStack<GridOutcome.BatchRevealed>.Empty, startInfo),
                 [.. effects, new GridSession.Effect.TriggerInitEffects()]),
-            GameWin win => EndGameWin(win, effects),
-            GameLose lose => EndGameLose(grid, lose, effects),
+            GameWin win => EndGameWin(effects, startInfo, clock, win.Bombs),
+            GameLose lose => EndGameLose(grid, lose, effects, startInfo, clock),
             _ => throw new SwitchExpressionException(),
         };
 
@@ -102,7 +108,7 @@ public static class GridSessionMachine
             requiredFirstIndex is { } required ? input.Index == required : input is RevealAt;
     }
 
-    static SessionWithEffects HandleRunningInput(GridSession.Running running, GridInput input)
+    static SessionWithEffects HandleRunningInput(GridSession.Running running, GridInput input, TimeProvider clock)
     {
         var grid = running.Grid;
         var outcome = grid.HandleInput(input);
@@ -111,7 +117,7 @@ public static class GridSessionMachine
         List<GridSession.Effect> effects =
         [
             new GridSession.Effect.Render(outcome),
-            new GridSession.Effect.UpdateOngoingRun(grid.GetSnapshot()),
+            new GridSession.Effect.OngoingRunChanged(new OngoingGame(grid.GetSnapshot(), running.StartInfo)),
         ];
 
         if (outcome is GridOutcome.BatchRevealed)
@@ -123,8 +129,8 @@ public static class GridSessionMachine
         {
             Surviving => new SessionWithEffects(running with { UndoStack = PushIfRevealed(running.UndoStack, outcome) },
                 effects),
-            GameWin win => EndGameWin(win, effects),
-            GameLose lose => EndGameLose(grid, lose, effects),
+            GameWin win => EndGameWin(effects, running.StartInfo, clock, win.Bombs),
+            GameLose lose => EndGameLose(grid, lose, effects, running.StartInfo, clock),
             _ => throw new SwitchExpressionException(),
         };
 
@@ -145,29 +151,39 @@ public static class GridSessionMachine
         return new SessionWithEffects(running with { UndoStack = stack },
         [
             new GridSession.Effect.Render(outcome),
-            new GridSession.Effect.UpdateOngoingRun(grid.GetSnapshot()),
+            new GridSession.Effect.OngoingRunChanged(new OngoingGame(grid.GetSnapshot(), running.StartInfo)),
         ]);
     }
 
-    static IReadOnlyList<GridSession.Effect> GetWinEffects(GameWin gameWin) =>
-    [
-        new GridSession.Effect.FinishRun(true, gameWin.Bombs),
-        new GridSession.Effect.PlayCongratulationEffects(),
-        new GridSession.Effect.AskForWinChoice(),
-    ];
+    static SessionWithEffects EndGameWin(IReadOnlyList<GridSession.Effect> effects,
+        RunStartInfo startInfo, TimeProvider clock, bool[,] bombs)
+    {
+        var latestRun = GameRunRecord.FromRun(startInfo, clock.GetLocalNow().DateTime, true, bombs);
 
-    static IReadOnlyList<GridSession.Effect> GetLoseEffects(Grid grid, GameLose gameLose) =>
-    [
-        new GridSession.Effect.FinishRun(false, gameLose.Bombs),
-        new GridSession.Effect.Render(MarkErrors(grid, gameLose.CellsInThisBatch)),
-        new GridSession.Effect.AskForLoseChoice(),
-    ];
+        IReadOnlyList<GridSession.Effect> winEffects =
+        [
+            new GridSession.Effect.FinishRun(latestRun),
+            new GridSession.Effect.PlayCongratulationEffects(),
+            new GridSession.Effect.AskForWinChoice(),
+        ];
 
-    static SessionWithEffects EndGameWin(GameWin gameWin, IReadOnlyList<GridSession.Effect> effects) =>
-        new(new GridSession.Finished(), [.. effects, .. GetWinEffects(gameWin)]);
+        return new SessionWithEffects(new GridSession.Finished(), [.. effects, .. winEffects]);
+    }
 
-    static SessionWithEffects EndGameLose(Grid grid, GameLose gameLose, IReadOnlyList<GridSession.Effect> effects) =>
-        new(new GridSession.Finished(), [.. effects, .. GetLoseEffects(grid, gameLose)]);
+    static SessionWithEffects EndGameLose(Grid grid, GameLose gameLose, IReadOnlyList<GridSession.Effect> effects,
+        RunStartInfo startInfo, TimeProvider clock)
+    {
+        var latestRun = GameRunRecord.FromRun(startInfo, clock.GetLocalNow().DateTime, false, gameLose.Bombs);
+
+        IReadOnlyList<GridSession.Effect> loseEffects =
+        [
+            new GridSession.Effect.FinishRun(latestRun),
+            new GridSession.Effect.Render(MarkErrors(grid, gameLose.CellsInThisBatch)),
+            new GridSession.Effect.AskForLoseChoice(latestRun),
+        ];
+
+        return new SessionWithEffects(new GridSession.Finished(), [.. effects, .. loseEffects]);
+    }
 
     static GridOutcome MarkErrors(Grid grid, IReadOnlyList<GridIndex> cells) =>
         new GridOutcome.ErrorsMarked([
