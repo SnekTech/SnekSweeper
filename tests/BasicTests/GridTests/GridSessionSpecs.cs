@@ -1,4 +1,5 @@
 ﻿using AwesomeAssertions;
+using BasicTests.Utils;
 using SnekSweeperCore.CellSystem;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
@@ -195,10 +196,4 @@ public class GridSessionSpecs
 
     static GameRunRecord FinishRunRecord(IReadOnlyList<GridSession.Effect> effects) =>
         effects.OfType<GridSession.Effect.FinishRun>().Single().LatestRun;
-}
-
-/// <summary>固定时钟：让"起点时间"这类断言不依赖真实时间与机器时区。</summary>
-sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
-{
-    public override DateTimeOffset GetUtcNow() => now;
 }
