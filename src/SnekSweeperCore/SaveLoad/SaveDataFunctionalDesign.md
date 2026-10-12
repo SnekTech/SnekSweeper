@@ -177,7 +177,7 @@ public partial class SaveData : Node
 
 ### 决策 6：E 阶段（DI，最初动机）
 
-record 化 + 单一入口之后，`SaveData` 成为可注入服务（像 `ISceneSwitcher` / `IAppRepo`），场景里 `Get<SaveData>()` 注入，彻底告别 static 单例。`MainSetting` 只是 `SaveData.State.MainSetting` 的普通字段，不再需要像 `currentSkin` 那样特殊处理。
+record 化 + 单一入口之后，`SaveData` 成为可注入服务（像 `ISceneSwitcher` / `IAppSessionHost`），场景里 `Get<SaveData>()` 注入，彻底告别 static 单例。`MainSetting` 只是 `SaveData.State.MainSetting` 的普通字段，不再需要像 `currentSkin` 那样特殊处理。
 
 ### 决策 7：放弃 C2（领域直接序列化）——仅生命末期才考虑
 
@@ -207,7 +207,7 @@ SaveData.Dispatch(s => s.UpdateHistory(h => h.Add(recentRecord)));
 // 历史（HistoryPage 清空）
 SaveData.Dispatch(s => s.UpdateHistory(h => h.Clear()));
 
-// 只读（AppRepo / MainMenuContainer / Level1.NewGame）
+// 只读（MainMenuContainer / Level1.NewGame）
 SaveData.State.MainSetting.CurrentSkinKey.ToSkin();
 ```
 
@@ -240,7 +240,7 @@ public void add_record_returns_new_state_and_keeps_original_untouched()
    - `SaveDataLenses`（4 个 UpdateDomain 提升器）+ `SaveData` autoload（Dispatch/StateChanged/SaveQueue 事件驱动保存）。
    - `GameRunRecorder` 重构：收敛为单 `ISaveDataStore` 依赖 + `FinishRun` 复合方法（清快照+生成记录+入库，返回记录）；`GameRunRecord.FromRun` 纯函数；删 `GenerateRecentRecord`/`SaveRecord`/`ClearSnapshot`。
    - 保存视觉反馈：`ISaveDataStore.NotifySaved()`/`SavedFeedback` + 组合根订阅 toast。
-3. **E 阶段 ✅**：`Main` `IProvide<ISaveDataStore>`；消费端 `[Dependency] ISaveDataStore SaveData` 注入（读 State / 写 UpdateX 扩展 / CurrentSkin 派生查询），`SaveData` 只剩 `Instance` static；AppRepo 简化为纯 app 事件持有者。
+3. **E 阶段 ✅**：`Main` `IProvide<ISaveDataStore>`；消费端 `[Dependency] ISaveDataStore SaveData` 注入（读 State / 写 UpdateX 扩展 / CurrentSkin 派生查询），`SaveData` 只剩 `Instance` static。顶层页面流转后来改由 Core 的 `AppSession` DU + Godot 层 `IAppSessionHost` 承担（原 `AppRepo` 已删除）。
 4. **C2（已放弃）**：见决策 7——领域直接序列化不采纳，保持"DTO 层版本化 + domain 纯净"。
 
 ## 7. 关联决策（已完成，本方案依赖）

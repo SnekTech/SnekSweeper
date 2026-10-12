@@ -30,6 +30,11 @@
 >   随重写处理 2 项（#2 tooltip、`InputMask` 输入拦截）；判定不修 5 处（#5/#6/#7/#8/#12）；
 >   另有 1 处（`Level1` 初始化 / 输入路径）已**结构性关闭**。
 > - **重写开工前的遗留总览（含验证缺口）见 §4.5。**
+>
+> **类型名更新（2026-10-12）**：本清单写作时的 LogicBlocks 体系已全部退场 —— App 顶层 FSM 重写为 Core 的
+> `AppSession` DU（宿主 `Main` 实现 `IAppSessionHost`，`AppLogic` / `IAppRepo` 已删除），grid FSM 重写为
+> Core 的 `GridSession` DU（`GridSessionMachine`，`GridLogic` 已删除）。下文中的类型 / 文件引用已就地
+> 更新为当前等价物；结论不受影响。
 
 ---
 
@@ -195,7 +200,7 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中 | 🚫 判定不可达，不修（见 §6） |
 | 6 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:23` | `WinPopup.ShowAndGetChoiceAsync(...)` | `IsInputBlocked = false;` → `InputMask.Visible = …` | 中高 | 🚫 判定不可达（见 §4.1） |
 | 7 | `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:31` | `LosePopup.ShowAndGetChoiceAsync(...)` | 同上 | 中高 | 🚫 判定不可达（见 §4.1） |
-| 8 | `S:/SnekSweeper/Scripts/GridSystem/State/states/GridLogic.State.Lose.cs`（`TriggerLoseTasksAsync`） | `LevelOrchestrator.GetPopupChoiceOnLoseAsync(ct)`（原先的 `MarkPlayerErrorsAsync` 已改为同步、且在 await **之前**） | `Output(EndGameChoiceOnLose)` → `Level1.GetPopupChoiceOnLoseAsync` → `HUD` / `PopupLayer` | 中 | 🚫 判定不可达（见 §4.1） |
+| 8 | `S:/SnekSweeper/Scripts/Levels/Level1.cs` → `HandleAskForLoseChoice`（原 `GridLogic.State.Lose.cs` / `LevelOrchestrator` 已随 grid FSM DU 重写删除） | `HUD.ShowAndGetChoiceOnLoseAsync(ct)` | 选择回调 `Retry` / `NewGame` / `BackToMainMenu` → `AppSessionHost.Send`（可能触发换场） | 中 | 🚫 判定不可达（见 §4.1） |
 | 9 | `S:/SnekSweeper/Scripts/UI/Level/Popup/WinPopup.cs:30` | `_popupChoiceListener.GetChoiceAsync(ct)` | `_animator.HideAsync(ct)` → `SlideOutAsync` → `target.TweenGlobalPosition` / `target.Hide()` | 中 | ✅ 随 #11 关闭 |
 | 10 | `S:/SnekSweeper/Scripts/UI/Level/Popup/LosePopup.cs:30` | 同上 | 同上 | 中 | ✅ 随 #11 关闭 |
 | 11 | `G:/TweenStuff/TweenExtensions.cs:38-45`（`SlideOutAsync`） | `target.TweenGlobalPosition(…).PlayAsync(…)` | `target.Hide();`（**库级**，本工作区唯一调用方是 `PopupAnimator`） | 中 | ✅ **已修（§5 第 2 档）** |
@@ -212,11 +217,12 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 3. **`SceneSwitcher`（#5）—— 判定不可达，不修**，见 §6。
 4. **`SlideOutAsync`（#11）—— 已按 §5 第 2 档修**，`WinPopup`/`LosePopup`（#9/#10）随之关闭
    （它俩 await 之后只有 `return choice`，真正的尾巴在库里）。
-5. **`PopupLayer`（#6/#7）与 `GridLogic.State.Lose`（#8）—— 判定不可达，不修。**
-   理由（2026-09-24 复核）：`ct` = `LevelExitToken` = `Level1.GetCancellationTokenOnTreeExit()`，
-   而能拆掉 `Level1` 的**唯一**入口是 `SceneSwitcher.GotoSceneAsync`，它由 `AppLogic` 的 output 驱动，
-   而 level 内的 output 又只在**拿到弹窗选择之后**才产生：
-   - #6/#7：`IsInputBlocked = false` 发生在 choice 交回逻辑块**之前** ⇒ 那一帧不可能有换场在飞；
+5. **`PopupLayer`（#6/#7）与 `Level1.HandleAskForLoseChoice`（#8，原 `GridLogic.State.Lose`）—— 判定不可达，不修。**
+   理由（2026-09-24 复核；2026-10-12 类型名更新）：`ct` = `LevelExitToken` = `Level1.GetCancellationTokenOnTreeExit()`，
+   而能拆掉 `Level1` 的**唯一**入口是 `SceneSwitcher.GotoSceneAsync`，它由 `AppSession` 的 effect 驱动
+   （`IAppSessionHost.Send` → `Main.ApplyAppSessionEffect`），
+   而 level 侧的 effect 又只在**拿到弹窗选择之后**才发出：
+   - #6/#7：`IsInputBlocked = false` 发生在 choice 交回调用方**之前** ⇒ 那一帧不可能有换场在飞；
    - #8：`Lose` 的续体是弹窗流程的**起点** ⇒ 它执行时更不可能有换场在飞。
    换场本身还要再等 `await GDTask.Yield()` 一个帧边界才 `Free()`，所以即便整条链在同一帧的泵里内联跑完，
    `Free()` 也至少晚一帧。
@@ -228,17 +234,16 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
    退出时按第 5 条同理，续体不会再撞上已释放的树。
 7. **`Level1.cs` 的初始化 / 输入路径 —— 窗口已结构性关闭（不再是"推理不可达"）。**
    整条链现在**全同步**，根本不存在"已排队续体"这个东西：
-   - `RestoreGrid` / `LayMines`：`grid.RestoreCellStates` / `grid.InitCells` → `TheGrid.Paint(grid)` →
-     `HUD.UpdateBombCount/UpdateFlagCount` → `GridLogic.Input(InitCompleted)`，全是同步调用；
-   - `HandleInput`：`grid.HandleInput`（同步纯转移）→ `ShowOutcome`（`ApplyGridOutcome` + HUD 同步）
-     → `GridLogic.Input(InputProcessed)`，同样全同步；
-   - 驱动这一切的 `GridOutcome` 是**返回值**，渲染由调用方同步消费（`Grid` 既不持有 renderer，
-     也不发总线事件）。
+   - `LoadLevel`：`GridSessionMachine.Start(_grid, setup)` → `PresentState()`（光标策略 / HUD）+ `ApplySessionEffects`，全是同步调用；
+   - `SendGridEvent`：`GridSessionMachine.Update(_gridSession, evt, TimeProvider.System)`（同步纯转移）
+     → `PresentState()` + `ApplySessionEffects`，同样全同步；
+   - 驱动这一切的 `GridOutcome` / `GridSession.Effect` 是**返回值**，渲染由调用方同步消费（`Grid` 既不持有
+     renderer，也不发总线事件）。
    这条路径上唯一还会 await 的是格子动画**内部**的续体（`Cover.RevealAsync` 等），
    而那部分由 §5 第 1/2 档在各自的使用点自守卫 —— `Level1` 侧不再承担这个窗口。
    **不依赖 `InputMask` 是否拦得住**：即便输入漏过去，最坏也只是"弹窗期间还能操作棋盘"（行为问题）。
-   附带的结构前提（**假设，须长期保持**）：`TheGrid`(HumbleGrid) 与 `Level1` 同生死、`GridLogic` 由 `Level1` 持有
-   ⇒ `Context.HumbleGrid` / `Context.LevelOrchestrator` 这类访问**不需要**防御式检查。
+   附带的结构前提（**假设，须长期保持**）：`TheGrid`(HumbleGrid) 与 `Level1` 同生死、`_grid` / `_gridSession`
+   由 `Level1` 持有 ⇒ 这些访问**不需要**防御式检查。
    若将来支持"不换场地原地重建网格"（复用池 / 中途重开一局），这条前提失效，上述访问点必须重新审。
 8. **`InputMask` 的输入拦截 —— 不属于本清单，标记为待重写**（随输入会话 / 弹窗重做）：
    现状是 `ColorRect` + `MOUSE_FILTER_STOP`，**只影响鼠标**；键盘/手柄不经 GUI 命中测试
@@ -263,10 +268,10 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 ### 4.3 已确认干净（7 个文件）
 
 `SnekGameDevKit/FileOperations.cs`、`SnekGameDevKit/SaveQueue.cs`、`JsonSerializationService.cs`、
-`GridLogic.State.Win.cs`、`G/Tasks/TaskFireAndForget.cs`、`MatrixConverterSpecs.cs`、
-`PlayerSaveDataRoundTripSpecs.cs`。
+`G/Tasks/TaskFireAndForget.cs`、`MatrixConverterSpecs.cs`、`PlayerSaveDataRoundTripSpecs.cs`。
 
-（原清单中的 `CommandInvoker.cs`、`CellStateTests.cs` 已分别随"删除命令层"、"cell 值化重构"移除。）
+（原清单中的 `CommandInvoker.cs`、`CellStateTests.cs` 已分别随"删除命令层"、"cell 值化重构"移除；
+`GridLogic.State.Win.cs` 亦随 grid FSM DU 重写删除。）
 
 ### 4.4 需人工确认的间接路径（原 6 处，现只剩 2 处）
 
@@ -278,8 +283,9 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
   恢复逻辑回到 Core 的 `Grid.RestoreCellStates`，纯同步）、原 `Grid.cs:27,100,111`（那三个 `EmitXxx`
   随 `GridEventBus` 删除）、原 `Level1.cs:144,150,159`（见 §4.1 第 7 条：整条链已全同步）、
   原 `Pagination.cs:87`（随翻页重写删除，binder 不再有 await）。
-- 残余的不确定项（**不影响上面任何结论**）：① LogicBlocks 在 `Stop()` 之后收到 `Input` 的确切行为未确认；
-  ② `InputMask` 是否拦得住键盘/手柄输入未确认（已单列为待重写项，见 §4.1 第 8 条）。
+- 残余的不确定项（**不影响上面任何结论**）：`InputMask` 是否拦得住键盘/手柄输入未确认
+  （已单列为待重写项，见 §4.1 第 8 条）。原第①项（LogicBlocks 在 `Stop()` 之后收到 `Input` 的行为）
+  已随 LogicBlocks 退场作废。
 - 另外，全仓 `Callable.From` / `CallDeferred` / `SetDeferred`（"排队到之后执行"的另一套家族）只有 1 处，
   即 `Tooltip.cs:19` —— 已随 tooltip 搁置。
 
