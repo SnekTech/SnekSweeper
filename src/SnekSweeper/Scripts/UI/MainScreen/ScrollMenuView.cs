@@ -52,6 +52,8 @@ public partial class ScrollMenuView : Control
 
     public override void _ExitTree()
     {
+        // todo: use link to exitToken to replace this? 
+        // todo: unsubscribe the button bindings
         _tweenCts?.CancelAndDispose();
     }
 
