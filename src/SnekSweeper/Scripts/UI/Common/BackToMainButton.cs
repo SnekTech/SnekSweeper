@@ -1,6 +1,7 @@
 ﻿using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using SnekSweeper.GameStateManagement;
+using SnekSweeperCore.AppFlow;
 
 namespace SnekSweeper.UI.Common;
 
@@ -10,7 +11,7 @@ public partial class BackToMainButton : Button
     public override void _Notification(int what) => this.Notify(what);
 
     [Dependency]
-    AppLogic AppLogic => this.DependOn<AppLogic>();
+    IAppSessionHost AppSessionHost => this.DependOn<IAppSessionHost>();
 
     public void OnResolved()
     {
@@ -22,5 +23,5 @@ public partial class BackToMainButton : Button
         Pressed -= SendBackToMainInput;
     }
 
-    void SendBackToMainInput() => AppLogic.Input(new AppState.Input.BackToMainMenu());
+    void SendBackToMainInput() => AppSessionHost.Send(new AppSession.Event.BackToMainMenu());
 }

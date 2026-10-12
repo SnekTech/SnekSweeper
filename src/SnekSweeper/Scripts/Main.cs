@@ -1,19 +1,23 @@
-﻿using Chickensoft.AutoInject;
+﻿using System.Runtime.CompilerServices;
+using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
-using Chickensoft.LogicBlocks;
 using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.Levels;
 using SnekSweeper.UI.Common.AmbientBackground;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.AppFlow;
 using SnekSweeperCore.SaveLoad;
 
 namespace SnekSweeper;
 
 [Meta(typeof(IAutoNode))]
-public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>, IProvide<ISaveDataStore>
+public partial class Main : Node, IAppSessionHost,
+    IProvide<IAppSessionHost>, IProvide<ISaveDataStore>
 {
+    public override void _Notification(int what) => this.Notify(what);
+
     /// <summary>背景过渡时长(步骤 7 的编排旋钮)。</summary>
     const float AmbientTransitionDuration = 0.8f;
 
@@ -23,53 +27,74 @@ public partial class Main : Node, IProvide<AppLogic>, IProvide<IAppRepo>, IProvi
     [Node]
     public AmbientBackground Background { get; set; } = null!;
 
-    IAppRepo AppRepo { get; set; } = null!;
-    AppLogic _appLogic = null!;
-    LogicBlock.Binding _binding = null!;
-
-    AppLogic IProvide<AppLogic>.Value() => _appLogic;
-    IAppRepo IProvide<IAppRepo>.Value() => AppRepo;
     ISaveDataStore IProvide<ISaveDataStore>.Value() => SaveData.Instance;
+
+    IAppSessionHost IProvide<IAppSessionHost>.Value() => this;
+
+    AppSession _session = AppSession.Initial;
+
+    public void Send(AppSession.Event evt)
+    {
+        var (next, effect) = _session.Update(evt);
+        _session = next;
+        ApplyAppSessionEffect(effect);
+    }
 
     public void OnReady()
     {
-        AppRepo = new AppRepo();
-        _appLogic = new AppLogic();
-        _appLogic.Set(AppRepo);
         this.Provide();
 
-        // 组合根: 把大脑的命令翻译成两个平等、独立的副作用 —— 切换场景 + 背景过渡。
-        // 绑定必须在 Start 之前建立, 否则会漏掉初始状态的 OnEnter 输出。
-        _binding = _appLogic.Bind()
-            .OnOutput((in AppState.Output.ShowMainMenu output) =>
-                Show<UI.MainScreen.MainMenuContainer>(AmbientThemes.Menu))
-            .OnOutput((in AppState.Output.ShowSettings output) =>
-                Show<UI.Settings.SettingsPage>(AmbientThemes.Menu))
-            .OnOutput((in AppState.Output.ShowHistory output) =>
-                Show<UI.History.HistoryPage>(AmbientThemes.Menu))
-            .OnOutput((in AppState.Output.ShowCheatCode output) =>
-                Show<CheatCodeSystem.UI.CheatCodePage>(AmbientThemes.Menu))
-            .OnOutput((in AppState.Output.ShowTutorial output) =>
-                Show<UI.Tutorial.TutorialPage>(AmbientThemes.Menu))
-            // 将来要按关卡区分主题时, 在这里用 output.Source 决定
-            .OnOutput((in AppState.Output.ShowLevel output) =>
-            {
-                var source = output.Source;
-                Show<Level1>(AmbientThemes.Level, level => level.LoadLevel(source));
-            });
-
         SaveData.Instance.SavedFeedback += () => MessageBox.Print("已保存");
-
-        _appLogic.Start<AppState.SplashScreen>();
     }
-
-    public override void _Notification(int what) => this.Notify(what);
-
-    public override void _ExitTree() => _binding.Dispose();
 
     void Show<T>(AmbientTheme theme, Action<T>? onSceneEntered = null) where T : Node, ISceneScript
     {
         SceneSwitcher.GotoSceneAsync(onSceneEntered).Forget();
         Background.GoTo(theme, AmbientTransitionDuration);
+    }
+
+    void ApplyAppSessionEffect(AppSessionEffect effect)
+    {
+        Action? applyEffect = effect switch
+        {
+            AppSessionEffect.Stay => null,
+            AppSessionEffect.Show { TargetScreen: var targetScreen } => () => ApplyTargetScreen(targetScreen),
+            _ => throw new SwitchExpressionException(),
+        };
+        applyEffect?.Invoke();
+        return;
+
+        void ApplyTargetScreen(AppScreen targetScreen)
+        {
+            switch (targetScreen)
+            {
+                case AppScreen.MainMenu:
+                    Show<UI.MainScreen.MainMenuContainer>(AmbientThemes.Menu);
+                    break;
+
+                case AppScreen.Settings:
+                    Show<UI.Settings.SettingsPage>(AmbientThemes.Menu);
+                    break;
+
+                case AppScreen.History:
+                    Show<UI.History.HistoryPage>(AmbientThemes.Menu);
+                    break;
+
+                case AppScreen.CheatCode:
+                    Show<CheatCodeSystem.UI.CheatCodePage>(AmbientThemes.Menu);
+                    break;
+
+                case AppScreen.Tutorial:
+                    Show<UI.Tutorial.TutorialPage>(AmbientThemes.Menu);
+                    break;
+
+                case AppScreen.Level { Source: var source }:
+                    // todo: reuse Level1 scene
+                    Show<Level1>(AmbientThemes.Level, level => level.LoadLevel(source));
+                    break;
+
+                default: throw new SwitchExpressionException();
+            }
+        }
     }
 }

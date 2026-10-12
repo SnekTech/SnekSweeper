@@ -2,6 +2,7 @@
 using Chickensoft.Introspection;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.AppFlow;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.LevelManagement;
@@ -15,7 +16,7 @@ public partial class RecordCard : PanelContainer, ISceneScript
     public override void _Notification(int what) => this.Notify(what);
 
     [Dependency]
-    AppLogic AppLogic => this.DependOn<AppLogic>();
+    IAppSessionHost AppSessionHost => this.DependOn<IAppSessionHost>();
 
     public GameRunRecord RunRecord
     {
@@ -55,6 +56,7 @@ public partial class RecordCard : PanelContainer, ISceneScript
 
     void OnRetryButtonPressed()
     {
-        AppLogic.InputNewGame(new FromRunRecord(RunRecord));
+        var newGameSource = new FromRunRecord(RunRecord);
+        AppSessionHost.Send(new AppSession.Event.NewGame(newGameSource));
     }
 }

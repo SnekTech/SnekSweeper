@@ -2,6 +2,7 @@
 using Chickensoft.Introspection;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.AppFlow;
 
 namespace SnekSweeper.UI.MainScreen;
 
@@ -12,7 +13,7 @@ public partial class SplashScreen : CenterContainer, ISceneScript
     public override void _Notification(int what) => this.Notify(what);
 
     [Dependency]
-    AppLogic AppLogic => this.DependOn<AppLogic>();
+    IAppSessionHost AppSessionHost => this.DependOn<IAppSessionHost>();
 
     public void OnResolved()
     {
@@ -25,5 +26,5 @@ public partial class SplashScreen : CenterContainer, ISceneScript
         PressToStartLabel.AnyKeyPressed -= OnAnyKeyPressed;
     }
 
-    void OnAnyKeyPressed() => AppLogic.Input(new AppState.Input.AnyKeyPressed());
+    void OnAnyKeyPressed() => AppSessionHost.Send(new AppSession.Event.AnyKeyPressed());
 }

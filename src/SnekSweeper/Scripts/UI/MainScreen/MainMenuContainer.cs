@@ -3,6 +3,7 @@ using Chickensoft.Introspection;
 using GodotGadgets.UI.ScrollMenuCore;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.AppFlow;
 using SnekSweeperCore.LevelManagement;
 using SnekSweeperCore.SaveLoad;
 
@@ -15,7 +16,7 @@ public partial class MainMenuContainer : Control, ISceneScript
     public override void _Notification(int what) => this.Notify(what);
 
     [Dependency]
-    AppLogic AppLogic => this.DependOn<AppLogic>();
+    IAppSessionHost AppSessionHost => this.DependOn<IAppSessionHost>();
 
     [Dependency]
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
@@ -40,34 +41,38 @@ public partial class MainMenuContainer : Control, ISceneScript
         {
             if (SaveData.State.CurrentRunInfo.OngoingGame is not { } ongoingGame) return;
 
-            var fromOngoingGame = new FromOngoingGame(ongoingGame);
-            bindings.Insert(0, CreateButtonWithBinding("Continue", () => AppLogic.InputNewGame(fromOngoingGame)));
+            bindings.Insert(0, CreateButtonWithBinding("Continue", () =>
+            {
+                var fromOngoingGame = new FromOngoingGame(ongoingGame);
+                AppSessionHost.Send(new AppSession.Event.NewGame(fromOngoingGame));
+            }));
         }
     }
 
     void OnTutorialButonPressed()
     {
-        AppLogic.Input(new AppState.Input.TutorialPressed());
+        AppSessionHost.Send(new AppSession.Event.TutorialPressed());
     }
 
     void OnHistoryButtonPressed()
     {
-        AppLogic.Input(new AppState.Input.HistoryPressed());
+        AppSessionHost.Send(new AppSession.Event.HistoryPressed());
     }
 
     void OnCheatCodeButtonPressed()
     {
-        AppLogic.Input(new AppState.Input.CheatCodePressed());
+        AppSessionHost.Send(new AppSession.Event.CheatCodePressed());
     }
 
     void OnSettingsButtonPressed()
     {
-        AppLogic.Input(new AppState.Input.SettingsPressed());
+        AppSessionHost.Send(new AppSession.Event.SettingsPressed());
     }
 
     void OnStartButtonPressed()
     {
-        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.State.MainSetting));
+        var newGameSource = LoadLevelSource.CreateRegularStart(SaveData.State.MainSetting);
+        AppSessionHost.Send(new AppSession.Event.NewGame(newGameSource));
     }
 
     void OnQuitPressed()

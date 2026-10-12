@@ -5,6 +5,7 @@ using GodotGadgets.Tasks;
 using GodotTask;
 using SnekSweeper.GameStateManagement;
 using SnekSweeper.Widgets;
+using SnekSweeperCore.AppFlow;
 using SnekSweeperCore.GameHistory;
 using SnekSweeperCore.GridSystem;
 using SnekSweeperCore.GridSystem.Session;
@@ -20,13 +21,10 @@ public partial class Level1 : Node2D, ISceneScript
     public override void _Notification(int what) => this.Notify(what);
 
     [Chickensoft.AutoInject.Dependency]
-    AppLogic AppLogic => this.DependOn<AppLogic>();
-
-    [Chickensoft.AutoInject.Dependency]
-    IAppRepo AppRepo => this.DependOn<IAppRepo>();
-
-    [Chickensoft.AutoInject.Dependency]
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
+
+    [Chickensoft.AutoInject.Dependency]
+    IAppSessionHost AppSessionHost => this.DependOn<IAppSessionHost>();
 
     Grid _grid = null!;
     GridSession _gridSession = null!;
@@ -120,8 +118,6 @@ public partial class Level1 : Node2D, ISceneScript
 
                 case GridSession.Effect.FinishRun finishRun:
                     _runRecorder.FinishRun(finishRun.LatestRun);
-                    // todo: refactor this when doing the [AppLogic -> DU] refactor
-                    AppRepo.InvokeGameEnded();
                     break;
 
                 case GridSession.Effect.AskForWinChoice:
@@ -172,18 +168,20 @@ public partial class Level1 : Node2D, ISceneScript
 
     void OnUndoRequested() => SendGridEvent(new GridSession.Event.UndoRequested());
 
-    public void NewGame()
+    void NewGame()
     {
-        AppLogic.InputNewGame(LoadLevelSource.CreateRegularStart(SaveData.State.MainSetting));
+        var newGameSource = LoadLevelSource.CreateRegularStart(SaveData.State.MainSetting);
+        AppSessionHost.Send(new AppSession.Event.NewGame(newGameSource));
     }
 
-    public void BackToMainMenu()
+    void BackToMainMenu()
     {
-        AppLogic.Input(new AppState.Input.BackToMainMenu());
+        AppSessionHost.Send(new AppSession.Event.BackToMainMenu());
     }
 
-    public void Retry(GameRunRecord runRecord)
+    void Retry(GameRunRecord runRecord)
     {
-        AppLogic.InputNewGame(new FromRunRecord(runRecord));
+        var newGameSource = new FromRunRecord(runRecord);
+        AppSessionHost.Send(new AppSession.Event.NewGame(newGameSource));
     }
 }
