@@ -19,7 +19,11 @@ public partial class GridInputListener : Node2D
     /// 判定"指针是否落在网格内"是翻译输入的前提——不知道网格多大的话，
     /// 这个组件就只能把鼠标位置硬算成一个"看起来合法"的格子。
     /// </summary>
-    public void Init(GridSize gridSize) => _gridSize = gridSize;
+    public void Init(GridSize gridSize)
+    {
+        _session = GridInputSession.Initial;
+        _gridSize = gridSize;
+    }
 
     public override void _UnhandledInput(InputEvent @event)
     {

@@ -59,6 +59,7 @@ public partial class Level1 : Node2D, ISceneScript
             _grid = new Grid(size);
 
             TheGrid.Init(size, SaveData.CurrentSkin);
+            HUD.ResetForNewRun();
 
             var (initialSession, effects) = GridSessionMachine.Start(_grid, setup);
             _gridSession = initialSession;

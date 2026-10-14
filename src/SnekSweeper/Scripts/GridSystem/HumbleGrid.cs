@@ -36,6 +36,7 @@ public partial class HumbleGrid : Node2D, IHumbleGrid, ISceneScript
     {
         GridInputListener.Init(gridSize);
         CellsContainer.InstantiateCells(gridSize, skin);
+        GridCursor.ShowAt(new PointerTarget.OffGrid());
     }
 
     public void PlayCongratulationEffects() => CellsContainer.PlayShuffleEffect();

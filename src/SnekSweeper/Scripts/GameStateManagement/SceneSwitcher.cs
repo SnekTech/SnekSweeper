@@ -16,6 +16,19 @@ public partial class SceneSwitcher : Node, ISceneSwitcher
         _currentScene = CurrentSceneHolder.GetChild(0);
     }
 
+    public bool TryReuseCurrent<T>(Action<T>? onReused = null) where T : Node, ISceneScript
+    {
+        if (_isTransitioning) return false;
+
+        if (_currentScene is T node)
+        {
+            onReused?.Invoke(node);
+            return true;
+        }
+
+        return false;
+    }
+
     public async GDTask GotoSceneAsync<T>(Action<T>? onSceneEntered, CancellationToken ct = default)
         where T : Node, ISceneScript
     {

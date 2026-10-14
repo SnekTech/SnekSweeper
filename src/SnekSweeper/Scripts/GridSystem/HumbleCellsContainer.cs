@@ -1,9 +1,11 @@
 ﻿using GodotGadgets.Extensions;
+using GodotGadgets.Tasks;
 using GodotGadgets.TweenStuff;
 using GodotTask;
 using GTweens.Builders;
 using GTweens.Easings;
 using GTweens.Enums;
+using GTweens.Tweens;
 using GTweensGodot.Extensions;
 using SnekSweeper.CellSystem;
 using SnekSweeper.Widgets;
@@ -16,8 +18,14 @@ namespace SnekSweeper.GridSystem;
 public partial class HumbleCellsContainer : Node2D, ICellRenderer, IHumbleCellCollection
 {
     readonly Dictionary<GridIndex, HumbleCell> _cells = [];
+    CancellationTokenSource? _celebrationCts;
 
     public IEnumerable<IHumbleCell> HumbleCells => _cells.Values;
+
+    public override void _ExitTree()
+    {
+        StopCelebration();
+    }
 
     public void InstantiateCells(GridSize gridSize, GridSkin skin)
     {
@@ -39,24 +47,33 @@ public partial class HumbleCellsContainer : Node2D, ICellRenderer, IHumbleCellCo
     {
         this.ClearChildren();
         _cells.Clear();
+        StopCelebration();
     }
 
     public void PlayShuffleEffect()
     {
-        const float duration = 0.1f;
+        StopCelebration();
+        _celebrationCts = new CancellationTokenSource();
 
-        var shuffleTweenBuilder = GTweenSequenceBuilder.New();
-        foreach (var humbleCell in _cells.Values)
+        var tween = BuildShuffleTween();
+        tween.PlayAsyncGD(_celebrationCts.Token).Forget();
+        return;
+
+        GTween BuildShuffleTween()
         {
-            var singleCellShuffle = humbleCell.TweenPosition(Vector2.Zero, duration)
-                .SetEasing(Easing.OutQuint);
-            shuffleTweenBuilder
-                .Append(singleCellShuffle);
-        }
+            const float duration = 0.1f;
 
-        var tween = shuffleTweenBuilder.Build()
-            .SetMaxLoops(ResetMode.PingPong);
-        // todo: 想办法在 Win.OnExit 中终止庆祝动画更合理
-        tween.PlayAsyncUntilNodeDestroy(this).Forget();
+            var builder = _cells.Values
+                .Select(cell => cell.TweenPosition(Vector2.Zero, duration).SetEasing(Easing.OutQuint))
+                .Aggregate(GTweenSequenceBuilder.New(), (builder, nextTween) => builder.Append(nextTween));
+
+            return builder.Build().SetMaxLoops(ResetMode.PingPong);
+        }
+    }
+
+    void StopCelebration()
+    {
+        _celebrationCts?.CancelAndDispose();
+        _celebrationCts = null;
     }
 }

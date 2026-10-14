@@ -12,4 +12,5 @@ public interface ISceneSwitcher
     /// <param name="onSceneEntered"></param>
     /// <param name="ct">留给"旧场景退场 / 新场景入场"的异步效果取消用；目前换场没有可取消的工作。</param>
     GDTask GotoSceneAsync<T>(Action<T>? onSceneEntered = null, CancellationToken ct = default) where T : Node, ISceneScript;
+    bool TryReuseCurrent<T>(Action<T>? onReused = null) where T : Node, ISceneScript;
 }

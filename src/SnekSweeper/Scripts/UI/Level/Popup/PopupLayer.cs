@@ -31,4 +31,11 @@ public partial class PopupLayer : CanvasLayer
         IsInputBlocked = false;
         return choice;
     }
+
+    public void Reset()
+    {
+        IsInputBlocked = false;
+        WinPopup.Hide();
+        LosePopup.Hide();
+    }
 }

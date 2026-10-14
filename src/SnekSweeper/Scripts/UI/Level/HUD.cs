@@ -35,4 +35,10 @@ public partial class HUD : CanvasLayer, ISceneScript
     public void UpdateBombCount(int bombCount) => BombCountLabel.Text = $"{bombCount} bombs";
     public void UpdateFlagCount(int flagCount) => FlagCountLabel.Text = $"{flagCount} flags";
     public void IncreaseCombo() => ComboRankCard.IncreaseCombo();
+
+    public void ResetForNewRun()
+    {
+        ComboRankCard.Reset();
+        _.PopupLayer.Reset();
+    }
 }

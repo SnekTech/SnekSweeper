@@ -89,7 +89,8 @@ public partial class Main : Node, IAppSessionHost,
                     break;
 
                 case AppScreen.Level { Source: var source }:
-                    // todo: reuse Level1 scene
+                    if (SceneSwitcher.TryReuseCurrent<Level1>(level => level.LoadLevel(source))) return;
+
                     Show<Level1>(AmbientThemes.Level, level => level.LoadLevel(source));
                     break;
 

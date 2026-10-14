@@ -41,11 +41,20 @@ public partial class ComboRankCard : VBoxContainer, ISceneScript
         RefreshDisplay();
     }
 
+    public void Reset()
+    {
+        _state = ComboDefault.initial;
+        _gameTime = 0;
+        RefreshDisplay();
+    }
+
     void RefreshDisplay()
     {
         var tier = ComboDefault.getTier(ComboDefault.levelAt(_gameTime, _state));
         _.ComboLevelTextLabel.Text = ToDisplayText(tier);
         _.ComboProgressBar.Value = ComboDefault.progressRatio(_gameTime, _state) * _.ComboProgressBar.MaxValue;
+
+        // fixme: ignore the MainSetting.ComboRankDisplay when setting the Visible property
         Visible = !tier.Equals(ComboTier.None);
     }
 

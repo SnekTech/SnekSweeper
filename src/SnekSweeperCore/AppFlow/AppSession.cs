@@ -37,6 +37,10 @@ public abstract record AppScreen
 public abstract record AppSessionEffect
 {
     public sealed record Stay : AppSessionEffect;
+
+    /// <summary>
+    /// 这个 effect 表示 app 需要处于 targetScreen，调用端可以重新创建场景，也可以复用现有资源，只要达到目的
+    /// </summary>
     public sealed record Show(AppScreen TargetScreen) : AppSessionEffect;
 }
 
