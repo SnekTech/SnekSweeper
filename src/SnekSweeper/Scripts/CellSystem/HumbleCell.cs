@@ -69,9 +69,7 @@ public partial class HumbleCell : Node2D, IHumbleCell, ISceneScript
                 break;
             case CellState.Flagged:
                 CellCover.Show();
-                CellFlag.Show();
-                // todo: decide whether to define a method to paint flag
-                CellFlag.FlagSprite.Position = CellFlag.FlagSprite.Position with { Y = 0 };
+                CellFlag.ShowRaised();
                 break;
             case CellState.BombRevealed:
                 CellCover.Hide();
