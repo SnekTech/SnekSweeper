@@ -16,7 +16,7 @@ public sealed class AppFlowSpecs
 
         init.Should().Be(new AppSession.SplashScreen());
         next.Should().Be(new AppSession.MainMenu());
-        effect.Should().Be(new AppSessionEffect.Show(new AppScreen.MainMenu()));
+        effect.Should().Be(new AppSessionEffect.Enter(new AppScreen.MainMenu()));
     }
 
     [Test]
@@ -28,7 +28,7 @@ public sealed class AppFlowSpecs
         var (next, effect) = mainMenuSession.Update(new AppSession.Event.NewGame(regularStart));
 
         next.Should().Be(new AppSession.InGame());
-        effect.Should().Be(new AppSessionEffect.Show(new AppScreen.Level(regularStart)));
+        effect.Should().Be(new AppSessionEffect.Enter(new AppScreen.Level(regularStart)));
     }
 
     [Test]
@@ -39,7 +39,7 @@ public sealed class AppFlowSpecs
         var (next, effect) = inGame.Update(new AppSession.Event.BackToMainMenu());
 
         next.Should().Be(new AppSession.MainMenu());
-        effect.Should().Be(new AppSessionEffect.Show(new AppScreen.MainMenu()));
+        effect.Should().Be(new AppSessionEffect.Enter(new AppScreen.MainMenu()));
     }
 
     [Test]
@@ -51,7 +51,7 @@ public sealed class AppFlowSpecs
         var (next, effect) = inGame.Update(new AppSession.Event.NewGame(regularStart));
 
         next.Should().Be(new AppSession.InGame());
-        effect.Should().Be(new AppSessionEffect.Show(new AppScreen.Level(regularStart)));
+        effect.Should().Be(new AppSessionEffect.Enter(new AppScreen.Level(regularStart)));
     }
 
     [Test]
@@ -87,7 +87,7 @@ public sealed class AppFlowSpecs
         var (next, effect) = history.Update(new AppSession.Event.NewGame(fromRun));
 
         next.Should().Be(new AppSession.InGame());
-        effect.Should().BeOfType<AppSessionEffect.Show>()
+        effect.Should().BeOfType<AppSessionEffect.Enter>()
             .Which.TargetScreen.Should().BeOfType<AppScreen.Level>();
     }
 }

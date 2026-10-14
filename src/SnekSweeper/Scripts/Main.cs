@@ -58,7 +58,7 @@ public partial class Main : Node, IAppSessionHost,
         Action? applyEffect = effect switch
         {
             AppSessionEffect.Stay => null,
-            AppSessionEffect.Show { TargetScreen: var targetScreen } => () => ApplyTargetScreen(targetScreen),
+            AppSessionEffect.Enter { TargetScreen: var targetScreen } => () => ApplyTargetScreen(targetScreen),
             _ => throw new SwitchExpressionException(),
         };
         applyEffect?.Invoke();
