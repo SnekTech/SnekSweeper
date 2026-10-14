@@ -18,14 +18,10 @@ public partial class ComboRankCard : VBoxContainer, ISceneScript
     [Dependency]
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
+    bool ShouldShowComboInSetting => SaveData.State.MainSetting.ComboRankDisplay;
+
     public void OnResolved()
     {
-        if (!SaveData.State.MainSetting.ComboRankDisplay)
-        {
-            Hide();
-            return;
-        }
-
         RefreshDisplay();
     }
 
@@ -53,9 +49,7 @@ public partial class ComboRankCard : VBoxContainer, ISceneScript
         var tier = ComboDefault.getTier(ComboDefault.levelAt(_gameTime, _state));
         _.ComboLevelTextLabel.Text = ToDisplayText(tier);
         _.ComboProgressBar.Value = ComboDefault.progressRatio(_gameTime, _state) * _.ComboProgressBar.MaxValue;
-
-        // fixme: ignore the MainSetting.ComboRankDisplay when setting the Visible property
-        Visible = !tier.Equals(ComboTier.None);
+        Visible = ShouldShowComboInSetting && !tier.Equals(ComboTier.None);
     }
 
     static readonly IReadOnlyDictionary<ComboTier, string> TierText = new Dictionary<ComboTier, string>
