@@ -20,7 +20,7 @@ public partial class ScrollMenuView : Control
     public void Init(IReadOnlyList<MenuItemBinding> bindings)
     {
         ItemsContainer.ClearChildren();
-        
+
         _itemNodes =
         [
             .. bindings.Select(b =>
@@ -38,7 +38,7 @@ public partial class ScrollMenuView : Control
         }
 
         var items = bindings.Select(b => b.Item).ToArray();
-        
+
         var config = new ScrollMenuConfig(items, visibleCount: 3);
         _menu = new ScrollMenu(config);
         _animator = new ScrollMenuViewAnimator(SlotHeight);
@@ -50,12 +50,7 @@ public partial class ScrollMenuView : Control
         ApplyWindow(_menu.VisibleWindow, NavigateDirection.Down); // up or down doesn't matter here
     }
 
-    public override void _ExitTree()
-    {
-        // todo: use link to exitToken to replace this? 
-        // todo: unsubscribe the button bindings
-        _tweenCts?.CancelAndDispose();
-    }
+    public override void _ExitTree() => _tweenCts?.CancelAndDispose();
 
     public override void _Input(InputEvent @event)
     {
