@@ -1,11 +1,9 @@
 ﻿using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
-using GodotGadgets.Extensions;
 using GodotGadgets.TooltipSystem;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.CheatCodeSystem;
 using SnekSweeperCore.SaveLoad;
-using SnekTech.Tooltip;
 
 namespace SnekSweeper.CheatCodeSystem.UI;
 
@@ -19,15 +17,14 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     CheatCode _cheatCode = null!;
+    TooltipTrigger? _tooltipTrigger;
 
-    public override void _EnterTree()
-    {
-        CheckButton.Toggled += OnCheckButtonToggled;
-    }
+    public override void _EnterTree() => CheckButton.Toggled += OnCheckButtonToggled;
 
     public override void _ExitTree()
     {
         CheckButton.Toggled -= OnCheckButtonToggled;
+        _tooltipTrigger?.Dispose();
     }
 
     internal void Init(CheatCode cheatCode, ITooltipDisplay tooltipDisplay)
@@ -37,16 +34,10 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
         NameLabel.Text = cheatCode.Data.Name;
         Icon.Texture = cheatCode.Icon;
         CheckButton.SetPressed(cheatCode.IsActivatedIn(SaveData.State.ActivatedCheatCodeSet));
-        
-        InitTooltip();
-        return;
 
-        void InitTooltip()
-        {
-            var tooltipTrigger = this.GetFirstChildOfType<ControlTooltipTrigger>()!;
-            tooltipTrigger.SetTooltipContent(TooltipContent.New(cheatCode.Data.Name, cheatCode.Data.Description));
-            tooltipTrigger.SetTooltipDisplay(tooltipDisplay);
-        }
+        _tooltipTrigger?.Dispose();
+        _tooltipTrigger = TooltipTrigger.Attach(new TooltipSource.FromControl(this),
+            TooltipContent.New(cheatCode.Data.Name, cheatCode.Data.Description), tooltipDisplay);
     }
 
     void OnCheckButtonToggled(bool toggledOn)

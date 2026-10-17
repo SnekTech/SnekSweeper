@@ -1,3 +1,4 @@
+using GodotGadgets.Tasks;
 using GodotGadgets.TweenStuff;
 using GodotTask;
 using GTweens.Easings;
@@ -35,20 +36,23 @@ public partial class AmbientBackground : CanvasLayer, ISceneScript
     /// <summary>
     /// 平滑过渡到目标主题。上一次过渡若尚未结束会被取消, 且从"当前实际值"续接 —— 不会跳变。
     /// </summary>
-    public GDTask GoToAsync(AmbientTheme theme, float duration, CancellationToken ct = default)
+    public async GDTask GoToAsync(AmbientTheme theme, float duration, CancellationToken ct = default)
     {
         var from = _uniforms.Read();
 
         var progress = GTweenExtensions.Tween(
-                () => 0f,                                    // 进度起点恒为 0; 真正的起点由 from 决定
-                p => _uniforms.Snap(from.LerpTo(theme, p)),  // 每帧把插值结果写进材质
+                () => 0f, // 进度起点恒为 0; 真正的起点由 from 决定
+                p => _uniforms.Snap(from.LerpTo(theme, p)), // 每帧把插值结果写进材质
                 1f,
                 duration)
             .SetEasing(Easing.InOutCubic);
 
-        return _transition.CancelPreviousAndPlayAsync(progress, ct).AsGDTask();
+        using var linked = ct.LinkWithNodeDestroy(this);
+
+        await _transition.CancelPreviousAndPlayAsync(progress, linked.Token);
     }
 
     /// <summary>平滑过渡(不等待)。</summary>
-    public void GoTo(AmbientTheme theme, float duration) => GoToAsync(theme, duration).Forget();
+    public void GoTo(AmbientTheme theme, float duration) =>
+        GoToAsync(theme, duration, this.GetCancellationTokenOnTreeExit()).Forget();
 }

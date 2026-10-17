@@ -1,7 +1,8 @@
-﻿using GodotGadgets.TooltipSystem;
+﻿using GodotGadgets.Extensions;
+using GodotGadgets.Tasks;
+using GodotGadgets.TooltipSystem;
 using GodotGadgets.TweenStuff;
 using GodotTask;
-using GTweensGodot.Extensions;
 
 namespace SnekSweeper.UI.TooltipSystem;
 
@@ -10,49 +11,44 @@ public partial class Tooltip : Control
 {
     const float FadeDuration = 0.3f;
 
+    public override void _Ready()
+    {
+        Hide();
+        this.SetModulateAlpha(0);
+    }
+
     internal async GDTask ShowAsync(TooltipContent content, Rect2 targetGlobalRect, CancellationToken token)
     {
+        using var linked = token.LinkWithNodeDestroy(this);
+
         HeaderLabel.Text = content.Title;
         ContentLabel.Text = content.Content;
         Show();
-        
+
         Callable.From(UpdateTooltipPosition).CallDeferred();
 
-        await this.TweenModulateAlpha(1, FadeDuration).PlayAsyncGD(token);
+        await this.FadeInAsync(FadeDuration, linked.Token);
         return;
 
         void UpdateTooltipPosition()
         {
+            // deferred 不可撤回，只能执行时兜底
+            if (!IsInstanceValid(this)) return;
+
             // the new tooltip panel container size can only
             // be obtained after the new tooltip appearing,
             // so the call to update the tooltip position should be deferred
-            GlobalPosition = GetValidGlobalPosition(targetGlobalRect, _.PanelContainer.Get().Size, GetViewportRect().Size);
+            GlobalPosition = TooltipPlacement.Resolve(
+                targetGlobalRect, _.PanelContainer.Get().Size, GetViewportRect().Size);
         }
     }
 
     internal async GDTask HideAsync(CancellationToken token)
     {
-        await this.TweenModulateAlpha(0, FadeDuration).PlayAsyncGD(token);
+        using var linked = token.LinkWithNodeDestroy(this);
+        await this.FadeOutAsync(FadeDuration, linked.Token);
+
+        linked.Token.ThrowIfCancellationRequested();
         Hide();
-    }
-
-    static Vector2 GetValidGlobalPosition(Rect2 targetGlobalRect, Vector2 tooltipSize, Vector2 viewportSize)
-    {
-        const int tooltipMarginX = 10;
-        var targetPosition = targetGlobalRect.Position;
-        var targetSize = targetGlobalRect.Size;
-        
-        var tooltipX = IsOverflowHorizontally()
-            ? targetPosition.X - tooltipMarginX - tooltipSize.X
-            : targetPosition.X + targetSize.X + tooltipMarginX;
-
-        var tooltipY = IsOverflowVertically()
-            ? targetPosition.Y - (tooltipSize.Y - targetSize.Y)
-            : targetPosition.Y;
-
-        return new Vector2(tooltipX, tooltipY);
-
-        bool IsOverflowHorizontally() => targetPosition.X + targetSize.X + tooltipMarginX + tooltipSize.X > viewportSize.X;
-        bool IsOverflowVertically() => targetPosition.Y + tooltipSize.Y > viewportSize.Y;
     }
 }
