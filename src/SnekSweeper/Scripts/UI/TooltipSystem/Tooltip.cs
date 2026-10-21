@@ -17,20 +17,40 @@ public partial class Tooltip : Control
         this.SetModulateAlpha(0);
     }
 
-    internal async GDTask ShowAsync(TooltipContent content, Rect2 targetGlobalRect, CancellationToken token)
+    internal async GDTask PlayFadeInAsync(CancellationToken token)
     {
         using var linked = token.LinkWithNodeDestroy(this);
+        await this.FadeInAsync(FadeDuration, linked.Token);
+    }
 
+    internal async GDTask FadeOutThenHideAsync(CancellationToken token)
+    {
+        using var linked = token.LinkWithNodeDestroy(this);
+        await this.FadeOutAsync(FadeDuration, linked.Token);
+
+        linked.Token.ThrowIfCancellationRequested();
+        Hide();
+    }
+
+    internal void Present(TooltipContent content, Rect2 anchor, float margin)
+    {
+        Apply(content);
+        PlaceDeferred(anchor, margin);
+    }
+
+    void Apply(TooltipContent content)
+    {
         HeaderLabel.Text = content.Title;
         ContentLabel.Text = content.Content;
         Show();
+    }
 
-        Callable.From(UpdateTooltipPosition).CallDeferred();
-
-        await this.FadeInAsync(FadeDuration, linked.Token);
+    void PlaceDeferred(Rect2 anchor, float margin)
+    {
+        Callable.From(Place).CallDeferred();
         return;
 
-        void UpdateTooltipPosition()
+        void Place()
         {
             // deferred 不可撤回，只能执行时兜底
             if (!IsInstanceValid(this)) return;
@@ -39,16 +59,7 @@ public partial class Tooltip : Control
             // be obtained after the new tooltip appearing,
             // so the call to update the tooltip position should be deferred
             GlobalPosition = TooltipPlacement.Resolve(
-                targetGlobalRect, _.PanelContainer.Get().Size, GetViewportRect().Size);
+                anchor, _.PanelContainer.Get().Size, GetViewportRect().Size, margin);
         }
-    }
-
-    internal async GDTask HideAsync(CancellationToken token)
-    {
-        using var linked = token.LinkWithNodeDestroy(this);
-        await this.FadeOutAsync(FadeDuration, linked.Token);
-
-        linked.Token.ThrowIfCancellationRequested();
-        Hide();
     }
 }

@@ -6,78 +6,42 @@ using GodotTask;
 namespace SnekSweeper.UI.TooltipSystem;
 
 [SceneTree]
-public partial class TooltipLayer : CanvasLayer, ITooltipDisplay
+public partial class TooltipLayer : CanvasLayer, ITooltipRenderer, ITooltipAttacher
 {
-    const float HoverDelaySeconds = 0.35f;
-
-    TooltipSession _session = new TooltipSession.Hidden();
-    CancellationTokenSource? _hoverDelay;
+    readonly TooltipHost _host;
     readonly LatestAction _fade = new();
-    RequestId _requestId;
+    readonly TooltipConfig _config = TooltipConfig.Default;
+
+    public TooltipLayer()
+    {
+        _host = new TooltipHost(_config, this, () => TimeSpan.FromMilliseconds(Time.GetTicksMsec()));
+    }
 
     public override void _ExitTree()
     {
-        _hoverDelay?.CancelAndDispose();
+        _host.Dispose();
         _fade.Dispose();
     }
 
-    public void PointerEntered(TooltipContent content, Rect2 targetGlobalRect)
-    {
-        var nextRequestId = _requestId.GetNext();
-        _requestId = nextRequestId;
-        Dispatch(new TooltipSession.Event.PointerEntered(new TooltipRequest(_requestId, content, targetGlobalRect)));
-    }
+    public override void _Process(double delta) => _host.Advance();
 
-    public void PointerExited()
-    {
-        Dispatch(new TooltipSession.Event.PointerExited());
-    }
+    public IDisposable Attach(TooltipSource source, TooltipContent content) => _host.Attach(source, content);
 
-    void Dispatch(TooltipSession.Event evt)
+    public void Render(TooltipTransition transition)
     {
-        if (!IsInsideTree()) return;
-        
-        var (next, effects) = _session.Update(evt, TimeSpan.FromSeconds(HoverDelaySeconds));
-        _session = next;
-        foreach (var effect in effects)
+        switch (transition)
         {
-            Apply(effect);
-        }
-    }
-
-    void Apply(TooltipSession.Effect effect)
-    {
-        switch (effect)
-        {
-            case TooltipSession.Effect.StartHoverDelay { Delay: var delay, RequestId: var requestId }:
-                _hoverDelay?.CancelAndDispose();
-                _hoverDelay = new CancellationTokenSource();
-                WaitThenDispatch(delay, requestId, _hoverDelay.Token).Forget();
+            case TooltipTransition.Show show:
+                Tooltip.Present(show.View.Content, show.View.Anchor, _config.Margin);
+                _fade.RunAsync(Tooltip.PlayFadeInAsync).Forget();
                 break;
-
-            case TooltipSession.Effect.CancelHoverDelay:
-                _hoverDelay?.CancelAndDispose();
-                _hoverDelay = null;
+            case TooltipTransition.Replace replace:
+                Tooltip.Present(replace.View.Content, replace.View.Anchor, _config.Margin);
                 break;
-
-            case TooltipSession.Effect.Show { Request: var request }:
-                _hoverDelay?.CancelAndDispose();
-                _hoverDelay = null;
-                _fade.RunAsync(ct => Tooltip.ShowAsync(request.Content, request.TargetRect, ct)).Forget();
+            case TooltipTransition.Hide:
+                _fade.RunAsync(Tooltip.FadeOutThenHideAsync).Forget();
                 break;
-
-            case TooltipSession.Effect.FadeOut:
-                _fade.RunAsync(Tooltip.HideAsync).Forget();
-                break;
-
             default: throw new UnreachableException();
         }
-    }
-
-    async GDTask WaitThenDispatch(TimeSpan delay, RequestId requestId, CancellationToken ct)
-    {
-        await GDTask.Delay(delay, ct);
-        ct.ThrowIfCancellationRequested();
-        Dispatch(new TooltipSession.Event.HoverDelayElapsed(requestId));
     }
 }

@@ -17,17 +17,17 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
     ISaveDataStore SaveData => this.DependOn<ISaveDataStore>();
 
     CheatCode _cheatCode = null!;
-    TooltipTrigger? _tooltipTrigger;
+    IDisposable? _tooltip;
 
     public override void _EnterTree() => CheckButton.Toggled += OnCheckButtonToggled;
 
     public override void _ExitTree()
     {
         CheckButton.Toggled -= OnCheckButtonToggled;
-        _tooltipTrigger?.Dispose();
+        _tooltip?.Dispose();
     }
 
-    internal void Init(CheatCode cheatCode, ITooltipDisplay tooltipDisplay)
+    internal void Init(CheatCode cheatCode, ITooltipAttacher tooltipAttacher)
     {
         _cheatCode = cheatCode;
 
@@ -35,9 +35,9 @@ public partial class CheatCodeCard : PanelContainer, ISceneScript
         Icon.Texture = cheatCode.Icon;
         CheckButton.SetPressed(cheatCode.IsActivatedIn(SaveData.State.ActivatedCheatCodeSet));
 
-        _tooltipTrigger?.Dispose();
-        _tooltipTrigger = TooltipTrigger.Attach(new TooltipSource.FromControl(this),
-            TooltipContent.New(cheatCode.Data.Name, cheatCode.Data.Description), tooltipDisplay);
+        _tooltip?.Dispose();
+        _tooltip = tooltipAttacher.Attach(new TooltipSource.FromControl(this),
+            new TooltipContent(cheatCode.Data.Name, cheatCode.Data.Description));
     }
 
     void OnCheckButtonToggled(bool toggledOn)
