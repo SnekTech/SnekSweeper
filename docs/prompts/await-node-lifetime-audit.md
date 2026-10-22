@@ -1,6 +1,8 @@
 # 任务: 修复「await 之后访问 Godot 节点」的一类隐患
 
-> 这是一个**自包含**的任务描述。把它贴给一个新对话即可开工。
+> **状态（2026-10-22）：清单已结案。** 除 `InputMask` 输入拦截（用户已自行接手，见 §4.1 第 8 条）
+> 之外，全部处置完成（已修 / 结构性关闭 / 判定不可达）。本文档保留为**记录与判据**，不再是待开工的任务书。
+> 唯一没闭合的是**运行时验证**（见 §4.5 / §6）：结论中除列出的那几处改动外，其余都是静态推理。
 > 目标仓库有两个（见下），改动跨仓；**不要替用户 commit**（见「工作约定」）。
 
 ---
@@ -11,12 +13,15 @@
 `FadingMask` 的删除合并成 1 处，见 §4 / §6）。请按「修法优先级」逐处修复，每修一处都要能说清
 「这个窗口为什么消失 / 为什么不成立」，**不要只是加个 null 检查糊过去**。
 
-建议顺序：见 §4.1「当前处置」（早期版本的"`Tooltip` → `PaginationBinder` → …"顺序已作废：前两项已搁置）。
-`SceneSwitcher` 那一条的可达性已判完（**不可达，不修**，见 §6）。
+建议顺序：见 §4.1「当前处置」。早期版本的"`Tooltip` → `PaginationBinder` → …"顺序已作废 ——
+这两项都已各自重写完成并关闭；`SceneSwitcher` 的可达性也已判完（**不可达，不修**，见 §6）。
+现在清单上唯一还挂着的是 `InputMask` 输入拦截，且用户已接手（§4.1 第 8 条）。
 
-> **进度（2026-09-24 更新）**：
+> **进度（2026-09-24 建，2026-10-22 更新）**：
 > - `Flag.cs` 已修（用户提交）；`FadingMask` 已整体删除（旧命中点作废）。
-> - **Tooltip（#2）搁置**：整个 tooltip feature 将重新设计，不在旧实现上做修。
+> - **Tooltip（#2，含 `CallDeferred` 家族）—— 已随 feature 重设计关闭（2026-10）**：旧实现整体重写
+>   （`SnekSweeper/UI/TooltipSystem/Tooltip.cs` + `TooltipLayer.cs`，以及 `GodotGadgets/TooltipSystem/`
+>   的纯逻辑 domain + host）。新实现按 §5 第 2 档自守卫，详见 §4.1 第 1 条。
 > - **翻页（#3 `PaginationBinder` + #4 `ExampleCard`）—— 已随 DU 重写关闭（2026-09-26）**：核心改为
 >   `PaginationState` + `PageNav`（纯，无 async / ct / 锁 / 事件），binder 不再 await 内容任务
 >   （`Task.WhenAll` + `catch(OCE)` 一并删除），`ExampleCard` 的封面状态搬到 await 之前。
@@ -26,10 +31,12 @@
 > - **`Level1.cs` 的初始化 / 输入路径（原 `:144,150,159`）—— 窗口已结构性关闭**：整条链现在**全同步**
 >   （`InitCells` / `RestoreCellStates` / `HandleInput` / `Paint` / 消费 `GridOutcome`），
 >   不再产生任何续体（详见 §4.1 第 7 条；原先的"时序论证"随之作废）。
-> - **至此清单结清**：已修 4 处（#1 `Flag`；#11 `SlideOutAsync` 连带 #9/#10；#3/#4 随翻页 DU 重写）；
->   随重写处理 2 项（#2 tooltip、`InputMask` 输入拦截）；判定不修 5 处（#5/#6/#7/#8/#12）；
->   另有 1 处（`Level1` 初始化 / 输入路径）已**结构性关闭**。
-> - **重写开工前的遗留总览（含验证缺口）见 §4.5。**
+> - **至此清单结清**：已修 5 处（#1 `Flag`；#11 `SlideOutAsync` 连带 #9/#10；#3/#4 随翻页 DU 重写；
+>   #2 tooltip 随 feature 重设计）；判定不修 5 处（#5/#6/#7/#8/#12）；另有 1 处（`Level1` 初始化 /
+>   输入路径）已**结构性关闭**。
+> - **唯一未结项**：`InputMask` 输入拦截 —— 它不属于「await 之后碰节点」这一类，用户已在自己的待办里
+>   接手（`PopupLayer.cs:16` 的 todo），将随"键鼠 + 手柄双输入"方案统一设计输入闸门。
+> - **遗留总览（含验证缺口）见 §4.5。**
 >
 > **类型名更新（2026-10-12）**：本清单写作时的 LogicBlocks 体系已全部退场 —— App 顶层 FSM 重写为 Core 的
 > `AppSession` DU（宿主 `Main` 实现 `IAppSessionHost`，`AppLogic` / `IAppRepo` 已删除），grid FSM 重写为
@@ -194,7 +201,7 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | # | 文件:行 | await 的东西 | await 之后碰的节点 | 风险 | 状态 |
 |---|---|---|---|---|---|
 | 1 | `S:/SnekSweeper/Scripts/CellSystem/Components/Flag.cs:49` | `tween.PlayAsyncUntilNodeDestroy` | `Hide();` | 中高 | ✅ **已修（用户改的，已提交）** |
-| 2 | `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs:36` | `TweenModulateAlpha(0,…).PlayAsyncGD(token)` | `Hide();` | **高** | ⏸ 搁置（tooltip 重设计中） |
+| 2 | `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs`（旧 `:36`，该文件已整体重写） | `TweenModulateAlpha(0,…).PlayAsyncGD(token)` | `Hide();` | **高** | ✅ 已随 tooltip 重设计关闭（见 §4.1 第 1 条） |
 | 3 | `G:/UI/Pagination/PaginationBinder.cs:90-92` | `Task.WhenAll(_pendingContentTasks)` | `_ui.SetNavigationEnabled/ClearContent/AddContentItem` | **高** | ✅ 随翻页 DU 重写关闭 |
 | 4 | `S:/SnekSweeper/Scripts/UI/Tutorial/Example/ExampleCard.cs:33` | `grid.InitCellsAsync(snapshot, ct)`（**该 API 已删除**） | `ApplyCoverStatus()` → `Cover.SetStatus` → `StatusIndicator.Modulate` | 中 | ✅ 已关闭：`InitCellsAsync` 删除，`ExampleCard.Init` 全同步 |
 | 5 | `S:/SnekSweeper/Scripts/GameStateManagement/SceneSwitcher.cs:32` | `GDTask.Yield()` | `_currentScene.Free()` / `CurrentSceneHolder.AddChild(newScene)` / `onSceneEntered?.Invoke(newScene)`（→ `Level1.LoadLevel` 会碰 `TheGrid`/`SaveData`） | 低-中 | 🚫 判定不可达，不修（见 §6） |
@@ -206,9 +213,21 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 | 11 | `G:/TweenStuff/TweenExtensions.cs:38-45`（`SlideOutAsync`） | `target.TweenGlobalPosition(…).PlayAsync(…)` | `target.Hide();`（**库级**，本工作区唯一调用方是 `PopupAnimator`） | 中 | ✅ **已修（§5 第 2 档）** |
 | 12 | `S:/SnekSweeper/Scripts/Autoloads/MessageBox.cs:47-48` | `GDTask.Delay`、`messageLabel.FadeOutAsync` | `messageLabel.QueueFree();` | 低（autoload 与整棵树同命） | 🚫 判定不可达（见 §4.1） |
 
-### 4.1 当前处置（2026-09-24，09-25 更新）
+### 4.1 当前处置（2026-09-24 建，2026-10-22 更新）
 
-1. **`Tooltip`（#2，含同文件的 `CallDeferred` 家族）—— 搁置**：整个 tooltip feature 将重新设计。
+1. **`Tooltip`（#2，含同文件的 `CallDeferred` 家族）—— 已随 feature 重设计关闭（2026-10）**。
+   旧实现整体重写；现在 tooltip 系统里只有 **2 个 async 方法**，都在
+   `S:/SnekSweeper/Scripts/UI/TooltipSystem/Tooltip.cs`，且都按 §5 第 2 档处理：
+   - `PlayFadeInAsync`：`token.LinkWithNodeDestroy(this)` → `await FadeInAsync`（await 之后不再碰节点）；
+   - `FadeOutThenHideAsync`：link → `await FadeOutAsync` → `linked.Token.ThrowIfCancellationRequested()`
+     → `Hide()`。旧 #2 的窗口就是在这里消失的（"已排队的续体"被自检挡住）。
+   取消源是 `LatestAction`（新的先 `CancelAndDispose` 旧的）；`TooltipLayer._ExitTree` 里
+   `_host.Close()` + `_fade.Dispose()`，所以退场时在飞的 fade 一律被取消 ⇒ 自检必抛 ⇒ 不会碰已销毁节点。
+   `GodotGadgets/TooltipSystem/` 那一侧（`TooltipHost` / `TooltipState` / `TooltipTransition` /
+   `TooltipPlacement` …）是**纯逻辑**（无 async、注入 `Func<TimeSpan> clock`），view 只携带 `Rect2`
+   快照、不持有活节点 ⇒ 结构上没有可被 await 打穿的地方。
+   `Callable.From(...).CallDeferred()` 全仓仅剩 `Tooltip.PlaceDeferred` 一处，且执行时
+   `if (!IsInstanceValid(this)) return;` 兜底（deferred 不可撤回，只能执行时兜底）。
 2. **`PaginationBinder` + `ExampleCard`（#3/#4）—— 已随翻页 DU 重写关闭（2026-09-26）。**
    旧实现里 `PaginationBar.ClearContent()` 会 `QueueFree()` 掉仍在 `InitAsync` 中的卡片，而
    `catch (OperationCanceledException)` 只覆盖"被取消"、不覆盖"完成之后节点才死" —— 这正是同一个窗口的两端。
@@ -245,11 +264,16 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
    附带的结构前提（**假设，须长期保持**）：`TheGrid`(HumbleGrid) 与 `Level1` 同生死、`_grid` / `_gridSession`
    由 `Level1` 持有 ⇒ 这些访问**不需要**防御式检查。
    若将来支持"不换场地原地重建网格"（复用池 / 中途重开一局），这条前提失效，上述访问点必须重新审。
-8. **`InputMask` 的输入拦截 —— 不属于本清单，标记为待重写**（随输入会话 / 弹窗重做）：
-   现状是 `ColorRect` + `MOUSE_FILTER_STOP`，**只影响鼠标**；键盘/手柄不经 GUI 命中测试
-   （`GridInputListener._UnhandledInput` 收得很宽）。要设备无关，正确位置是在**输入适配层**放显式闸门
-   （例如 `GridInputListener` 先问 `IsInputBlocked`），而不是依赖 GUI 命中测试。
-   另：`InputMask` 只覆盖屏幕一部分时，未覆盖区域的鼠标事件会漏过去。
+8. **`InputMask` 的输入拦截 —— 不属于本清单，用户已接手（2026-10）**：
+   `S:/SnekSweeper/Scripts/UI/Level/Popup/PopupLayer.cs:16` 已留 todo
+   （`block input the right way, this only block mouse inputs now`）。
+   后续会同时支持**键鼠 + 手柄**两种输入，输入闸门届时会有专门设计 —— 本任务不再跟进。
+   诊断保留在此，作为那次设计的输入：
+   - 现状 `ColorRect` + `MOUSE_FILTER_STOP` **只挡鼠标**；键盘/手柄不经 GUI 命中测试
+     （`GridInputListener._UnhandledInput` 收得很宽）；
+   - 要设备无关，正确位置是在**输入适配层**放显式闸门（例如 `GridInputListener` 先问 `IsInputBlocked`），
+     而不是依赖 GUI 命中测试；
+   - 另：`InputMask` 只覆盖屏幕一部分时，未覆盖区域的鼠标事件会漏过去。
 
 ### 4.2 类 D（**不同问题，别混进来**）
 
@@ -283,28 +307,29 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
   恢复逻辑回到 Core 的 `Grid.RestoreCellStates`，纯同步）、原 `Grid.cs:27,100,111`（那三个 `EmitXxx`
   随 `GridEventBus` 删除）、原 `Level1.cs:144,150,159`（见 §4.1 第 7 条：整条链已全同步）、
   原 `Pagination.cs:87`（随翻页重写删除，binder 不再有 await）。
-- 残余的不确定项（**不影响上面任何结论**）：`InputMask` 是否拦得住键盘/手柄输入未确认
-  （已单列为待重写项，见 §4.1 第 8 条）。原第①项（LogicBlocks 在 `Stop()` 之后收到 `Input` 的行为）
-  已随 LogicBlocks 退场作废。
-- 另外，全仓 `Callable.From` / `CallDeferred` / `SetDeferred`（"排队到之后执行"的另一套家族）只有 1 处，
-  即 `Tooltip.cs:19` —— 已随 tooltip 搁置。
+- 残余的不确定项（**不影响上面任何结论**）：`InputMask` 是否拦得住键盘/手柄输入未确认 ——
+  用户已接手（见 §4.1 第 8 条），本任务不再跟进。原第①项（LogicBlocks 在 `Stop()` 之后收到
+  `Input` 的行为）已随 LogicBlocks 退场作废。
+- 另外，全仓 `Callable.From` / `CallDeferred` / `SetDeferred`（"排队到之后执行"的另一套家族）
+  只有 1 处，即 `Tooltip.PlaceDeferred` —— 已在执行时用 `IsInstanceValid` 兜底（见 §4.1 第 1 条）。
 
-### 4.5 重写开工前的遗留总览（2026-09-25）
+### 4.5 遗留总览（2026-09-25 建，2026-10-22 更新）
 
 | 桶 | 内容 |
 |---|---|
-| ✅ 已修 | #1 `Flag`；#11 `SlideOutAsync`（连带 #9/#10）；#3/#4 随翻页 DU 重写；`TaskCancellationExtensions.GetCancellationTokenOnTreeExit` 改为按节点缓存 |
+| ✅ 已修 | #1 `Flag`；#11 `SlideOutAsync`（连带 #9/#10）；#3/#4 随翻页 DU 重写；#2 tooltip（随 feature 重设计，含 `CallDeferred` 家族的兜底）；`TaskCancellationExtensions.GetCancellationTokenOnTreeExit` 改为按节点缓存 |
 | 🚫 判定不修（有论证） | #5 `SceneSwitcher`；#6/#7 `PopupLayer`；#8 `Lose`；#12 `MessageBox` |
 | ✅ 已结构性关闭 | `Level1.cs` 初始化 / 输入路径（整条链全同步，见 §4.1 第 7 条）；类 D 的两个实例随 `GridEventBus` 删除而消失（见 §4.2） |
-| ⏸ 随重写处理 | #2 tooltip（含 `CallDeferred` 家族）；`InputMask` 输入拦截（§4.1 第 8 条） |
+| ⏸ 用户已接手（不在本任务内） | `InputMask` 输入拦截（§4.1 第 8 条；`PopupLayer.cs:16` 的 todo，随"键鼠 + 手柄"双输入方案统一设计） |
 | 🕓 另立一类不处理 | 类 D 订阅者生命周期（判据见 §4.2；实例已消失，判据留作将来用） |
 
 **验证缺口（唯一没闭合的一环）**：以上结论除 #1/#11/缓存那次改动外，**全是静态推理**，没有运行时验证。
-按 §6 跑一遍手动回归（反复切场景 / 翻页 / tooltip 悬停 / 胜负弹窗），并确认输出面板里没有
-`UnobservedTaskException` / `ObjectDisposedException`。`GetCancellationTokenOnTreeExit` 的缓存改动最值得先跑一次
-（它影响每次动画、每次输入、每条消息的 token）。
+按 §6 跑一遍手动回归（反复切场景 / 翻页 / **tooltip 快速悬停、悬停中换目标、悬停中切场景** / 胜负弹窗），
+并确认输出面板里没有 `UnobservedTaskException` / `ObjectDisposedException`。
+优先跑这三处：`GetCancellationTokenOnTreeExit` 的按节点缓存（影响每次动画/输入/消息的 token）、
+`SlideOutAsync`（#11 的自检 ct）、tooltip 的 `FadeOutThenHideAsync`（#2 的新修法）。
 
-> **🏗️ 重构提醒（pagination / tooltip 开工时主动提）**：那两个领域重写时，凡 `await` 之后要碰节点的写法
+> **🏗️ 长期规则**：翻页与 tooltip 的重写都已完成，但这条规则继续适用 —— 凡 `await` 之后要碰节点的写法
 > 都按 §5 三档处理（token 绑节点生命周期 + 在使用点自建链接 + 续体自检；当心 `ct = default` 的假安全陷阱）。
 
 
@@ -358,15 +383,16 @@ await tween.PlayAsyncUntilNodeDestroy(this, linked.Token);
 
 1. 编译 + 全工作区错误检查干净。
 2. 手动跑游戏：反复切场景（主菜单↔设置↔历史↔教程↔对局）、教程里反复翻页、
-   进对局后反复胜负弹窗 + tooltip 反复悬停。
+   进对局后反复胜负弹窗；tooltip 快速悬停、悬停中换目标、悬停中切场景。
 3. 观察输出面板里是否还有 `UnobservedTaskException` / `ObjectDisposedException`。
 
 ---
 
-## 7. 建议的第一条回复
+## 7. 历史：任务开工时的「建议第一条回复」
 
-先不要动手改代码。先回复：
-1. 你对根因机制的理解（用自己的话复述"为什么取消机制救不了已排队的续体"）；
-2. 你打算从哪一处开始、用什么手段、为什么；
-3. `Tooltip.cs` 那一处的具体修改方案（因为它的 token 结构最可疑，可能需要顺带补 `_ExitTree` 取消）。
-等用户确认后再改。
+> 本任务已结案，这一节只留作记录（它当初是为了防止"上来就动手加 null 检查"）。核心要求仍然成立：
+> 先说清"这个窗口为什么消失 / 为什么不存在"再改，说不清就不算修好。
+
+1. 用自己的话复述根因：为什么取消机制救不了**已排队的续体**；
+2. 从哪一处开始、用什么手段、为什么；
+3. （历史）`Tooltip.cs` 的改造方案 —— 已于 2026-10 随 tooltip feature 重设计完成（见 §4.1 第 1 条）。

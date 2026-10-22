@@ -13,6 +13,7 @@ public partial class PopupLayer : CanvasLayer
 
     public override void _Ready()
     {
+        // todo: block input the right way, this only block mouse inputs now
         IsInputBlocked = false;
     }
 
