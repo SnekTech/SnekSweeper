@@ -19,7 +19,7 @@ public partial class TooltipLayer : CanvasLayer, ITooltipRenderer, ITooltipAttac
 
     public override void _ExitTree()
     {
-        _host.Dispose();
+        _host.Stop();
         _fade.Dispose();
     }
 
