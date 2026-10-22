@@ -19,8 +19,9 @@ public partial class TooltipLayer : CanvasLayer, ITooltipRenderer, ITooltipAttac
 
     public override void _ExitTree()
     {
-        _host.Stop();
+        _host.Close();
         _fade.Dispose();
+        Tooltip.Hide();
     }
 
     public override void _Process(double delta) => _host.Advance();
