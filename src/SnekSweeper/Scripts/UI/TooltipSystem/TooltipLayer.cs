@@ -31,16 +31,22 @@ public partial class TooltipLayer : CanvasLayer, ITooltipRenderer, ITooltipAttac
     {
         switch (transition)
         {
+            case TooltipTransition.Unchanged:
+                return;
+
             case TooltipTransition.Show show:
                 Tooltip.Present(show.View.Content, show.View.Anchor, _config.Margin);
                 _fade.RunAsync(Tooltip.PlayFadeInAsync).Forget();
                 break;
+
             case TooltipTransition.Replace replace:
                 Tooltip.Present(replace.View.Content, replace.View.Anchor, _config.Margin);
                 break;
+
             case TooltipTransition.Hide:
                 _fade.RunAsync(Tooltip.FadeOutThenHideAsync).Forget();
                 break;
+
             default: throw new UnreachableException();
         }
     }
