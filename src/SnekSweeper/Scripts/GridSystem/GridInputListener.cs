@@ -42,7 +42,7 @@ public partial class GridInputListener : Node2D
     /// <summary>把 Godot 鼠标事件翻译成会话的一步；不关心的事件返回 null。</summary>
     GridInputOutcome? Translate(InputEventMouse mouseEvent)
     {
-        var target = TargetAt(mouseEvent.Position);
+        var target = GetTarget();
 
         return mouseEvent switch
         {
@@ -63,9 +63,9 @@ public partial class GridInputListener : Node2D
     /// 屏幕坐标 → 落点；落在网格外是 <see cref="PointerTarget.OffGrid"/> ——
     /// "没有指向任何格子"是一种状态，不是错误值。
     /// </summary>
-    PointerTarget TargetAt(Vector2 mousePosition)
+    PointerTarget GetTarget()
     {
-        var localMousePosition = mousePosition - GlobalPosition;
+        var localMousePosition = GetLocalMousePosition();
         var i = Mathf.FloorToInt(localMousePosition.Y / HumbleCell.CellSizeInPixels);
         var j = Mathf.FloorToInt(localMousePosition.X / HumbleCell.CellSizeInPixels);
         var gridIndex = new GridIndex(i, j);
