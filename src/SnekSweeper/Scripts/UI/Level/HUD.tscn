@@ -61,10 +61,20 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "0 flags"
 
+[node name="StatusBar" type="MarginContainer" parent="MarginContainer/HBoxContainer" unique_id=1453570351]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
+
+[node name="InputDeviceLabel" type="Label" parent="MarginContainer/HBoxContainer/StatusBar" unique_id=1206824798]
+unique_name_in_owner = true
+layout_mode = 2
+text = "device: mouse"
+
 [node name="ComboRankCard" parent="MarginContainer/HBoxContainer" unique_id=1688790515 instance=ExtResource("3_vtae1")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 10
+size_flags_horizontal = 8
 size_flags_vertical = 0
 
 [node name="PopupLayer" parent="." unique_id=695196234 instance=ExtResource("4_ti1le")]
