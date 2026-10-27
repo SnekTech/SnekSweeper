@@ -25,6 +25,7 @@ GTweensGodotUpdater="*res://Scripts/Autoloads/GTweensGodotUpdater.cs"
 SaveData="*res://Scripts/Autoloads/SaveData.cs"
 MessageBox="*res://Scripts/Autoloads/MessageBox.tscn"
 QuitHandler="*uid://cxvipmchokb61"
+DeviceDetectorDriver="*uid://cnu5u2faj5anb"
 
 [display]
 
