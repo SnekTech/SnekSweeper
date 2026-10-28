@@ -55,9 +55,9 @@ public partial class HUD : CanvasLayer, ISceneScript
     {
         var deviceText = device switch
         {
-            Mouse or Keyboard => "keyboard / mouse",
-            Gamepad { Brand: var brand } => $"{nameof(Gamepad)} ({brand})",
-            Unknown => nameof(Unknown),
+            InputDevice.Mouse or InputDevice.Keyboard => "keyboard / mouse",
+            InputDevice.Gamepad { Brand: var brand } => $"{nameof(InputDevice.Gamepad)} ({brand})",
+            InputDevice.NoDevice => nameof(InputDevice.NoDevice),
             _ => throw new UnreachableException(),
         };
 
