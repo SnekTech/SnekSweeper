@@ -11,16 +11,29 @@ public partial class DeviceDetectorDriver : Node
         Input.JoyConnectionChanged += OnJoyConnectionChanged;
     }
 
-
     public override void _ExitTree()
     {
         Input.JoyConnectionChanged -= OnJoyConnectionChanged;
     }
 
-    public override void _Input(InputEvent evt)
+    public override void _Input(InputEvent @event)
     {
-        Detector.Handle(evt);
+        if (ToSample(@event) is { } sample) Detector.Handle(sample);
     }
+
+    static InputSample? ToSample(InputEvent @event) => @event switch
+    {
+        InputEventMouse => InputSample.Mouse.Instance,
+        InputEventKey => InputSample.Keyboard.Instance,
+        InputEventJoypadButton { Device: var deviceId } when Gamepads.Find(deviceId) is { } gamepad =>
+            new InputSample.GamepadButton(gamepad),
+        InputEventJoypadMotion
+        {
+            Axis: JoyAxis.LeftX or JoyAxis.LeftY or JoyAxis.RightX or JoyAxis.RightY,
+            Device: var deviceId, AxisValue: var value,
+        } when Gamepads.Find(deviceId) is { } gamepad => new InputSample.GamepadAxis(gamepad, value),
+        _ => null,
+    };
 
     static void OnJoyConnectionChanged(long device, bool connected)
     {
