@@ -37,6 +37,16 @@ public partial class DeviceDetectorDriver : Node
 
     static void OnJoyConnectionChanged(long device, bool connected)
     {
-        Gamepads.ForgetCache((int)device);
+        var deviceId = (int)device;
+        var previous = Gamepads.ForgetCache(deviceId);
+
+        var gamepad = connected ? Gamepads.Find(deviceId) : previous;
+        if (gamepad is null)
+            return;
+
+        InputSample gamepadSample = connected
+            ? new InputSample.GamepadConnected(gamepad)
+            : new InputSample.GamepadDisconnected(gamepad);
+        Detector.Handle(gamepadSample);
     }
 }
