@@ -2,11 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://bm3lx1wgwydcm" path="res://Scripts/UI/Common/BackToMainButton.tscn" id="1_exko8"]
 [ext_resource type="Script" uid="uid://y4bxhdwv6tsd" path="res://Scripts/UI/Level/HUD.cs" id="1_udr3g"]
+[ext_resource type="Resource" uid="uid://i0qqjfdlujlo" path="res://Resources/gamepadGlyph/glyphCatalog.tres" id="2_fmg0l"]
+[ext_resource type="PackedScene" uid="uid://00vykknj1eoh" path="res://Scripts/UI/Common/InputHintView/GamepadHintList.tscn" id="3_b8pse"]
 [ext_resource type="PackedScene" uid="uid://ofhobc7irrc4" path="res://Scripts/Combo/ComboRankCard.tscn" id="3_vtae1"]
 [ext_resource type="PackedScene" uid="uid://chttesjjcccd0" path="res://Scripts/UI/Level/Popup/PopupLayer.tscn" id="4_ti1le"]
 
 [node name="HUD" type="CanvasLayer" unique_id=1050904476]
 script = ExtResource("1_udr3g")
+_gamepadGlyphCatalog = ExtResource("2_fmg0l")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=776818080]
 anchors_preset = 15
@@ -61,7 +64,7 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "0 flags"
 
-[node name="StatusBar" type="MarginContainer" parent="MarginContainer/HBoxContainer" unique_id=1453570351]
+[node name="StatusBar" type="HBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=577358859]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 8
@@ -70,6 +73,14 @@ size_flags_vertical = 8
 unique_name_in_owner = true
 layout_mode = 2
 text = "device: mouse"
+
+[node name="Spacer" type="Control" parent="MarginContainer/HBoxContainer/StatusBar" unique_id=1563916696]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GamepadHintList" parent="MarginContainer/HBoxContainer/StatusBar" unique_id=1140453218 instance=ExtResource("3_b8pse")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="ComboRankCard" parent="MarginContainer/HBoxContainer" unique_id=1688790515 instance=ExtResource("3_vtae1")]
 unique_name_in_owner = true

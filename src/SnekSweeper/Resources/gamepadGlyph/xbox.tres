@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="GamepadGlyphSet" format=3 uid="uid://g76k7qs5axbg"]
+
+[ext_resource type="Script" uid="uid://b3p5u1jlw2l01" path="res://Scripts/CustomResources/GamepadGlyphSet.cs" id="1_50d3x"]
+[ext_resource type="Texture2D" uid="uid://erbwxymlv7q6" path="res://Art/atlas_textures/xbox_controller/xbox_button_B.tres" id="1_hmtjo"]
+[ext_resource type="Texture2D" uid="uid://cwoqoahwan7of" path="res://Art/atlas_textures/xbox_controller/xbox_button_Y.tres" id="2_q6bow"]
+[ext_resource type="Texture2D" uid="uid://7f1qshr0ahku" path="res://Art/atlas_textures/xbox_controller/xbox_button_A.tres" id="3_08a3k"]
+[ext_resource type="Texture2D" uid="uid://bsyen1iwydn3w" path="res://Art/atlas_textures/xbox_controller/xbox_button_X.tres" id="4_aer2i"]
+
+[resource]
+script = ExtResource("1_50d3x")
+West = ExtResource("4_aer2i")
+North = ExtResource("2_q6bow")
+East = ExtResource("1_hmtjo")
+South = ExtResource("3_08a3k")
+metadata/_custom_type_script = "uid://b3p5u1jlw2l01"

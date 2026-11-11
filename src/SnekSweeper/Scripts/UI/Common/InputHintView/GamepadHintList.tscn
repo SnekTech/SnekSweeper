@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://00vykknj1eoh"]
+
+[ext_resource type="PackedScene" uid="uid://bf38j7xvqqj3p" path="res://Scripts/UI/Common/InputHintView/GamepadHintSegment.tscn" id="1_ijhj4"]
+[ext_resource type="Script" uid="uid://bhev4684me8uc" path="res://Scripts/UI/Common/InputHintView/GamepadHintList.cs" id="1_wjaip"]
+[ext_resource type="Texture2D" uid="uid://erbwxymlv7q6" path="res://Art/atlas_textures/xbox_controller/xbox_button_B.tres" id="2_wjaip"]
+[ext_resource type="Texture2D" uid="uid://cwoqoahwan7of" path="res://Art/atlas_textures/xbox_controller/xbox_button_Y.tres" id="3_x74mn"]
+
+[node name="GamepadHintList" type="HBoxContainer" unique_id=1140453218]
+offset_right = 196.0
+offset_bottom = 24.0
+theme_override_constants/separation = 16
+script = ExtResource("1_wjaip")
+
+[node name="Segment1" parent="." unique_id=1672074674 instance=ExtResource("1_ijhj4")]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="." unique_id=750235666]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer2" unique_id=1368382952]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("2_wjaip")
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer2" unique_id=1087409209]
+layout_mode = 2
+text = "Flag"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="." unique_id=1839742171]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer3" unique_id=799517684]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_x74mn")
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer3" unique_id=486910993]
+layout_mode = 2
+text = "Chord"

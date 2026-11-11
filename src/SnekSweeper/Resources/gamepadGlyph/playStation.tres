@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="GamepadGlyphSet" format=3 uid="uid://c2lk1bjn8vcoe"]
+
+[ext_resource type="Texture2D" uid="uid://b5wcgtwkfg18n" path="res://Art/atlas_textures/playstation_controller/ps_button_circle.tres" id="1_dagea"]
+[ext_resource type="Texture2D" uid="uid://djaail348j7h0" path="res://Art/atlas_textures/playstation_controller/ps_button_triangle.tres" id="2_65fxu"]
+[ext_resource type="Texture2D" uid="uid://o34uocx7sdil" path="res://Art/atlas_textures/playstation_controller/ps_button_cross.tres" id="3_6tqv6"]
+[ext_resource type="Texture2D" uid="uid://dcelyngjivyvy" path="res://Art/atlas_textures/playstation_controller/ps_button_square.tres" id="4_11exw"]
+[ext_resource type="Script" uid="uid://b3p5u1jlw2l01" path="res://Scripts/CustomResources/GamepadGlyphSet.cs" id="5_deogj"]
+
+[resource]
+script = ExtResource("5_deogj")
+West = ExtResource("4_11exw")
+North = ExtResource("2_65fxu")
+East = ExtResource("1_dagea")
+South = ExtResource("3_6tqv6")
+metadata/_custom_type_script = "uid://b3p5u1jlw2l01"

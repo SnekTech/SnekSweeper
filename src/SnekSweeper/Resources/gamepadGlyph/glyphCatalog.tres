@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GamepadGlyphCatalog" format=3 uid="uid://i0qqjfdlujlo"]
+
+[ext_resource type="Resource" uid="uid://3ls1evuu1voj" path="res://Resources/gamepadGlyph/nintendo.tres" id="1_boeux"]
+[ext_resource type="Script" uid="uid://8ibmjpa772s0" path="res://Scripts/CustomResources/GamepadGlyphCatalog.cs" id="1_nn01c"]
+[ext_resource type="Resource" uid="uid://c2lk1bjn8vcoe" path="res://Resources/gamepadGlyph/playStation.tres" id="2_63xl8"]
+[ext_resource type="Resource" uid="uid://g76k7qs5axbg" path="res://Resources/gamepadGlyph/xbox.tres" id="3_cb7f6"]
+
+[resource]
+script = ExtResource("1_nn01c")
+Xbox = ExtResource("3_cb7f6")
+PlayStation = ExtResource("2_63xl8")
+Nintendo = ExtResource("1_boeux")
+metadata/_custom_type_script = "uid://8ibmjpa772s0"

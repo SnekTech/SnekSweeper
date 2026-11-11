@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using GodotGadgets.InputProcessing;
 using GodotTask;
 using SnekSweeper.Autoloads;
+using SnekSweeper.CustomResources;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
 
@@ -10,6 +12,9 @@ namespace SnekSweeper.UI.Level;
 [SceneTree]
 public partial class HUD : CanvasLayer, ISceneScript
 {
+    [Export]
+    GamepadGlyphCatalog _gamepadGlyphCatalog = null!;
+    
     static DeviceDetector Detector => DeviceDetectorDriver.Detector;
 
     public override void _EnterTree()
@@ -21,6 +26,7 @@ public partial class HUD : CanvasLayer, ISceneScript
     public override void _Ready()
     {
         UpdateDeviceText(Detector.Current);
+        UpdateInputHint(Detector.Current);
     }
 
     public override void _ExitTree()
@@ -37,7 +43,11 @@ public partial class HUD : CanvasLayer, ISceneScript
 
     void OnUndoPressed() => UndoRequested?.Invoke();
 
-    void OnDeviceChanged(InputDevice previous, InputDevice detected) => UpdateDeviceText(detected);
+    void OnDeviceChanged(InputDevice previous, InputDevice detected)
+    {
+        UpdateDeviceText(detected);
+        UpdateInputHint(detected);
+    }
 
     public event Action? UndoRequested;
 
@@ -63,4 +73,24 @@ public partial class HUD : CanvasLayer, ISceneScript
 
         InputDeviceLabel.Text = $"device: {deviceText}";
     }
+
+    void UpdateInputHint(InputDevice device)
+    {
+        GamepadHintList.ShowHints(DeviceHints(device, _gamepadGlyphCatalog));
+    }
+
+    static IReadOnlyList<InputHint> GamepadHints(IGamepadGlyphs glyphs) =>
+    [
+        new(glyphs.Glyph(GamepadFaceButton.West), "Reveal"),
+        new(glyphs.Glyph(GamepadFaceButton.East), "Flag"),
+        new(glyphs.Glyph(GamepadFaceButton.North), "Chord"),
+    ];
+
+    static IReadOnlyList<InputHint> DeviceHints(InputDevice device, GamepadGlyphCatalog catalog) => device switch
+    {
+        InputDevice.Gamepad { Brand: var brand } => GamepadHints(catalog.For(brand)),
+        InputDevice.Mouse or InputDevice.Keyboard => [],
+        InputDevice.NoDevice => [],
+        _ => throw new SwitchExpressionException(),
+    };
 }

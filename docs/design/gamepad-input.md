@@ -8,4 +8,4 @@
 
 - [ ] move cursor with gamepad
   - [x] switch between mouse / keyboard / gamepad
-  - [ ] use keyboard to monitor gamepad for convenience: WASD + HJKL
+- [x] input hint in level HUD

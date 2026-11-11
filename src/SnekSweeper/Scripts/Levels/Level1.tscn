@@ -15,7 +15,7 @@ unique_name_in_owner = true
 position = Vector2(320, 180)
 
 [node name="GridStartPosition" type="Marker2D" parent="." unique_id=493653098]
-position = Vector2(128, 64)
+position = Vector2(128, 48)
 gizmo_extents = 16.0
 
 [node name="TheGrid" parent="GridStartPosition" unique_id=1645680372 instance=ExtResource("3_27cws")]
