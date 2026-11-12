@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using GodotGadgets.InputProcessing;
 using GodotTask;
 using SnekSweeper.Autoloads;
 using SnekSweeper.CustomResources;
+using SnekSweeper.UI.Common.InputHintView;
 using SnekSweeper.Widgets;
 using SnekSweeperCore.LevelManagement;
 
@@ -14,7 +14,7 @@ public partial class HUD : CanvasLayer, ISceneScript
 {
     [Export]
     GamepadGlyphCatalog _gamepadGlyphCatalog = null!;
-    
+
     static DeviceDetector Detector => DeviceDetectorDriver.Detector;
 
     public override void _EnterTree()
@@ -76,21 +76,6 @@ public partial class HUD : CanvasLayer, ISceneScript
 
     void UpdateInputHint(InputDevice device)
     {
-        GamepadHintList.ShowHints(DeviceHints(device, _gamepadGlyphCatalog));
+        GamepadHintList.ShowHints(InputHintPresenter.DeviceHints(device, _gamepadGlyphCatalog));
     }
-
-    static IReadOnlyList<InputHint> GamepadHints(IGamepadGlyphProvider glyphProvider) =>
-    [
-        new(glyphProvider.Glyph(new GamepadFaceButton.West()), "Reveal"),
-        new(glyphProvider.Glyph(new GamepadFaceButton.East()), "Flag"),
-        new(glyphProvider.Glyph(new GamepadFaceButton.North()), "Chord"),
-    ];
-
-    static IReadOnlyList<InputHint> DeviceHints(InputDevice device, GamepadGlyphCatalog catalog) => device switch
-    {
-        InputDevice.Gamepad { Brand: var brand } => GamepadHints(catalog.For(brand)),
-        InputDevice.Mouse or InputDevice.Keyboard => [],
-        InputDevice.NoDevice => [],
-        _ => throw new SwitchExpressionException(),
-    };
 }
