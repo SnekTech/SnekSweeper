@@ -1,10 +1,9 @@
-﻿using System.Runtime.CompilerServices;
-using GodotGadgets.InputProcessing;
+﻿using GodotGadgets.InputProcessing;
 
 namespace SnekSweeper.CustomResources;
 
 [GlobalClass]
-public partial class GamepadGlyphSet : Resource, IGamepadGlyphs
+public partial class GamepadGlyphSet : Resource, IGamepadGlyphProvider
 {
     [Export]
     public Texture2D West { get; set; } = null!;
@@ -25,6 +24,5 @@ public partial class GamepadGlyphSet : Resource, IGamepadGlyphs
             GamepadFaceButton.North => North,
             GamepadFaceButton.East => East,
             GamepadFaceButton.South => South,
-            _ => throw new SwitchExpressionException(),
         };
 }

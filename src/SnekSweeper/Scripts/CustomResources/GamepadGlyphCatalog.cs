@@ -13,7 +13,7 @@ public partial class GamepadGlyphCatalog : Resource
     [Export]
     public GamepadGlyphSet Nintendo { get; set; } = null!;
 
-    public IGamepadGlyphs For(GamepadBrand brand) => brand switch
+    public IGamepadGlyphProvider For(GamepadBrand brand) => brand switch
     {
         GamepadBrand.Xbox => Xbox,
         GamepadBrand.PlayStation => PlayStation,

@@ -79,11 +79,11 @@ public partial class HUD : CanvasLayer, ISceneScript
         GamepadHintList.ShowHints(DeviceHints(device, _gamepadGlyphCatalog));
     }
 
-    static IReadOnlyList<InputHint> GamepadHints(IGamepadGlyphs glyphs) =>
+    static IReadOnlyList<InputHint> GamepadHints(IGamepadGlyphProvider glyphProvider) =>
     [
-        new(glyphs.Glyph(GamepadFaceButton.West), "Reveal"),
-        new(glyphs.Glyph(GamepadFaceButton.East), "Flag"),
-        new(glyphs.Glyph(GamepadFaceButton.North), "Chord"),
+        new(glyphProvider.Glyph(new GamepadFaceButton.West()), "Reveal"),
+        new(glyphProvider.Glyph(new GamepadFaceButton.East()), "Flag"),
+        new(glyphProvider.Glyph(new GamepadFaceButton.North()), "Chord"),
     ];
 
     static IReadOnlyList<InputHint> DeviceHints(InputDevice device, GamepadGlyphCatalog catalog) => device switch
