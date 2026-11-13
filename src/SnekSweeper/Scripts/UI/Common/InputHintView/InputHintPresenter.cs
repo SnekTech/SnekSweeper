@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using GodotGadgets.InputProcessing;
+﻿using GodotGadgets.InputProcessing;
 using SnekSweeper.CustomResources;
 
 namespace SnekSweeper.UI.Common.InputHintView;
@@ -18,6 +17,5 @@ static class InputHintPresenter
         InputDevice.Gamepad { Brand: var brand } => GamepadHints(catalog.For(brand)),
         InputDevice.Mouse or InputDevice.Keyboard => [],
         InputDevice.NoDevice => [],
-        _ => throw new SwitchExpressionException(),
     };
 }
