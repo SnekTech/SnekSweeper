@@ -5,6 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>15</LangVersion>
+        <!-- Closed hierarchies / unions: a missing case or null arm must fail the build -->
+        <WarningsAsErrors>$(WarningsAsErrors);CS8509;CS8655</WarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>

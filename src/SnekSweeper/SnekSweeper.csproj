@@ -6,6 +6,8 @@
         <LangVersion>15</LangVersion>
         <!-- Catch compiler-mismatch issues with the Introspection generator -->
         <WarningsAsErrors>CS9057</WarningsAsErrors> 
+        <!-- Closed hierarchies / unions: a missing case or null arm must fail the build -->
+        <WarningsAsErrors>$(WarningsAsErrors);CS8509;CS8655</WarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
